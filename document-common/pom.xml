@@ -6,29 +6,11 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.test.web</groupId>
-  <artifactId>parse-html</artifactId>
+  <artifactId>document-common</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>Parser for HTML</name>
+  <name>Common document object code</name>
   <packaging>jar</packaging>
   <dependencies>
-
-	<dependency>
-		<groupId>com.test.web</groupId>
-		<artifactId>types</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</dependency>
-
-	<dependency>
-		<groupId>com.test.web</groupId>
-		<artifactId>css-common</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</dependency>
-
-	<dependency>
-		<groupId>com.test.web</groupId>
-		<artifactId>parse-common</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</dependency>
 
 
 	<!-- test dependencies --> 
