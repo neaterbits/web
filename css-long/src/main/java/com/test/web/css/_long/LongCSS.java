@@ -179,112 +179,145 @@ public class LongCSS {
 
 	private static void addStyle(CSStyle style, long [] buf, int offset) {
 		// Set bit for style present
-		buf[offset + IDX_STYLES] |= 1 << style.ordinal();
+		buf[offset + IDX_STYLES] |= (long)(1 << style.ordinal());
+	}
+
+	private static void clearStyle(CSStyle style, long [] buf, int offset) {
+		// Set bit for style present
+		buf[offset + IDX_STYLES] &= ~((long)(1 << style.ordinal()));
 	}
 
 	public static boolean hasStyle(CSStyle style, long [] buf, int offset) {
-		return (buf[offset + IDX_STYLES] & (long)style.ordinal()) != 0L;
+		return (buf[offset + IDX_STYLES] & (long)(1 << style.ordinal())) != 0L;
 	}
 	
-	private static final int JUSTIFY_LEFT_SHIFT	 	= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 4) + JUSTIFY_SIZE_BITS * 3;
-	private static final int JUSTIFY_LEFT_UNIT		= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 3) + JUSTIFY_SIZE_BITS * 3 + JUSTIFY_TYPE_BITS;
-	private static final int JUSTIFY_LEFT_TYPE 		= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 3) + JUSTIFY_SIZE_BITS * 3;
+	private static final int JUSTIFY_TOP_SHIFT	 	= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 4) + JUSTIFY_SIZE_BITS * 3;
+	private static final int JUSTIFY_TOP_UNIT		= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 3) + JUSTIFY_SIZE_BITS * 3 + JUSTIFY_TYPE_BITS;
+	private static final int JUSTIFY_TOP_TYPE 		= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 3) + JUSTIFY_SIZE_BITS * 3;
 	private static final int JUSTIFY_RIGHT_SHIFT 	= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 3) + JUSTIFY_SIZE_BITS * 2;
 	private static final int JUSTIFY_RIGHT_UNIT 	= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 2) + JUSTIFY_SIZE_BITS * 2 + JUSTIFY_TYPE_BITS;
 	private static final int JUSTIFY_RIGHT_TYPE 	= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 2) + JUSTIFY_SIZE_BITS * 2;
-	private static final int JUSTIFY_TOP_SHIFT 		= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 2) + JUSTIFY_SIZE_BITS * 1;
-	private static final int JUSTIFY_TOP_UNIT 		= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 1) + JUSTIFY_SIZE_BITS * 1 + JUSTIFY_TYPE_BITS;
-	private static final int JUSTIFY_TOP_TYPE 		= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 1) + JUSTIFY_SIZE_BITS * 1;
-	private static final int JUSTIFY_BOTTOM_SHIFT 	= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 1) + JUSTIFY_SIZE_BITS * 0;
-	private static final int JUSTIFY_BOTTOM_UNIT 	= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 0) + JUSTIFY_SIZE_BITS * 0 + JUSTIFY_TYPE_BITS;
-	private static final int JUSTIFY_BOTTOM_TYPE 	= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 0) + JUSTIFY_SIZE_BITS * 0;
+	private static final int JUSTIFY_BOTTOM_SHIFT 	= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 2) + JUSTIFY_SIZE_BITS * 1;
+	private static final int JUSTIFY_BOTTOM_UNIT 	= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 1) + JUSTIFY_SIZE_BITS * 1 + JUSTIFY_TYPE_BITS;
+	private static final int JUSTIFY_BOTTOM_TYPE 	= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 1) + JUSTIFY_SIZE_BITS * 1;
+	private static final int JUSTIFY_LEFT_SHIFT 	= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 1) + JUSTIFY_SIZE_BITS * 0;
+	private static final int JUSTIFY_LEFT_UNIT 		= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 0) + JUSTIFY_SIZE_BITS * 0 + JUSTIFY_TYPE_BITS;
+	private static final int JUSTIFY_LEFT_TYPE 		= ((UNIT_BITS + JUSTIFY_TYPE_BITS) * 0) + JUSTIFY_SIZE_BITS * 0;
 	
 	private static <PARAM> void getJustify(long encoded, ICSSJustify<PARAM> setter, PARAM param) {
 		
-		final int left 			= maskToInt(encoded, JUSTIFY_LEFT_SHIFT, JUSTIFY_SIZE_BITS);
-		final CSSUnit leftUnit 	= maskToUnit(encoded, JUSTIFY_LEFT_UNIT, JUSTIFY_SIZE_BITS);
-		final Justify leftAuto 	= maskToJustify(encoded, JUSTIFY_LEFT_TYPE);
+		final int top 			= maskToInt(encoded, JUSTIFY_TOP_SHIFT, JUSTIFY_SIZE_BITS);
+		final CSSUnit topUnit 	= maskToUnit(encoded, JUSTIFY_TOP_UNIT, UNIT_BITS);
+		final Justify topJustify 	= maskToJustify(encoded, JUSTIFY_TOP_TYPE);
 
 		final int right 		= maskToInt(encoded, JUSTIFY_RIGHT_SHIFT, JUSTIFY_SIZE_BITS);
-		final CSSUnit rightUnit = maskToUnit(encoded, JUSTIFY_RIGHT_UNIT, JUSTIFY_SIZE_BITS);
-		final Justify rightAuto = maskToJustify(encoded, JUSTIFY_RIGHT_TYPE);
-
-		final int top 			= maskToInt(encoded, JUSTIFY_TOP_SHIFT, JUSTIFY_SIZE_BITS);
-		final CSSUnit topUnit 	= maskToUnit(encoded, JUSTIFY_TOP_UNIT, JUSTIFY_SIZE_BITS);
-		final Justify topAuto 	= maskToJustify(encoded, JUSTIFY_TOP_TYPE);
+		final CSSUnit rightUnit = maskToUnit(encoded, JUSTIFY_RIGHT_UNIT, UNIT_BITS);
+		final Justify rightJustify = maskToJustify(encoded, JUSTIFY_RIGHT_TYPE);
 
 		final int bottom 			= maskToInt(encoded, JUSTIFY_BOTTOM_SHIFT, JUSTIFY_SIZE_BITS);
-		final CSSUnit bottomUnit 	= maskToUnit(encoded, JUSTIFY_BOTTOM_UNIT, JUSTIFY_SIZE_BITS);
-		final Justify bottomAuto 	= maskToJustify(encoded, JUSTIFY_BOTTOM_TYPE);
+		final CSSUnit bottomUnit 	= maskToUnit(encoded, JUSTIFY_BOTTOM_UNIT, UNIT_BITS);
+		final Justify bottomJustify 	= maskToJustify(encoded, JUSTIFY_BOTTOM_TYPE);
 		
-		setter.set(param, left, leftUnit, leftAuto, top, topUnit, topAuto, right, rightUnit, rightAuto, bottom, bottomUnit, bottomAuto);
+		final int left 			= maskToInt(encoded, JUSTIFY_LEFT_SHIFT, JUSTIFY_SIZE_BITS);
+		final CSSUnit leftUnit 	= maskToUnit(encoded, JUSTIFY_LEFT_UNIT, UNIT_BITS);
+		final Justify leftJustify 	= maskToJustify(encoded, JUSTIFY_LEFT_TYPE);
+
+		setter.set(param, top, topUnit, topJustify, right, rightUnit, rightJustify, bottom, bottomUnit, bottomJustify, left, leftUnit, leftJustify);
 	}
 
 	private static void setJustify(
 			long [] buf, int offset,
-			int left, CSSUnit leftUnit, Justify leftType,
 			int top, CSSUnit topUnit, Justify topType, 
 			int right, CSSUnit rightUnit, Justify rightType,
-			int bottom, CSSUnit bottomUnit, Justify bottomType) {
+			int bottom, CSSUnit bottomUnit, Justify bottomType,
+			int left, CSSUnit leftUnit, Justify leftType) {
 
 		// Merge with existing values since this may be an update
 		long encoded = buf[offset];
 		
-		if (leftType != Justify.NONE) {
+		if (topType != Justify.NONE) {
 			encoded &= 0x0000FFFFFFFFFFFFL;
-			encoded |=    left 					<< JUSTIFY_LEFT_SHIFT
-						| ordinal(leftUnit) 	<< JUSTIFY_LEFT_UNIT
-						| leftType.ordinal() 	<< JUSTIFY_LEFT_TYPE;
+			encoded |= 	  sizeLong(top, topType) 	<< JUSTIFY_TOP_SHIFT
+						| ordinalLong(topUnit)		<< JUSTIFY_TOP_UNIT
+						| ordinalLong(topType)		<< JUSTIFY_TOP_TYPE;
 			
 		}
-		
+
 		if (rightType != Justify.NONE) {
 			encoded &= 0xFFFF0000FFFFFFFFL;
-			encoded |=     right 			 	<< JUSTIFY_RIGHT_SHIFT
-						 | ordinal(rightUnit) 	<< JUSTIFY_RIGHT_UNIT
-						 | rightType.ordinal() 	<< JUSTIFY_RIGHT_TYPE;
+			encoded |=   sizeLong(right, rightType)		<< JUSTIFY_RIGHT_SHIFT
+					   | ordinalLong(rightUnit) 		<< JUSTIFY_RIGHT_UNIT
+					   | ordinalLong(rightType) 		<< JUSTIFY_RIGHT_TYPE;
 		}
 		
-		if (topType != Justify.NONE) {
+		
+		if (bottomType != Justify.NONE) {
 			encoded &= 0xFFFFFFFF0000FFFFL;
-			encoded |= 	  top   		    << JUSTIFY_TOP_SHIFT
-						| ordinal(topUnit)	<< JUSTIFY_TOP_UNIT
-						| topType.ordinal()	<< JUSTIFY_TOP_TYPE;
-			
-		}
-		
-		if (topType != Justify.NONE) {
-			encoded &= 0xFFFFFFFFFFFF0000L;
-			encoded |=	  bottom 			    << JUSTIFY_BOTTOM_SHIFT
-						| ordinal(bottomUnit) 	<< JUSTIFY_BOTTOM_UNIT
-						| bottomType.ordinal() 	<< JUSTIFY_BOTTOM_TYPE;
+			encoded |=	  sizeLong(bottom, bottomType)	<< JUSTIFY_BOTTOM_SHIFT
+						| ordinalLong(bottomUnit) 		<< JUSTIFY_BOTTOM_UNIT
+						| ordinalLong(bottomType) 		<< JUSTIFY_BOTTOM_TYPE;
 
 		}
 		
 		
+		if (leftType != Justify.NONE) {
+			encoded &= 0xFFFFFFFFFFFF0000L;
+			encoded |=    sizeLong(left, leftType) 	<< JUSTIFY_LEFT_SHIFT
+						| ordinalLong(leftUnit) 	<< JUSTIFY_LEFT_UNIT
+						| ordinalLong(leftType) 	<< JUSTIFY_LEFT_TYPE;
+		}
+		
 		buf[offset] = encoded;
 	}
 	
-	private static final int ordinal(CSSUnit unit) {
+	private static final long sizeLong(int size, Justify type) {
+		return type == Justify.SIZE ? size : 0;
+	}
+
+	private static final long ordinalLong(CSSUnit unit) {
 		return unit != null ? unit.ordinal() : 0;
 	}
 	
+	private static final long ordinalLong(Justify type) {
+		return type.ordinal();
+	}
+	
+	private static void setStyle(long [] buf, int offset, Justify type, CSStyle style) {
+		if (type != Justify.NONE) {
+			addStyle(style, buf, offset);
+		}
+		else {
+			// Keep current
+			//clearStyle(style, buf, offset);
+		}
+	}
+	
 	public static void setMargin(long [] buf, int offset,
-			int left, CSSUnit leftUnit, Justify leftType,
 			int top, CSSUnit topUnit, Justify topType, 
 			int right, CSSUnit rightUnit, Justify rightType,
-			int bottom, CSSUnit bottomUnit, Justify bottomType) {
+			int bottom, CSSUnit bottomUnit, Justify bottomType,
+			int left, CSSUnit leftUnit, Justify leftType) {
+
+		setStyle(buf, offset, topType, CSStyle.MARGIN_TOP);
+		setStyle(buf, offset, rightType, CSStyle.MARGIN_RIGHT);
+		setStyle(buf, offset, bottomType, CSStyle.MARGIN_BOTTOM);
+		setStyle(buf, offset, leftType, CSStyle.MARGIN_LEFT);
 		
-		setJustify(buf, offset + IDX_MARGIN, left, leftUnit, leftType, top, topUnit, topType, right, rightUnit, rightType, bottom, bottomUnit, bottomType);
+		setJustify(buf, offset + IDX_MARGIN, top, topUnit, topType, right, rightUnit, rightType, bottom, bottomUnit, bottomType, left, leftUnit, leftType);
 	}
 	
 	public static void setPadding(long [] buf, int offset,
-			int left, CSSUnit leftUnit, Justify leftType,
 			int top, CSSUnit topUnit, Justify topType, 
 			int right, CSSUnit rightUnit, Justify rightType,
-			int bottom, CSSUnit bottomUnit, Justify bottomType) {
+			int bottom, CSSUnit bottomUnit, Justify bottomType,
+			int left, CSSUnit leftUnit, Justify leftType) {
 		
-		setJustify(buf, offset + IDX_PADDING, left, leftUnit, leftType, top, topUnit, topType, right, rightUnit, rightType, bottom, bottomUnit, bottomType);
+		setStyle(buf, offset, topType, CSStyle.PADDING_TOP);
+		setStyle(buf, offset, rightType, CSStyle.PADDING_RIGHT);
+		setStyle(buf, offset, bottomType, CSStyle.PADDING_BOTTOM);
+		setStyle(buf, offset, leftType, CSStyle.PADDING_LEFT);
+
+		setJustify(buf, offset + IDX_PADDING, top, topUnit, topType, right, rightUnit, rightType, bottom, bottomUnit, bottomType, left, leftUnit, leftType);
 	}
 
 	public static <PARAM> void getMargin(long [] buf, int offset, ICSSJustify<PARAM> setter, PARAM param) {
@@ -303,9 +336,9 @@ public class LongCSS {
 		
 		addStyle(CSStyle.WIDTH, buf, offset);
 		
-		buf[offset + 1] =   buf[offset + 1]
-				 | ((long)width) << (UNIT_BITS + HEIGHT_BITS + UNIT_BITS)
-				 | ((long)unit.ordinal()) << (HEIGHT_BITS + UNIT_BITS); 
+		long encoded =((long)width) << (UNIT_BITS + HEIGHT_BITS + UNIT_BITS) | ((long)unit.ordinal()) << (HEIGHT_BITS + UNIT_BITS); 
+		
+		buf[offset + IDX_DIMENSIONS] |= encoded;
 	}
 
 	public static void addHeight(long [] buf, int offset, int height, CSSUnit unit) {
@@ -316,23 +349,27 @@ public class LongCSS {
 		
 		addStyle(CSStyle.HEIGHT, buf, offset);
 		
-		buf[offset + 1] =   buf[offset + 1]
-				 | ((long)height) << UNIT_BITS
-				 | ((long)unit.ordinal()); 
+		long encoded = ((long)height) << UNIT_BITS | ((long)unit.ordinal());
+		
+		buf[offset + IDX_DIMENSIONS] |= encoded; 
 	}
 
 	public static int getWidth(long [] buf, int offset) {
-		return (int)buf[offset + 1] >> (UNIT_BITS  + HEIGHT_BITS + UNIT_BITS);
+		final long width = buf[offset + IDX_DIMENSIONS] >> (UNIT_BITS  + HEIGHT_BITS + UNIT_BITS);
+		
+		return (int)width;
 	}
 
 	public static CSSUnit getWidthUnit(long [] buf, int offset) {
-		final int ordinal = (int)((buf[offset + 1] >> (HEIGHT_BITS + UNIT_BITS)) & ((1 << UNIT_BITS) - 1));
+		final int ordinal = (int)((buf[offset + IDX_DIMENSIONS] >> (HEIGHT_BITS + UNIT_BITS)) & ((1 << UNIT_BITS) - 1));
 
 		return CSSUnit.values()[ordinal];
 	}
 
 	public static int getHeight(long [] buf, int offset) {
-		return (int)(buf[offset + 1] >> (UNIT_BITS) & ((1 << HEIGHT_BITS) - 1));
+		final long height = buf[offset + IDX_DIMENSIONS] >> (UNIT_BITS) & ((1 << HEIGHT_BITS) - 1);
+		
+		return (int)height;
 	}
 
 	public static CSSUnit getHeightUnit(long [] buf, int offset) {
@@ -341,7 +378,9 @@ public class LongCSS {
 		return CSSUnit.values()[ordinal];
 	}
 	
-	private static void updateFlag(long [] buf, int offset, int ordinal, int shift, long clear) {
+	private static void updateFlag(long [] buf, int offset, CSStyle style, int ordinal, int shift, long clear) {
+		
+		addStyle(style, buf, offset);
 		
 		long encoded = buf[offset + IDX_FLAGS];
 		
@@ -360,23 +399,23 @@ public class LongCSS {
 	}
 	
 	public static void setDisplay(long [] buf, int offset, CSSDisplay display) {
-		updateFlag(buf, offset, display.ordinal(), DISPLAY_SHIFT, DISPLAY_CLEAR);
+		updateFlag(buf, offset, CSStyle.DISPLAY, display.ordinal(), DISPLAY_SHIFT, DISPLAY_CLEAR);
 	}
 	
 	public static void setPosition(long [] buf, int offset, CSSPosition position) {
-		updateFlag(buf, offset, position.ordinal(), POSITION_SHIFT, POSITION_CLEAR);
+		updateFlag(buf, offset, CSStyle.POSITION, position.ordinal(), POSITION_SHIFT, POSITION_CLEAR);
 	}
 
 	public static void setFloat(long [] buf, int offset, CSSFloat _float) {
-		updateFlag(buf, offset, _float.ordinal(), FLOAT_SHIFT, FLOAT_CLEAR);
+		updateFlag(buf, offset, CSStyle.FLOAT, _float.ordinal(), FLOAT_SHIFT, FLOAT_CLEAR);
 	}
 
 	public static void setTextAlign(long [] buf, int offset, CSSTextAlign textAlign) {
-		updateFlag(buf, offset, textAlign.ordinal(), TEXT_ALIGN_SHIFT, TEXT_ALIGN_CLEAR);
+		updateFlag(buf, offset, CSStyle.TEXT_ALIGN, textAlign.ordinal(), TEXT_ALIGN_SHIFT, TEXT_ALIGN_CLEAR);
 	}
 
 	public static void setOverflow(long [] buf, int offset, CSSOverflow overflow) {
-		updateFlag(buf, offset, overflow.ordinal(), OVERFLOW_SHIFT, OVERFLOW_CLEAR);
+		updateFlag(buf, offset,CSStyle.OVERFLOW, overflow.ordinal(), OVERFLOW_SHIFT, OVERFLOW_CLEAR);
 	}
 	
 	public static CSSDisplay getDisplay(long [] buf, int offset) {

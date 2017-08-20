@@ -74,9 +74,9 @@ public final class LongCSSDocument extends LongBuffersIntegerIndex implements CS
 
 	@Override
 	public boolean isSet(CSSTarget target, String targetName, CSStyle style) {
-		
+
 		final Integer entry = getMap(target).get(targetName);
-		
+
 		final boolean isSet;
 
 		if (entry == null) {
@@ -87,6 +87,12 @@ public final class LongCSSDocument extends LongBuffersIntegerIndex implements CS
 		}
 
 		return isSet;
+	}
+	
+	
+	@Override
+	public boolean isSet(Integer ref, CSStyle style) {
+		return LongCSS.hasStyle(style, buf(ref), offset(ref));
 	}
 
 	@Override
@@ -215,28 +221,28 @@ public final class LongCSSDocument extends LongBuffersIntegerIndex implements CS
 	}
 
 	@Override
-	public void onHeight(Void context, int width, CSSUnit unit) {
-		LongCSS.addHeight(buf(curParseElement), offset(curParseElement), width, unit);
+	public void onHeight(Void context, int height, CSSUnit unit) {
+		LongCSS.addHeight(buf(curParseElement), offset(curParseElement), height, unit);
 	}
 
 	@Override
 	public void onMargin(Void context,
-			int left, CSSUnit leftUnit, Justify leftType,
 			int top, CSSUnit topUnit, Justify topType,
 			int right, CSSUnit rightUnit, Justify rightType,
-			int bottom, CSSUnit bottomUnit, Justify bottomType) {
+			int bottom, CSSUnit bottomUnit, Justify bottomType,
+			int left, CSSUnit leftUnit, Justify leftType) {
 		
-		LongCSS.setMargin(buf(curParseElement), offset(curParseElement), left, leftUnit, leftType, top, topUnit, topType, right, rightUnit, rightType, bottom, bottomUnit, bottomType);
+		LongCSS.setMargin(buf(curParseElement), offset(curParseElement), top, topUnit, topType, right, rightUnit, rightType, bottom, bottomUnit, bottomType, left, leftUnit, leftType);
 	}
 
 	@Override
 	public void onPadding(Void context,
-			int left, CSSUnit leftUnit, Justify leftType,
 			int top, CSSUnit topUnit, Justify topType,
 			int right, CSSUnit rightUnit, Justify rightType,
-			int bottom, CSSUnit bottomUnit, Justify bottomType) {
+			int bottom, CSSUnit bottomUnit, Justify bottomType,
+			int left, CSSUnit leftUnit, Justify leftType) {
 		
-		LongCSS.setPadding(buf(curParseElement), offset(curParseElement), left, leftUnit, leftType, top, topUnit, topType, right, rightUnit, rightType, bottom, bottomUnit, bottomType);
+		LongCSS.setPadding(buf(curParseElement), offset(curParseElement), top, topUnit, topType, right, rightUnit, rightType, bottom, bottomUnit, bottomType, left, leftUnit, leftType);
 	}
 
 	@Override

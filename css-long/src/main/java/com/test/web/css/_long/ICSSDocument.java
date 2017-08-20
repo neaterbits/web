@@ -33,6 +33,8 @@ public interface ICSSDocument<TARGET> {
 
 	TARGET get(CSSTarget target, String targetName);
 	
+	boolean isSet(TARGET ref, CSStyle style);
+	
 	int getWidth(TARGET ref);
 	
 	CSSUnit getWidthUnit(TARGET ref);

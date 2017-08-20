@@ -20,7 +20,16 @@ public abstract class LongBuffers extends BaseBuffers<long [][], long[]> {
 
 	@Override
 	protected long[] allocateBuffer(int length) {
-		return new long[length];
+		final long[] buf = new long[length];
+		
+		// Check that is all 0
+		for (long l : buf) {
+			if (l != 0L) {
+				throw new IllegalStateException("not 0");
+			}
+		}
+
+		return buf;
 	}
 
 	@Override

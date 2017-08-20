@@ -11,9 +11,10 @@ package com.test.web.css.common;
 
 public interface ICSSJustify<PARAM> {
 
-	void set(PARAM param, int left, CSSUnit leftUnit, Justify leftType,
+	void set(PARAM param,
 			int top, CSSUnit topUnit, Justify topType, 
 			int right, CSSUnit rightUnit, Justify rightType,
-			int bottom, CSSUnit bottomUnit, Justify bottomType);
+			int bottom, CSSUnit bottomUnit, Justify bottomType,
+			int left, CSSUnit leftUnit, Justify leftType);
 	
 }

@@ -30,17 +30,10 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 	void onOverflow(CONTEXT context, CSSOverflow overflow);
 
 	void onMargin(CONTEXT context,
-			int left, CSSUnit leftUnit, Justify leftType,
 			int top, CSSUnit topUnit, Justify topType, 
 			int right, CSSUnit rightUnit, Justify rightType,
-			int bottom, CSSUnit bottomUnit, Justify bottomType);
-
-	default void onMarginLeft(CONTEXT context, int left, CSSUnit leftUnit, Justify leftType) {
-		onMargin(context, left, leftUnit, leftType,
-				0, null, Justify.NONE,
-				0, null, Justify.NONE,
-				0, null, Justify.NONE);
-	}
+			int bottom, CSSUnit bottomUnit, Justify bottomType,
+			int left, CSSUnit leftUnit, Justify leftType);
 
 	default void onMarginRight(CONTEXT context, int right, CSSUnit rightUnit, Justify rightType) {
 		onMargin(context, 
@@ -52,9 +45,9 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 
 	default void onMarginTop(CONTEXT context, int top, CSSUnit topUnit, Justify topType) {
 		onMargin(context, 
-				0, null, Justify.NONE,
-				0, null, Justify.NONE,
 				top, topUnit, topType,
+				0, null, Justify.NONE,
+				0, null, Justify.NONE,
 				0, null, Justify.NONE);
 	}
 
@@ -62,18 +55,27 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 		onMargin(context, 
 				0, null, Justify.NONE,
 				0, null, Justify.NONE,
+				bottom, bottomUnit, bottomType,
+				0, null, Justify.NONE);
+	}
+
+	default void onMarginLeft(CONTEXT context, int left, CSSUnit leftUnit, Justify leftType) {
+		onMargin(context,
 				0, null, Justify.NONE,
-				bottom, bottomUnit, bottomType);
+				0, null, Justify.NONE,
+				0, null, Justify.NONE,
+				left, leftUnit, leftType);
 	}
 
 	void onPadding(CONTEXT context,
-			int left, CSSUnit leftUnit, Justify leftType,
 			int top, CSSUnit topUnit, Justify topType, 
 			int right, CSSUnit rightUnit, Justify rightType,
-			int bottom, CSSUnit bottomUnit, Justify bottomType);
+			int bottom, CSSUnit bottomUnit, Justify bottomType,
+			int left, CSSUnit leftUnit, Justify leftType);
 
-	default void onPaddingLeft(CONTEXT context, int left, CSSUnit leftUnit, Justify leftType) {
-		onPadding(context, left, leftUnit, leftType,
+	default void onPaddingTop(CONTEXT context, int top, CSSUnit topUnit, Justify topType) {
+		onPadding(context, 
+				top, topUnit, topType,
 				0, null, Justify.NONE,
 				0, null, Justify.NONE,
 				0, null, Justify.NONE);
@@ -87,20 +89,20 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 				0, null, Justify.NONE);
 	}
 
-	default void onPaddingTop(CONTEXT context, int top, CSSUnit topUnit, Justify topType) {
-		onPadding(context, 
-				0, null, Justify.NONE,
-				0, null, Justify.NONE,
-				top, topUnit, topType,
-				0, null, Justify.NONE);
-	}
-
 	default void onPaddingBottom(CONTEXT context, int bottom, CSSUnit bottomUnit, Justify bottomType) {
 		onPadding(context, 
 				0, null, Justify.NONE,
 				0, null, Justify.NONE,
+				bottom, bottomUnit, bottomType,
+				0, null, Justify.NONE);
+	}
+
+	default void onPaddingLeft(CONTEXT context, int left, CSSUnit leftUnit, Justify leftType) {
+		onPadding(context,
 				0, null, Justify.NONE,
-				bottom, bottomUnit, bottomType);
+				0, null, Justify.NONE,
+				0, null, Justify.NONE,
+				left, leftUnit, leftType);
 	}
 }
 
