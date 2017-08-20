@@ -4,7 +4,9 @@ package com.test.web.parse.common;
 
 public abstract class CharType {
 
-	abstract boolean isOfType(char c); 
+	protected boolean isOfType(char c) {
+		return false;
+	}
 	
 	public boolean matches(String s) {
 		
@@ -20,6 +22,10 @@ public abstract class CharType {
 		}
 
 		return matches;
+	}
+	
+	protected static boolean isASCIILetter(char c) {
+		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); 
 	}
 	
 }

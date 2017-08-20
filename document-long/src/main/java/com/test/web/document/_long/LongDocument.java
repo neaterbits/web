@@ -3,6 +3,7 @@ package com.test.web.document._long;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.test.web.buffers.LongBuffersIntegerIndex;
 import com.test.web.document.common.Document;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.io.common.CharInput;
@@ -24,20 +25,17 @@ import com.test.web.parse.html.enums.HTMLElement;
  */
 
 
-public class LongDocument implements Document, HTMLParserListener<CharInput, LongTokenizer> {
+public class LongDocument extends LongBuffersIntegerIndex implements Document, HTMLParserListener<CharInput, LongTokenizer> {
 
 	private static final int INITIAL_BUFFERS = 100;
 	
 	
-	private final long [][] buffers;
-	
-	// Stack for position
+	// Stack for position while parsing
 	private final List<Integer> stack;
 	
 	
 	
 	public LongDocument() {
-		this.buffers = new long[INITIAL_BUFFERS][];
 		this.stack = new ArrayList<>();
 	}
 

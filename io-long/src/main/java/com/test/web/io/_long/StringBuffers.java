@@ -6,10 +6,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
+import com.test.web.buffers.BaseBuffers;
 import com.test.web.io.common.CharInput;
 
-public class StringBuffers implements CharInput {
+public class StringBuffers extends BaseBuffers<char[][], char[]> implements CharInput {
 	
+	private static final boolean DEBUG = false;
+	
+	private static final String PREFIX = "StringBuffers:";
+
 	private static final int BUF_NO_BITS = 24; // Buffer no
 	private static final int OFFSET_BITS = 16; // Offset into each buffer to start of string
 	private static final int LENGTH_BITS = 24; // Length of string from 
@@ -25,7 +30,7 @@ public class StringBuffers implements CharInput {
 	}
 
 	private static int bufOffset(long stringRef) {
-		return (int)(stringRef >> (OFFSET_BITS + LENGTH_BITS));  
+		return (int)(stringRef >> LENGTH_BITS);  
 	}
 
 	private static int length(long stringRef) {
@@ -40,7 +45,6 @@ public class StringBuffers implements CharInput {
 	// Read 100 bytes at a time max so that can parse as we read from socket
 	private static final int READ_CHUNK = 100;
 	
-	private char [][] buffers;
 
 	private final BufferedReader reader;
 
@@ -48,14 +52,13 @@ public class StringBuffers implements CharInput {
 	private long curReadPos;
 	
 	
-	StringBuffers(InputStream inputStream) {
+	public StringBuffers(InputStream inputStream) {
+		super(new char [INITIAL_BUFFERS][], INITIAL_BUFFERS, MAX_BUFFERS, OFFSET_BITS);
 		
 		if (inputStream == null) {
 			throw new IllegalArgumentException("inputStream == null");
 		}
 		
-		this.buffers = new char [INITIAL_BUFFERS][];
-
 		this.reader = new BufferedReader(new InputStreamReader(inputStream));
 		
 		this.curReadPos = 0;
@@ -93,10 +96,17 @@ public class StringBuffers implements CharInput {
 				this.curReadPos = stringRef(bufNo + 1, 0, 0); 
 			}
 			else {
+				if (DEBUG) {
+					System.out.format(PREFIX + " readNext before: %d %d %x %x\n", bufNo, bufOffset, curReadPos, curWritePos);
+				}
 				this.curReadPos = stringRef(bufNo, bufOffset + 1, 0);
 			}
 
 			ret = (int)c;
+		}
+		
+		if (DEBUG) {
+			System.out.format(PREFIX + " readNext: %x %x\n", curReadPos, curWritePos);
 		}
 		
 		return ret;
@@ -114,23 +124,12 @@ public class StringBuffers implements CharInput {
 			// Switch to next buffer
 			++ bufNo;
 			bufOffset = 0;
-			
-			if (bufNo >= buffers.length) {
-				// Increase buffers array
-				if (bufNo >= MAX_BUFFERS) {
-					// More than max buffers
-					throw new IllegalStateException("bufNo >= MAX_BUFFERS");
-				}
-				
-				final int numBuffers = Math.min(MAX_BUFFERS, buffers.length * 2);
-				
-				this.buffers = Arrays.copyOf(buffers, numBuffers);
-				
-			}
-			
-			if (buffers[bufNo] == null) {
-				buffers[bufNo] = new char[BUFFER_SIZE];
-			}
+
+			expandBuffers(bufNo);
+		}
+		else if (buffers[bufNo] == null) {
+			// Not intialized yet
+			buffers[bufNo] = allocateBuffer(BUFFER_SIZE);
 		}
 		
 		// Now have a bufNo, bufOffset and leftInBuffer, read into buffer
@@ -156,5 +155,25 @@ public class StringBuffers implements CharInput {
 		final int bufOffset = bufOffset(curReadPos);
 
 		return bufNo == 0 ? bufOffset : (bufNo - 1) * (long)BUFFER_SIZE;
+	}
+
+	@Override
+	protected char[] get(char[][] array, int bufNo) {
+		return array[bufNo];
+	}
+
+	@Override
+	protected void set(char[][] array, int bufNo, char[] buf) {
+		array[bufNo] = buf;
+	}
+
+	@Override
+	protected char[] allocateBuffer(int length) {
+		return new char[length];
+	}
+
+	@Override
+	protected char[][] copy(char[][] array, int newLength) {
+		return Arrays.copyOf(array, newLength);
 	}
 }

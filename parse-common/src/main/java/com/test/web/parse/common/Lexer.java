@@ -2,13 +2,19 @@ package com.test.web.parse.common;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.Arrays;
 
 import com.test.web.io.common.CharInput;
 
 public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharInput> {
 
+	private static final boolean DEBUG = true;
+	
+	private static final String PREFIX = "Lexer: ";
+	
 	private final INPUT input;
 	private final TOKEN tokNone;
+	private final TOKEN tokEOF;
 	
 	private final StringBuilder cur;
 	private int buffered;
@@ -19,7 +25,7 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	private int lineNo;
 	
 	
-	public Lexer(INPUT input, Class<TOKEN> tokenClass, TOKEN tokNone) {
+	public Lexer(INPUT input, Class<TOKEN> tokenClass, TOKEN tokNone, TOKEN tokEOF) {
 		
 		if (input == null) {
 			throw new IllegalArgumentException("inputStream == null");
@@ -34,6 +40,7 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		this.matchingTokens = new int[tokenClass.getEnumConstants().length];
 		
 		this.tokNone = tokNone;
+		this.tokEOF = tokEOF;
 		this.cur = new StringBuilder();
 		this.buffered = -1;
 		this.lineNo = 1;
@@ -41,6 +48,11 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	
 	
 	public TOKEN lex(TOKEN ... tokens) throws IOException {
+		
+		if (DEBUG) {
+			System.out.println("----");
+			System.out.println(PREFIX + " lex(" + Arrays.toString(tokens) + ")");
+		}
 		
 		if (tokens.length > matchingTokens.length) {
 			throw new IllegalArgumentException("tokens.length > matchingTokens.length");
@@ -59,7 +71,19 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 			final int val = read();
 			
 			if (val < 0) {
-				throw new EOFException("Reached EOF");
+				
+				if (tokEOF != null) {
+					for (TOKEN token : tokens) {
+						if (token == tokEOF) {
+							found = tokEOF;
+							break;
+						}
+					}
+				}
+				
+				if (found == null) {
+					throw new EOFException("Reached EOF");
+				}
 			}
 			
 			final char c = (char)val;
@@ -76,6 +100,10 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 			for (int i = 0; i < tokens.length; ++ i) {
 				// Check whether tokens match
 				final TOKEN token = tokens[i];
+				
+				if (DEBUG) {
+					System.out.println(PREFIX + " Matching token " + token + " to \"" + cur + "\"");
+				}
 				
 				final boolean match;
 				
@@ -109,12 +137,20 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 					final boolean matches = token.getCharType().matches(cur.toString());
 					if (matches) {
 						// Matches but we should read all characters from stream
+						if (DEBUG) {
+							System.out.println(PREFIX + " matched chartype");
+						}
 						++ numPossibleMatch;
 						match = false;
 					}
 					else {
 						// Does not match, but if length > 1 that means we have a match from previous chars
-						if (cur.length() > 1) {
+						if (   cur.length() > 1 
+							&& token.getCharType().matches(cur.toString().substring(0, cur.length() - 1))) {
+							
+							if (DEBUG) {
+								System.out.println(PREFIX + " no longer matched chartype but matched last");
+							}
 							match = true;
 							
 							// Must copy to temporary buf since we read a character that cannot be read
@@ -128,28 +164,47 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 					}
 					break;
 					
+				case EOF:
+					// skip
+					match = false;
+					break;
+						
+					
 				default:
 					throw new IllegalArgumentException("Unknown token type " + token.getTokenType() + " for token " + token);
 				}
 				
+				if (DEBUG) {
+					System.out.println(PREFIX + " match to " + token + ", buf = \"" + cur + "\", match=" + match +", numPossibleMatch=" + numPossibleMatch);
+				}
 				
 				if (match) {
 					// Return first matching token
 					found = token;
 					break;
 				}
-				else if (numPossibleMatch == 0) {
-					// No possible matches, return not-found token
-					found = tokNone;
+			}
+
+			if (numPossibleMatch == 0 && found == null) {
+				
+				if (DEBUG) {
+					System.out.println(PREFIX + " No possible matches, returning");
 				}
+				
+				// No possible matches, return not-found token
+				found = tokNone;
 			}
 
 		} while (found == null);
 		
+		if (DEBUG) {
+			System.out.println(PREFIX + " returned token " + found + " at " + lineNo + ", buf=\"" + cur + "\", buffered char='"+ (char)buffered + "'");
+		}
+		
 		return found;
 	}
 	
-	public final int read() throws IOException {
+	private final int read() throws IOException {
 		final int ret;
 		
 		if (buffered >= 0) {
@@ -163,7 +218,11 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		return ret;
 	}
 	
+	public final String get() {
+		return cur.toString();
+	}
+	
 	public final ParserException unexpectedToken() {
-		return new ParserException("Unexpected token at " + lineNo);
+		return new ParserException("Unexpected token for \"" + cur.toString() + "\" at " + lineNo);
 	}
 }

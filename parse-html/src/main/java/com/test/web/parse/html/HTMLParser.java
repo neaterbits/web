@@ -25,7 +25,7 @@ final class HTMLParser<INPUT extends CharInput, TOKENIZER extends Tokenizer> ext
 		
 		this.input = input;
 		this.tokenizer = tokenizer;
-		this.lexer = new Lexer<HTMLToken, INPUT>(input, HTMLToken.class, HTMLToken.NONE);
+		this.lexer = new Lexer<HTMLToken, INPUT>(input, HTMLToken.class, HTMLToken.NONE, null);
 		this.listener = listener;
 	}
 	

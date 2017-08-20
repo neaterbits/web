@@ -6,35 +6,11 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.test.web</groupId>
-  <artifactId>css-long</artifactId>
+  <artifactId>buffers</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>CSS long storage code</name>
+  <name>Buffers</name>
   <packaging>jar</packaging>
   <dependencies>
-
-	<dependency>
-		<groupId>com.test.web</groupId>
-		<artifactId>buffers</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</dependency>
-
-	<dependency>
-		<groupId>com.test.web</groupId>
-		<artifactId>css-common</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</dependency>
-
-	<dependency>
-		<groupId>com.test.web</groupId>
-		<artifactId>parse-css</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</dependency>
-
-	<dependency>
-		<groupId>com.test.web</groupId>
-		<artifactId>io-long</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</dependency>
 
 	<!-- test dependencies --> 
 
@@ -47,5 +23,3 @@
 
   </dependencies>
 </project>
-
-

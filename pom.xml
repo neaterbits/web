@@ -23,6 +23,7 @@
 
 	  <modules>
 	    <module>types</module>
+	    <module>buffers</module>
 	    <module>css-common</module>
 	    <module>css-long</module>
 	    <module>io-common</module>
