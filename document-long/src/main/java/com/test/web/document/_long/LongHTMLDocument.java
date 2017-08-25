@@ -62,6 +62,13 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 
 	@Override
+	public void onText(LongTokenizer tokentizer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
 	public void onAttribute(LongTokenizer tokenizer, HTMLAttribute attribute) {
 		// TODO Auto-generated method stub
 		
@@ -69,7 +76,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 
 	@Override
-	public void onAttribute(LongTokenizer tokenizer, HTMLAttribute attribute, String value) {
+	public void onAttributeValue(LongTokenizer tokenizer, HTMLAttribute attribute) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -18,11 +18,19 @@ import com.test.web.types.ValueType;
 public enum HTMLAttribute implements IKeyValue {
 	
 	DISPLAY("display", CSSDisplay.class),
-	STYLE("style", CSStyle.class);
+	STYLE("style", CSStyle.class),
+	
+	TYPE("type", ValueType.ONE);
 	// 
 	private final String name;
 	private final ValueType paramType;
 	private final Class<? extends IEnum> htmlEnum;
+	
+	private HTMLAttribute(String name, ValueType paramType) {
+		this.name = name;
+		this.paramType = paramType;
+		this.htmlEnum = null;
+	}
 	
 	private HTMLAttribute(String name, Class<? extends IEnum> enumClass) {
 		this.name = name;

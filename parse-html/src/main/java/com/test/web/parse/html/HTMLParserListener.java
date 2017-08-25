@@ -1,6 +1,5 @@
 package com.test.web.parse.html;
 
-import com.test.web.io.common.CharInput;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.html.enums.HTMLAttribute;
 import com.test.web.parse.html.enums.HTMLElement;
@@ -19,9 +18,11 @@ public interface HTMLParserListener<TOKENIZER extends Tokenizer> {
 
 	void onElementEnd(TOKENIZER tokenizer, HTMLElement element);
 	
+	void onText(TOKENIZER tokentizer);
+	
 	void onAttribute(TOKENIZER tokenizer, HTMLAttribute attribute);
 
-	void onAttribute(TOKENIZER tokenizer, HTMLAttribute attribute, String value);
+	void onAttributeValue(TOKENIZER tokenizer, HTMLAttribute attribute);
 
 	void onStyleAttributeValue(TOKENIZER tokenizer, String key, String value);
 }

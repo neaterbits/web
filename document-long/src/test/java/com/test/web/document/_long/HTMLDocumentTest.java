@@ -18,6 +18,11 @@ public class HTMLDocumentTest extends TestCase {
 "<html>\n" +
 "<!-- a single line comment -->\n" +
 "<head>\n" +
+"  <title>Document Title</title>\n" +
+"  <script type=\"text/javascript\">\n" +
+"    function func() {\n" +
+"    }\n" +
+"  </script>\n" +
 "</head>\n" +
 "<!-- a \n" +
 " multi line \n" +

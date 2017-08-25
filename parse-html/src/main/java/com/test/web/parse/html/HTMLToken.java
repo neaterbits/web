@@ -12,7 +12,7 @@ public enum HTMLToken implements IToken {
 	NONE(),
 	
 	TAG_LESS_THAN('<'),
-	TAG_GEATER_THAN('>'),
+	TAG_GREATER_THAN('>'),
 	TAG_SLASH('/'),
 	
 	TAG_EXCLAMATION_POINT('!'),
@@ -29,6 +29,8 @@ public enum HTMLToken implements IToken {
 
 	WS(CharTypeWS.INSTANCE),
 	
+	TEXT(HTMLCharTypeText.INSTANCE),
+	
 	DOCTYPE("DOCTYPE", false),
 	DOCTYPE_HTML("HTML", false),
 	DOCTYPE_PUBLIC("PUBLIC", false),
@@ -36,6 +38,7 @@ public enum HTMLToken implements IToken {
 	// Tags
 	HTML(HTMLElement.HTML),
 	HEAD(HTMLElement.HEAD),
+	TITLE(HTMLElement.TITLE),
 	SCRIPT(HTMLElement.SCRIPT),
 	BODY(HTMLElement.BODY),
 	DIV(HTMLElement.DIV),
@@ -48,7 +51,8 @@ public enum HTMLToken implements IToken {
 	
 	// Attributes
 	DISPLAY(HTMLAttribute.DISPLAY),
-	STYLE(HTMLAttribute.STYLE)
+	STYLE(HTMLAttribute.STYLE),
+	TYPE(HTMLAttribute.TYPE)
 	;
 	
 	private final TokenType tokenType;
@@ -59,7 +63,18 @@ public enum HTMLToken implements IToken {
 	private final CharType charType;
 	private final HTMLElement element;
 	private final HTMLAttribute attribute;
+	
+	private HTMLToken [] attributeTokens;
 
+	static {
+		// Initialize attributeTokens for all elements
+		for (HTMLToken token : HTMLToken.values()) {
+			if (token.getElement() != null) {
+				token.attributeTokens = getAttributeTokens(token);
+			}
+		}
+	}
+	
 	private HTMLToken() {
 		this.tokenType = TokenType.NONE;
 		this.character = 0;
@@ -188,5 +203,45 @@ public enum HTMLToken implements IToken {
 
 	public HTMLAttribute getAttribute() {
 		return attribute;
+	}
+	
+	
+	public HTMLToken[] getAttributeTokens() {
+		return attributeTokens;
+	}
+
+	private static final HTMLToken [] NO_TOKENS = new HTMLToken[0];
+	
+	public static HTMLToken [] getAttributeTokens(HTMLToken token) {
+		final HTMLAttribute [] attributes = token.getElement().getAttributes();
+		
+		final HTMLToken [] ret;
+		
+		
+		if (attributes != null) {
+			ret = new HTMLToken[attributes.length];
+			
+			for (int i = 0; i < attributes.length; ++ i) {
+				HTMLToken found = null;
+
+				for (HTMLToken t : HTMLToken.values()) {
+					if (t.attribute != null && t.attribute == attributes[i]) {
+						found = t;
+						break;
+					}
+				}
+				
+				if (found == null) {
+					throw new IllegalStateException("No token found for attribute " + attributes[i]);
+				}
+				
+				ret[i] = found;
+			}
+		}
+		else {
+			ret = NO_TOKENS;
+		}
+		
+		return ret;
 	}
 }
