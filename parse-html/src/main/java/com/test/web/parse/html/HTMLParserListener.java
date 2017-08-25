@@ -20,9 +20,9 @@ public interface HTMLParserListener<TOKENIZER extends Tokenizer> {
 	
 	void onText(TOKENIZER tokentizer);
 	
-	void onAttribute(TOKENIZER tokenizer, HTMLAttribute attribute);
+	void onAttributeWithoutValue(TOKENIZER tokenizer, HTMLAttribute attribute);
 
-	void onAttributeValue(TOKENIZER tokenizer, HTMLAttribute attribute);
+	void onAttributeWithValue(TOKENIZER tokenizer, HTMLAttribute attribute);
 
 	void onStyleAttributeValue(TOKENIZER tokenizer, String key, String value);
 }

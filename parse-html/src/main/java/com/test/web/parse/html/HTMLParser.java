@@ -354,16 +354,12 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 				break;
 
 			case NONE:
+				listener.onAttributeWithoutValue(tokenizer, attributeToken.getAttribute());
 				done = true;
 				break;
 
 			default:
-				if (token.getAttribute() != null) {
-					listener.onAttribute(tokenizer, attributeToken.getAttribute());
-				}
-				else {
-					throw lexer.unexpectedToken();
-				}
+				throw lexer.unexpectedToken();
 			}
 
 		} while (!done);
@@ -376,7 +372,7 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 		switch (token) {
 		case QUOTED_STRING:
 			// Read until end of quote or whitespace
-			listener.onAttributeValue(tokenizer, attributeToken.getAttribute());
+			listener.onAttributeWithValue(tokenizer, attributeToken.getAttribute());
 			break;
 			
 		default:

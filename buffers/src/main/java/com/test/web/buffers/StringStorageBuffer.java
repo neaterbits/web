@@ -22,7 +22,7 @@ import java.util.Map;
  *
  */
 
-public class StringBuffer {
+public class StringStorageBuffer {
 
 	// Stores everything in one buffer
 	private char [] buffer;
@@ -31,8 +31,9 @@ public class StringBuffer {
 	
 	private final Map<String, Integer> map;
 	
-	StringBuffer() {
+	public StringStorageBuffer() {
 		this.map = new HashMap<String, Integer>();
+		this.buffer = new char[10000];
 	}
 	
 	public int add(String s) {
@@ -48,6 +49,7 @@ public class StringBuffer {
 		}
 		
 		final Integer idx = map.get(s);
+		final int ret;
 		
 		if (idx == null) {
 			// Not already added, add to buffer
@@ -64,10 +66,19 @@ public class StringBuffer {
 		
 			s.getChars(0, len, buffer, writePos);
 			
+			ret = writePos;
+			
 			writePos += len;
+			
+			buffer[writePos] = '\0';
+			
+			++ writePos;
+		}
+		else {
+			ret = idx;
 		}
 		
-		return idx;
+		return ret;
 	}
 	
 	private void expandBuffer(int size) {

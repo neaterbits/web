@@ -31,10 +31,9 @@ public class HTMLDocumentTest extends TestCase {
 		
 		final LongHTMLDocument doc = new LongHTMLDocument();
 		
-		
 		final StringBuffers buffers = new StringBuffers(new ByteArrayInputStream(html.getBytes()));
 		
-		final HTMLParser<LongTokenizer> parser = new HTMLParser<>(buffers, null, doc);
+		final HTMLParser<LongTokenizer> parser = new HTMLParser<>(buffers, buffers, doc);
 		
 		parser.parseHTMLFile();
 		

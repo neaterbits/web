@@ -48,9 +48,7 @@ public enum HTMLToken implements IToken {
 	UL(HTMLElement.UL),
 	LI(HTMLElement.LI),
 	
-	
 	// Attributes
-	DISPLAY(HTMLAttribute.DISPLAY),
 	STYLE(HTMLAttribute.STYLE),
 	TYPE(HTMLAttribute.TYPE)
 	;

@@ -1,6 +1,8 @@
 package com.test.web.parse.html.enums;
 
-public enum HTMLDirection {
+import com.test.web.types.IEnum;
+
+public enum HTMLDirection implements IEnum {
 	LTR("ltr"),
 	RTL("rtl"),
 	AUTO("auto");
@@ -11,6 +13,7 @@ public enum HTMLDirection {
 		this.name = name;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

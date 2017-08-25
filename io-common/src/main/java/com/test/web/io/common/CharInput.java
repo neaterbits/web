@@ -6,6 +6,6 @@ public interface CharInput {
 
 	int readNext() throws IOException;
 
-	long getPos();
-	
+	// for tokenizer
+	void mark();
 }

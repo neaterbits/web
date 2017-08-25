@@ -7,9 +7,11 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 
 import com.test.web.buffers.BaseBuffers;
+import com.test.web.buffers.StringStorageBuffer;
 import com.test.web.io.common.CharInput;
+import com.test.web.types.IEnum;
 
-public class StringBuffers extends BaseBuffers<char[][], char[]> implements CharInput {
+public class StringBuffers extends BaseBuffers<char[][], char[]> implements CharInput, LongTokenizer {
 	
 	private static final boolean DEBUG = false;
 	
@@ -50,6 +52,7 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 
 	private long curWritePos;
 	private long curReadPos;
+	private long tokenizerPos;
 	
 	
 	public StringBuffers(InputStream inputStream) {
@@ -147,7 +150,6 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 		return charsRead;
 	}
 
-	@Override
 	public long getPos() {
 		
 		// Current read pos
@@ -155,6 +157,12 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 		final int bufOffset = bufOffset(curReadPos);
 
 		return bufNo == 0 ? bufOffset : (bufNo - 1) * (long)BUFFER_SIZE;
+	}
+	
+
+	@Override
+	public void mark() {
+		this.tokenizerPos = curReadPos;
 	}
 
 	@Override
@@ -175,5 +183,127 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 	@Override
 	protected char[][] copy(char[][] array, int newLength) {
 		return Arrays.copyOf(array, newLength);
+	}
+
+	@Override
+	public <E extends Enum<E> & IEnum> E asEnum(Class<E> enumClass, boolean caseSensitive) {
+		final E [] values = enumClass.getEnumConstants();
+		
+		for (E e : values) {
+			if (equals(e.getName(), caseSensitive)) {
+				return e;
+			}
+		}
+		
+		return null;
+	}
+
+	@Override
+	public boolean equalsIgnoreCase(String s) {
+		return equals(s, false);
+	}
+	
+	private boolean equals(String s, boolean caseSensitive) {
+		final long pos = tokenizerPos;
+
+		boolean equals = true;
+		
+		int bufNo = bufNo(pos);
+		int bufOffset = bufOffset(pos);
+		char [] buf = buffers[bufNo];
+		
+		final int length = s.length();
+		
+		for (int i = 0; i < length; ++ i) {
+			
+			if (pos == curWritePos) {
+				equals = false;
+				break;
+			}
+			
+			final char c = buf[bufOffset];
+			if (caseSensitive) {
+				if (c != s.charAt(i)) {
+					equals = false;
+					break;
+				}
+			}
+			else {
+				if (Character.toUpperCase(c) != Character.toUpperCase(s.charAt(i))) {
+					equals = false;
+					break;
+				}
+			}
+
+			if (bufOffset == BUFFER_SIZE - 1) {
+				++ bufNo;
+				bufOffset = 0;
+				buf = buffers[bufNo];
+			}
+			else {
+				++ bufOffset;
+			}
+		}
+		
+		return equals;
+	}
+
+	@Override
+	public int addToBuffer(StringStorageBuffer buffer) {
+		final long pos = tokenizerPos;
+
+		boolean equals = true;
+		
+		int bufNo = bufNo(pos);
+		int bufOffset = bufOffset(pos);
+		
+		final int writeBufNo = bufNo(curWritePos);
+		final int writeBufOffest = bufOffset(curWritePos);
+		
+		int length;
+		
+		switch (writeBufNo - bufNo) {
+		case 0:
+			length = writeBufOffest - bufOffset;
+			break;
+			
+		case 1:
+			length = BUFFER_SIZE - bufOffset + writeBufOffest;
+			break;
+			
+		default:
+			// More than one complete buffer between this and write pos
+			length = (writeBufNo - bufNo - 1) * BUFFER_SIZE + BUFFER_SIZE - bufOffset + writeBufOffest;
+		}
+		
+		final char [] tmp = new char[length];
+		
+		char [] buf = buffers[bufNo];
+
+		for (int i = 0; i < length; ++ i) {
+			if (pos == curWritePos) {
+				equals = false;
+				break;
+			}
+			
+			tmp[i] = buf[bufOffset];
+
+			if (bufOffset == BUFFER_SIZE - 1) {
+				++ bufNo;
+				bufOffset = 0;
+				buf = buffers[bufNo];
+			}
+			else {
+				++ bufOffset;
+			}
+		}
+
+		// TODO: could add character by character
+		return buffer.add(tmp, 0, length);
+	}
+
+	@Override
+	public long get() {
+		return getPos();
 	}
 }

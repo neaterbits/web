@@ -13,7 +13,10 @@ import com.test.web.parse.html.enums.HTMLElement;
 
 final class LongHTML extends BufferUtil {
 
-	private static final int HTML_COMPACT = 5;
+	static final int SIZE_LEAF_ELEMENT = 4;
+	static final int SIZE_CONTAINER_ELEMENT = 5;
+	static final int SIZE_TEXT = 3;
+	
 	
 	/* Compact header for HTML elements.
 	 * 
@@ -55,6 +58,7 @@ final class LongHTML extends BufferUtil {
 	private static final int IDX_HEADER = 0;
 	
 	private static final int IDX_TEXT = 1; // For text elements
+	private static final int IDX_TEXT_LAST_NEXT = 2; // For text elements
 
 	// Compact-header for element
 	private static final int IDX_HTML_ID_AND_CLASS = 1;
@@ -62,9 +66,10 @@ final class LongHTML extends BufferUtil {
 	private static final int IDX_HTML_STYLE_ACCESSKEY_CONTEXTMENU = 3;
 	private static final int IDX_HTML_TITLE_LANG_TABINDEX = 4;
 
+	// For container elements
 	private static final int IDX_HTML_HEAD_TAIL = 5;
 	
-	private static final int END_OF_LIST_MARKER = 0xFFFFFFFF;
+	static final int END_OF_LIST_MARKER = 0xFFFFFFFF;
 	
 	private static final int HEADER_ELEMENT_BITS = 5;
 	private static final int HEADER_DIRECTION_BITS = 2;
@@ -74,22 +79,23 @@ final class LongHTML extends BufferUtil {
 	private static final long HEADER_SPELLCHECK 		= 1 << 1;
 	private static final long HEADER_HIDDEN 			= 1 << 2;
 	private static final long HEADER_DRAGGABLE 			= 1 << 3;
-	private static final long HEADER_CONTENTEDITABLE 	= 1 << 4, HEADER_FLAG_MSB = HEADER_CONTENTEDITABLE;
+	private static final long HEADER_CONTENTEDITABLE 	= 1 << 4;
+	private static final int HEADER_FLAG_MSB = 4;
 	
-	private static final long HEADER_DROPZONE_SHIFT 	= HEADER_FLAG_MSB + 1;
-	private static final long HEADER_DIRECTION_SHIFT 	= HEADER_DROPZONE_SHIFT + HEADER_DROPZONE_BITS;
-	private static final long HEADER_ELEMENT_SHIFT		= HEADER_DIRECTION_SHIFT + HEADER_DIRECTION_BITS;
+	private static final int HEADER_DROPZONE_SHIFT 	= HEADER_FLAG_MSB + 1;
+	private static final int HEADER_DIRECTION_SHIFT 	= HEADER_DROPZONE_SHIFT + HEADER_DROPZONE_BITS;
+	private static final int HEADER_ELEMENT_SHIFT		= HEADER_DIRECTION_SHIFT + HEADER_DIRECTION_BITS;
 	
 	static {
 		if (1 << HEADER_ELEMENT_BITS < HTMLElement.values().length) {
 			throw new IllegalStateException("Not enought room for all HTML elements");
 		}
 		
-		if (1 << HEADER_DIRECTION_BITS < HTMLElement.values().length) {
+		if (1 << HEADER_DIRECTION_BITS < HTMLDirection.values().length) {
 			throw new IllegalStateException("Not enought room for " + HTMLDirection.class.getSimpleName());
 		}
 		
-		if (1 << HEADER_DROPZONE_BITS < HTMLElement.values().length) {
+		if (1 << HEADER_DROPZONE_BITS < HTMLDropzone.values().length) {
 			throw new IllegalStateException("Not enought room for " + HTMLDropzone.class.getSimpleName());
 		}
 		
@@ -134,11 +140,11 @@ final class LongHTML extends BufferUtil {
 		setText(buf, offset, text);
 	}
 
-	static int getLower32(long [] buf, int offsetAndIdx) {
+	private static int getLower32(long [] buf, int offsetAndIdx) {
 		return (int)(((buf[offsetAndIdx] & 0xFFFFFFFF00000000L)) >> 32);
 	}
 
-	static void setLower32(long [] buf, int offsetAndIdx, int next) {
+	private static void setLower32(long [] buf, int offsetAndIdx, int next) {
 		long encoded = buf[offsetAndIdx];
 
 		encoded &= 0x00000000FFFFFFFFL;
@@ -146,11 +152,11 @@ final class LongHTML extends BufferUtil {
 		buf[offsetAndIdx] = encoded;
 	}
 
-	static int getUpper32(long [] buf, int offsetAndIdx) {
+	private static int getUpper32(long [] buf, int offsetAndIdx) {
 		return (int)(buf[offsetAndIdx] & 0x00000000FFFFFFFFL);
 	}
 
-	static void setUpper32(long [] buf, int offsetAndIdx, int value) {
+	private static void setUpper32(long [] buf, int offsetAndIdx, int value) {
 		long encoded = buf[offsetAndIdx];
 
 		encoded &= 0xFFFFFFFF00000000L;
@@ -158,11 +164,11 @@ final class LongHTML extends BufferUtil {
 		buf[offsetAndIdx] = encoded;
 	}
 
-	static int get16To32(long [] buf, int offsetAndIdx) {
+	private static int get16To32(long [] buf, int offsetAndIdx) {
 		return (int)((buf[offsetAndIdx] & 0x00000000FFFF0000L) >> 16);
 	}
 
-	static void set16To32(long [] buf, int offsetAndIdx, int value) {
+	private static void set16To32(long [] buf, int offsetAndIdx, int value) {
 		
 		if (value > Short.MAX_VALUE) {
 			throw new IllegalArgumentException("value > Short.MAX_VALUE");
@@ -175,11 +181,11 @@ final class LongHTML extends BufferUtil {
 		buf[offsetAndIdx] = encoded;
 	}
 
-	static int get0To16(long [] buf, int offset) {
+	private static int get0To16(long [] buf, int offset) {
 		return (int)(buf[offset + IDX_HTML_STYLE_ACCESSKEY_CONTEXTMENU] & 0x000000000000FFFFL);
 	}
 
-	static void set0To16(long [] buf, int offsetAndIdx, int value) {
+	private static void set0To16(long [] buf, int offsetAndIdx, int value) {
 
 		if (value > Short.MAX_VALUE) {
 			throw new IllegalArgumentException("value > Short.MAX_VALUE");
@@ -192,22 +198,70 @@ final class LongHTML extends BufferUtil {
 		buf[offsetAndIdx] = encoded;
 	}
 
-	static int getLast(long [] buf, int offset) {
-		return getUpper32(buf, offset + IDX_HTML_LAST_NEXT);
+	static int getTextLast(long [] buf, int offset) {
+		return getUpper32(buf, offset + IDX_TEXT_LAST_NEXT);
 	}
 
-	static void setLast(long [] buf, int offset, int next) {
+	static void setTextLast(long [] buf, int offset, int next) {
+		setUpper32(buf, offset + IDX_TEXT_LAST_NEXT, next);
+	}
+
+	static int getTextNext(long [] buf, int offset) {
+		return getLower32(buf, offset + IDX_TEXT_LAST_NEXT);
+	}
+
+	static void setTextNext(long [] buf, int offset, int next) {
+		setLower32(buf, offset, next);
+	}
+
+	static int getElementLast(long [] buf, int offset) {
+		return getUpper32(buf, offset + IDX_TEXT_LAST_NEXT);
+	}
+
+	static void setElementLast(long [] buf, int offset, int next) {
 		setUpper32(buf, offset + IDX_HTML_LAST_NEXT, next);
 	}
 
-	static int getNext(long [] buf, int offset) {
+	static int getElementNext(long [] buf, int offset) {
 		return getLower32(buf, offset + IDX_HTML_LAST_NEXT);
 	}
 
-	static void setNext(long [] buf, int offset, int next) {
+	static void setElementNext(long [] buf, int offset, int next) {
 		setLower32(buf, offset, next);
 	}
 	
+	private static void setFlag(long [] buf, int offset, long flag, boolean set) {
+		final long cur = buf[offset + IDX_HEADER];
+		
+		final long updated;
+
+		if (set) {
+			updated = cur | flag;
+		}
+		else {
+			updated = cur & (~flag);
+		}
+
+		buf[offset + IDX_HEADER] = updated;
+	}
+
+	static void setContentEditable(long [] buf, int offset, boolean editable) {
+		setFlag(buf, offset, HEADER_CONTENTEDITABLE, editable);
+	}
+	
+	private static <E extends Enum<E>> void setEnumBits(long [] buf, int offset, E enumValue, int shift, int bits) {
+		final long cur = buf[offset + IDX_HEADER];
+		
+		long updated = cur & ~((1 << (shift + bits)) - 1);
+		updated |= ((long)enumValue.ordinal()) << shift;
+		
+		buf[offset + IDX_HEADER] = updated;
+	}
+	
+	static void setDirection(long [] buf, int offset, HTMLDirection direction) {
+		setEnumBits(buf, offset, direction, HEADER_DIRECTION_SHIFT, HEADER_DIRECTION_BITS);
+	}
+
 	// IDX_HTML_STYLE_ACCESSKEY_CONTEXTMENU
 	static int getStyle(long [] buf, int offset) {
 		return getUpper32(buf, offset + IDX_HTML_STYLE_ACCESSKEY_CONTEXTMENU);
@@ -271,6 +325,14 @@ final class LongHTML extends BufferUtil {
 		setUpper32(buf, offset + IDX_HTML_HEAD_TAIL, next);
 	}
 	
+	static int getTail(long [] buf, int offset) {
+		return getLower32(buf, offset + IDX_HTML_HEAD_TAIL);
+	}
+
+	static void setTail(long [] buf, int offset, int next) {
+		setLower32(buf, offset + IDX_HTML_HEAD_TAIL, next);
+	}
+
 	static void setHTML(
 			long [] buf, int offset, 
 			HTMLElement element,
@@ -318,12 +380,34 @@ final class LongHTML extends BufferUtil {
 	
 	
 	private static long unsignedIntToLong(int integer) {
-		// TODO
-		final long l = integer;
+		long l;
+		
+		if (integer < 0) {
+			// clear bit 31 and set in long
+			final int i2 = (integer & ~(1 << 31));
+			
+			l = i2;
+			
+			l |= 1L << 31;
+			
+			//System.out.format("converted negative int %08x to %08x %d %016x\n", integer, i2, i2, l);
+		}
+		else {
+			l = integer;
+		}
 		
 		if (l < 0) {
-			throw new IllegalStateException("l < 0");
+			throw new IllegalStateException("l < 0: " + integer + "/" + l);
 		}
 		return l;
+	}
+	
+	
+	// Other tags
+	private static final int IDX_SCRIPT_TYPE = SIZE_LEAF_ELEMENT;
+	private static final int SIZE_SCRIPT_ELEMENT = SIZE_LEAF_ELEMENT + 1;
+
+	static void setScriptType(long [] buf, int offset, int type) {
+		setUpper32(buf, offset + IDX_SCRIPT_TYPE, type);
 	}
 }

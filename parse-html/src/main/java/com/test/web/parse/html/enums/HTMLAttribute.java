@@ -17,7 +17,21 @@ import com.test.web.types.ValueType;
 
 public enum HTMLAttribute implements IKeyValue {
 	
-	DISPLAY("display", CSSDisplay.class),
+	TRANSLATE("translate", ValueType.ONE),
+	SPELLCHECK("spellcheck", ValueType.ONE),
+	HIDDEN("hidden", ValueType.ONE),
+	DRAGGABLE("draggable", ValueType.ONE),
+	CONTENTEDITABLE("contenteditable", ValueType.ONE),
+	DROPZONE("dropzone", ValueType.ONE),
+	DIRECTION("direction", ValueType.ONE),
+	
+	ACCESSKEY("accesskey", ValueType.ONE),
+	CONTEXTMENU("contextmenu", ValueType.ONE),
+	
+	TITLE("title", ValueType.ONE),
+	LANG("lang", ValueType.ONE),
+	TABINDEX("tabindex", ValueType.ONE),
+	
 	STYLE("style", CSStyle.class),
 	
 	TYPE("type", ValueType.ONE);

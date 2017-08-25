@@ -11,10 +11,20 @@
   <name>IO code</name>
   <packaging>jar</packaging>
   <dependencies>
-
+	
+	<dependency>
+		<groupId>com.test.web</groupId>
+		<artifactId>types</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>com.test.web</groupId>
+		<artifactId>buffers</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</dependency>
 
 	<!-- test dependencies --> 
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
