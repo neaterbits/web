@@ -10,6 +10,8 @@ import com.test.web.parse.html.HTMLParser;
 
 import junit.framework.TestCase;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class HTMLDocumentTest extends TestCase {
 	public void testParser() throws IOException, ParserException {
 		
@@ -19,7 +21,7 @@ public class HTMLDocumentTest extends TestCase {
 "<!-- a single line comment -->\n" +
 "<head>\n" +
 "  <title>Document Title</title>\n" +
-"  <script type=\"text/javascript\">\n" +
+"  <script id=\"script_id\" type=\"text/javascript\">\n" +
 "    function func() {\n" +
 "    }\n" +
 "  </script>\n" +
@@ -36,7 +38,10 @@ public class HTMLDocumentTest extends TestCase {
 		final HTMLParser<LongTokenizer> parser = new HTMLParser<>(buffers, buffers, doc);
 		
 		parser.parseHTMLFile();
+
+		final Integer element = doc.getElementById("script_id");
 		
+		assertThat(doc.getScriptType(element)).isEqualTo("text/javascript");
 	}
 		
 

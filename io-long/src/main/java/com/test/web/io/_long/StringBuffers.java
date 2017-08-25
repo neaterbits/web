@@ -211,12 +211,15 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 		int bufNo = bufNo(pos);
 		int bufOffset = bufOffset(pos);
 		char [] buf = buffers[bufNo];
+
+		final int readBufNo = bufNo(curReadPos);
+		final int readBufOffest = bufOffset(curReadPos);
 		
 		final int length = s.length();
 		
 		for (int i = 0; i < length; ++ i) {
 			
-			if (pos == curWritePos) {
+			if (bufOffset == readBufOffest && bufNo == readBufNo) {
 				equals = false;
 				break;
 			}
@@ -249,40 +252,55 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 	}
 
 	@Override
-	public int addToBuffer(StringStorageBuffer buffer) {
+	public int addToBuffer(StringStorageBuffer buffer, int startOffset, int endSkip) {
 		final long pos = tokenizerPos;
 
-		boolean equals = true;
-		
 		int bufNo = bufNo(pos);
 		int bufOffset = bufOffset(pos);
 		
-		final int writeBufNo = bufNo(curWritePos);
-		final int writeBufOffest = bufOffset(curWritePos);
+		final int readBufNo = bufNo(curReadPos);
+		final int readBufOffest = bufOffset(curReadPos);
 		
 		int length;
 		
-		switch (writeBufNo - bufNo) {
+		switch (readBufNo - bufNo) {
 		case 0:
-			length = writeBufOffest - bufOffset;
+			length = readBufOffest - bufOffset;
 			break;
 			
 		case 1:
-			length = BUFFER_SIZE - bufOffset + writeBufOffest;
+			length = BUFFER_SIZE - bufOffset + readBufOffest;
 			break;
 			
 		default:
 			// More than one complete buffer between this and write pos
-			length = (writeBufNo - bufNo - 1) * BUFFER_SIZE + BUFFER_SIZE - bufOffset + writeBufOffest;
+			length = (readBufNo - bufNo - 1) * BUFFER_SIZE + BUFFER_SIZE - bufOffset + readBufOffest;
+		}
+
+		char [] buf = buffers[bufNo];
+		
+		if (startOffset > 0) {
+			length -= startOffset;
+			
+			++ bufOffset;
+			
+			if (bufOffset == BUFFER_SIZE - 1) {
+				++ bufNo;
+				bufOffset = 0;
+				buf = buffers[bufNo];
+			}	
+		}
+		
+		length -= endSkip;
+		
+		if (length < 0) {
+			throw new IllegalStateException("length < 0");
 		}
 		
 		final char [] tmp = new char[length];
 		
-		char [] buf = buffers[bufNo];
-
 		for (int i = 0; i < length; ++ i) {
-			if (pos == curWritePos) {
-				equals = false;
+			if (bufOffset == readBufOffest && bufNo == readBufNo) {
 				break;
 			}
 			

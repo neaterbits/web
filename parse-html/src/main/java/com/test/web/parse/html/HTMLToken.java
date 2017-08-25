@@ -49,6 +49,25 @@ public enum HTMLToken implements IToken {
 	LI(HTMLElement.LI),
 	
 	// Attributes
+	
+	ID(HTMLAttribute.ID),
+	CLASS(HTMLAttribute.CLASS),
+	TRANSLATE(HTMLAttribute.TRANSLATE),
+	ACCESSKEY(HTMLAttribute.ACCESSKEY),
+	CONTENTEDITABLE(HTMLAttribute.CONTENTEDITABLE),
+	CONTEXTMENU(HTMLAttribute.CONTEXTMENU),
+	DIRECTION(HTMLAttribute.DIRECTION),
+	DRAGGABLE(HTMLAttribute.DRAGGABLE),
+	DROPZONE(HTMLAttribute.DROPZONE),
+	
+	HIDDEN(HTMLAttribute.HIDDEN),
+	
+	LANG(HTMLAttribute.LANG),
+	
+	SPELLCHECK(HTMLAttribute.SPELLCHECK),
+	TABINDEX(HTMLAttribute.TABINDEX),
+	ATTR_TITLE(HTMLAttribute.TITLE),
+	
 	STYLE(HTMLAttribute.STYLE),
 	TYPE(HTMLAttribute.TYPE)
 	;
@@ -64,6 +83,31 @@ public enum HTMLToken implements IToken {
 	
 	private HTMLToken [] attributeTokens;
 
+	private static final HTMLToken [] NO_TOKENS = new HTMLToken[0];
+	
+	private static final HTMLToken [] GLOBAL_ATTRIBUTE_TOKENS;
+	
+	
+	static {
+		
+		int numGlobalAttributes = 0;
+		
+		for (HTMLAttribute attribute : HTMLAttribute.values()) {
+			if (attribute.isGlobal()) {
+				++ numGlobalAttributes;
+			}
+		}
+		
+		GLOBAL_ATTRIBUTE_TOKENS = new HTMLToken[numGlobalAttributes];
+		
+		int i = 0;
+		for (HTMLAttribute attribute : HTMLAttribute.values()) {
+			if (attribute.isGlobal()) {
+				GLOBAL_ATTRIBUTE_TOKENS[i ++] = findTokenForAttribute(attribute);
+			}
+		}
+	}
+	
 	static {
 		// Initialize attributeTokens for all elements
 		for (HTMLToken token : HTMLToken.values()) {
@@ -208,36 +252,40 @@ public enum HTMLToken implements IToken {
 		return attributeTokens;
 	}
 
-	private static final HTMLToken [] NO_TOKENS = new HTMLToken[0];
+	
+	private static HTMLToken findTokenForAttribute(HTMLAttribute attribute) {
+		HTMLToken found = null;
+
+		for (HTMLToken t : HTMLToken.values()) {
+			if (t.attribute != null && t.attribute == attribute) {
+				found = t;
+				break;
+			}
+		}
+		
+		if (found == null) {
+			throw new IllegalStateException("No token found for attribute " + attribute);
+		}
+		
+		return found;
+	}
+	
 	
 	public static HTMLToken [] getAttributeTokens(HTMLToken token) {
 		final HTMLAttribute [] attributes = token.getElement().getAttributes();
-		
 		final HTMLToken [] ret;
 		
-		
 		if (attributes != null) {
-			ret = new HTMLToken[attributes.length];
+			ret = new HTMLToken[GLOBAL_ATTRIBUTE_TOKENS.length + attributes.length];
 			
-			for (int i = 0; i < attributes.length; ++ i) {
-				HTMLToken found = null;
+			System.arraycopy(GLOBAL_ATTRIBUTE_TOKENS, 0, ret, 0, GLOBAL_ATTRIBUTE_TOKENS.length);
 
-				for (HTMLToken t : HTMLToken.values()) {
-					if (t.attribute != null && t.attribute == attributes[i]) {
-						found = t;
-						break;
-					}
-				}
-				
-				if (found == null) {
-					throw new IllegalStateException("No token found for attribute " + attributes[i]);
-				}
-				
-				ret[i] = found;
+			for (int i = 0; i < attributes.length; ++ i) {
+				ret[GLOBAL_ATTRIBUTE_TOKENS.length + i] = findTokenForAttribute(attributes[i]);
 			}
 		}
 		else {
-			ret = NO_TOKENS;
+			ret = GLOBAL_ATTRIBUTE_TOKENS;
 		}
 		
 		return ret;

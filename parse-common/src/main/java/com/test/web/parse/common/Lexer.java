@@ -8,7 +8,7 @@ import com.test.web.io.common.CharInput;
 
 public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharInput> {
 
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
 	private static final String PREFIX = "Lexer: ";
 

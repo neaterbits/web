@@ -24,8 +24,6 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 		this.listener = listener;
 	}
 	
-	
-	
 	private HTMLToken rootTag(HTMLToken ... tagTokens) throws IOException, ParserException {
 		return endTagOrSub(null, tagTokens);
 	}
@@ -90,7 +88,6 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 							throw lexer.unexpectedToken();
 						}
 					}
-					
 
 					found = tagToken;
 					break;
@@ -196,15 +193,15 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 		
 		do {
 			switch (endTagOrSub(HTMLToken.HEAD, HTMLToken.TITLE, HTMLToken.SCRIPT)) {
-			
+
 			case TITLE:
 				parseText(HTMLToken.TITLE);
 				break;
-			
+
 			case SCRIPT:
 				parseText(HTMLToken.SCRIPT);
 				break;
-	
+
 			case TAG_END:
 				//end tag
 				done = true;
@@ -372,7 +369,7 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 		switch (token) {
 		case QUOTED_STRING:
 			// Read until end of quote or whitespace
-			listener.onAttributeWithValue(tokenizer, attributeToken.getAttribute());
+			listener.onAttributeWithValue(tokenizer, attributeToken.getAttribute(), 1, 1);
 			break;
 			
 		default:

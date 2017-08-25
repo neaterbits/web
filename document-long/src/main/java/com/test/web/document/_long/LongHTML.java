@@ -258,6 +258,22 @@ final class LongHTML extends BufferUtil {
 		buf[offset + IDX_HEADER] = updated;
 	}
 	
+	static void setId(long [] buf, int offset, int value) {
+		setUpper32(buf, offset + IDX_HTML_ID_AND_CLASS, value);
+	}
+	
+	static void setClass(long [] buf, int offset, int value) {
+		setLower32(buf, offset + IDX_HTML_ID_AND_CLASS, value);
+	}
+
+	static int getId(long [] buf, int offset) {
+		return getUpper32(buf, offset + IDX_HTML_ID_AND_CLASS);
+	}
+	
+	static int getClass(long [] buf, int offset) {
+		return getLower32(buf, offset + IDX_HTML_ID_AND_CLASS);
+	}
+	
 	static void setDirection(long [] buf, int offset, HTMLDirection direction) {
 		setEnumBits(buf, offset, direction, HEADER_DIRECTION_SHIFT, HEADER_DIRECTION_BITS);
 	}
@@ -410,4 +426,28 @@ final class LongHTML extends BufferUtil {
 	static void setScriptType(long [] buf, int offset, int type) {
 		setUpper32(buf, offset + IDX_SCRIPT_TYPE, type);
 	}
+
+	static int getScriptType(long [] buf, int offset) {
+		return getUpper32(buf, offset + IDX_SCRIPT_TYPE);
+	}
+
+	static int elementSize(HTMLElement element) {
+		final int ret;
+		
+		switch (element) {
+		case SCRIPT:
+			ret = LongHTML.SIZE_SCRIPT_ELEMENT;
+			break;
+			
+		default:
+			ret = element.isContainerElement()
+				? LongHTML.SIZE_CONTAINER_ELEMENT
+				: LongHTML.SIZE_LEAF_ELEMENT;
+			break;
+			
+		}
+		
+		return ret;
+	}
+	
 }

@@ -1,8 +1,12 @@
 package com.test.web.document._long;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.test.web.buffers.LongBuffersIntegerIndex;
 import com.test.web.buffers.StringStorageBuffer;
 import com.test.web.document.common.Document;
+import com.test.web.document.common.Element;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.parse.html.HTMLParserListener;
 import com.test.web.parse.html.enums.HTMLAttribute;
@@ -25,10 +29,9 @@ import com.test.web.parse.html.enums.HTMLElement;
 
 public class LongHTMLDocument extends LongBuffersIntegerIndex
 
-	implements Document, HTMLParserListener<LongTokenizer> {
+	implements Document<Integer>, HTMLParserListener<LongTokenizer> {
 
 	private static final int INITIAL_BUFFERS = 100;
-	
 	
 	
 	// Stack for position while parsing
@@ -43,9 +46,13 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	private final StringStorageBuffer titleBuffer;
 	private final StringStorageBuffer typeBuffer;
 	
+	private final Map<String, Integer> elementById;
+	
 	
 	public LongHTMLDocument() {
 		this.stack = new int[100];
+		
+		this.elementById = new HashMap<String, Integer>();
 		
 		this.idBuffer = new StringStorageBuffer();
 		this.classBuffer = new StringStorageBuffer();
@@ -81,9 +88,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		
 		// Start of an HTML element, add to buffer and
 		
-		final int numLongs = element.isContainerElement()
-				? LongHTML.SIZE_CONTAINER_ELEMENT
-				: LongHTML.SIZE_LEAF_ELEMENT;
+		final int numLongs = LongHTML.elementSize(element);
 		
 		final int elementRef = allocate(numLongs);
 
@@ -158,15 +163,25 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 
 	@Override
-	public void onAttributeWithValue(LongTokenizer tokenizer, HTMLAttribute attribute) {
+	public void onAttributeWithValue(LongTokenizer tokenizer, HTMLAttribute attribute, int startOffset, int endSkip) {
 		final int elementRef = getCurElement();
 		final int elementOffset = offset(elementRef);
 		final long [] elementBuf = buf(elementRef);
 
 		switch (attribute) {
 		
+		case ID:
+			final int idStringRef = tokenizer.addToBuffer(idBuffer, startOffset, endSkip);
+			final String idString = idBuffer.getString(idStringRef);
+
+			elementById.put(idString, getCurElement());
+			
+			LongHTML.setId(elementBuf, elementOffset, idStringRef);
+			break;
+		
+		
 		case ACCESSKEY:
-			LongHTML.setAccessKey(elementBuf, elementOffset, tokenizer.addToBuffer(accessKeyBuffer));
+			LongHTML.setAccessKey(elementBuf, elementOffset, tokenizer.addToBuffer(accessKeyBuffer, startOffset, endSkip));
 			break;
 			
 		case CONTENTEDITABLE:
@@ -174,7 +189,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 			break;
 			
 		case CONTEXTMENU:
-			LongHTML.setContextMenu(elementBuf, elementOffset, tokenizer.addToBuffer(contextMenuBuffer));
+			LongHTML.setContextMenu(elementBuf, elementOffset, tokenizer.addToBuffer(contextMenuBuffer, startOffset, endSkip));
 			break;
 			
 		case DIRECTION:
@@ -183,7 +198,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 			
 		// script type as string
 		case TYPE:
-			LongHTML.setScriptType(elementBuf, elementOffset, tokenizer.addToBuffer(typeBuffer));
+			LongHTML.setScriptType(elementBuf, elementOffset, tokenizer.addToBuffer(typeBuffer, startOffset, endSkip));
 			break;
 			
 		default:
@@ -196,5 +211,18 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	public void onStyleAttributeValue(LongTokenizer tokenizer, String key, String value) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public Integer getElementById(String id) {
+		return elementById.get(id);
+	}
+
+
+	@Override
+	public String getScriptType(Integer element) {
+		final int ref = LongHTML.getScriptType(buf(element), offset(element));
+		
+		return typeBuffer.getString(ref);
 	}
 }

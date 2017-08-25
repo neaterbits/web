@@ -1,7 +1,6 @@
 package com.test.web.parse.html.enums;
 
 import com.test.web.css.common.CSStyle;
-import com.test.web.css.common.CSSDisplay;
 import com.test.web.types.IEnum;
 import com.test.web.types.IKeyValue;
 import com.test.web.types.IKeyValueList;
@@ -17,37 +16,43 @@ import com.test.web.types.ValueType;
 
 public enum HTMLAttribute implements IKeyValue {
 	
-	TRANSLATE("translate", ValueType.ONE),
-	SPELLCHECK("spellcheck", ValueType.ONE),
-	HIDDEN("hidden", ValueType.ONE),
-	DRAGGABLE("draggable", ValueType.ONE),
-	CONTENTEDITABLE("contenteditable", ValueType.ONE),
-	DROPZONE("dropzone", ValueType.ONE),
-	DIRECTION("direction", ValueType.ONE),
+	ID("id", true, ValueType.ONE),
+	CLASS("class", true, ValueType.ONE),
 	
-	ACCESSKEY("accesskey", ValueType.ONE),
-	CONTEXTMENU("contextmenu", ValueType.ONE),
+	TRANSLATE("translate", true, ValueType.ONE),
+	SPELLCHECK("spellcheck", true, ValueType.ONE),
+	HIDDEN("hidden", true, ValueType.ONE),
+	DRAGGABLE("draggable", true, ValueType.ONE),
+	CONTENTEDITABLE("contenteditable", true, ValueType.ONE),
+	DROPZONE("dropzone", true, ValueType.ONE),
+	DIRECTION("direction", true, ValueType.ONE),
 	
-	TITLE("title", ValueType.ONE),
-	LANG("lang", ValueType.ONE),
-	TABINDEX("tabindex", ValueType.ONE),
+	ACCESSKEY("accesskey", true, ValueType.ONE),
+	CONTEXTMENU("contextmenu", true, ValueType.ONE),
 	
-	STYLE("style", CSStyle.class),
+	TITLE("title", true, ValueType.ONE),
+	LANG("lang", true, ValueType.ONE),
+	TABINDEX("tabindex", true, ValueType.ONE),
 	
-	TYPE("type", ValueType.ONE);
+	STYLE("style", true, CSStyle.class),
+	
+	TYPE("type", false, ValueType.ONE);
 	// 
 	private final String name;
+	private final boolean global;
 	private final ValueType paramType;
 	private final Class<? extends IEnum> htmlEnum;
 	
-	private HTMLAttribute(String name, ValueType paramType) {
+	private HTMLAttribute(String name, boolean global, ValueType paramType) {
 		this.name = name;
+		this.global = global;
 		this.paramType = paramType;
 		this.htmlEnum = null;
 	}
 	
-	private HTMLAttribute(String name, Class<? extends IEnum> enumClass) {
+	private HTMLAttribute(String name, boolean global, Class<? extends IEnum> enumClass) {
 		this.name = name;
+		this.global = global;
 		this.htmlEnum = enumClass;
 		
 		if (IOptionEnum.class.isAssignableFrom(enumClass)) {
@@ -63,6 +68,10 @@ public enum HTMLAttribute implements IKeyValue {
 	
 	public String getName() {
 		return name;
+	}
+	
+	public boolean isGlobal() {
+		return global;
 	}
 
 	@Override
