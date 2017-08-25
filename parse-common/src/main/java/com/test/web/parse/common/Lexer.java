@@ -122,6 +122,55 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 					}
 					break;
 					
+				case FROM_CHAR_TO_CHAR:
+					if (cur.charAt(0) != token.getFromCharacter()) {
+						match = false;
+					}
+					else if (cur.length() >= 2 && c == token.getToCharacter() ){
+						match = true;
+					}
+					else {
+						++ numPossibleMatch;
+						match = false;
+					}
+					break;
+					
+				case FROM_STRING_TO_STRING:
+					if (cur.length() <= token.getFromLiteral().length()) {
+						match = false;
+						
+						if (token.getFromLiteral().startsWith(cur.toString())) {
+							++ numPossibleMatch;
+						}
+					}
+					else if (cur.length() >= (token.getFromLiteral().length() + token.getToLiteral().length())) {
+						final String s = cur.toString();
+						
+						if (s.startsWith(token.getFromLiteral())) {
+							if (s.endsWith(token.getToLiteral())) {
+								match = true;
+							}
+							else {
+								++ numPossibleMatch;
+								match = false;
+							}
+						}
+						else {
+							match = false;
+						}
+					}
+					else {
+						// cur length is > from literal length but less than sum
+						final String s = cur.toString();
+						
+						match = false;
+						
+						if (s.startsWith(token.getFromLiteral())) {
+							++ numPossibleMatch;
+						}
+					}
+					break;
+					
 				case CS_LITERAL:
 					if (cur.length() < token.getLiteral().length()) {
 						++ numPossibleMatch;

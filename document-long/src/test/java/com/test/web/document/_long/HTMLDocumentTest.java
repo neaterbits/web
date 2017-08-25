@@ -14,10 +14,14 @@ public class HTMLDocumentTest extends TestCase {
 	public void testParser() throws IOException, ParserException {
 		
 		final String html = 
-				
+"<!DOCTYPE HTML PUBLIC \"-//W3C/DTD HTML 4.01 Frameset//EN\" \"http://w3.org/TR/html4/frameset.dtd\">" +				
 "<html>\n" +
+"<!-- a single line comment -->\n" +
 "<head>\n" +
 "</head>\n" +
+"<!-- a \n" +
+" multi line \n" +
+" comment -->\n" +
 "</html>";
 		
 		final LongHTMLDocument doc = new LongHTMLDocument();

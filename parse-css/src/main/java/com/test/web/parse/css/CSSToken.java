@@ -246,6 +246,27 @@ public enum CSSToken implements IToken {
 		return charType;
 	}
 
+	@Override
+	public char getFromCharacter() {
+		throw new UnsupportedOperationException("TODO");
+	}
+
+	@Override
+	public char getToCharacter() {
+		throw new UnsupportedOperationException("TODO");
+	}
+	
+
+	@Override
+	public String getFromLiteral() {
+		throw new UnsupportedOperationException("TODO");
+	}
+
+	@Override
+	public String getToLiteral() {
+		throw new UnsupportedOperationException("TODO");
+	}
+
 	public CSStyle getElement() {
 		return element;
 	}

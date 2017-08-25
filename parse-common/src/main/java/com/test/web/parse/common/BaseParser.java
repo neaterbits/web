@@ -37,6 +37,15 @@ public abstract class BaseParser<TOKEN extends Enum<TOKEN> & IToken, INPUT exten
 		return copy;
 	}
 
+	protected final TOKEN [] merge(TOKEN [] tokens, TOKEN ... otherTokens) {
+		final TOKEN [] copy = Arrays.copyOf(tokens, tokens.length + otherTokens.length);
+
+		// token first since is most likely to find?
+		System.arraycopy(otherTokens, 0, copy, tokens.length, otherTokens.length);
+
+		return copy;
+	}
+
 	protected final TOKEN lexSkipWS(TOKEN ... tokens) throws IOException {
 
 		TOKEN token = lexer.lex(merge(wsToken, tokens));
