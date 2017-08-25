@@ -1,12 +1,15 @@
 package com.test.web.document._long;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.test.web.buffers.LongBuffersIntegerIndex;
 import com.test.web.buffers.StringStorageBuffer;
 import com.test.web.document.common.Document;
-import com.test.web.document.common.Element;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.parse.html.HTMLParserListener;
 import com.test.web.parse.html.enums.HTMLAttribute;
@@ -33,11 +36,10 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 	private static final int INITIAL_BUFFERS = 100;
 	
-	
 	// Stack for position while parsing
 	private final int [] stack;
-	private int depth; 
-	
+	private int depth;
+
 	private final StringStorageBuffer idBuffer;
 	private final StringStorageBuffer classBuffer;
 	private final StringStorageBuffer accessKeyBuffer;
@@ -45,17 +47,27 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	private final StringStorageBuffer langBuffer;
 	private final StringStorageBuffer titleBuffer;
 	private final StringStorageBuffer typeBuffer;
-	
+
 	private final Map<String, Integer> elementById;
+	private final Map<String, List<Integer>> elementsByClass;
+
+	// Array of element classes that are appended to every time we read an element
+	// TODO: perhaps use a linked-list? We can only add classes here since we only stor index and count for each element, class would seldom be updated dynamically though
 	
+	private int [] elementClasses;
+	private int numElementClasses;
 	
 	public LongHTMLDocument() {
 		this.stack = new int[100];
 		
-		this.elementById = new HashMap<String, Integer>();
+		this.elementById = new HashMap<>();
+		this.elementsByClass = new HashMap<>();
 		
 		this.idBuffer = new StringStorageBuffer();
 		this.classBuffer = new StringStorageBuffer();
+		
+		this.elementClasses = new int[100];
+		this.numElementClasses = 1; // Skip initial so that default encoded class value (0) never points to an index 
 		
 		// Just reuse same buffer
 		this.accessKeyBuffer = this.contextMenuBuffer = this.langBuffer = this.titleBuffer = this.typeBuffer = new StringStorageBuffer();
@@ -179,7 +191,6 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 			LongHTML.setId(elementBuf, elementOffset, idStringRef);
 			break;
 		
-		
 		case ACCESSKEY:
 			LongHTML.setAccessKey(elementBuf, elementOffset, tokenizer.addToBuffer(accessKeyBuffer, startOffset, endSkip));
 			break;
@@ -206,6 +217,62 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		}
 	}
 
+	@Override
+	public void onClassAttributeValue(LongTokenizer tokenizer, int startOffset, int endSkip) {
+		final int elementRef = getCurElement();
+		final int elementOffset = offset(elementRef);
+		final long [] elementBuf = buf(elementRef);
+
+		final int classStringRef = tokenizer.addToBuffer(classBuffer, startOffset, endSkip);
+		
+		final String classString = classBuffer.getString(classStringRef);
+
+		List<Integer> elementsWithClass = elementsByClass.get(classString);
+		
+		final int element = getCurElement();
+		
+		if (elementsWithClass == null) {
+			elementsWithClass = new ArrayList<>();
+			elementsByClass.put(classString, elementsWithClass);
+
+			elementsWithClass.add(element);
+		}
+		else {
+			if (!elementsWithClass.contains(element)) {
+				elementsWithClass.add(element);
+			}
+		}
+		
+		final int existingClassRef = LongHTML.getClass(elementBuf, elementOffset);
+
+		if (numElementClasses == elementClasses.length) {
+			this.elementClasses = Arrays.copyOf(elementClasses, elementClasses.length * 2);
+		}
+		
+		final int updatedClassRef;
+		
+
+		if (existingClassRef == 0) {
+			// Not set since starts counting from 0
+			updatedClassRef = numElementClasses << 16 | 1; // length 1 
+		}
+		else {
+			final int classTableIdx = existingClassRef >> 16;
+			final int classTableLength = existingClassRef & 0x0000FFFF;
+
+			if (classTableIdx + classTableLength != numElementClasses ) {
+				throw new IllegalArgumentException("Not last element");
+			}
+			
+			updatedClassRef = (classTableIdx << 16) | (classTableLength + 1);
+		}
+		
+		elementClasses[numElementClasses ++] = classStringRef;
+		
+
+		LongHTML.setClass(elementBuf, elementOffset, updatedClassRef);
+	}
+
 
 	@Override
 	public void onStyleAttributeValue(LongTokenizer tokenizer, String key, String value) {
@@ -216,6 +283,34 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	@Override
 	public Integer getElementById(String id) {
 		return elementById.get(id);
+	}
+
+	@Override
+	public String [] getClasses(Integer element) {
+		final int elementOffset = offset(element);
+		final long [] elementBuf = buf(element);
+		
+		final int classRef = LongHTML.getClass(elementBuf, elementOffset);
+		
+		final int numClasses = classRef & 0x0000FFFF;
+		
+		final String [] ret = new String[numClasses];
+		
+		final int startIdx = classRef >> 16;
+		
+		for (int i = 0; i < numClasses; ++ i) {
+			ret[i] = classBuffer.getString(elementClasses[startIdx + i]);
+		}
+		
+		return ret;
+	}
+
+
+	@Override
+	public List<Integer> getElementsWithClass(String _class) {
+		final List<Integer> elements = elementsByClass.get(_class);
+		
+		return elements != null ? elements : Collections.emptyList();
 	}
 
 

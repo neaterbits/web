@@ -301,6 +301,11 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 			case NONE:
 				done = true;
 				break;
+				
+			case CLASS:
+				// Special-handling of class attribute since may contain multiple
+				parseClassAttribute(token);
+				break;
 
 			default:
 				// This should be an attribute as is not any of the other tokens
@@ -377,6 +382,39 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 		}
 	}
 
+	// class requires special parsing, since is space separated
+	private void parseClassAttribute(HTMLToken attributeToken) throws IOException, ParserException {
+		if (lexSkipWS(HTMLToken.EQUALS) != HTMLToken.EQUALS) {
+			throw lexer.unexpectedToken();
+		}
+		
+		if (lexSkipWS(HTMLToken.QUOTE) != HTMLToken.QUOTE) {
+			throw lexer.unexpectedToken();
+		}
+		
+		boolean done = false;
+		
+		do {
+			// Ignore WS at start and end of quotes
+			switch (lexer.lex(HTMLToken.WS, HTMLToken.CLASS_NAME, HTMLToken.QUOTE)) {
+			case WS:
+				// Skip to next
+				break;
+				
+			case CLASS_NAME:
+				// TODO: must skip 1 at end since lexer has read one past, find more elegant solution
+				listener.onClassAttributeValue(tokenizer, 0, lexer.getEndSkip());
+				break;
+				
+			case QUOTE:
+				done = true;
+				break;
+				
+			default:
+				throw lexer.unexpectedToken();
+			}
+		} while (!done);
+	}
 	
 	private HTMLToken tags(HTMLToken ... htmlTokens) throws IOException, ParserException {
 

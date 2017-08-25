@@ -24,5 +24,7 @@ public interface HTMLParserListener<TOKENIZER extends Tokenizer> {
 
 	void onAttributeWithValue(TOKENIZER tokenizer, HTMLAttribute attribute, int startOffset, int endSkip);
 
+	void onClassAttributeValue(TOKENIZER tokenizer, int startOffset, int endSkip);
+
 	void onStyleAttributeValue(TOKENIZER tokenizer, String key, String value);
 }

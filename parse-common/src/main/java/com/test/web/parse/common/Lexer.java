@@ -8,7 +8,7 @@ import com.test.web.io.common.CharInput;
 
 public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharInput> {
 
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
 	private static final String PREFIX = "Lexer: ";
 
@@ -293,5 +293,9 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	
 	public final ParserException unexpectedToken() {
 		return new ParserException("Unexpected token for \"" + cur.toString() + "\" at " + lineNo + ": " + lastToken);
+	}
+	
+	public final int getEndSkip() {
+		return buffered >= 0 ? 1 : 0;
 	}
 }

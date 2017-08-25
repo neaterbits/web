@@ -30,6 +30,11 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</dependency>
 
+	<dependency>
+		<groupId>com.test.web</groupId>
+		<artifactId>parse-css</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</dependency>
 
 	<!-- test dependencies --> 
 

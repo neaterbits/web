@@ -4,6 +4,7 @@ import com.test.web.parse.common.CharType;
 import com.test.web.parse.common.CharTypeWS;
 import com.test.web.parse.common.IToken;
 import com.test.web.parse.common.TokenType;
+import com.test.web.parse.css.CharTypeHTMLElementClass;
 import com.test.web.parse.html.enums.HTMLAttribute;
 import com.test.web.parse.html.enums.HTMLElement;
 
@@ -69,7 +70,9 @@ public enum HTMLToken implements IToken {
 	ATTR_TITLE(HTMLAttribute.TITLE),
 	
 	STYLE(HTMLAttribute.STYLE),
-	TYPE(HTMLAttribute.TYPE)
+	TYPE(HTMLAttribute.TYPE),
+	
+	CLASS_NAME(CharTypeHTMLElementClass.INSTANCE)
 	;
 	
 	private final TokenType tokenType;
