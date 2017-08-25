@@ -11,6 +11,9 @@ import com.test.web.css.common.CSSDisplay;
 import com.test.web.css.common.CSSFloat;
 
 import static com.test.web.buffers.BitOperations.max;
+
+import com.test.web.buffers.BufferUtil;
+
 import static com.test.web.buffers.BitOperations.maskToInt;
 
 /**
@@ -45,7 +48,7 @@ import static com.test.web.buffers.BitOperations.maskToInt;
 
 
 
-public class LongCSS {
+public class LongCSS extends BufferUtil {
 	
 	private static CSSUnit maskToUnit(long l, int shiftBits, int numBits) {
 		return CSSUnit.values()[maskToInt(l, shiftBits, numBits)];
@@ -117,16 +120,6 @@ public class LongCSS {
 	private static final int FLOAT_CLEAR 		= ~FLOAT_MASK;
 	private static final int OVERFLOW_CLEAR 	= ~OVERFLOW_MASK;
 	
-	private static class Flag {
-		private final int numBits;
-		private final Class<? extends Enum<?>> enumClass;
-		
-		public Flag(int numBits, Class<? extends Enum<?>> enumClass) {
-			this.numBits = numBits;
-			this.enumClass = enumClass;
-		}
-	}
-	
 	private static Flag [] flags = new Flag[] {
 			new Flag(DISPLAY_BITS, 		CSSDisplay.class),
 			new Flag(POSITION_BITS,		CSSPosition.class),
@@ -150,20 +143,8 @@ public class LongCSS {
 	static final int CSS_ENTITY_COMPACT = NUM_COMPACT;
 
 	static {
-		
-		int sumBits = 0; 
-		for (Flag flag : flags) {
-			if (1 << flag.numBits < flag.enumClass.getEnumConstants().length) {
-				throw new IllegalStateException("Not enough room for all bits in " + flag.enumClass);
-			}
-			
-			sumBits += flag.numBits;
-		}
-		
-		if (sumBits > 64) {
-			throw new IllegalStateException("more that 64 bits in flags");
-		}
-		
+
+		verifyFlags(flags, 64);
 		
 		if (1 << UNIT_BITS < CSSUnit.values().length) {
 			throw new IllegalStateException("Not enough room for all unit bits");

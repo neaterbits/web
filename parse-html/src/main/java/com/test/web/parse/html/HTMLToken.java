@@ -11,9 +11,12 @@ public enum HTMLToken implements IToken {
 
 	NONE(),
 	
-	TAG_START('<'),
-	TAG_END('>'),
-	END_TAG_MARKER('/'),
+	TAG_LESS_THAN('<'),
+	TAG_GEATER_THAN('>'),
+	TAG_SLASH('/'),
+	
+	// Pseudo-token to return that we reached end og tag
+	TAG_END(' '),
 
 	QUOTE('"'),
 	EQUALS('='),
@@ -68,7 +71,7 @@ public enum HTMLToken implements IToken {
 	}
 	
 	private HTMLToken(String literal, HTMLElement element, HTMLAttribute attribute) {
-		this.tokenType = TokenType.LITERAL;
+		this.tokenType = TokenType.CI_LITERAL;
 		this.character = 0;
 		this.literal = literal;
 		this.charType = null;

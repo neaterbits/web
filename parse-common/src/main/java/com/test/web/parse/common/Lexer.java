@@ -9,9 +9,9 @@ import com.test.web.io.common.CharInput;
 public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharInput> {
 
 	private static final boolean DEBUG = false;
-	
+
 	private static final String PREFIX = "Lexer: ";
-	
+
 	private final INPUT input;
 	private final TOKEN tokNone;
 	private final TOKEN tokEOF;
@@ -23,6 +23,9 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	private final int [] matchingTokens;
 	
 	private int lineNo;
+	
+	// For debug
+	private TOKEN lastToken;
 	
 	
 	public Lexer(INPUT input, Class<TOKEN> tokenClass, TOKEN tokNone, TOKEN tokEOF) {
@@ -67,7 +70,6 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		// Read input until finds matching token
 		// TODO: exit if cannot find matching token of any length
 		do {
-		
 			final int val = read();
 			
 			if (val < 0) {
@@ -120,7 +122,7 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 					}
 					break;
 					
-				case LITERAL:
+				case CS_LITERAL:
 					if (cur.length() < token.getLiteral().length()) {
 						++ numPossibleMatch;
 						match = false;
@@ -133,6 +135,19 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 					}
 					break;
 					
+				case CI_LITERAL:
+					if (cur.length() < token.getLiteral().length()) {
+						++ numPossibleMatch;
+						match = false;
+					}
+					else if (cur.length() == token.getLiteral().length()) {
+						match = cur.toString().equalsIgnoreCase(token.getLiteral());
+					}
+					else {
+						match = false;
+					}
+					break;
+
 				case CHARTYPE:
 					final boolean matches = token.getCharType().matches(cur.toString());
 					if (matches) {
@@ -201,6 +216,8 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 			System.out.println(PREFIX + " returned token " + found + " at " + lineNo + ", buf=\"" + cur + "\", buffered char='"+ (char)buffered + "'");
 		}
 		
+		this.lastToken = found;
+		
 		return found;
 	}
 	
@@ -223,6 +240,6 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	}
 	
 	public final ParserException unexpectedToken() {
-		return new ParserException("Unexpected token for \"" + cur.toString() + "\" at " + lineNo);
+		return new ParserException("Unexpected token for \"" + cur.toString() + "\" at " + lineNo + ": " + lastToken);
 	}
 }

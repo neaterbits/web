@@ -14,27 +14,73 @@ import com.test.web.parse.common.Lexer;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.html.enums.HTMLElement;
 
-final class HTMLParser<INPUT extends CharInput, TOKENIZER extends Tokenizer> extends BaseParser {
+public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HTMLToken, CharInput> {
 	
-	private final INPUT input;
 	private final TOKENIZER tokenizer;
-	private final Lexer<HTMLToken, INPUT> lexer;
-	private final HTMLParserListener<INPUT, TOKENIZER> listener;
+	private final Lexer<HTMLToken, CharInput> lexer;
+	private final HTMLParserListener<TOKENIZER> listener;
 	
-	public HTMLParser(INPUT input, TOKENIZER tokenizer, HTMLParserListener<INPUT, TOKENIZER> listener) {
+	public HTMLParser(CharInput input, TOKENIZER tokenizer, HTMLParserListener<TOKENIZER> listener) {
+		super(new Lexer<HTMLToken, CharInput>(input, HTMLToken.class, HTMLToken.NONE, null), HTMLToken.WS);
 		
-		this.input = input;
 		this.tokenizer = tokenizer;
-		this.lexer = new Lexer<HTMLToken, INPUT>(input, HTMLToken.class, HTMLToken.NONE, null);
+		this.lexer = getLexer();
 		this.listener = listener;
 	}
 	
 	
+	private HTMLToken rootTag(HTMLToken ... tagTokens) throws IOException, ParserException {
+		return endTagOrSub(null, tagTokens);
+	}
+	
+	
+	private HTMLToken endTagOrSub(HTMLToken currentTag, HTMLToken ... tagTokens) throws IOException, ParserException {
+		
+		HTMLToken tagToken;
+		
+		switch (lexSkipWS(HTMLToken.TAG_LESS_THAN)) {
+		case TAG_LESS_THAN: // May be start of end-tag 
+			
+			final HTMLToken [] tokens = currentTag != null ? merge(HTMLToken.TAG_SLASH, tagTokens) : tagTokens;
+			
+			switch ((tagToken = lexSkipWS(tokens))) {
+			case NONE:
+				throw lexer.unexpectedToken();
+				
+			case TAG_SLASH:
+				// This is end-of-tag for current tag, skip tag
+				if (lexSkipWS(currentTag) != currentTag) {
+					throw lexer.unexpectedToken();
+				}
+
+				// Skip '>' too
+				if (lexSkipWS(HTMLToken.TAG_GEATER_THAN) != HTMLToken.TAG_GEATER_THAN) {
+					throw lexer.unexpectedToken();
+				}
+				tagToken = HTMLToken.TAG_END;
+				break;
+
+			default:
+				// This was start of sub-tag, skip '>'
+				if (lexSkipWS(HTMLToken.TAG_GEATER_THAN) != HTMLToken.TAG_GEATER_THAN) {
+					throw lexer.unexpectedToken();
+				}
+				break;
+			}
+			break;
+			
+		default:
+			throw lexer.unexpectedToken();
+		}
+		
+		return tagToken;
+	}
+
 	public void parseHTMLFile() throws IOException, ParserException {
 		
 		// Try parse HTML from start
 		
-		switch (lexer.lex(HTMLToken.HTML)) {
+		switch (rootTag(HTMLToken.HTML)) {
 		
 		case HTML:
 			
@@ -49,13 +95,16 @@ final class HTMLParser<INPUT extends CharInput, TOKENIZER extends Tokenizer> ext
 	
 	private void parseHTML() throws IOException, ParserException {
 		
-		switch (lexer.lex(HTMLToken.HEAD, HTMLToken.BODY)) {
+		switch (endTagOrSub(HTMLToken.HTML, HTMLToken.HEAD, HTMLToken.BODY)) {
 		
 		case HEAD:
 			parseHead();
 			break;
 		
 		case BODY:
+			break;
+
+		case TAG_END:
 			break;
 			
 		default:
@@ -65,9 +114,12 @@ final class HTMLParser<INPUT extends CharInput, TOKENIZER extends Tokenizer> ext
 	}
 
 	private void parseHead() throws IOException, ParserException {
-		switch (tags(HTMLToken.SCRIPT)) {
+		switch (endTagOrSub(HTMLToken.HEAD, HTMLToken.SCRIPT)) {
 		case SCRIPT:
-			
+			break;
+
+		case TAG_END:
+			//end tag
 			break;
 
 		default:
@@ -136,8 +188,8 @@ final class HTMLParser<INPUT extends CharInput, TOKENIZER extends Tokenizer> ext
 
 		tokens[attributes.length] 	  = HTMLToken.WS;
 		
-		tokens[attributes.length + 1] = HTMLToken.END_TAG_MARKER; // In case start and end-tag in same eg <tag [attributes] /> 
-		tokens[attributes.length + 2] = HTMLToken.TAG_END; // In case end of tag eg <tag [attributes]>"
+		tokens[attributes.length + 1] = HTMLToken.TAG_SLASH; // In case start and end-tag in same eg <tag [attributes] /> 
+		tokens[attributes.length + 2] = HTMLToken.TAG_GEATER_THAN; // In case end of tag eg <tag [attributes]>"
 		
 		HTMLToken token = lexer.lex(tokens); 
 		
@@ -145,12 +197,12 @@ final class HTMLParser<INPUT extends CharInput, TOKENIZER extends Tokenizer> ext
 		
 		do {
 			switch (token) {
-			case END_TAG_MARKER:
+			case TAG_SLASH:
 				// End of tag marker
 				done = true;
 				break;
 				
-			case TAG_END:
+			case TAG_GEATER_THAN:
 				// End tag
 				done = true;
 				break;
@@ -230,13 +282,13 @@ final class HTMLParser<INPUT extends CharInput, TOKENIZER extends Tokenizer> ext
 
 		final HTMLToken ret;
 		
-		HTMLToken token = lexer.lex(HTMLToken.TAG_START, HTMLToken.WS);
+		HTMLToken token = lexer.lex(HTMLToken.TAG_LESS_THAN, HTMLToken.WS);
 		
 		if (token == HTMLToken.WS) {
-			token = lexer.lex(HTMLToken.TAG_START);
+			token = lexer.lex(HTMLToken.TAG_LESS_THAN);
 		}
 
-		if (token == HTMLToken.TAG_START) {
+		if (token == HTMLToken.TAG_LESS_THAN) {
 
 			final HTMLToken [] tokensPlusWS = Arrays.copyOf(htmlTokens, htmlTokens.length + 1);
 
@@ -262,10 +314,10 @@ final class HTMLParser<INPUT extends CharInput, TOKENIZER extends Tokenizer> ext
 		
 		HTMLToken token;
 		
-		token = lexer.lex(HTMLToken.TAG_END, HTMLToken.WS);
+		token = lexer.lex(HTMLToken.TAG_GEATER_THAN, HTMLToken.WS);
 		if (token == HTMLToken.WS) {
 			// Read past WS
-			token = lexer.lex(HTMLToken.TAG_END);
+			token = lexer.lex(HTMLToken.TAG_GEATER_THAN);
 		}
 		
 		return token;

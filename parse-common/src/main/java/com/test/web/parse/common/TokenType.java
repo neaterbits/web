@@ -6,6 +6,7 @@ public enum TokenType {
 	EOF,
 	
 	CHARACTER, // A single character
-	LITERAL, // A literal string
+	CS_LITERAL, // A literal string
+	CI_LITERAL, // A case insensitive literal string
 	CHARTYPE;
 }

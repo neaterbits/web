@@ -51,7 +51,6 @@ public class CSSDocumentTest extends TestCase {
 		
 		final StringBuffers buffers = new StringBuffers(new ByteArrayInputStream(css.getBytes()));
 		
-		
 		final CSSParser<LongTokenizer, Void> parser = new CSSParser<>(buffers, doc);
 		
 		parser.parseCSS();

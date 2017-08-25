@@ -25,7 +25,9 @@ import com.test.web.parse.html.enums.HTMLElement;
  */
 
 
-public class LongDocument extends LongBuffersIntegerIndex implements Document, HTMLParserListener<CharInput, LongTokenizer> {
+public class LongHTMLDocument extends LongBuffersIntegerIndex
+
+	implements Document, HTMLParserListener<LongTokenizer> {
 
 	private static final int INITIAL_BUFFERS = 100;
 	
@@ -35,7 +37,7 @@ public class LongDocument extends LongBuffersIntegerIndex implements Document, H
 	
 	
 	
-	public LongDocument() {
+	public LongHTMLDocument() {
 		this.stack = new ArrayList<>();
 	}
 

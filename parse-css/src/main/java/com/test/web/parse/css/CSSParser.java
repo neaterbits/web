@@ -13,6 +13,7 @@ import com.test.web.css.common.CSStyle;
 import com.test.web.css.common.Justify;
 import com.test.web.io.common.CharInput;
 import com.test.web.io.common.Tokenizer;
+import com.test.web.parse.common.BaseParser;
 import com.test.web.parse.common.Lexer;
 import com.test.web.parse.common.ParserException;
 
@@ -21,15 +22,17 @@ import com.test.web.parse.common.ParserException;
  * @author nhl
  *
  */
-public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> {
+public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput> {
 	
 	private final CharInput input;
 	private final Lexer<CSSToken, CharInput> lexer; 
 	private final CSSParserListener<TOKENIZER, LISTENER_CONTEXT> listener;
 
 	public CSSParser(CharInput input, CSSParserListener<TOKENIZER, LISTENER_CONTEXT> listener) {
+		super(new Lexer<CSSToken, CharInput>(input, CSSToken.class, CSSToken.NONE, CSSToken.EOF), CSSToken.WS);
+		
 		this.input = input;
-		this.lexer = new Lexer<CSSToken, CharInput>(input, CSSToken.class, CSSToken.NONE, CSSToken.EOF);
+		this.lexer = getLexer();
 		this.listener = listener;
 	}
 	
@@ -200,20 +203,6 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> {
 		} while (!done);
 	}
 	
-	private CSSToken lexSkipWS(CSSToken ... tokens) throws IOException {
-		final CSSToken [] copy = Arrays.copyOf(tokens, tokens.length + 1);
-		
-		// TODO WS token first since is most likely to find?
-		copy[tokens.length] = CSSToken.WS;
-		
-		CSSToken token = lexer.lex(copy);
-		
-		if (token == CSSToken.WS) {
-			token = lexer.lex(tokens);
-		}
-		
-		return token;
-	}
 
 	private void skipAnyWS() throws IOException {
 		lexer.lex(CSSToken.WS);

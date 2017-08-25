@@ -13,7 +13,7 @@ import com.test.web.parse.html.enums.HTMLElement;
  * @param <TOKENIZER>
  */
 
-public interface HTMLParserListener<INPUT extends CharInput, TOKENIZER extends Tokenizer> {
+public interface HTMLParserListener<TOKENIZER extends Tokenizer> {
 
 	void onElementStart(TOKENIZER tokenizer, HTMLElement element);
 

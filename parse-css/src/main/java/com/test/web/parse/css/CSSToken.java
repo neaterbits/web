@@ -167,7 +167,7 @@ public enum CSSToken implements IToken {
 	}
 	
 	private CSSToken(String literal, CSStyle element, CSSUnit unit, CSSDisplay display, CSSPosition position, CSSFloat _float, CSSTextAlign textAlign, CSSOverflow overflow) {
-		this.tokenType = TokenType.LITERAL;
+		this.tokenType = TokenType.CS_LITERAL;
 		this.character = 0;
 		this.literal = literal;
 		this.charType = null;
