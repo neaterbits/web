@@ -181,12 +181,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 			System.out.println("## append " + element + " at " + elementOffset + " to " + LongHTML.getHTMLElement(curBuf, curOffset) + " at " + curOffset);
 		}
 		
-		if (element == null) {
-			LongHTML.setAsText(elementBuf, elementOffset);
-		}
-
 		final long mask = element != null ? 0xFFFFFFFFFFFFFFFFL : 0x7FFFFFFFFFFFFFFFL;
-		
 		
 		if (CHECK_OVERWRITE && (LongHTML.getHeader(elementBuf, elementOffset) & mask) != 0L) {
 			throw new IllegalStateException("Header not 0");
@@ -283,6 +278,8 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		
 		final int elementOffset = offset(elementRef);
 		final long [] elementBuf = buf(elementRef);
+
+		LongHTML.setAsText(elementBuf, elementOffset);
 		
 		LongHTML.setText(elementBuf, elementOffset, tokenizer.get(startOffset, endSkip));
 	}
