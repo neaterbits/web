@@ -10,6 +10,6 @@ public interface LongTokenizer extends Tokenizer {
 	 * @return
 	 */
 	
-	long get();
+	long get(int startOffset, int endSkip);
 	
 }

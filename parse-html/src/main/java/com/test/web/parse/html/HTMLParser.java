@@ -1,6 +1,7 @@
 package com.test.web.parse.html;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Arrays;
 
 import com.test.web.io.common.CharInput;
@@ -8,9 +9,15 @@ import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.BaseParser;
 import com.test.web.parse.common.Lexer;
 import com.test.web.parse.common.ParserException;
-import com.test.web.parse.html.enums.HTMLElement;
+import com.test.web.types.IIndent;
 
-public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HTMLToken, CharInput> {
+public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HTMLToken, CharInput> implements IIndent {
+	
+	private static final boolean DEBUG = true;
+	private static final PrintStream DEBUG_OUT = System.out;
+	
+	private int debugStackLevel;
+	
 	
 	private final TOKENIZER tokenizer;
 	private final Lexer<HTMLToken, CharInput> lexer;
@@ -25,11 +32,34 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 	}
 	
 	private HTMLToken rootTag(HTMLToken ... tagTokens) throws IOException, ParserException {
-		return endTagOrSub(null, tagTokens);
+		return endTagOrSub(null, true, tagTokens);
 	}
 	
 	
-	private HTMLToken endTagOrSub(HTMLToken currentTag, HTMLToken ... tagTokens) throws IOException, ParserException {
+	private HTMLToken endTagOrSubOrText(HTMLToken currentTag, boolean allowNone, boolean allowText, HTMLToken ... tagTokens) throws IOException, ParserException {
+		final HTMLToken found;
+		
+		if (allowText) {
+			// Look for text, tag start and WS in that order
+			final HTMLToken text = lexer.lex(HTMLToken.TEXT);
+			if (text == HTMLToken.TEXT) {
+				
+				debugText();
+				
+				found = text;
+			}
+			else {
+				found = endTagOrSub(currentTag, allowNone, tagTokens);
+			}
+		}
+		else {
+			found = endTagOrSub(currentTag, allowNone, tagTokens);
+		}
+		
+		return found;
+	}
+
+	private HTMLToken endTagOrSub(HTMLToken currentTag, boolean allowNone, HTMLToken ... tagTokens) throws IOException, ParserException {
 		
 		HTMLToken found = null;
 
@@ -39,13 +69,19 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 				
 				final HTMLToken [] tokens = currentTag != null
 					? merge(tagTokens, HTMLToken.COMMENT_CONTENT, HTMLToken.TAG_SLASH) 
-					: merge(HTMLToken.COMMENT_CONTENT, tagTokens);
+					: merge(tagTokens, HTMLToken.COMMENT_CONTENT);
 				
 				HTMLToken tagToken;
 					
 				switch ((tagToken = lexSkipWS(tokens))) {
 				case NONE:
-					throw lexer.unexpectedToken();
+					if (allowNone) {
+						found = tagToken;
+					}
+					else {
+						throw lexer.unexpectedToken();
+					}
+					break;
 					
 				case COMMENT_CONTENT:
 					// Probably a comment
@@ -57,8 +93,10 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 					if (lexSkipWS(currentTag) != currentTag) {
 						throw lexer.unexpectedToken();
 					}
+					
+					debugExit(currentTag.getElement().getName());
 
-					listener.onElementEnd(tokenizer, tagToken.getElement());
+					listener.onElementEnd(tokenizer, currentTag.getElement());
 	
 					// Skip '>' too
 					if (lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
@@ -70,11 +108,11 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 	
 				default:
 					// Found element
+					debugEnter(tagToken.getElement().getName());
 					listener.onElementStart(tokenizer, tagToken.getElement());
 					
 					// Parse any attributes
 					final HTMLToken [] attributeTokens = tagToken.getAttributeTokens();
-					
 					
 					if (attributeTokens != null && attributeTokens.length > 0) {
 						parseTagAttributes(attributeTokens);
@@ -101,6 +139,26 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 		while (found == null);
 		
 		return found;
+	}
+	
+	private void debugEnter(String context) {
+
+		indent(debugStackLevel, DEBUG_OUT);
+
+		DEBUG_OUT.append("Start ").append(context).println();;
+
+		++ debugStackLevel;
+	}
+
+	private void debugExit(String context) {
+		-- debugStackLevel;
+		indent(debugStackLevel, DEBUG_OUT);
+		DEBUG_OUT.append("End ").append(context).println();;
+	}
+
+	private void debugText() {
+		indent(debugStackLevel, DEBUG_OUT);
+		DEBUG_OUT.append("Text: \"").append(tokenizer.asString(0, lexer.getEndSkip())).println("\"");
 	}
 
 	public void parseHTMLFile() throws IOException, ParserException {
@@ -139,6 +197,8 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 	
 	private void parseDocType() throws IOException, ParserException {
 
+		debugEnter("DOCTYPE");
+		
 		if (lexSkipWS(HTMLToken.DOCTYPE) != HTMLToken.DOCTYPE) {
 			throw lexer.unexpectedToken();
 		}
@@ -165,26 +225,32 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 		if (lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
 			throw lexer.unexpectedToken();
 		}
+		
+		debugExit("DOCTYPE");
 	}
 	
 	private void parseHTML() throws IOException, ParserException {
 		
-		switch (endTagOrSub(HTMLToken.HTML, HTMLToken.HEAD, HTMLToken.BODY)) {
-		
-		case HEAD:
-			parseHead();
-			break;
-		
-		case BODY:
-			break;
+		final HTMLToken token = endTagOrSub(HTMLToken.HTML, true, HTMLToken.HEAD);
 
-		case TAG_END:
-			break;
-			
-		default:
-			throw lexer.unexpectedToken();
+		if (token == HTMLToken.HEAD) {
+			parseHead();
 		}
 		
+		if (token != HTMLToken.TAG_END) {
+			// Was not end of file, and may have parsed <head> tag, parse <body> if any
+			switch (endTagOrSub(HTMLToken.HTML, true, HTMLToken.BODY)) {
+			case BODY:
+				parseBody();
+				break;
+				
+			case TAG_END:
+				break;
+				
+			default:
+				throw lexer.unexpectedToken();
+			}
+		}
 	}
 
 	private void parseHead() throws IOException, ParserException {
@@ -192,7 +258,7 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 		boolean done = false;
 		
 		do {
-			switch (endTagOrSub(HTMLToken.HEAD, HTMLToken.TITLE, HTMLToken.SCRIPT)) {
+			switch (endTagOrSub(HTMLToken.HEAD, false, HTMLToken.TITLE, HTMLToken.SCRIPT)) {
 
 			case TITLE:
 				parseText(HTMLToken.TITLE);
@@ -215,37 +281,17 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 	
 	private void parseBody() throws IOException, ParserException {
 		
-		parseContainer(HTMLElement.BODY);
+		parseContainer(HTMLToken.BODY, true);
 		
 	}
 	
-	private void parseContainerElements() throws IOException, ParserException {
-	
-		switch (tags(HTMLToken.DIV, HTMLToken.SPAN, HTMLToken.INPUT)) {
-		case DIV:
-			parseDiv();
-			break;
-			
-		case SPAN:
-			parseSpan();
-			break;
-			
-		case INPUT:
-			parseInput();
-			break;
-
-		default:
-			throw lexer.unexpectedToken();
-		}
-	}
 	
 	private void parseDiv() throws IOException, ParserException {
-		
-		parseContainerElements();
+		parseContainer(HTMLToken.DIV, true);
 	}
 	
 	private void parseSpan() throws IOException, ParserException {
-		parseContainerElements();
+		parseContainer(HTMLToken.SPAN, true);
 	}
 	
 	private void parseInput() throws IOException, ParserException {
@@ -253,15 +299,37 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 	}
 	
 
-	private void parseContainer(HTMLElement element) throws IOException, ParserException {
+	private void parseContainer(HTMLToken curToken, boolean text) throws IOException, ParserException {
 		
-		listener.onElementStart(tokenizer, element);
-
-		parseTagAttributes();
+		boolean done = false;
 		
-		parseContainerElements();
+		do {
 		
-		listener.onElementEnd(tokenizer, element);
+			switch (endTagOrSubOrText(curToken, false, text, HTMLToken.DIV, HTMLToken.SPAN, HTMLToken.INPUT)) {
+			case DIV:
+				parseDiv();
+				break;
+				
+			case SPAN:
+				parseSpan();
+				break;
+				
+			case INPUT:
+				parseInput();
+				break;
+				
+			case TEXT:
+				listener.onText(tokenizer, 0, lexer.getEndSkip());
+				break;
+				
+			case TAG_END:
+				done = true;
+				break;
+	
+			default:
+				throw lexer.unexpectedToken();
+			}
+		} while (!done);
 	}
 	
 	private HTMLToken parseTagAttributes(HTMLToken ... attributes) throws IOException, ParserException {
@@ -323,7 +391,8 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 		// Scan for text or start-tag
 		switch (lexer.lex(HTMLToken.TEXT, HTMLToken.TAG_LESS_THAN)) {
 		case TEXT:
-			listener.onText(tokenizer);
+			debugText();
+			listener.onText(tokenizer, 0, lexer.getEndSkip());
 			checkTagEnd(elementToken);
 			break;
 

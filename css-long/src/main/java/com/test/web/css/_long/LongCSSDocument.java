@@ -198,7 +198,7 @@ public final class LongCSSDocument extends LongBuffersIntegerIndex implements CS
 		// Started a CSS entity, must allocate out of buffer
 		// Start out allocating a compact element, we might re-allocate if turns out to have more than the standard compact elements
 		
-		this.curParseElement = allocate(LongCSS.CSS_ENTITY_COMPACT);
+		this.curParseElement = allocate(LongCSS.CSS_ENTITY_COMPACT, target.name());
 		
 		// Store in map
 		if (map.containsKey(targetName)) {

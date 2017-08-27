@@ -16,7 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HTMLDocumentTest extends TestCase {
 	public void testParser() throws IOException, ParserException {
 		
-		final String html = 
+		final String html =
+
 "<!DOCTYPE HTML PUBLIC \"-//W3C/DTD HTML 4.01 Frameset//EN\" \"http://w3.org/TR/html4/frameset.dtd\">" +				
 "<html>\n" +
 "<!-- a single line comment -->\n" +
@@ -30,15 +31,25 @@ public class HTMLDocumentTest extends TestCase {
 "<!-- a \n" +
 " multi line \n" +
 " comment -->\n" +
+" <body>\n" +
+"   <div id=\"main_div\">\n" +
+"     Some text before span\n" +
+"     <span class=\"text_content\">This is a text</span>\n" +
+"     Some text after span\n" +
+"   </div>\n" +
+" </body>\n" +
 "</html>";
 		
-		final LongHTMLDocument doc = new LongHTMLDocument();
 		
 		final StringBuffers buffers = new StringBuffers(new ByteArrayInputStream(html.getBytes()));
+
+		final LongHTMLDocument doc = new LongHTMLDocument(buffers);
 		
 		final HTMLParser<LongTokenizer> parser = new HTMLParser<>(buffers, buffers, doc);
 		
 		parser.parseHTMLFile();
+		
+		doc.dumpFlat(System.out);
 
 		final Integer scriptElement = doc.getElementById("script_id");
 		
@@ -48,7 +59,16 @@ public class HTMLDocumentTest extends TestCase {
 		assertThat(doc.getClasses(titleElement)).isEqualTo(new String [] { "title_class" });
 
 		assertThat(doc.getElementsWithClass("title_class")).isEqualTo(Arrays.asList(titleElement));
-	}
-		
 
+		final Integer mainDiv =  doc.getElementById("main_div");
+		
+		assertThat(mainDiv).isNotNull();
+		assertThat(doc.getId(mainDiv)).isEqualTo("main_div");
+		
+		assertThat(doc.getNumElements(mainDiv)).isEqualTo(3);
+	}
+	
+	public void testIsLFWhiteSpace() {
+		assertThat(Character.isWhitespace('\n')).isEqualTo(true);
+	}
 }

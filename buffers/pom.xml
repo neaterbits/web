@@ -12,7 +12,12 @@
   <packaging>jar</packaging>
   <dependencies>
 
-	<!-- test dependencies --> 
+	<!-- test dependencies -->
+	<dependency>
+		<groupId>com.test.web</groupId>
+		<artifactId>types</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</dependency> 
 
     <dependency>
       <groupId>junit</groupId>

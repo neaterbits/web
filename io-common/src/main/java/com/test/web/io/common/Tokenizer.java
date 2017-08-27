@@ -16,4 +16,6 @@ public interface Tokenizer {
 	boolean equalsIgnoreCase(String s);
 	
 	int addToBuffer(StringStorageBuffer buffer, int startOffset, int endSkip);
+	
+	String asString(int startOffset, int endSkip);
 }

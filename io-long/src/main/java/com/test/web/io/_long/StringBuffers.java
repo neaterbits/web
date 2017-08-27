@@ -251,13 +251,7 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 		return equals;
 	}
 
-	@Override
-	public int addToBuffer(StringStorageBuffer buffer, int startOffset, int endSkip) {
-		final long pos = tokenizerPos;
-
-		int bufNo = bufNo(pos);
-		int bufOffset = bufOffset(pos);
-		
+	private int getTokenLength(int bufNo, int bufOffset) {
 		final int readBufNo = bufNo(curReadPos);
 		final int readBufOffest = bufOffset(curReadPos);
 		
@@ -276,6 +270,18 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 			// More than one complete buffer between this and write pos
 			length = (readBufNo - bufNo - 1) * BUFFER_SIZE + BUFFER_SIZE - bufOffset + readBufOffest;
 		}
+
+		return length;
+	}
+	
+	@Override
+	public int addToBuffer(StringStorageBuffer buffer, int startOffset, int endSkip) {
+		final long pos = tokenizerPos;
+
+		int bufNo = bufNo(pos);
+		int bufOffset = bufOffset(pos);
+		
+		int length = getTokenLength(bufNo, bufOffset);
 
 		char [] buf = buffers[bufNo];
 		
@@ -297,12 +303,16 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 			throw new IllegalStateException("length < 0");
 		}
 		
+		final char [] tmp = toCharBuf(buf, bufNo, bufOffset, length);
+
+		// TODO: could add character by character
+		return buffer.add(tmp, 0, length);
+	}
+	
+	private char [] toCharBuf(char [] buf, int bufNo, int bufOffset, int length) {
 		final char [] tmp = new char[length];
 		
 		for (int i = 0; i < length; ++ i) {
-			if (bufOffset == readBufOffest && bufNo == readBufNo) {
-				break;
-			}
 			
 			tmp[i] = buf[bufOffset];
 
@@ -315,13 +325,46 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 				++ bufOffset;
 			}
 		}
-
-		// TODO: could add character by character
-		return buffer.add(tmp, 0, length);
+		
+		return tmp;
 	}
 
 	@Override
-	public long get() {
-		return getPos();
+	public long get(int startOffset, int endSkip) {
+		final long pos = tokenizerPos + startOffset;
+
+		int bufNo = bufNo(pos);
+		int bufOffset = bufOffset(pos);
+		
+		int length = getTokenLength(bufNo, bufOffset);
+
+		if (startOffset > 0) {
+			length -= startOffset;
+			
+			++ bufOffset;
+			
+			if (bufOffset == BUFFER_SIZE - 1) {
+				++ bufNo;
+				bufOffset = 0;
+			}	
+		}
+		
+		length -= endSkip;
+		
+		return stringRef(bufNo, bufOffset, length);
+	}
+	
+	public String getString(long ref) {
+		final int length = length(ref);
+		
+		int bufNo = bufNo(ref);
+		int bufOffset = bufOffset(ref);
+
+		return new String(toCharBuf(buffers[bufNo], bufNo, bufOffset, length));
+	}
+
+	@Override
+	public String asString(int startOffset, int endSkip) {
+		return getString(get(startOffset, endSkip));
 	}
 }

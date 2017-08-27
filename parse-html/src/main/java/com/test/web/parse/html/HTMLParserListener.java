@@ -18,7 +18,7 @@ public interface HTMLParserListener<TOKENIZER extends Tokenizer> {
 
 	void onElementEnd(TOKENIZER tokenizer, HTMLElement element);
 	
-	void onText(TOKENIZER tokentizer);
+	void onText(TOKENIZER tokenizer, int startOffset, int endSkip);
 	
 	void onAttributeWithoutValue(TOKENIZER tokenizer, HTMLAttribute attribute);
 

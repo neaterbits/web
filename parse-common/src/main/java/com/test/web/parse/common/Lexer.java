@@ -220,12 +220,12 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 							}
 							match = true;
 							
-							// Must copy to temporary buf since we read a character that cannot be read
+							// Must copy to temporary buf since we read a character that cannot be returned
 							this.buffered = val;
 							cur.setLength(cur.length() - 1);
 						}
 						else {
-							// Cannot match
+							// Cannot match so buffer char
 							match = false;
 						}
 					}
@@ -259,6 +259,8 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 				}
 				
 				// No possible matches, return not-found token
+				// If read a character, buffer it for next iteration
+				this.buffered = c;
 				found = tokNone;
 			}
 

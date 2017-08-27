@@ -10,6 +10,8 @@ import java.util.List;
 public interface Document<ELEMENT> {
 
 	ELEMENT getElementById(String id);
+	
+	String getId(ELEMENT element);
 
 	String [] getClasses(ELEMENT element);
 	
@@ -17,4 +19,6 @@ public interface Document<ELEMENT> {
 
 	// Access methods for various elements
 	String getScriptType(ELEMENT element);
+	
+	int getNumElements(ELEMENT element);
 }

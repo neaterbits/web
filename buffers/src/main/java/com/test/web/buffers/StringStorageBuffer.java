@@ -31,9 +31,14 @@ public class StringStorageBuffer {
 	
 	private final Map<String, Integer> map;
 	
+	public static final int NONE = 0;
+	
 	public StringStorageBuffer() {
 		this.map = new HashMap<String, Integer>();
 		this.buffer = new char[10000];
+		
+		// Start at 1 so not same as NONE
+		this.writePos = 1;
 	}
 	
 	public int add(String s) {

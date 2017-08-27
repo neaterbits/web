@@ -1,5 +1,6 @@
 package com.test.web.document._long;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,10 +12,12 @@ import com.test.web.buffers.LongBuffersIntegerIndex;
 import com.test.web.buffers.StringStorageBuffer;
 import com.test.web.document.common.Document;
 import com.test.web.io._long.LongTokenizer;
+import com.test.web.io._long.StringBuffers;
 import com.test.web.parse.html.HTMLParserListener;
 import com.test.web.parse.html.enums.HTMLAttribute;
 import com.test.web.parse.html.enums.HTMLDirection;
 import com.test.web.parse.html.enums.HTMLElement;
+import com.test.web.types.Debug;
 
 /**
  * Stores the read document as a series of compacted long-values.
@@ -34,7 +37,12 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 	implements Document<Integer>, HTMLParserListener<LongTokenizer> {
 
-	private static final int INITIAL_BUFFERS = 100;
+	private static final boolean CHECK_OVERWRITE = true;
+	private static final boolean CHECK_IS_CONTAINER = true;
+
+	private static final boolean CHECK_TEXT_OVERWRITE = true;
+
+	private final StringBuffers textBuffer;
 	
 	// Stack for position while parsing
 	private final int [] stack;
@@ -57,7 +65,14 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	private int [] elementClasses;
 	private int numElementClasses;
 	
-	public LongHTMLDocument() {
+	
+	private int rootElement;
+	
+	
+	public LongHTMLDocument(StringBuffers textBuffer) {
+		
+		this.textBuffer = textBuffer;
+		
 		this.stack = new int[100];
 		
 		this.elementById = new HashMap<>();
@@ -71,10 +86,22 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		
 		// Just reuse same buffer
 		this.accessKeyBuffer = this.contextMenuBuffer = this.langBuffer = this.titleBuffer = this.typeBuffer = new StringStorageBuffer();
+		
+		this.rootElement = LongHTML.END_OF_LIST_MARKER;
 	}
 
 
 	private void pushElement(int element) {
+		
+		if (depth == 0) {
+			
+			if (rootElement != LongHTML.END_OF_LIST_MARKER) {
+				throw new IllegalStateException("Root element already set");
+			}
+			
+			this.rootElement = element;
+		}
+		
 		if (depth == stack.length) {
 			throw new IllegalStateException("Reached max stack size: " + stack.length);
 		}
@@ -102,57 +129,159 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		
 		final int numLongs = LongHTML.elementSize(element);
 		
-		final int elementRef = allocate(numLongs);
+		final int elementRef = allocate(numLongs, element.getName());
 
-		if (depth != 0) {
-			appendElement(getCurElement(), elementRef);
-		}
-		
-		pushElement(elementRef);
-	}
-	
-	private void appendElement(int cur, int elementRef) {
 		final int elementOffset = offset(elementRef);
 		final long [] elementBuf = buf(elementRef);
 
-		// Append to current
-		final long [] curBuf = buf(cur);
-		final int curOffset = offset(cur);
+		if (LongHTML.getHeader(elementBuf, elementOffset) != 0L) {
+			throw new IllegalStateException("Header not 0 at " + elementOffset);
+		}
+
+		if (element.isContainerElement()) {
+			initHeadTail(elementBuf, elementOffset);
+		}
 		
+		if (depth != 0) {
+			final int cur = getCurElement();
+			// Append to current
+			final long [] curBuf = buf(cur);
+			final int curOffset = offset(cur);
+
+			appendElement(cur, curBuf, curOffset, elementRef, element);
+		}
+		else {
+			// Root element
+			LongHTML.setElementLast(elementBuf, elementOffset, LongHTML.END_OF_LIST_MARKER);
+			LongHTML.setElementNext(elementBuf, elementOffset, LongHTML.END_OF_LIST_MARKER);
+		}
+
+		LongHTML.setHTMLElement(elementBuf, elementOffset, element);
+		
+		if (element.isContainerElement()) {
+			pushElement(elementRef);
+		}
+	}
+
+	private void initHeadTail(long [] elementBuf, int elementOffset) {
+		LongHTML.setHead(elementBuf, elementOffset, LongHTML.END_OF_LIST_MARKER);
+		LongHTML.setTail(elementBuf, elementOffset, LongHTML.END_OF_LIST_MARKER);
+	}
+	
+	
+	private void appendElement(final int cur, final long [] curBuf, final int curOffset, final int elementRef, final HTMLElement element) {
+		final int elementOffset = offset(elementRef);
+		final long [] elementBuf = buf(elementRef);
+
+		if (Debug.DEBUG_APPEND) {
+			System.out.println("## append " + element + " at " + elementOffset + " to " + LongHTML.getHTMLElement(curBuf, curOffset) + " at " + curOffset);
+		}
+		
+		if (element == null) {
+			LongHTML.setAsText(elementBuf, elementOffset);
+		}
+
+		final long mask = element != null ? 0xFFFFFFFFFFFFFFFFL : 0x7FFFFFFFFFFFFFFFL;
+		
+		
+		if (CHECK_OVERWRITE && (LongHTML.getHeader(elementBuf, elementOffset) & mask) != 0L) {
+			throw new IllegalStateException("Header not 0");
+		}
+
+		if (CHECK_IS_CONTAINER && !LongHTML.getHTMLElement(curBuf, curOffset).isContainerElement()) {
+			throw new IllegalStateException("Not a container element at " + curOffset
+					+ ": " + LongHTML.getHTMLElement(curBuf, curOffset)
+					+ " when appending " + element);
+		}
+			
 		// ref to tail element of list, we must update this one
 		final int tail = LongHTML.getTail(curBuf, curOffset);
 		
+		if (tail == 0L) {
+			throw new IllegalStateException("tail == 0L from " + curOffset);
+		}
+		
 		if (tail == LongHTML.END_OF_LIST_MARKER) {
-			// Empty list, sets head and tail to this
+			if (Debug.DEBUG_APPEND) {
+				System.out.println("## appending to empty list");
+			}
+			
+			// Empty list, sets head and tail to this new element
 			LongHTML.setHead(curBuf, curOffset, elementRef);
 			LongHTML.setTail(curBuf, curOffset, elementRef);
 
 			LongHTML.setElementLast(elementBuf, elementOffset, LongHTML.END_OF_LIST_MARKER);
+			LongHTML.setElementNext(elementBuf, elementOffset, LongHTML.END_OF_LIST_MARKER);
 		}
 		else {
-		
 			final long [] tailBuf = buf(tail);
+			final int tailOffset = offset(tail);
 
-			LongHTML.setElementNext(tailBuf, offset(tail), elementRef);
+			// Set next ref of tail to point to this
+			LongHTML.setElementNext(tailBuf, tailOffset, elementRef);
+			
+			if (Debug.DEBUG_APPEND) {
+				System.out.println("## appending after " + tailOffset);
+			}
+
+			// Set last ref of this to point to tail
 			LongHTML.setElementLast(elementBuf, elementOffset, tail);
+			LongHTML.setElementNext(elementBuf, elementOffset, LongHTML.END_OF_LIST_MARKER);
+			
+			// Set list tail to point to this
+			LongHTML.setTail(curBuf, curOffset, elementRef);
 		}
 
-		LongHTML.setElementNext(elementBuf, elementOffset, LongHTML.END_OF_LIST_MARKER);
+		if (CHECK_OVERWRITE && (LongHTML.getHeader(elementBuf, elementOffset) & mask) != 0L) {
+			throw new IllegalStateException("Header not 0");
+		}
+
 		LongHTML.setParent(elementBuf, elementOffset, cur);
+		
+		if (CHECK_OVERWRITE && (LongHTML.getHeader(elementBuf, elementOffset) & mask) != 0L) {
+			throw new IllegalStateException("Header not 0");
+		}
 	}
 
 	@Override
 	public void onElementEnd(LongTokenizer tokenizer, HTMLElement element) {
-		popElement();
+		if (element.isContainerElement()) {
+			popElement();
+		}
 	}
 
 	@Override
-	public void onText(LongTokenizer tokentizer) {
-		final int elementRef = allocate(LongHTML.SIZE_TEXT);
+	public void onText(LongTokenizer tokenizer, int startOffset, int endSkip) {
+		final int elementRef = allocate(LongHTML.SIZE_TEXT, "text");
 		
-		appendElement(getCurElement(), elementRef);
-	}
+		final int cur = getCurElement();
+		// Append to current
+		final long [] curBuf = buf(cur);
+		final int curOffset = offset(cur);
+		
+		final HTMLElement curElement = LongHTML.getHTMLElement(curBuf, curOffset); 
 
+		if (curElement.isContainerElement()) {
+			appendElement(cur, curBuf, curOffset, elementRef, null);
+		}
+		else {
+			// Leaf element that can contain only text, add text
+			final long [] buf = buf(elementRef);
+			final int offset = offset(elementRef);
+
+			if (CHECK_TEXT_OVERWRITE && LongHTML.getLeafText(curBuf, curOffset) != 0) {
+				throw new IllegalStateException("Text already set at " + curOffset);
+			}
+			
+			LongHTML.setLeafText(curBuf, curOffset, elementRef);
+			LongHTML.setParent(buf, offset, cur);
+		}
+		
+		final int elementOffset = offset(elementRef);
+		final long [] elementBuf = buf(elementRef);
+		
+		LongHTML.setText(elementBuf, elementOffset, tokenizer.get(startOffset, endSkip));
+	}
 
 	@Override
 	public void onAttributeWithoutValue(LongTokenizer tokenizer, HTMLAttribute attribute) {
@@ -286,6 +415,16 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 
 	@Override
+	public String getId(Integer element) {
+		final int elementOffset = offset(element);
+		final long [] elementBuf = buf(element);
+
+		final int id = LongHTML.getId(elementBuf, elementOffset);
+				
+		return id == StringStorageBuffer.NONE ? null : idBuffer.getString(id);
+	}
+
+	@Override
 	public String [] getClasses(Integer element) {
 		final int elementOffset = offset(element);
 		final long [] elementBuf = buf(element);
@@ -319,5 +458,108 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		final int ref = LongHTML.getScriptType(buf(element), offset(element));
 		
 		return typeBuffer.getString(ref);
+	}
+
+
+	@Override
+	public int getNumElements(Integer element) {
+		// Not constant-time for now
+		
+		final int elementOffset = offset(element);
+		final long [] elementBuf = buf(element);
+		
+		if (!LongHTML.isElement(elementBuf, elementOffset)) {
+			throw new IllegalArgumentException("Not a HTML element: " + element);
+		}
+		
+		int count = 0;
+
+		System.out.println("\n\n");
+
+		for (int curElement = LongHTML.getHead(elementBuf, elementOffset);
+				curElement != LongHTML.END_OF_LIST_MARKER;) {
+
+			final long [] curElementBuf = buf(element);
+			final int curElementOffset = offset(curElement);
+
+			final int nextElement = LongHTML.getElementNext(curElementBuf, curElementOffset);
+
+			//System.out.println("## get next of " + curElement + ": " + nextElement);
+
+			curElement = nextElement;
+
+			++ count;
+
+			if (count > 100) {
+				break;
+			}
+		}
+		
+		return count;
+	}
+	
+	void dumpFlat(PrintStream out) {
+		dumpFlat(INITIAL_ELEMENT, out);
+	}
+	
+	void dumpFlat(int element, PrintStream out) {
+		// Start at top of buffer and iterate linearly?
+		
+		for (;;) {
+		
+			final int elementSize = dumpElement(0, element, out);
+	
+			int nextElement = element + elementSize;
+			
+			if (offset(nextElement) >= getBufferSize()) {
+				// Skipped to next buffer, rount
+				element = nextElement - (nextElement % getBufferSize());
+			}
+			else {
+				element = nextElement;
+			}
+			
+			if (element >= getWritePos()) {
+				break;
+			}
+		}
+	}
+	
+	private int dumpElement(int indent, int element, PrintStream out) {
+		final int elementOffset = offset(element);
+		final long [] elementBuf = buf(element);
+
+		final StringBuilder sb = new StringBuilder();
+
+		for (int i = 0; i < indent; ++ i) {
+			sb.append("  ");
+		}
+
+		sb.append(String.format("%08x[%d] header %016x:", System.identityHashCode(elementBuf), elementOffset, LongHTML.getHeader(elementBuf, elementOffset)));
+
+		sb.append(" ");
+		
+		final int elementSize;
+
+		if (LongHTML.isElement(elementBuf, elementOffset)) {
+			
+			final HTMLElement htmlElement = LongHTML.getHTMLElement(elementBuf, elementOffset);
+			
+			sb.append("element")
+			.append(" ")
+			.append(htmlElement);
+			
+			elementSize = LongHTML.elementSize(htmlElement);
+		}
+		else {
+			final long text = LongHTML.getText(elementBuf, element);
+			
+			sb.append(String.format(" text %016x: ", text)).append("\"").append(textBuffer.getString(text)).append("\"");	
+			elementSize = LongHTML.SIZE_TEXT;
+		}
+
+		out.println(sb.toString());
+		
+		return elementSize;
 	}
 }
