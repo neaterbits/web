@@ -33,6 +33,9 @@
 	    <module>parse-html</module>
 	    <module>document-common</module>
 	    <module>document-long</module>
+	    <module>loadqueue-common</module>
+	    <module>loadqueue-html</module>
+	    <module>testdata</module>
   </modules>
   <repositories>
 

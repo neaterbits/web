@@ -1,5 +1,7 @@
 package com.test.web.parse.html;
 
+import java.io.IOException;
+
 import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.io.common.Tokenizer;
@@ -14,9 +16,9 @@ import com.test.web.io.common.Tokenizer;
 
 public interface HTMLParserListener<TOKENIZER extends Tokenizer> {
 
-	void onElementStart(TOKENIZER tokenizer, HTMLElement element);
+	void onElementStart(TOKENIZER tokenizer, HTMLElement element) throws IOException;
 
-	void onElementEnd(TOKENIZER tokenizer, HTMLElement element);
+	void onElementEnd(TOKENIZER tokenizer, HTMLElement element) throws IOException;
 	
 	void onText(TOKENIZER tokenizer, int startOffset, int endSkip);
 	

@@ -70,6 +70,7 @@ final class LongHTML extends LongHTMLHeaderFlags {
 	
 	static final int END_OF_LIST_MARKER = 0xFFFFFFFF;
 	
+	
 	static {
 		if (IDX_HTML_CONTAINER_LAST >= SIZE_CONTAINER_ELEMENT) {
 			throw new IllegalStateException("IDX_HTML_CONTAINER_LAST >= SIZE_CONTAINER_ELEMENT");

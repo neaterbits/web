@@ -1,46 +1,41 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>com.test.web</groupId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <artifactId>root</artifactId>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.test.web</groupId>
-  <artifactId>css-long</artifactId>
+  <artifactId>loadqueue-html</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>CSS long storage code</name>
+  <name>HTML specific loadqueue code</name>
   <packaging>jar</packaging>
   <dependencies>
 
 	<dependency>
 		<groupId>com.test.web</groupId>
-		<artifactId>buffers</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<artifactId>loadqueue-common</artifactId>
+		<version>${project.version}</version>
 	</dependency>
 
 	<dependency>
 		<groupId>com.test.web</groupId>
-		<artifactId>css-common</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<artifactId>parse-html</artifactId>
+		<version>${project.version}</version>
 	</dependency>
 
-	<dependency>
-		<groupId>com.test.web</groupId>
-		<artifactId>parse-css</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</dependency>
-
-	<dependency>
-		<groupId>com.test.web</groupId>
-		<artifactId>io-long</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</dependency>
-	
 	<!-- test dependencies --> 
 
 	<dependency>
 		<groupId>com.test.web</groupId>
 		<artifactId>testdata</artifactId>
+		<version>${project.version}</version>
+		<scope>test</scope>
+	</dependency>
+
+	<dependency>
+		<groupId>com.test.web</groupId>
+		<artifactId>document-long</artifactId>
 		<version>${project.version}</version>
 		<scope>test</scope>
 	</dependency>
@@ -54,5 +49,3 @@
 
   </dependencies>
 </project>
-
-

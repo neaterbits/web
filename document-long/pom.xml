@@ -38,6 +38,13 @@
 
 	<!-- test dependencies --> 
 
+	<dependency>
+		<groupId>com.test.web</groupId>
+		<artifactId>testdata</artifactId>
+		<version>${project.version}</version>
+		<scope>test</scope>
+	</dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

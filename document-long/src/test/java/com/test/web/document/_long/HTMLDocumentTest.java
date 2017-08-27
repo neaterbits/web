@@ -1,15 +1,21 @@
 package com.test.web.document._long;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
 
 import com.test.web.document.common.HTMLElement;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.io._long.StringBuffers;
+import com.test.web.io.common.SimpleLoadStream;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.html.HTMLParser;
+import com.test.web.testdata.TestData;
 
 import junit.framework.TestCase;
 
@@ -18,33 +24,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HTMLDocumentTest extends TestCase {
 	public void testParser() throws IOException, ParserException {
 		
-		final String html =
-
-"<!DOCTYPE HTML PUBLIC \"-//W3C/DTD HTML 4.01 Frameset//EN\" \"http://w3.org/TR/html4/frameset.dtd\">" +				
-"<html>\n" +
-"<!-- a single line comment -->\n" +
-"<head>\n" +
-"  <title id=\"title_id\" class=\"title_class\">Document Title</title>\n" +
-"  <link rel=\"stylesheet\" type=\"text/css\" href=\"test_stylesheet.css\"/>\n" +
-"  <script id=\"script_id\" type=\"text/javascript\">\n" +
-"    function func() {\n" +
-"    }\n" +
-"  </script>\n" +
-"</head>\n" +
-"<!-- a \n" +
-" multi line \n" +
-" comment -->\n" +
-" <body>\n" +
-"   <div id=\"main_div\">\n" +
-"     Some text before span\n" +
-"     <span class=\"text_content\">This is a text</span>\n" +
-"     Some text after span\n" +
-"   </div>\n" +
-" </body>\n" +
-"</html>";
+		final String html = TestData.HTML;
 		
-		
-		final StringBuffers buffers = new StringBuffers(new ByteArrayInputStream(html.getBytes()));
+		final StringBuffers buffers = new StringBuffers(new SimpleLoadStream(html));
 
 		final LongHTMLDocument doc = new LongHTMLDocument(buffers);
 		
@@ -79,7 +61,7 @@ public class HTMLDocumentTest extends TestCase {
 		assertThat(doc.getLinkType(link)).isEqualTo("text/css");
 		assertThat(doc.getLinkHRef(link)).isEqualTo("test_stylesheet.css");
 	}
-	
+
 	public void testIsLFWhiteSpace() {
 		assertThat(Character.isWhitespace('\n')).isEqualTo(true);
 	}
