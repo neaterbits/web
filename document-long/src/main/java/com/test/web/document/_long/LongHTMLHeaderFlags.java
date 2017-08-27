@@ -1,7 +1,7 @@
 package com.test.web.document._long;
 
+import com.test.web.document.common.HTMLElement;
 import com.test.web.parse.html.enums.HTMLDirection;
-import com.test.web.parse.html.enums.HTMLElement;
 
 public class LongHTMLHeaderFlags extends LongHTMLBase {
 	private static final int HEADER_ELEMENT_BITS = 5;

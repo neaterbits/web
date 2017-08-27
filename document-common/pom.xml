@@ -12,6 +12,17 @@
   <packaging>jar</packaging>
   <dependencies>
 
+	<dependency>
+		<groupId>com.test.web</groupId>
+		<artifactId>types</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>com.test.web</groupId>
+		<artifactId>css-common</artifactId>
+		<version>${project.version}</version>
+	</dependency>
 
 	<!-- test dependencies --> 
 

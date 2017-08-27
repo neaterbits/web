@@ -7,16 +7,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import com.test.web.buffers.LongBuffersIntegerIndex;
 import com.test.web.buffers.StringStorageBuffer;
 import com.test.web.document.common.Document;
+import com.test.web.document.common.HTMLAttribute;
+import com.test.web.document.common.HTMLElement;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.io._long.StringBuffers;
 import com.test.web.parse.html.HTMLParserListener;
-import com.test.web.parse.html.enums.HTMLAttribute;
 import com.test.web.parse.html.enums.HTMLDirection;
-import com.test.web.parse.html.enums.HTMLElement;
 import com.test.web.types.Debug;
 
 /**
@@ -54,7 +56,9 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	private final StringStorageBuffer contextMenuBuffer;
 	private final StringStorageBuffer langBuffer;
 	private final StringStorageBuffer titleBuffer;
+	private final StringStorageBuffer relBuffer;
 	private final StringStorageBuffer typeBuffer;
+	private final StringStorageBuffer hrefBuffer;
 
 	private final Map<String, Integer> elementById;
 	private final Map<String, List<Integer>> elementsByClass;
@@ -85,7 +89,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		this.numElementClasses = 1; // Skip initial so that default encoded class value (0) never points to an index 
 		
 		// Just reuse same buffer
-		this.accessKeyBuffer = this.contextMenuBuffer = this.langBuffer = this.titleBuffer = this.typeBuffer = new StringStorageBuffer();
+		this.accessKeyBuffer = this.contextMenuBuffer = this.langBuffer = this.titleBuffer = this.relBuffer = this.typeBuffer = this.hrefBuffer = new StringStorageBuffer();
 		
 		this.rootElement = LongHTML.END_OF_LIST_MARKER;
 	}
@@ -158,9 +162,9 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 		LongHTML.setHTMLElement(elementBuf, elementOffset, element);
 		
-		if (element.isContainerElement()) {
+		//if (element.isContainerElement()) {
 			pushElement(elementRef);
-		}
+		//}
 	}
 
 	private void initHeadTail(long [] elementBuf, int elementOffset) {
@@ -245,9 +249,9 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 	@Override
 	public void onElementEnd(LongTokenizer tokenizer, HTMLElement element) {
-		if (element.isContainerElement()) {
+		//if (element.isContainerElement()) {
 			popElement();
-		}
+		//}
 	}
 
 	@Override
@@ -304,7 +308,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 
 	@Override
-	public void onAttributeWithValue(LongTokenizer tokenizer, HTMLAttribute attribute, int startOffset, int endSkip) {
+	public void onAttributeWithValue(LongTokenizer tokenizer, HTMLAttribute attribute, int startOffset, int endSkip, HTMLElement element) {
 		final int elementRef = getCurElement();
 		final int elementOffset = offset(elementRef);
 		final long [] elementBuf = buf(elementRef);
@@ -336,9 +340,43 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 			LongHTML.setDirection(elementBuf, elementOffset, tokenizer.asEnum(HTMLDirection.class, false));
 			break;
 			
+		case REL:
+			switch (element) {
+			case LINK:
+				LongHTML.setLinkRel(elementBuf, elementOffset, tokenizer.addToBuffer(relBuffer, startOffset, endSkip));
+				break;
+				
+			default:
+				throw new IllegalStateException("Unknown element " + element + " for attribute " + attribute);
+			}
+			break;
+			
 		// script type as string
 		case TYPE:
-			LongHTML.setScriptType(elementBuf, elementOffset, tokenizer.addToBuffer(typeBuffer, startOffset, endSkip));
+			switch (element) {
+			case SCRIPT:
+				LongHTML.setScriptType(elementBuf, elementOffset, tokenizer.addToBuffer(typeBuffer, startOffset, endSkip));
+				break;
+
+			case LINK:
+				LongHTML.setLinkType(elementBuf, elementOffset, tokenizer.addToBuffer(typeBuffer, startOffset, endSkip));
+				break;
+
+			default:
+				throw new IllegalStateException("Unknown element " + element + " for attribute " + attribute);
+			}
+				
+			break;
+			
+		case HREF:
+			switch (element) {
+			case LINK:
+				LongHTML.setLinkHRef(elementBuf, elementOffset, tokenizer.addToBuffer(hrefBuffer, startOffset, endSkip));
+				break;
+				
+			default:
+				throw new IllegalStateException("Unknown element " + element + " for attribute " + attribute);
+			}
 			break;
 			
 		default:
@@ -459,6 +497,30 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		
 		return typeBuffer.getString(ref);
 	}
+	
+
+	@Override
+	public String getLinkRel(Integer element) {
+		final int ref = LongHTML.getLinkRel(buf(element), offset(element));
+		
+		return relBuffer.getString(ref);
+	}
+
+
+	@Override
+	public String getLinkType(Integer element) {
+		final int ref = LongHTML.getLinkType(buf(element), offset(element));
+		
+		return typeBuffer.getString(ref);
+	}
+
+
+	@Override
+	public String getLinkHRef(Integer element) {
+		final int ref = LongHTML.getLinkHRef(buf(element), offset(element));
+		
+		return hrefBuffer.getString(ref);
+	}
 
 
 	@Override
@@ -497,17 +559,35 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		
 		return count;
 	}
-	
-	void dumpFlat(PrintStream out) {
-		dumpFlat(INITIAL_ELEMENT, out);
+
+	@FunctionalInterface
+	interface ElementVisitor {
+		void onElement(int ref, long [] buf, int offset, HTMLElement type);
 	}
 	
-	void dumpFlat(int element, PrintStream out) {
-		// Start at top of buffer and iterate linearly?
-		
+	private void foreEachElement(ElementVisitor visitor) {
+		foreEachElement(INITIAL_ELEMENT, visitor);
+	}
+
+	private void foreEachElement(int element, ElementVisitor visitor) {
 		for (;;) {
-		
-			final int elementSize = dumpElement(0, element, out);
+			final int elementOffset = offset(element);
+			final long [] elementBuf = buf(element);
+			
+			
+			final int elementSize;
+			if (LongHTML.isElement(elementBuf, elementOffset)) {
+				final HTMLElement type = LongHTML.getHTMLElement(elementBuf, elementOffset);
+				
+				elementSize = LongHTML.elementSize(type);
+
+				visitor.onElement(element, elementBuf, elementOffset, type);
+			}
+			else {
+				elementSize = LongHTML.SIZE_TEXT;
+				
+				visitor.onElement(element, elementBuf, elementOffset, null);
+			}
 	
 			int nextElement = element + elementSize;
 			
@@ -525,9 +605,16 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		}
 	}
 	
-	private int dumpElement(int indent, int element, PrintStream out) {
-		final int elementOffset = offset(element);
-		final long [] elementBuf = buf(element);
+	void dumpFlat(PrintStream out) {
+		dumpFlat(INITIAL_ELEMENT, out);
+	}
+	
+	void dumpFlat(int element, PrintStream out) {
+		// Start at top of buffer and iterate linearly?
+		foreEachElement(element, (ref, buf, offset, type) -> dumpElement(0, buf, offset, type, out));
+	}
+	
+	private void dumpElement(int indent, long [] elementBuf, int elementOffset, HTMLElement type, PrintStream out) {
 
 		final StringBuilder sb = new StringBuilder();
 
@@ -543,7 +630,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 		if (LongHTML.isElement(elementBuf, elementOffset)) {
 			
-			final HTMLElement htmlElement = LongHTML.getHTMLElement(elementBuf, elementOffset);
+			final HTMLElement htmlElement = type;
 			
 			sb.append("element")
 			.append(" ")
@@ -552,14 +639,28 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 			elementSize = LongHTML.elementSize(htmlElement);
 		}
 		else {
-			final long text = LongHTML.getText(elementBuf, element);
+			final long text = LongHTML.getText(elementBuf, elementOffset);
 			
 			sb.append(String.format(" text %016x: ", text)).append("\"").append(textBuffer.getString(text)).append("\"");	
 			elementSize = LongHTML.SIZE_TEXT;
 		}
 
 		out.println(sb.toString());
+	}
+
+
+	@Override
+	public List<Integer> getElementsWithType(HTMLElement type) {
 		
-		return elementSize;
+		final List<Integer> ret = new ArrayList<>();
+		
+		foreEachElement((ref, buf, offset, t) -> {
+			if (type == t) {
+				ret.add(ref);
+			}
+		});
+		
+		// Iterate all elements and collect those of type
+		return ret;
 	}
 }

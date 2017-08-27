@@ -1,7 +1,7 @@
 package com.test.web.document._long;
 
+import com.test.web.document.common.HTMLElement;
 import com.test.web.parse.html.enums.HTMLDirection;
-import com.test.web.parse.html.enums.HTMLElement;
 
 /**
  * Helper class for indexing attributes for HTML elements
@@ -259,12 +259,44 @@ final class LongHTML extends LongHTMLHeaderFlags {
 		return getUpper32(buf, offset + IDX_SCRIPT_TYPE);
 	}
 
+	private static final int IDX_LINK_REL_TYPE = SIZE_LEAF_ELEMENT;
+	private static final int IDX_LINK_HREF = SIZE_LEAF_ELEMENT + 1;
+	private static final int SIZE_LINK_ELEMENT = SIZE_LEAF_ELEMENT + 2;
+
+	static void setLinkRel(long [] buf, int offset, int rel) {
+		setUpper32(buf, offset + IDX_LINK_REL_TYPE, rel);
+	}
+
+	static int getLinkRel(long [] buf, int offset) {
+		return getUpper32(buf, offset + IDX_LINK_REL_TYPE);
+	}
+
+	static void setLinkType(long [] buf, int offset, int type) {
+		setLower32(buf, offset + IDX_LINK_REL_TYPE, type);
+	}
+
+	static int getLinkType(long [] buf, int offset) {
+		return getLower32(buf, offset + IDX_LINK_REL_TYPE);
+	}
+
+	static void setLinkHRef(long [] buf, int offset, int rel) {
+		setUpper32(buf, offset + IDX_LINK_HREF, rel);
+	}
+
+	static int getLinkHRef(long [] buf, int offset) {
+		return getUpper32(buf, offset + IDX_LINK_HREF);
+	}
+
 	static int elementSize(HTMLElement element) {
 		final int ret;
 		
 		switch (element) {
 		case SCRIPT:
 			ret = LongHTML.SIZE_SCRIPT_ELEMENT;
+			break;
+
+		case LINK:
+			ret = LongHTML.SIZE_LINK_ELEMENT;
 			break;
 			
 		default:

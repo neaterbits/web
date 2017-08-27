@@ -1,8 +1,8 @@
 package com.test.web.parse.html;
 
+import com.test.web.document.common.HTMLAttribute;
+import com.test.web.document.common.HTMLElement;
 import com.test.web.io.common.Tokenizer;
-import com.test.web.parse.html.enums.HTMLAttribute;
-import com.test.web.parse.html.enums.HTMLElement;
 
 /**
  * Parser listener that calls onto model as we are parsing along the input document 
@@ -22,7 +22,7 @@ public interface HTMLParserListener<TOKENIZER extends Tokenizer> {
 	
 	void onAttributeWithoutValue(TOKENIZER tokenizer, HTMLAttribute attribute);
 
-	void onAttributeWithValue(TOKENIZER tokenizer, HTMLAttribute attribute, int startOffset, int endSkip);
+	void onAttributeWithValue(TOKENIZER tokenizer, HTMLAttribute attribute, int startOffset, int endSkip, HTMLElement element);
 
 	void onClassAttributeValue(TOKENIZER tokenizer, int startOffset, int endSkip);
 

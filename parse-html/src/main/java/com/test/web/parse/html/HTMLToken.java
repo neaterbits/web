@@ -1,13 +1,13 @@
 package com.test.web.parse.html;
 
+import com.test.web.document.common.HTMLAttribute;
+import com.test.web.document.common.HTMLElement;
 import com.test.web.parse.common.CharType;
 import com.test.web.parse.common.CharTypeWS;
 import com.test.web.parse.common.IToken;
 import com.test.web.parse.common.TokenType;
 import com.test.web.parse.css.CharTypeHTMLElementClass;
 import com.test.web.parse.css.CharTypeHTMLElementTag;
-import com.test.web.parse.html.enums.HTMLAttribute;
-import com.test.web.parse.html.enums.HTMLElement;
 
 public enum HTMLToken implements IToken {
 
@@ -41,6 +41,7 @@ public enum HTMLToken implements IToken {
 	HTML(HTMLElement.HTML),
 	HEAD(HTMLElement.HEAD),
 	TITLE(HTMLElement.TITLE),
+	LINK(HTMLElement.LINK),
 	SCRIPT(HTMLElement.SCRIPT),
 	BODY(HTMLElement.BODY),
 	DIV(HTMLElement.DIV),
@@ -71,7 +72,9 @@ public enum HTMLToken implements IToken {
 	ATTR_TITLE(HTMLAttribute.TITLE),
 	
 	STYLE(HTMLAttribute.STYLE),
+	REL(HTMLAttribute.REL),
 	TYPE(HTMLAttribute.TYPE),
+	HREF(HTMLAttribute.HREF),
 	
 	CLASS_NAME(CharTypeHTMLElementClass.INSTANCE),
 	ANY_TAG(CharTypeHTMLElementTag.INSTANCE)

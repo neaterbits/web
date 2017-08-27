@@ -1,4 +1,5 @@
-package com.test.web.parse.html.enums;
+package com.test.web.document.common;
+
 
 /**
  * All known HTML elements
@@ -13,6 +14,7 @@ public enum HTMLElement {
 	HEAD("head", true),
 	BODY("body", true),
 	TITLE("title", false),
+	LINK("link", false, HTMLAttribute.REL, HTMLAttribute.TYPE, HTMLAttribute.HREF),
 	SCRIPT("script", false, HTMLAttribute.TYPE),
 	DIV("div", true),
 	SPAN("span", true),

@@ -1,4 +1,4 @@
-package com.test.web.parse.html.enums;
+package com.test.web.document.common;
 
 import com.test.web.css.common.CSStyle;
 import com.test.web.types.IEnum;
@@ -36,7 +36,9 @@ public enum HTMLAttribute implements IKeyValue {
 	
 	STYLE("style", true, CSStyle.class),
 	
-	TYPE("type", false, ValueType.ONE);
+	REL("rel", false, ValueType.ONE),
+	TYPE("type", false, ValueType.ONE),
+	HREF("href", false, ValueType.ONE);
 	// 
 	private final String name;
 	private final boolean global;

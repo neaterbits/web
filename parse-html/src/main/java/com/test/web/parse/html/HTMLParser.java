@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
 
+import com.test.web.document.common.HTMLElement;
 import com.test.web.io.common.CharInput;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.BaseParser;
@@ -115,18 +116,34 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 					final HTMLToken [] attributeTokens = tagToken.getAttributeTokens();
 					
 					if (attributeTokens != null && attributeTokens.length > 0) {
-						parseTagAttributes(attributeTokens);
+						switch (parseTagAttributes(tagToken.getElement(), attributeTokens)) {
+						// In '/' then this is start and end tag in one 
+						case TAG_SLASH:
+							if (lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
+								throw lexer.unexpectedToken();
+							}
+							debugExit(tagToken.getElement().getName());
+
+							listener.onElementEnd(tokenizer, tagToken.getElement());
+							break;
+							
+						case TAG_GREATER_THAN:
+							// End of tag, just exit loop with start tag
+							found = tagToken;
+							break;
+							
+						default:
+							throw lexer.unexpectedToken();
+						}
 						
 						// Already skipped '>' or '/>' as part of attribute parsing
 					}
 					else {
-						
 						// This was start of sub-tag, skip '>'
 						if (lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
 							throw lexer.unexpectedToken();
 						}
 					}
-
 					found = tagToken;
 					break;
 				}
@@ -258,7 +275,7 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 		boolean done = false;
 		
 		do {
-			switch (endTagOrSub(HTMLToken.HEAD, false, HTMLToken.TITLE, HTMLToken.SCRIPT)) {
+			switch (endTagOrSub(HTMLToken.HEAD, false, HTMLToken.TITLE, HTMLToken.LINK, HTMLToken.SCRIPT)) {
 
 			case TITLE:
 				parseText(HTMLToken.TITLE);
@@ -266,6 +283,9 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 
 			case SCRIPT:
 				parseText(HTMLToken.SCRIPT);
+				break;
+				
+			case LINK:
 				break;
 
 			case TAG_END:
@@ -332,7 +352,7 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 		} while (!done);
 	}
 	
-	private HTMLToken parseTagAttributes(HTMLToken ... attributes) throws IOException, ParserException {
+	private HTMLToken parseTagAttributes(HTMLElement element, HTMLToken ... attributes) throws IOException, ParserException {
 
 		// Look for any attributes or for tag start
 		final HTMLToken [] tokens = Arrays.copyOf(attributes, attributes.length + 3);
@@ -377,7 +397,7 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 
 			default:
 				// This should be an attribute as is not any of the other tokens
-				parseAttribute(token);
+				parseAttribute(token, element);
 				break;
 			}
 		}
@@ -407,7 +427,7 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 
 	// Common attribute parser for any input attribute
 	
-	private void parseAttribute(HTMLToken attributeToken) throws IOException, ParserException {
+	private void parseAttribute(HTMLToken attributeToken, HTMLElement element) throws IOException, ParserException {
 		
 		// Attribute may have value, depending
 		boolean done = false;
@@ -420,7 +440,7 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 				break;
 
 			case EQUALS:
-				parseAttributeValue(attributeToken);
+				parseAttributeValue(attributeToken, element);
 				done = true;
 				break;
 
@@ -436,14 +456,14 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 		} while (!done);
 	}
 
-	private void parseAttributeValue(HTMLToken attributeToken) throws IOException, ParserException {
+	private void parseAttributeValue(HTMLToken attributeToken, HTMLElement element) throws IOException, ParserException {
 		
 		HTMLToken token = lexSkipWS(HTMLToken.QUOTED_STRING);
 		
 		switch (token) {
 		case QUOTED_STRING:
 			// Read until end of quote or whitespace
-			listener.onAttributeWithValue(tokenizer, attributeToken.getAttribute(), 1, 1);
+			listener.onAttributeWithValue(tokenizer, attributeToken.getAttribute(), 1, 1, element);
 			break;
 			
 		default:
@@ -544,5 +564,9 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 		if (token != HTMLToken.TAG_GREATER_THAN) {
 			throw lexer.unexpectedToken();
 		}
+
+		debugExit(elementToken.getElement().getName());
+
+		listener.onElementEnd(tokenizer, elementToken.getElement());
 	}
 }

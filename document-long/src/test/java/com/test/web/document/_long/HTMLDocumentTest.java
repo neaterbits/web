@@ -3,7 +3,9 @@ package com.test.web.document._long;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
+import com.test.web.document.common.HTMLElement;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.io._long.StringBuffers;
 import com.test.web.parse.common.ParserException;
@@ -23,6 +25,7 @@ public class HTMLDocumentTest extends TestCase {
 "<!-- a single line comment -->\n" +
 "<head>\n" +
 "  <title id=\"title_id\" class=\"title_class\">Document Title</title>\n" +
+"  <link rel=\"stylesheet\" type=\"text/css\" href=\"test_stylesheet.css\"/>\n" +
 "  <script id=\"script_id\" type=\"text/javascript\">\n" +
 "    function func() {\n" +
 "    }\n" +
@@ -66,6 +69,15 @@ public class HTMLDocumentTest extends TestCase {
 		assertThat(doc.getId(mainDiv)).isEqualTo("main_div");
 		
 		assertThat(doc.getNumElements(mainDiv)).isEqualTo(3);
+		
+		final List<Integer> links = doc.getElementsWithType(HTMLElement.LINK);
+		
+		assertThat(links.size()).isEqualTo(1);
+		final Integer link = links.get(0);
+		
+		assertThat(doc.getLinkRel(link)).isEqualTo("stylesheet");
+		assertThat(doc.getLinkType(link)).isEqualTo("text/css");
+		assertThat(doc.getLinkHRef(link)).isEqualTo("test_stylesheet.css");
 	}
 	
 	public void testIsLFWhiteSpace() {

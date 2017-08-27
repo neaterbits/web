@@ -101,13 +101,21 @@ public class StringStorageBuffer {
 	
 	
 	public String getString(int ref) {
+		if (ref > writePos) {
+			throw new IllegalArgumentException("ref > writePos");
+		}
+		
+		if (ref == NONE) {
+			throw new IllegalArgumentException("ref == NONE");
+		}
+		
 		for (int i = ref; ; ++ i) {
 			final char c = buffer[i];
 			
 			if (c == '\0') {
 				// 0-termination
 				if (i == 0) {
-					throw new IllegalStateException("empty string");
+					throw new IllegalStateException("empty string for ref " + ref);
 				}
 				
 				return new String(buffer, ref, i - ref);

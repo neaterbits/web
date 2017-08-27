@@ -17,8 +17,14 @@ public interface Document<ELEMENT> {
 	
 	List<ELEMENT> getElementsWithClass(String _class);
 
+	int getNumElements(ELEMENT element);
+
+	List<ELEMENT> getElementsWithType(HTMLElement type);
+
 	// Access methods for various elements
 	String getScriptType(ELEMENT element);
-	
-	int getNumElements(ELEMENT element);
+
+	String getLinkRel(ELEMENT element);
+	String getLinkType(ELEMENT element);
+	String getLinkHRef(ELEMENT element);
 }
