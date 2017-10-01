@@ -34,6 +34,14 @@ public interface ICSSDocument<TARGET> {
 	
 	boolean isSet(TARGET ref, CSStyle style);
 	
+	int getLeft(TARGET ref);
+	
+	CSSUnit getLeftUnit(TARGET ref);
+
+	int getTop(TARGET ref);
+	
+	CSSUnit getTopUnit(TARGET ref);
+	
 	int getWidth(TARGET ref);
 	
 	CSSUnit getWidthUnit(TARGET ref);

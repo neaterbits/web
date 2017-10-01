@@ -100,6 +100,26 @@ public final class LongCSSDocument extends LongBuffersIntegerIndex implements CS
 	public Integer get(CSSTarget target, String targetName) {
 		return getMap(target).get(targetName);
 	}
+	
+	@Override
+	public int getLeft(Integer ref) {
+		return LongCSS.getLeft(buf(ref), offset(ref));
+	}
+
+	@Override
+	public CSSUnit getLeftUnit(Integer ref) {
+		return LongCSS.getLeftUnit(buf(ref), offset(ref));
+	}
+
+	@Override
+	public int getTop(Integer ref) {
+		return LongCSS.getTop(buf(ref), offset(ref));
+	}
+
+	@Override
+	public CSSUnit getTopUnit(Integer ref) {
+		return LongCSS.getTopUnit(buf(ref), offset(ref));
+	}
 
 	@Override
 	public int getWidth(Integer ref) {
@@ -214,6 +234,16 @@ public final class LongCSSDocument extends LongBuffersIntegerIndex implements CS
 	@Override
 	public void onEntityEnd(Void context) {
 		// Nothing to do as write pos in buffer was already advanced
+	}
+
+	@Override
+	public void onLeft(Void context, int left, CSSUnit unit) {
+		LongCSS.addLeft(buf(curParseElement), offset(curParseElement), left, unit);
+	}
+
+	@Override
+	public void onTop(Void context, int top, CSSUnit unit) {
+		LongCSS.addTop(buf(curParseElement), offset(curParseElement), top, unit);
 	}
 
 	@Override

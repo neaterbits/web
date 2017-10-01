@@ -67,9 +67,10 @@ public class LongCSS extends BufferUtil {
 
 	private static final int IDX_STYLES = 0; // Which styles are enabled
 	private static final int IDX_FLAGS = 1; // various flags (display, text-align, ...)
-	private static final int IDX_DIMENSIONS = 2; // width/height
-	private static final int IDX_MARGIN = 3;
-	private static final int IDX_PADDING = 4;
+	private static final int IDX_POSITION = 2; // left/top
+	private static final int IDX_DIMENSIONS = 3; // width/height
+	private static final int IDX_MARGIN = 4;
+	private static final int IDX_PADDING = 5;
 	
 	private static final int NUM_COMPACT = IDX_PADDING + 1;
 	
@@ -102,10 +103,10 @@ public class LongCSS extends BufferUtil {
 	private static final int OVERFLOW_BITS = 3;
 	
 	
-	private static final int DISPLAY_SHIFT 	= POSITION_BITS + TEXT_ALIGN_BITS + FLOAT_BITS + OVERFLOW_BITS;
-	private static final int POSITION_SHIFT = 				  TEXT_ALIGN_BITS + FLOAT_BITS + OVERFLOW_BITS;
-	private static final int TEXT_ALIGN_SHIFT = 				  		        FLOAT_BITS + OVERFLOW_BITS;
-	private static final int FLOAT_SHIFT = 				  		        					 OVERFLOW_BITS;
+	private static final int DISPLAY_SHIFT 		= POSITION_BITS + TEXT_ALIGN_BITS + FLOAT_BITS + OVERFLOW_BITS;
+	private static final int POSITION_SHIFT  		= 				                TEXT_ALIGN_BITS + FLOAT_BITS + OVERFLOW_BITS;
+	private static final int TEXT_ALIGN_SHIFT 	= 				  		        							 	 FLOAT_BITS + OVERFLOW_BITS;
+	private static final int FLOAT_SHIFT 			= 				  		        					 									OVERFLOW_BITS;
 	private static final int OVERFLOW_SHIFT = 0;
 
 	private static final int DISPLAY_MASK 		= ((1 << DISPLAY_BITS 		+ 1) - 1) << DISPLAY_SHIFT;
@@ -130,6 +131,12 @@ public class LongCSS extends BufferUtil {
 	
 	
 	private static final int UNIT_BITS = 2;
+
+	private static final int LEFT_BITS = 30;
+	private static final int TOP_BITS = 30;
+
+	private static final int LEFT_MAX = max(LEFT_BITS);
+	private static final int TOP_MAX = max(TOP_BITS);
 	
 	private static final int WITDH_BITS = 30;
 	private static final int HEIGHT_BITS = 30;
@@ -309,6 +316,33 @@ public class LongCSS extends BufferUtil {
 		getJustify(buf[offset + IDX_PADDING], setter, param);
 	}
 
+	public static void addLeft(long [] buf, int offset, int left, CSSUnit unit) {
+		
+		if (left > LEFT_MAX) {
+			throw new IllegalArgumentException("left > LEFT_MAX: " + left);
+		}
+		
+		addStyle(CSStyle.LEFT, buf, offset);
+		
+		long encoded =((long)left) << (UNIT_BITS + TOP_BITS + UNIT_BITS) | ((long)unit.ordinal()) << (TOP_BITS + UNIT_BITS); 
+		
+		buf[offset + IDX_POSITION] |= encoded;
+	}
+
+	public static void addTop(long [] buf, int offset, int top, CSSUnit unit) {
+
+		if (top > TOP_MAX) {
+			throw new IllegalArgumentException("top > TOP_MAX: " + top);
+		}
+		
+		addStyle(CSStyle.TOP, buf, offset);
+		
+		long encoded = ((long)top) << UNIT_BITS | ((long)unit.ordinal());
+		
+		buf[offset + IDX_POSITION] |= encoded; 
+	}
+
+	
 	public static void addWidth(long [] buf, int offset, int width, CSSUnit unit) {
 		
 		if (width > WIDTH_MAX) {
@@ -333,6 +367,30 @@ public class LongCSS extends BufferUtil {
 		long encoded = ((long)height) << UNIT_BITS | ((long)unit.ordinal());
 		
 		buf[offset + IDX_DIMENSIONS] |= encoded; 
+	}
+
+	public static int getLeft(long [] buf, int offset) {
+		final long left = buf[offset + IDX_POSITION] >> (UNIT_BITS  + TOP_BITS + UNIT_BITS);
+		
+		return (int)left;
+	}
+
+	public static CSSUnit getLeftUnit(long [] buf, int offset) {
+		final int ordinal = (int)((buf[offset + IDX_POSITION] >> (TOP_BITS + UNIT_BITS)) & ((1 << UNIT_BITS) - 1));
+
+		return CSSUnit.values()[ordinal];
+	}
+
+	public static int getTop(long [] buf, int offset) {
+		final long top = buf[offset + IDX_POSITION] >> (UNIT_BITS) & ((1 << TOP_BITS) - 1);
+		
+		return (int)top;
+	}
+
+	public static CSSUnit getTopUnit(long [] buf, int offset) {
+		final int ordinal = (int)(buf[offset + 1] & ((1 << UNIT_BITS) - 1));
+		
+		return CSSUnit.values()[ordinal];
 	}
 
 	public static int getWidth(long [] buf, int offset) {

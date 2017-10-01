@@ -11,6 +11,9 @@ import com.test.web.types.ValueType;
 
 public enum CSStyle implements IKeyValueList {
 	
+	LEFT("left", ValueType.ONE),
+	TOP("top", ValueType.ONE),
+	
 	WIDTH("width", ValueType.ONE),
 	HEIGHT("height", ValueType.ONE),
 	
