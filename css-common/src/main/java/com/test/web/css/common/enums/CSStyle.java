@@ -1,4 +1,4 @@
-package com.test.web.css.common;
+package com.test.web.css.common.enums;
 
 import com.test.web.types.IKeyValueList;
 import com.test.web.types.ValueType;

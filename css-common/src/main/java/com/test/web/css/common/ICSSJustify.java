@@ -1,5 +1,8 @@
 package com.test.web.css.common;
 
+import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.css.common.enums.CSSJustify;
+
 /**
  * For reading back CSS justify values back from buffer 
  * 
@@ -12,9 +15,9 @@ package com.test.web.css.common;
 public interface ICSSJustify<PARAM> {
 
 	void set(PARAM param,
-			int top, CSSUnit topUnit, Justify topType, 
-			int right, CSSUnit rightUnit, Justify rightType,
-			int bottom, CSSUnit bottomUnit, Justify bottomType,
-			int left, CSSUnit leftUnit, Justify leftType);
+			int top, CSSUnit topUnit, CSSJustify topType, 
+			int right, CSSUnit rightUnit, CSSJustify rightType,
+			int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
+			int left, CSSUnit leftUnit, CSSJustify leftType);
 	
 }

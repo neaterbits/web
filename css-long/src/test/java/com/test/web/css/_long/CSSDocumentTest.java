@@ -3,18 +3,18 @@ package com.test.web.css._long;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import com.test.web.css.common.CSSFloat;
-import com.test.web.css.common.CSSTarget;
-import com.test.web.css.common.CSSUnit;
-import com.test.web.css.common.CSStyle;
 import com.test.web.css.common.ICSSJustify;
-import com.test.web.css.common.Justify;
+import com.test.web.css.common.enums.CSSFloat;
+import com.test.web.css.common.enums.CSSPosition;
+import com.test.web.css.common.enums.CSSTarget;
+import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.css.common.enums.CSStyle;
+import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.io._long.StringBuffers;
 import com.test.web.io.common.SimpleLoadStream;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser;
-import com.test.web.parse.css.CSSPosition;
 import com.test.web.testdata.TestData;
 
 import junit.framework.TestCase;
@@ -68,11 +68,11 @@ public class CSSDocumentTest extends TestCase {
 		
 		assertThat(margins.left).isEqualTo(10);
 		assertThat(margins.leftUnit).isEqualTo(CSSUnit.PX);
-		assertThat(margins.leftType).isEqualTo(Justify.SIZE);
+		assertThat(margins.leftType).isEqualTo(CSSJustify.SIZE);
 		
-		assertThat(margins.rightType).isEqualTo(Justify.AUTO);
-		assertThat(margins.topType).isEqualTo(Justify.NONE);
-		assertThat(margins.bottomType).isEqualTo(Justify.NONE);
+		assertThat(margins.rightType).isEqualTo(CSSJustify.AUTO);
+		assertThat(margins.topType).isEqualTo(CSSJustify.NONE);
+		assertThat(margins.bottomType).isEqualTo(CSSJustify.NONE);
 
 		final int classRef = doc.get(CSSTarget.CLASS, "a_class");
 		assertThat(doc.isSet(classRef, CSStyle.POSITION)).isTrue();
@@ -89,33 +89,33 @@ public class CSSDocumentTest extends TestCase {
 
 		assertThat(padding.top).isEqualTo(30);
 		assertThat(padding.topUnit).isEqualTo(CSSUnit.PX);
-		assertThat(padding.topType).isEqualTo(Justify.SIZE);
+		assertThat(padding.topType).isEqualTo(CSSJustify.SIZE);
 	}
 	
 	private static class TestCSSJustify implements ICSSJustify<Void> {
 
 		int top;
 		CSSUnit topUnit;
-		Justify topType;
+		CSSJustify topType;
 		
 		int right;
 		CSSUnit rightUnit;
-		Justify rightType;
+		CSSJustify rightType;
 		
 		int bottom;
 		CSSUnit bottomUnit;
-		Justify bottomType;
+		CSSJustify bottomType;
 		
 		int left;
 		CSSUnit leftUnit;
-		Justify leftType;
+		CSSJustify leftType;
 		
 		@Override
 		public void set(Void param,
-				int top, CSSUnit topUnit, Justify topType,
-				int right, CSSUnit rightUnit, Justify rightType,
-				int bottom, CSSUnit bottomUnit, Justify bottomType,
-				int left, CSSUnit leftUnit, Justify leftType) {
+				int top, CSSUnit topUnit, CSSJustify topType,
+				int right, CSSUnit rightUnit, CSSJustify rightType,
+				int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
+				int left, CSSUnit leftUnit, CSSJustify leftType) {
 			
 			this.top = top;
 			this.topUnit = topUnit;

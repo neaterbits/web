@@ -1,15 +1,18 @@
 package com.test.web.parse.css;
 
+import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.css.common.enums.CSSFloat;
+import com.test.web.css.common.enums.CSSOverflow;
+import com.test.web.css.common.enums.CSSPosition;
+import com.test.web.css.common.enums.CSSTextAlign;
+import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.css.common.enums.CSStyle;
 import com.test.web.parse.common.CharType;
 import com.test.web.parse.common.CharTypeHexDigit;
 import com.test.web.parse.common.CharTypeInteger;
 import com.test.web.parse.common.CharTypeWS;
 import com.test.web.parse.common.IToken;
 import com.test.web.parse.common.TokenType;
-import com.test.web.css.common.CSSDisplay;
-import com.test.web.css.common.CSSFloat;
-import com.test.web.css.common.CSSUnit;
-import com.test.web.css.common.CSStyle;
 
 public enum CSSToken implements IToken {
 	NONE(TokenType.NONE),

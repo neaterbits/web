@@ -1,10 +1,10 @@
 package com.test.web.parse.css;
 
-import com.test.web.css.common.CSSUnit;
-import com.test.web.css.common.Justify;
+import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.css.common.enums.CSSJustify;
 
 interface IJustifyFunction {
 
-	void onJustify(int size, CSSUnit unit, Justify justify);
+	void onJustify(int size, CSSUnit unit, CSSJustify justify);
 	
 }

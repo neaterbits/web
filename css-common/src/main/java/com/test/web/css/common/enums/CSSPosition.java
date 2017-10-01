@@ -1,4 +1,4 @@
-package com.test.web.parse.css;
+package com.test.web.css.common.enums;
 
 public enum CSSPosition {
 

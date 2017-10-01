@@ -1,6 +1,6 @@
 package com.test.web.document.common;
 
-import com.test.web.css.common.CSStyle;
+import com.test.web.css.common.enums.CSStyle;
 import com.test.web.types.IEnum;
 import com.test.web.types.IKeyValue;
 import com.test.web.types.IKeyValueList;

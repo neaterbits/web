@@ -5,18 +5,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.test.web.buffers.LongBuffersIntegerIndex;
-import com.test.web.css.common.CSSDisplay;
-import com.test.web.css.common.CSSFloat;
-import com.test.web.css.common.CSSTarget;
-import com.test.web.css.common.CSSUnit;
-import com.test.web.css.common.CSStyle;
+import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.ICSSJustify;
-import com.test.web.css.common.Justify;
+import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.css.common.enums.CSSFloat;
+import com.test.web.css.common.enums.CSSOverflow;
+import com.test.web.css.common.enums.CSSPosition;
+import com.test.web.css.common.enums.CSSTarget;
+import com.test.web.css.common.enums.CSSTextAlign;
+import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.css.common.enums.CSStyle;
+import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.io._long.LongTokenizer;
-import com.test.web.parse.css.CSSOverflow;
 import com.test.web.parse.css.CSSParserListener;
-import com.test.web.parse.css.CSSPosition;
-import com.test.web.parse.css.CSSTextAlign;
 
 /***
  * For storing and accessing a CSS document, encoding in arrays of long [] for less GC and memory churn
@@ -227,20 +228,20 @@ public final class LongCSSDocument extends LongBuffersIntegerIndex implements CS
 
 	@Override
 	public void onMargin(Void context,
-			int top, CSSUnit topUnit, Justify topType,
-			int right, CSSUnit rightUnit, Justify rightType,
-			int bottom, CSSUnit bottomUnit, Justify bottomType,
-			int left, CSSUnit leftUnit, Justify leftType) {
+			int top, CSSUnit topUnit, CSSJustify topType,
+			int right, CSSUnit rightUnit, CSSJustify rightType,
+			int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
+			int left, CSSUnit leftUnit, CSSJustify leftType) {
 		
 		LongCSS.setMargin(buf(curParseElement), offset(curParseElement), top, topUnit, topType, right, rightUnit, rightType, bottom, bottomUnit, bottomType, left, leftUnit, leftType);
 	}
 
 	@Override
 	public void onPadding(Void context,
-			int top, CSSUnit topUnit, Justify topType,
-			int right, CSSUnit rightUnit, Justify rightType,
-			int bottom, CSSUnit bottomUnit, Justify bottomType,
-			int left, CSSUnit leftUnit, Justify leftType) {
+			int top, CSSUnit topUnit, CSSJustify topType,
+			int right, CSSUnit rightUnit, CSSJustify rightType,
+			int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
+			int left, CSSUnit leftUnit, CSSJustify leftType) {
 		
 		LongCSS.setPadding(buf(curParseElement), offset(curParseElement), top, topUnit, topType, right, rightUnit, rightType, bottom, bottomUnit, bottomType, left, leftUnit, leftType);
 	}

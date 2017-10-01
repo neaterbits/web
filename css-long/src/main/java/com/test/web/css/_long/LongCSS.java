@@ -1,14 +1,14 @@
 package com.test.web.css._long;
 
-import com.test.web.css.common.CSSUnit;
-import com.test.web.css.common.CSStyle;
 import com.test.web.css.common.ICSSJustify;
-import com.test.web.css.common.Justify;
-import com.test.web.parse.css.CSSOverflow;
-import com.test.web.parse.css.CSSPosition;
-import com.test.web.parse.css.CSSTextAlign;
-import com.test.web.css.common.CSSDisplay;
-import com.test.web.css.common.CSSFloat;
+import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.css.common.enums.CSSFloat;
+import com.test.web.css.common.enums.CSSOverflow;
+import com.test.web.css.common.enums.CSSPosition;
+import com.test.web.css.common.enums.CSSTextAlign;
+import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.css.common.enums.CSStyle;
+import com.test.web.css.common.enums.CSSJustify;
 
 import static com.test.web.buffers.BitOperations.max;
 
@@ -58,11 +58,11 @@ public class LongCSS extends BufferUtil {
 		return maskToInt(l, shiftBits, 1) != 0;
 	}
 	
-	private static Justify maskToJustify(long l, int shiftBits) {
+	private static CSSJustify maskToJustify(long l, int shiftBits) {
 
 		final int ordinal = maskToInt(l, shiftBits, 2);
 		
-		return Justify.values()[ordinal];
+		return CSSJustify.values()[ordinal];
 	}
 
 	private static final int IDX_STYLES = 0; // Which styles are enabled
@@ -189,34 +189,34 @@ public class LongCSS extends BufferUtil {
 		
 		final int top 			= maskToInt(encoded, JUSTIFY_TOP_SHIFT, JUSTIFY_SIZE_BITS);
 		final CSSUnit topUnit 	= maskToUnit(encoded, JUSTIFY_TOP_UNIT, UNIT_BITS);
-		final Justify topJustify 	= maskToJustify(encoded, JUSTIFY_TOP_TYPE);
+		final CSSJustify topJustify 	= maskToJustify(encoded, JUSTIFY_TOP_TYPE);
 
 		final int right 		= maskToInt(encoded, JUSTIFY_RIGHT_SHIFT, JUSTIFY_SIZE_BITS);
 		final CSSUnit rightUnit = maskToUnit(encoded, JUSTIFY_RIGHT_UNIT, UNIT_BITS);
-		final Justify rightJustify = maskToJustify(encoded, JUSTIFY_RIGHT_TYPE);
+		final CSSJustify rightJustify = maskToJustify(encoded, JUSTIFY_RIGHT_TYPE);
 
 		final int bottom 			= maskToInt(encoded, JUSTIFY_BOTTOM_SHIFT, JUSTIFY_SIZE_BITS);
 		final CSSUnit bottomUnit 	= maskToUnit(encoded, JUSTIFY_BOTTOM_UNIT, UNIT_BITS);
-		final Justify bottomJustify 	= maskToJustify(encoded, JUSTIFY_BOTTOM_TYPE);
+		final CSSJustify bottomJustify 	= maskToJustify(encoded, JUSTIFY_BOTTOM_TYPE);
 		
 		final int left 			= maskToInt(encoded, JUSTIFY_LEFT_SHIFT, JUSTIFY_SIZE_BITS);
 		final CSSUnit leftUnit 	= maskToUnit(encoded, JUSTIFY_LEFT_UNIT, UNIT_BITS);
-		final Justify leftJustify 	= maskToJustify(encoded, JUSTIFY_LEFT_TYPE);
+		final CSSJustify leftJustify 	= maskToJustify(encoded, JUSTIFY_LEFT_TYPE);
 
 		setter.set(param, top, topUnit, topJustify, right, rightUnit, rightJustify, bottom, bottomUnit, bottomJustify, left, leftUnit, leftJustify);
 	}
 
 	private static void setJustify(
 			long [] buf, int offset,
-			int top, CSSUnit topUnit, Justify topType, 
-			int right, CSSUnit rightUnit, Justify rightType,
-			int bottom, CSSUnit bottomUnit, Justify bottomType,
-			int left, CSSUnit leftUnit, Justify leftType) {
+			int top, CSSUnit topUnit, CSSJustify topType, 
+			int right, CSSUnit rightUnit, CSSJustify rightType,
+			int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
+			int left, CSSUnit leftUnit, CSSJustify leftType) {
 
 		// Merge with existing values since this may be an update
 		long encoded = buf[offset];
 		
-		if (topType != Justify.NONE) {
+		if (topType != CSSJustify.NONE) {
 			encoded &= 0x0000FFFFFFFFFFFFL;
 			encoded |= 	  sizeLong(top, topType) 	<< JUSTIFY_TOP_SHIFT
 						| ordinalLong(topUnit)		<< JUSTIFY_TOP_UNIT
@@ -224,7 +224,7 @@ public class LongCSS extends BufferUtil {
 			
 		}
 
-		if (rightType != Justify.NONE) {
+		if (rightType != CSSJustify.NONE) {
 			encoded &= 0xFFFF0000FFFFFFFFL;
 			encoded |=   sizeLong(right, rightType)		<< JUSTIFY_RIGHT_SHIFT
 					   | ordinalLong(rightUnit) 		<< JUSTIFY_RIGHT_UNIT
@@ -232,7 +232,7 @@ public class LongCSS extends BufferUtil {
 		}
 		
 		
-		if (bottomType != Justify.NONE) {
+		if (bottomType != CSSJustify.NONE) {
 			encoded &= 0xFFFFFFFF0000FFFFL;
 			encoded |=	  sizeLong(bottom, bottomType)	<< JUSTIFY_BOTTOM_SHIFT
 						| ordinalLong(bottomUnit) 		<< JUSTIFY_BOTTOM_UNIT
@@ -241,7 +241,7 @@ public class LongCSS extends BufferUtil {
 		}
 		
 		
-		if (leftType != Justify.NONE) {
+		if (leftType != CSSJustify.NONE) {
 			encoded &= 0xFFFFFFFFFFFF0000L;
 			encoded |=    sizeLong(left, leftType) 	<< JUSTIFY_LEFT_SHIFT
 						| ordinalLong(leftUnit) 	<< JUSTIFY_LEFT_UNIT
@@ -251,20 +251,20 @@ public class LongCSS extends BufferUtil {
 		buf[offset] = encoded;
 	}
 	
-	private static final long sizeLong(int size, Justify type) {
-		return type == Justify.SIZE ? size : 0;
+	private static final long sizeLong(int size, CSSJustify type) {
+		return type == CSSJustify.SIZE ? size : 0;
 	}
 
 	private static final long ordinalLong(CSSUnit unit) {
 		return unit != null ? unit.ordinal() : 0;
 	}
 	
-	private static final long ordinalLong(Justify type) {
+	private static final long ordinalLong(CSSJustify type) {
 		return type.ordinal();
 	}
 	
-	private static void setStyle(long [] buf, int offset, Justify type, CSStyle style) {
-		if (type != Justify.NONE) {
+	private static void setStyle(long [] buf, int offset, CSSJustify type, CSStyle style) {
+		if (type != CSSJustify.NONE) {
 			addStyle(style, buf, offset);
 		}
 		else {
@@ -274,10 +274,10 @@ public class LongCSS extends BufferUtil {
 	}
 	
 	public static void setMargin(long [] buf, int offset,
-			int top, CSSUnit topUnit, Justify topType, 
-			int right, CSSUnit rightUnit, Justify rightType,
-			int bottom, CSSUnit bottomUnit, Justify bottomType,
-			int left, CSSUnit leftUnit, Justify leftType) {
+			int top, CSSUnit topUnit, CSSJustify topType, 
+			int right, CSSUnit rightUnit, CSSJustify rightType,
+			int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
+			int left, CSSUnit leftUnit, CSSJustify leftType) {
 
 		setStyle(buf, offset, topType, CSStyle.MARGIN_TOP);
 		setStyle(buf, offset, rightType, CSStyle.MARGIN_RIGHT);
@@ -288,10 +288,10 @@ public class LongCSS extends BufferUtil {
 	}
 	
 	public static void setPadding(long [] buf, int offset,
-			int top, CSSUnit topUnit, Justify topType, 
-			int right, CSSUnit rightUnit, Justify rightType,
-			int bottom, CSSUnit bottomUnit, Justify bottomType,
-			int left, CSSUnit leftUnit, Justify leftType) {
+			int top, CSSUnit topUnit, CSSJustify topType, 
+			int right, CSSUnit rightUnit, CSSJustify rightType,
+			int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
+			int left, CSSUnit leftUnit, CSSJustify leftType) {
 		
 		setStyle(buf, offset, topType, CSStyle.PADDING_TOP);
 		setStyle(buf, offset, rightType, CSStyle.PADDING_RIGHT);

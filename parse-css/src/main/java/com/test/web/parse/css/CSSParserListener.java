@@ -1,10 +1,13 @@
 package com.test.web.parse.css;
 
-import com.test.web.css.common.CSSDisplay;
-import com.test.web.css.common.CSSFloat;
-import com.test.web.css.common.CSSTarget;
-import com.test.web.css.common.CSSUnit;
-import com.test.web.css.common.Justify;
+import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.css.common.enums.CSSFloat;
+import com.test.web.css.common.enums.CSSOverflow;
+import com.test.web.css.common.enums.CSSPosition;
+import com.test.web.css.common.enums.CSSTarget;
+import com.test.web.css.common.enums.CSSTextAlign;
+import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.io.common.Tokenizer;
 
 public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
@@ -30,78 +33,78 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 	void onOverflow(CONTEXT context, CSSOverflow overflow);
 
 	void onMargin(CONTEXT context,
-			int top, CSSUnit topUnit, Justify topType, 
-			int right, CSSUnit rightUnit, Justify rightType,
-			int bottom, CSSUnit bottomUnit, Justify bottomType,
-			int left, CSSUnit leftUnit, Justify leftType);
+			int top, CSSUnit topUnit, CSSJustify topType, 
+			int right, CSSUnit rightUnit, CSSJustify rightType,
+			int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
+			int left, CSSUnit leftUnit, CSSJustify leftType);
 
-	default void onMarginRight(CONTEXT context, int right, CSSUnit rightUnit, Justify rightType) {
+	default void onMarginRight(CONTEXT context, int right, CSSUnit rightUnit, CSSJustify rightType) {
 		onMargin(context, 
-				0, null, Justify.NONE,
+				0, null, CSSJustify.NONE,
 				right, rightUnit, rightType,
-				0, null, Justify.NONE,
-				0, null, Justify.NONE);
+				0, null, CSSJustify.NONE,
+				0, null, CSSJustify.NONE);
 	}
 
-	default void onMarginTop(CONTEXT context, int top, CSSUnit topUnit, Justify topType) {
+	default void onMarginTop(CONTEXT context, int top, CSSUnit topUnit, CSSJustify topType) {
 		onMargin(context, 
 				top, topUnit, topType,
-				0, null, Justify.NONE,
-				0, null, Justify.NONE,
-				0, null, Justify.NONE);
+				0, null, CSSJustify.NONE,
+				0, null, CSSJustify.NONE,
+				0, null, CSSJustify.NONE);
 	}
 
-	default void onMarginBottom(CONTEXT context, int bottom, CSSUnit bottomUnit, Justify bottomType) {
+	default void onMarginBottom(CONTEXT context, int bottom, CSSUnit bottomUnit, CSSJustify bottomType) {
 		onMargin(context, 
-				0, null, Justify.NONE,
-				0, null, Justify.NONE,
+				0, null, CSSJustify.NONE,
+				0, null, CSSJustify.NONE,
 				bottom, bottomUnit, bottomType,
-				0, null, Justify.NONE);
+				0, null, CSSJustify.NONE);
 	}
 
-	default void onMarginLeft(CONTEXT context, int left, CSSUnit leftUnit, Justify leftType) {
+	default void onMarginLeft(CONTEXT context, int left, CSSUnit leftUnit, CSSJustify leftType) {
 		onMargin(context,
-				0, null, Justify.NONE,
-				0, null, Justify.NONE,
-				0, null, Justify.NONE,
+				0, null, CSSJustify.NONE,
+				0, null, CSSJustify.NONE,
+				0, null, CSSJustify.NONE,
 				left, leftUnit, leftType);
 	}
 
 	void onPadding(CONTEXT context,
-			int top, CSSUnit topUnit, Justify topType, 
-			int right, CSSUnit rightUnit, Justify rightType,
-			int bottom, CSSUnit bottomUnit, Justify bottomType,
-			int left, CSSUnit leftUnit, Justify leftType);
+			int top, CSSUnit topUnit, CSSJustify topType, 
+			int right, CSSUnit rightUnit, CSSJustify rightType,
+			int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
+			int left, CSSUnit leftUnit, CSSJustify leftType);
 
-	default void onPaddingTop(CONTEXT context, int top, CSSUnit topUnit, Justify topType) {
+	default void onPaddingTop(CONTEXT context, int top, CSSUnit topUnit, CSSJustify topType) {
 		onPadding(context, 
 				top, topUnit, topType,
-				0, null, Justify.NONE,
-				0, null, Justify.NONE,
-				0, null, Justify.NONE);
+				0, null, CSSJustify.NONE,
+				0, null, CSSJustify.NONE,
+				0, null, CSSJustify.NONE);
 	}
 
-	default void onPaddingRight(CONTEXT context, int right, CSSUnit rightUnit, Justify rightType) {
+	default void onPaddingRight(CONTEXT context, int right, CSSUnit rightUnit, CSSJustify rightType) {
 		onPadding(context, 
-				0, null, Justify.NONE,
+				0, null, CSSJustify.NONE,
 				right, rightUnit, rightType,
-				0, null, Justify.NONE,
-				0, null, Justify.NONE);
+				0, null, CSSJustify.NONE,
+				0, null, CSSJustify.NONE);
 	}
 
-	default void onPaddingBottom(CONTEXT context, int bottom, CSSUnit bottomUnit, Justify bottomType) {
+	default void onPaddingBottom(CONTEXT context, int bottom, CSSUnit bottomUnit, CSSJustify bottomType) {
 		onPadding(context, 
-				0, null, Justify.NONE,
-				0, null, Justify.NONE,
+				0, null, CSSJustify.NONE,
+				0, null, CSSJustify.NONE,
 				bottom, bottomUnit, bottomType,
-				0, null, Justify.NONE);
+				0, null, CSSJustify.NONE);
 	}
 
-	default void onPaddingLeft(CONTEXT context, int left, CSSUnit leftUnit, Justify leftType) {
+	default void onPaddingLeft(CONTEXT context, int left, CSSUnit leftUnit, CSSJustify leftType) {
 		onPadding(context,
-				0, null, Justify.NONE,
-				0, null, Justify.NONE,
-				0, null, Justify.NONE,
+				0, null, CSSJustify.NONE,
+				0, null, CSSJustify.NONE,
+				0, null, CSSJustify.NONE,
 				left, leftUnit, leftType);
 	}
 }

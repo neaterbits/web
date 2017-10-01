@@ -6,11 +6,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-
-import com.test.web.css.common.CSSTarget;
-import com.test.web.css.common.CSSUnit;
-import com.test.web.css.common.CSStyle;
-import com.test.web.css.common.Justify;
+import com.test.web.css.common.enums.CSSTarget;
+import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.css.common.enums.CSStyle;
+import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.io.common.CharInput;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.BaseParser;
@@ -296,11 +295,11 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		switch (token) {
 		case INTEGER:
 			final int intValue = Integer.parseInt(lexer.get());
-			semiColonRead = parseSizeValueAfterInt(intValue, (size, unit) -> toCall.onJustify(size, unit, Justify.SIZE));
+			semiColonRead = parseSizeValueAfterInt(intValue, (size, unit) -> toCall.onJustify(size, unit, CSSJustify.SIZE));
 			break;
 			
 		case AUTO:
-			toCall.onJustify(9, null, Justify.AUTO);
+			toCall.onJustify(9, null, CSSJustify.AUTO);
 			semiColonRead = false;
 			break;
 			

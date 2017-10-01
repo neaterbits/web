@@ -1,14 +1,13 @@
-package com.test.web.css._long;
+package com.test.web.css.common;
 
-import com.test.web.css.common.CSSDisplay;
-import com.test.web.css.common.CSSFloat;
-import com.test.web.css.common.CSSTarget;
-import com.test.web.css.common.CSSUnit;
-import com.test.web.css.common.CSStyle;
-import com.test.web.css.common.ICSSJustify;
-import com.test.web.parse.css.CSSOverflow;
-import com.test.web.parse.css.CSSPosition;
-import com.test.web.parse.css.CSSTextAlign;
+import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.css.common.enums.CSSFloat;
+import com.test.web.css.common.enums.CSSOverflow;
+import com.test.web.css.common.enums.CSSPosition;
+import com.test.web.css.common.enums.CSSTarget;
+import com.test.web.css.common.enums.CSSTextAlign;
+import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.css.common.enums.CSStyle;
 
 /**
  * Read-only access to a CSS document, must be assumed to be thread-safe after parsing, ie. we will make sure to never update while rendering.

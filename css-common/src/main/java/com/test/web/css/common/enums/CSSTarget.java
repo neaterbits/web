@@ -1,4 +1,4 @@
-package com.test.web.css.common;
+package com.test.web.css.common.enums;
 
 public enum CSSTarget {
 	TAG,
