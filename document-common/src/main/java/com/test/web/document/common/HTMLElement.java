@@ -21,7 +21,9 @@ public enum HTMLElement {
 	INPUT("input", false),
 	FIELDSET("fieldset", true),
 	UL("ul", true),
-	LI("li", true)
+	LI("li", true),
+	
+	IMG("img", false)
 
 	;
 	

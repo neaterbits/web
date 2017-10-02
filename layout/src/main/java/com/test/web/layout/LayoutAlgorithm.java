@@ -12,6 +12,7 @@ import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.document.common.Document;
 import com.test.web.document.common.HTMLElement;
+import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io.common.Tokenizer;
 
 
@@ -23,7 +24,8 @@ import com.test.web.io.common.Tokenizer;
  * 
  */
 
-public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer> {
+public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
+	implements HTMLElementListener<ELEMENT, CSSContext<ELEMENT>> {
 
 	private final ViewPort viewPort;
 	private final ITextExtent textExtent;
@@ -57,7 +59,8 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer> {
 		this.fonts = new HashMap<>();
 	}
 
-	public void onElementStart(Document<ELEMENT> document, CSSContext<ELEMENT> cssContext, ELEMENT element) {
+    @Override
+	public void onElementStart(Document<ELEMENT> document, ELEMENT element, CSSContext<ELEMENT> cssContext) {
 		cssContext.getCSSLayoutStyles(
 				document.getId(element),
 				document.getTag(element),
@@ -79,7 +82,8 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer> {
 		computeLayout(layoutStyles, cur, sub, document, element);
 	}
 	
-	public void onElementEnd(Document<ELEMENT> document, CSSContext<ELEMENT> cssContext, ELEMENT element) {
+    @Override
+	public void onElementEnd(Document<ELEMENT> document, ELEMENT element, CSSContext<ELEMENT> cssContext) {
 		
 		final ElementLayout cur = getCur();
 		
@@ -99,8 +103,8 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer> {
 		}
 	}
 	
-	
-	public void onText(String text) {
+    @Override
+	public void onText(Document<ELEMENT> document, String text, CSSContext<ELEMENT> cssContext) {
 		// We have a text element, compute text extents according to current mode
 		// TODO: text-align, overflow
 
@@ -188,7 +192,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer> {
 	
 	private void computeElementDimensionsOnElementStart(CSSLayoutStyles styles,  ElementLayout cur, ElementLayout sub) {
 		// Does it have width set?
-		if (styles.getWidthUnit() != null) {
+		if (styles.hasWidth()) {
 			final int width = computeWidthPx(styles.getWidth(), styles.getWidthUnit(), cur.getDimensions(), viewPort);
 			
 			sub.setHasCSSWidth(true);
@@ -201,7 +205,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer> {
 		
 		
 		// Does it have height? If not, compute height of element
-		if (styles.getHeightUnit() != null) {
+		if (styles.hasHeight()) {
 			final int height = computeWidthPx(styles.getHeight(), styles.getHeightUnit(), cur.getDimensions(), viewPort);
 			
 			sub.setHasCSSHeight(true);
@@ -211,7 +215,6 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer> {
 			// No width set as part of CSS so we must compute element size from the element itself.
 			// This depends on the type of element, the available space etc.
 		}
-		
 	}
 	
 	private static int computeWidthPx(int width, CSSUnit widthUnit, Dimensions cur,  ViewPort viewPort) {

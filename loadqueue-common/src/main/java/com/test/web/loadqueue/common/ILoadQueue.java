@@ -4,5 +4,12 @@ import java.io.IOException;
 
 public interface ILoadQueue {
 
-	void addStyleSheet(String url) throws IOException;
+	// Listener is called back on calling thread
+	void addStyleSheet(String url, LoadCompletionListener completionListener) throws IOException;
+
+	void addImageLoadingForDimensions(String url, LoadCompletionListener completionListener) throws IOException;
+
+	boolean hasStyleSheet();
+	
+	boolean hasImageLoadingForDimensions();
 }

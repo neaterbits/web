@@ -26,6 +26,12 @@
 
 	<dependency>
 		<groupId>com.test.web</groupId>
+		<artifactId>document-common</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</dependency>
+
+	<dependency>
+		<groupId>com.test.web</groupId>
 		<artifactId>parse-common</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</dependency>

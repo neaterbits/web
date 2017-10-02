@@ -51,4 +51,20 @@ final class LoadJob {
 	boolean hasAnyDependencies() {
 		return dependencies != null && !dependencies.isEmpty();
 	}
+	
+	boolean hasDependencyOfType(Class<? extends Dependency> type) {
+		boolean found = false;
+		
+		if (dependencies != null) {
+			
+			for (Dependency dependency : dependencies) {
+				if (type.equals(dependency.getClass())) {
+					found = true;
+					break;
+				}
+			}
+		}
+
+		return found;
+	}
 }

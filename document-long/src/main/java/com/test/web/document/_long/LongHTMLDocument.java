@@ -11,12 +11,12 @@ import java.util.Map;
 import com.test.web.buffers.LongBuffersIntegerIndex;
 import com.test.web.buffers.StringStorageBuffer;
 import com.test.web.css.common.ICSSDocument;
-import com.test.web.document.common.Document;
 import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
+import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.io._long.StringBuffers;
-import com.test.web.parse.html.HTMLParserListener;
+import com.test.web.parse.html.IDocumentParserListener;
 import com.test.web.parse.html.enums.HTMLDirection;
 import com.test.web.types.Debug;
 
@@ -36,7 +36,7 @@ import com.test.web.types.Debug;
 
 public class LongHTMLDocument extends LongBuffersIntegerIndex
 
-	implements Document<Integer>, HTMLParserListener<Integer, LongTokenizer> {
+	implements IDocumentParserListener<Integer, LongTokenizer> {
 
 	private static final boolean CHECK_OVERWRITE = true;
 	private static final boolean CHECK_IS_CONTAINER = true;
@@ -126,7 +126,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 
 	@Override
-	public void onElementStart(LongTokenizer tokenizer, HTMLElement element) {
+	public Integer onElementStart(LongTokenizer tokenizer, HTMLElement element) {
 		
 		// Start of an HTML element, add to buffer and
 		
@@ -164,6 +164,8 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		//if (element.isContainerElement()) {
 			pushElement(elementRef);
 		//}
+			
+		return elementRef;
 	}
 
 	private void initHeadTail(long [] elementBuf, int elementOffset) {
@@ -463,8 +465,6 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		return id == StringStorageBuffer.NONE ? null : idBuffer.getString(id);
 	}
 	
-	
-	
 	@Override
 	public HTMLElement getType(Integer element) {
 		final int elementOffset = offset(element);
@@ -502,7 +502,6 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		return null;
 	}
 
-
 	@Override
 	public List<Integer> getElementsWithClass(String _class) {
 		final List<Integer> elements = elementsByClass.get(_class);
@@ -517,7 +516,6 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		
 		return typeBuffer.getString(ref);
 	}
-	
 
 	@Override
 	public String getLinkRel(Integer element) {
@@ -526,14 +524,12 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		return relBuffer.getString(ref);
 	}
 
-
 	@Override
 	public String getLinkType(Integer element) {
 		final int ref = LongHTML.getLinkType(buf(element), offset(element));
 		
 		return typeBuffer.getString(ref);
 	}
-
 
 	@Override
 	public String getLinkHRef(Integer element) {
@@ -542,6 +538,12 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		return hrefBuffer.getString(ref);
 	}
 
+	@Override
+	public String getImgUrl(Integer element) {
+		final int ref = LongHTML.getImgUrl(buf(element), offset(element));
+		
+		return hrefBuffer.getString(ref);
+	}
 
 	@Override
 	public int getNumElements(Integer element) {
@@ -556,8 +558,6 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		
 		int count = 0;
 
-		System.out.println("\n\n");
-
 		for (int curElement = LongHTML.getHead(elementBuf, elementOffset);
 				curElement != LongHTML.END_OF_LIST_MARKER;) {
 
@@ -571,14 +571,54 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 			curElement = nextElement;
 
 			++ count;
-
-			if (count > 100) {
-				break;
-			}
 		}
 		
 		return count;
 	}
+
+	
+	
+	@Override
+	public <PARAM> void iterateFrom(Integer element, HTMLElementListener<Integer, PARAM> listener, PARAM param) {
+		iterate(INITIAL_ELEMENT, listener, param, element, false);
+	}
+	
+	private <PARAM> boolean iterate(int element, HTMLElementListener<Integer, PARAM> listener, PARAM param, int startElement, boolean callListener) {
+		final int elementOffset = offset(element);
+		final long [] elementBuf = buf(element);
+
+		if (LongHTML.isElement(elementBuf, elementOffset)) {
+
+			if (callListener) {
+				listener.onElementStart(this, element, param);
+			}
+			
+			for (int ref = LongHTML.getHead(elementBuf, elementOffset);
+					ref != LongHTML.END_OF_LIST_MARKER;
+					ref = LongHTML.getElementNext(buf(ref), offset(ref))) {
+				
+				callListener = iterate(ref, listener, param, startElement, callListener);
+			}
+			
+			if (callListener) {
+				listener.onElementEnd(this, element, param);
+			}
+			
+		}
+		else {
+			if (callListener) {
+				listener.onText(this, textBuffer.getString(LongHTML.getText(elementBuf, elementOffset)), param);
+			}
+		}
+
+		if (!callListener && element == startElement) {
+			// found element where we are to start call listener, call listeners for all elements after this one
+			callListener = true;
+		}
+		
+		return callListener;
+	}
+
 
 	@FunctionalInterface
 	interface ElementVisitor {
@@ -594,8 +634,8 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 			final int elementOffset = offset(element);
 			final long [] elementBuf = buf(element);
 			
-			
 			final int elementSize;
+
 			if (LongHTML.isElement(elementBuf, elementOffset)) {
 				final HTMLElement type = LongHTML.getHTMLElement(elementBuf, elementOffset);
 				

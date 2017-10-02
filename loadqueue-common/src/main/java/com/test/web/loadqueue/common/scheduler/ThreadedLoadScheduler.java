@@ -169,10 +169,25 @@ public class ThreadedLoadScheduler extends LoadScheduler {
 			this.delegate = delegate;
 		}
 
+		@Override
+		public synchronized void addStyleSheet(String url, LoadCompletionListener listener) throws IOException {
+			delegate.addStyleSheet(url, listener);
+		}
 
 		@Override
-		public synchronized void addStyleSheet(String url) throws IOException {
-			delegate.addStyleSheet(url);
+		public synchronized void addImageLoadingForDimensions(String url, LoadCompletionListener completionListener)
+				throws IOException {
+			delegate.addImageLoadingForDimensions(url, completionListener);
+		}
+
+		@Override
+		public synchronized boolean hasStyleSheet() {
+			return delegate.hasStyleSheet();
+		}
+
+		@Override
+		public synchronized boolean hasImageLoadingForDimensions() {
+			return delegate.hasImageLoadingForDimensions();
 		}
 	}
 }

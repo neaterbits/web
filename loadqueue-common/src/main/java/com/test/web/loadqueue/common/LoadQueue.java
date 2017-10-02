@@ -48,18 +48,29 @@ public class LoadQueue implements ILoadQueue {
 	}
 
 	@Override
-	public void addStyleSheet(String url) throws IOException {
+	public void addStyleSheet(String url, LoadCompletionListener listener) throws IOException {
+		final Dependency styleSheetDependency = new StyleSheetDependency(url);
+
+		addDependency(url, listener, styleSheetDependency);
+	}
+	
+	@Override
+	public void addImageLoadingForDimensions(String url, LoadCompletionListener listener) throws IOException {
+		final Dependency imageDependency = new ImageDimensionsDependency(url);
 		
+		addDependency(url, listener, imageDependency);
+	}
+
+	private void addDependency(String url, LoadCompletionListener listener, Dependency dependency) throws IOException {
 		if (findJob(url) != null) {
 			throw new IllegalArgumentException("Already has ongoing job for " + url);
 		}
 		
 		// We added a style-sheet, this means main job must block
-		final Dependency styleSheetDependency = new StyleSheetDependency(url);
 
 		final boolean hadDependencies = pageJob.hasAnyDependencies();
 		
-		pageJob.addDependency(styleSheetDependency);
+		pageJob.addDependency(dependency);
 		
 		if (!hadDependencies) {
 			// Initial dependency, so block
@@ -69,7 +80,7 @@ public class LoadQueue implements ILoadQueue {
 		// Schedule load and unblock stream when complete
 		final QueueLoadStream stream = pageStream.schedule(url, () -> {
 			
-			pageJob.removeDependency(styleSheetDependency);
+			pageJob.removeDependency(dependency);
 
 			if (!pageJob.hasAnyDependencies()) {
 				pageStream.unblockFromDependency();
@@ -77,10 +88,24 @@ public class LoadQueue implements ILoadQueue {
 				// URL should be unique
 				jobsInProgress.removeIf(j -> j.getStream().getUrl().equals(url));
 			}
+			
+			if (listener != null) {
+				listener.onComplete();
+			}
 		});
 		
 		final LoadJob job = new LoadJob(stream);
 
 		this.jobsInProgress.add(job);
+	}
+
+	@Override
+	public boolean hasStyleSheet() {
+		return pageJob.hasDependencyOfType(StyleSheetDependency.class);
+	}
+
+	@Override
+	public boolean hasImageLoadingForDimensions() {
+		return pageJob.hasDependencyOfType(ImageDimensionsDependency.class);
 	}
 }

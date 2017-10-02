@@ -288,9 +288,20 @@ final class LongHTML extends LongHTMLHeaderFlags {
 		return getUpper32(buf, offset + IDX_LINK_HREF);
 	}
 
+	private static final int IDX_IMAGE_URL = SIZE_LEAF_ELEMENT ;
+	private static final int SIZE_IMAGE_ELEMENT = SIZE_LEAF_ELEMENT + 1;
+
+	static void setImgUrl(long [] buf, int offset, int rel) {
+		setUpper32(buf, offset + IDX_IMAGE_URL, rel);
+	}
+
+	static int getImgUrl(long [] buf, int offset) {
+		return getUpper32(buf, offset + IDX_IMAGE_URL);
+	}
+	
 	static int elementSize(HTMLElement element) {
 		final int ret;
-		
+
 		switch (element) {
 		case SCRIPT:
 			ret = LongHTML.SIZE_SCRIPT_ELEMENT;
@@ -298,6 +309,10 @@ final class LongHTML extends LongHTMLHeaderFlags {
 
 		case LINK:
 			ret = LongHTML.SIZE_LINK_ELEMENT;
+			break;
+
+		case IMG:
+			ret = LongHTML.SIZE_IMAGE_ELEMENT;
 			break;
 			
 		default:

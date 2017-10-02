@@ -102,6 +102,10 @@ public class CSSLayoutStyles {
 	public CSSUnit getWidthUnit() {
 		return widthUnit;
 	}
+	
+	public boolean hasWidth() {
+		return getWidthUnit() != null;
+	}
 
 	public int getHeight() {
 		return height;
@@ -111,6 +115,10 @@ public class CSSLayoutStyles {
 		return heightUnit;
 	}
 	
+	public boolean hasHeight() {
+		return getHeightUnit() != null;
+	}
+
 	public CSSDimensions getPadding() {
 		return padding;
 	}
