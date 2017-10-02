@@ -14,11 +14,11 @@ import com.test.web.io.common.Tokenizer;
  * @param <TOKENIZER>
  */
 
-public interface HTMLParserListener<TOKENIZER extends Tokenizer> {
+public interface HTMLParserListener<ELEMENT, TOKENIZER extends Tokenizer> {
 
 	void onElementStart(TOKENIZER tokenizer, HTMLElement element) throws IOException;
 
-	void onElementEnd(TOKENIZER tokenizer, HTMLElement element) throws IOException;
+	ELEMENT onElementEnd(TOKENIZER tokenizer, HTMLElement element) throws IOException;
 	
 	void onText(TOKENIZER tokenizer, int startOffset, int endSkip);
 	

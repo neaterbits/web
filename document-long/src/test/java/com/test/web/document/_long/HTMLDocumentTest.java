@@ -30,7 +30,7 @@ public class HTMLDocumentTest extends TestCase {
 
 		final LongHTMLDocument doc = new LongHTMLDocument(buffers);
 		
-		final HTMLParser<LongTokenizer> parser = new HTMLParser<>(buffers, buffers, doc);
+		final HTMLParser<Integer, LongTokenizer> parser = new HTMLParser<>(buffers, buffers, doc);
 		
 		parser.parseHTMLFile();
 		

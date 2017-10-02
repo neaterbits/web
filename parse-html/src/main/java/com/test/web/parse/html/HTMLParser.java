@@ -12,7 +12,7 @@ import com.test.web.parse.common.Lexer;
 import com.test.web.parse.common.ParserException;
 import com.test.web.types.IIndent;
 
-public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HTMLToken, CharInput> implements IIndent {
+public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer> extends BaseParser<HTMLToken, CharInput> implements IIndent {
 	
 	private static final boolean DEBUG = true;
 	private static final PrintStream DEBUG_OUT = System.out;
@@ -22,9 +22,9 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 	
 	private final TOKENIZER tokenizer;
 	private final Lexer<HTMLToken, CharInput> lexer;
-	private final HTMLParserListener<TOKENIZER> listener;
+	private final HTMLParserListener<ELEMENT, TOKENIZER> listener;
 	
-	public HTMLParser(CharInput input, TOKENIZER tokenizer, HTMLParserListener<TOKENIZER> listener) {
+	public HTMLParser(CharInput input, TOKENIZER tokenizer, HTMLParserListener<ELEMENT, TOKENIZER> listener) {
 		super(new Lexer<HTMLToken, CharInput>(input, HTMLToken.class, HTMLToken.NONE, null), HTMLToken.WS);
 		
 		this.tokenizer = tokenizer;
@@ -393,6 +393,10 @@ public final class HTMLParser<TOKENIZER extends Tokenizer> extends BaseParser<HT
 			case CLASS:
 				// Special-handling of class attribute since may contain multiple
 				parseClassAttribute(token);
+				break;
+				
+			case STYLE:
+				// Special handling of style attribute as we parse this as a CSS document
 				break;
 
 			default:

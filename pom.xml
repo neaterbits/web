@@ -28,6 +28,7 @@
 	    <module>css-long</module>
 	    <module>io-common</module>
 	    <module>io-long</module>
+	    <module>layout</module>
 	    <module>parse-common</module>
 	    <module>parse-css</module>
 	    <module>parse-html</module>

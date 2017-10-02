@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.test.web.buffers.LongBuffersIntegerIndex;
 import com.test.web.buffers.StringStorageBuffer;
+import com.test.web.css.common.ICSSDocument;
 import com.test.web.document.common.Document;
 import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
@@ -35,7 +36,7 @@ import com.test.web.types.Debug;
 
 public class LongHTMLDocument extends LongBuffersIntegerIndex
 
-	implements Document<Integer>, HTMLParserListener<LongTokenizer> {
+	implements Document<Integer>, HTMLParserListener<Integer, LongTokenizer> {
 
 	private static final boolean CHECK_OVERWRITE = true;
 	private static final boolean CHECK_IS_CONTAINER = true;
@@ -241,10 +242,15 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 
 	@Override
-	public void onElementEnd(LongTokenizer tokenizer, HTMLElement element) {
+	public Integer onElementEnd(LongTokenizer tokenizer, HTMLElement element) {
+		
+		final int cur = getCurElement();
+		
 		//if (element.isContainerElement()) {
 			popElement();
 		//}
+			
+		return cur;
 	}
 
 	@Override
@@ -456,6 +462,19 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 				
 		return id == StringStorageBuffer.NONE ? null : idBuffer.getString(id);
 	}
+	
+	
+	
+	@Override
+	public HTMLElement getType(Integer element) {
+		final int elementOffset = offset(element);
+		final long [] elementBuf = buf(element);
+
+		final HTMLElement htmlElement = LongHTML.getHTMLElement(elementBuf, elementOffset);
+	
+		return htmlElement;
+	}
+
 
 	@Override
 	public String [] getClasses(Integer element) {
@@ -475,6 +494,12 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		}
 		
 		return ret;
+	}
+
+	@Override
+	public ICSSDocument<Integer> getStyles(Integer element) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

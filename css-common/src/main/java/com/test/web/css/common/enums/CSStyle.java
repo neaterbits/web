@@ -18,7 +18,6 @@ public enum CSStyle implements IKeyValueList {
 	HEIGHT("height", ValueType.ONE),
 	
 	BACKGROUND_COLOR("background-color", ValueType.ONE),
-	FONT_SIZE("font-size", ValueType.ONE),
 	
 	MARGIN_LEFT("margin-left", ValueType.ONE),
 	MARGIN_RIGHT("margin-right", ValueType.ONE),
@@ -34,7 +33,11 @@ public enum CSStyle implements IKeyValueList {
 	POSITION("position", ValueType.ONE),
 	FLOAT("float", ValueType.ONE),
 	TEXT_ALIGN("text-align", ValueType.ONE),
-	OVERFLOW("overflow", ValueType.ONE)
+	OVERFLOW("overflow", ValueType.ONE),
+	
+	FONT_FAMILY("font-family", ValueType.ONE),
+	FONT_NAME("font-name", ValueType.ONE),
+	FONT_SIZE("font-size", ValueType.ONE)
 	;
 	
 	private final String name;

@@ -17,6 +17,7 @@ import com.test.web.testdata.TestData;
 
 import junit.framework.TestCase;
 
+
 public class HTMLLoadQueueTest extends TestCase {
 
 	// Test load queue to see that works with blocking
@@ -51,11 +52,11 @@ public class HTMLLoadQueueTest extends TestCase {
 
 		final LongHTMLDocument doc = new LongHTMLDocument(buffers);
 		
-		final DependencyCollectingParserListener<LongTokenizer> parserListener
+		final DependencyCollectingParserListener<Integer, LongTokenizer> parserListener
 			= new DependencyCollectingParserListener<>(doc, loadQueue.getQueue());
 		
 
-		final HTMLParser<LongTokenizer> parser = new HTMLParser<LongTokenizer>(buffers, buffers, parserListener);
+		final HTMLParser<Integer, LongTokenizer> parser = new HTMLParser<Integer, LongTokenizer>(buffers, buffers, parserListener);
 		
 		parser.parseHTMLFile();
 	}

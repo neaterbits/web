@@ -16,6 +16,10 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 	
 	void onEntityEnd(CONTEXT context);
 	
+	void onLeft(CONTEXT context, int left, CSSUnit unit);
+	
+	void onTop(CONTEXT context, int top, CSSUnit unit);
+	
 	void onWidth(CONTEXT context, int width, CSSUnit unit);
 	
 	void onHeight(CONTEXT context, int width, CSSUnit unit);

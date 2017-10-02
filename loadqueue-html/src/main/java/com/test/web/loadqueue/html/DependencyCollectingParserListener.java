@@ -2,16 +2,22 @@ package com.test.web.loadqueue.html;
 
 import java.io.IOException;
 
+import com.test.web.css.common.CSSContext;
 import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.loadqueue.common.ILoadQueue;
 import com.test.web.parse.html.HTMLParserListener;
 
-public class DependencyCollectingParserListener<TOKENIZER extends Tokenizer>
-			implements HTMLParserListener<TOKENIZER> {
+/*
+ * Collects dependencies, ie. CSS style sheets during parser and utilizes these to perform layout and rendering during the loading phase
+ * as soon as this information is available.
+ */
+
+public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Tokenizer>
+			implements HTMLParserListener<ELEMENT, TOKENIZER> {
 	
-	private final HTMLParserListener<TOKENIZER> delegate;
+	private final HTMLParserListener<ELEMENT, TOKENIZER> delegate;
 	private final ILoadQueue loadQueue;
 
 	private HTMLElement curElement;
@@ -20,8 +26,9 @@ public class DependencyCollectingParserListener<TOKENIZER extends Tokenizer>
 	private String linkType;
 	private String linkHRef;
 	
+	private CSSContext<ELEMENT> cssContext;
 	
-	public DependencyCollectingParserListener(HTMLParserListener<TOKENIZER> delegate, ILoadQueue loadQueue) {
+	public DependencyCollectingParserListener(HTMLParserListener<ELEMENT, TOKENIZER> delegate, ILoadQueue loadQueue) {
 		this.delegate = delegate;
 		this.loadQueue = loadQueue;
 	}
@@ -41,8 +48,8 @@ public class DependencyCollectingParserListener<TOKENIZER extends Tokenizer>
 		
 	}
 
-	public void onElementEnd(TOKENIZER tokenizer, HTMLElement element) throws IOException {
-		delegate.onElementEnd(tokenizer, element);
+	public ELEMENT onElementEnd(TOKENIZER tokenizer, HTMLElement element) throws IOException {
+		final ELEMENT elementRef = delegate.onElementEnd(tokenizer, element);
 		
 		if (curElement != null) {
 
@@ -62,6 +69,7 @@ public class DependencyCollectingParserListener<TOKENIZER extends Tokenizer>
 			this.curElement = null;
 		}
 		
+		return elementRef;
 	}
 
 	public void onText(TOKENIZER tokenizer, int startOffset, int endSkip) {
@@ -99,6 +107,7 @@ public class DependencyCollectingParserListener<TOKENIZER extends Tokenizer>
 				break;
 
 			default:
+				
 				throw new IllegalStateException("Unexpected elememnt " + curElement);
 			}
 		}

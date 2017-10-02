@@ -63,4 +63,11 @@ public interface ICSSDocument<TARGET> {
 	CSSTextAlign getTextAlign(TARGET ref);
 
 	CSSOverflow getOverflow(TARGET ref);
+	
+	String getFontFamily(TARGET ref);
+	
+	String getFontName(TARGET ref);
+	
+	int getFontSize(TARGET ref);
+	
 }

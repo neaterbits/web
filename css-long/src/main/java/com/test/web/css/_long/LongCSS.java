@@ -71,8 +71,9 @@ public class LongCSS extends BufferUtil {
 	private static final int IDX_DIMENSIONS = 3; // width/height
 	private static final int IDX_MARGIN = 4;
 	private static final int IDX_PADDING = 5;
+	private static final int IDX_FONT = 6;
 	
-	private static final int NUM_COMPACT = IDX_PADDING + 1;
+	private static final int NUM_COMPACT = IDX_FONT + 1;
 	
 	
 	private static int bits(Class<?> enumClass) {
@@ -112,7 +113,7 @@ public class LongCSS extends BufferUtil {
 	private static final int DISPLAY_MASK 		= ((1 << DISPLAY_BITS 		+ 1) - 1) << DISPLAY_SHIFT;
 	private static final int POSITION_MASK		= ((1 << POSITION_BITS 		+ 1) - 1) << POSITION_SHIFT;
 	private static final int TEXT_ALIGN_MASK 	= ((1 << TEXT_ALIGN_BITS 	+ 1) - 1) << TEXT_ALIGN_SHIFT;
-	private static final int FLOAT_MASK 		= ((1 << FLOAT_BITS 		+ 1) - 1) << FLOAT_SHIFT;
+	private static final int FLOAT_MASK 			= ((1 << FLOAT_BITS 		+ 1) - 1) << FLOAT_SHIFT;
 	private static final int OVERFLOW_MASK 		= ((1 << OVERFLOW_BITS 		+ 1) - 1) << OVERFLOW_SHIFT;
 
 	private static final int DISPLAY_CLEAR 		= ~DISPLAY_MASK;
@@ -146,7 +147,18 @@ public class LongCSS extends BufferUtil {
 	
 	private static final int JUSTIFY_SIZE_BITS = 13;
 	private static final int JUSTIFY_TYPE_BITS = 2;
-
+	
+	private static final int FONT_FAMILY_BITS = 8;
+	private static final int FONT_NAME_BITS = 16;
+	private static final int FONT_SIZE_BITS = 16;
+	private static final int FONT_STYLE_BITS = 8;
+	
+	private static final int FONT_FAMILY_SHIFT = FONT_NAME_BITS + FONT_SIZE_BITS + FONT_STYLE_BITS;
+	private static final int FONT_NAME_SHIFT = FONT_SIZE_BITS + FONT_STYLE_BITS;
+	private static final int FONT_SIZE_SHIFT = FONT_STYLE_BITS;
+	private static final int FONT_STYLE_SHIFT = 0;
+	
+	
 	static final int CSS_ENTITY_COMPACT = NUM_COMPACT;
 
 	static {
@@ -431,8 +443,12 @@ public class LongCSS extends BufferUtil {
 	}
 	
 	private static int getFlag(long [] buf, int offset, int shift, long mask) {
-		
-		final long encoded = buf[offset + IDX_FLAGS];
+		return getValue(buf, offset + IDX_FLAGS, shift, mask);
+	}
+	
+	private static int getValue(long [] buf, int offset, int shift, long mask) {
+			
+		final long encoded = buf[offset];
 		
 		return (int)((encoded & mask) >> shift);
 	}
@@ -475,5 +491,37 @@ public class LongCSS extends BufferUtil {
 	
 	public static CSSOverflow getOverflow(long [] buf, int offset) {
 		return CSSOverflow.values()[getFlag(buf, offset, OVERFLOW_SHIFT, OVERFLOW_MASK)];
+	}
+	
+	public static void setFontFamily(long [] buf, int offset, int family) {
+		buf[offset + IDX_FONT] |= maskToInt(family, FONT_FAMILY_SHIFT, FONT_FAMILY_BITS);
+	}
+	
+	public static void setFontName(long [] buf, int offset, int name) {
+		buf[offset + IDX_FONT] |= maskToInt(name, FONT_NAME_SHIFT, FONT_NAME_BITS);
+	}
+	
+	public static void setFontSize(long [] buf, int offset, int size) {
+		buf[offset + IDX_FONT] |= maskToInt(size, FONT_SIZE_SHIFT, FONT_SIZE_BITS);
+	}
+	
+	public static void setFontStyle(long [] buf, int offset, int style) {
+		buf[offset + IDX_FONT] |= maskToInt(style, FONT_STYLE_SHIFT, FONT_STYLE_BITS);
+	}
+
+	public static int getFontFamily(long [] buf, int offset) {
+		return getValue(buf, offset + IDX_FONT, FONT_FAMILY_SHIFT, FONT_FAMILY_BITS);
+	}
+	
+	public static int getFontName(long [] buf, int offset) {
+		return getValue(buf, offset + IDX_FONT, FONT_NAME_SHIFT, FONT_NAME_BITS);
+	}
+	
+	public static short getFontSize(long [] buf, int offset) {
+		return (short)getValue(buf, offset + IDX_FONT, FONT_SIZE_SHIFT, FONT_SIZE_BITS);
+	}
+	
+	public static short getFontStyle(long [] buf, int offset) {
+		return (short)getValue(buf, offset + IDX_FONT, FONT_STYLE_SHIFT, FONT_STYLE_BITS);
 	}
 }

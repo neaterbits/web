@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.test.web.buffers.LongBuffersIntegerIndex;
+import com.test.web.buffers.StringStorageBuffer;
 import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSDisplay;
@@ -35,6 +36,7 @@ public final class LongCSSDocument extends LongBuffersIntegerIndex implements CS
 	private Map<String, Integer> byId;
 	private Map<String, Integer> byClass;
 	
+	private StringStorageBuffer fontBuffer;
 
 	private int curParseElement;
 
@@ -305,5 +307,24 @@ public final class LongCSSDocument extends LongBuffersIntegerIndex implements CS
 	@Override
 	public void onOverflow(Void context, CSSOverflow overflow) {
 		LongCSS.setOverflow(buf(curParseElement), offset(curParseElement), overflow);
+	}
+
+	@Override
+	public String getFontFamily(Integer ref) {
+		final int fontFamily = LongCSS.getFontFamily(buf(ref), offset(ref));
+
+		return fontBuffer.getString(fontFamily);
+	}
+
+	@Override
+	public String getFontName(Integer ref) {
+		final int fontName = LongCSS.getFontName(buf(ref), offset(ref));
+
+		return fontBuffer.getString(fontName);
+	}
+
+	@Override
+	public int getFontSize(Integer ref) {
+		return LongCSS.getFontSize(buf(ref), offset(ref));
 	}
 }
