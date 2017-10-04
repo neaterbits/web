@@ -5,23 +5,21 @@
     <artifactId>root</artifactId>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.test.web</groupId>
   <artifactId>io-common</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <name>IO code</name>
   <packaging>jar</packaging>
   <dependencies>
 	
 	<dependency>
-		<groupId>com.test.web</groupId>
+		<groupId>${project.groupId}</groupId>
 		<artifactId>types</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>${project.version}</version>
 	</dependency>
 	
 	<dependency>
-		<groupId>com.test.web</groupId>
+		<groupId>${project.groupId}</groupId>
 		<artifactId>buffers</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>${project.version}</version>
 	</dependency>
 
 	<!-- test dependencies --> 

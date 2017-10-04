@@ -5,21 +5,19 @@
     <artifactId>root</artifactId>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.test.web</groupId>
   <artifactId>loadqueue-common</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <name>Common loading queue code</name>
   <packaging>jar</packaging>
   <dependencies>
 	
 	<dependency>
-		<groupId>com.test.web</groupId>
+		<groupId>${project.groupId}</groupId>
 		<artifactId>types</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 	
 	<dependency>
-		<groupId>com.test.web</groupId>
+		<groupId>${project.groupId}</groupId>
 		<artifactId>io-common</artifactId>
 		<version>${project.version}</version>
 	</dependency>

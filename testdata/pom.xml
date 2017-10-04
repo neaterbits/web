@@ -5,9 +5,7 @@
     <artifactId>root</artifactId>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.test.web</groupId>
   <artifactId>testdata</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <name>Test data</name>
   <packaging>jar</packaging>
   <dependencies>

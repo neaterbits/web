@@ -5,27 +5,25 @@
     <artifactId>root</artifactId>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.test.web</groupId>
   <artifactId>loadqueue-html</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <name>HTML specific loadqueue code</name>
   <packaging>jar</packaging>
   <dependencies>
 
 	<dependency>
-		<groupId>com.test.web</groupId>
+		<groupId>${project.groupId}</groupId>
 		<artifactId>loadqueue-common</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 
 	<dependency>
-		<groupId>com.test.web</groupId>
+		<groupId>${project.groupId}</groupId>
 		<artifactId>parse-html</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 
 	<dependency>
-		<groupId>com.test.web</groupId>
+		<groupId>${project.groupId}</groupId>
 		<artifactId>layout</artifactId>
 		<version>${project.version}</version>
 	</dependency>
@@ -33,14 +31,14 @@
 	<!-- test dependencies --> 
 
 	<dependency>
-		<groupId>com.test.web</groupId>
+		<groupId>${project.groupId}</groupId>
 		<artifactId>testdata</artifactId>
 		<version>${project.version}</version>
 		<scope>test</scope>
 	</dependency>
 
 	<dependency>
-		<groupId>com.test.web</groupId>
+		<groupId>${project.groupId}</groupId>
 		<artifactId>document-long</artifactId>
 		<version>${project.version}</version>
 		<scope>test</scope>
