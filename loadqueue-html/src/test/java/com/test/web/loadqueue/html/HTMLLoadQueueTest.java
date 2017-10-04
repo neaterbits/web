@@ -53,7 +53,7 @@ public class HTMLLoadQueueTest extends TestCase {
 		final LongHTMLDocument doc = new LongHTMLDocument(buffers);
 		
 		final DependencyCollectingParserListener<Integer, LongTokenizer> parserListener
-			= new DependencyCollectingParserListener<>(doc, loadQueue.getQueue(), null, null);
+			= new DependencyCollectingParserListener<>(doc, loadQueue.getQueue(), null, null, null);
 		
 
 		final HTMLParser<Integer, LongTokenizer> parser = new HTMLParser<Integer, LongTokenizer>(buffers, buffers, parserListener);

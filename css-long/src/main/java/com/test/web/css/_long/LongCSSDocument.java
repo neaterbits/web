@@ -308,6 +308,11 @@ public final class LongCSSDocument extends LongBuffersIntegerIndex implements CS
 	public void onOverflow(Void context, CSSOverflow overflow) {
 		LongCSS.setOverflow(buf(curParseElement), offset(curParseElement), overflow);
 	}
+	
+	@Override
+	public short getZIndex(Integer ref) {
+		return LongCSS.getZIndex(buf(ref), offset(ref));
+	}
 
 	@Override
 	public String getFontFamily(Integer ref) {

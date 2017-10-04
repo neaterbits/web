@@ -3,6 +3,9 @@ package com.test.web.layout;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.test.web.render.common.IRenderFactory;
+import com.test.web.render.common.IRenderer;
+
 /*
  * Page layout consists of a number of page layers, each page
  * being at a different z-index or similar, sorted in order
@@ -17,7 +20,7 @@ public final class PageLayout<ELEMENT> {
 		this.layers = new ArrayList<>();
 	}
 	
-	public  PageLayer<ELEMENT> addOrGetLayer(int index) {
+	public  PageLayer<ELEMENT> addOrGetLayer(int index, IRenderFactory renderFactory) {
 		PageLayer<ELEMENT> found = null;
 		
 		for (PageLayer<ELEMENT> l : layers) {
@@ -28,7 +31,7 @@ public final class PageLayout<ELEMENT> {
 		}
 		
 		if (found == null) {
-			found = new PageLayer<>(index);
+			found = new PageLayer<>(index, renderFactory.createRenderer());
 			layers.add(found);
 		}
 		

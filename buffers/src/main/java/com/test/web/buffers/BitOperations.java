@@ -9,6 +9,9 @@ public class BitOperations {
 		return (int) ((l >> shiftBits) & ((1 << numBits) - 1));
 	}
 	
+	public static long maskToLong(long l, int shiftBits, int numBits) {
+		return  ((l >> shiftBits) & ((1 << numBits) - 1));
+	}
 	
 	protected static long unsignedIntToLong(int integer) {
 		long l;

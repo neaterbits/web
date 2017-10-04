@@ -71,9 +71,9 @@ public class LongCSS extends BufferUtil {
 	private static final int IDX_DIMENSIONS = 3; // width/height
 	private static final int IDX_MARGIN = 4;
 	private static final int IDX_PADDING = 5;
-	private static final int IDX_FONT = 6;
+	private static final int IDX_FONT_ZINDEX = 6;
 	
-	private static final int NUM_COMPACT = IDX_FONT + 1;
+	private static final int NUM_COMPACT = IDX_FONT_ZINDEX + 1;
 	
 	
 	private static int bits(Class<?> enumClass) {
@@ -148,11 +148,13 @@ public class LongCSS extends BufferUtil {
 	private static final int JUSTIFY_SIZE_BITS = 13;
 	private static final int JUSTIFY_TYPE_BITS = 2;
 	
+	private static final int ZINDEX_BITS = 16;
 	private static final int FONT_FAMILY_BITS = 8;
 	private static final int FONT_NAME_BITS = 16;
 	private static final int FONT_SIZE_BITS = 16;
 	private static final int FONT_STYLE_BITS = 8;
 	
+	private static final int ZINDEX_SHIFT = FONT_FAMILY_BITS + FONT_NAME_BITS + FONT_SIZE_BITS + FONT_STYLE_BITS;
 	private static final int FONT_FAMILY_SHIFT = FONT_NAME_BITS + FONT_SIZE_BITS + FONT_STYLE_BITS;
 	private static final int FONT_NAME_SHIFT = FONT_SIZE_BITS + FONT_STYLE_BITS;
 	private static final int FONT_SIZE_SHIFT = FONT_STYLE_BITS;
@@ -492,36 +494,44 @@ public class LongCSS extends BufferUtil {
 	public static CSSOverflow getOverflow(long [] buf, int offset) {
 		return CSSOverflow.values()[getFlag(buf, offset, OVERFLOW_SHIFT, OVERFLOW_MASK)];
 	}
+
+	public static void setZIndex(long [] buf, int offset, short zIndex) {
+		buf[offset + IDX_FONT_ZINDEX] |= maskToLong(zIndex, ZINDEX_SHIFT, ZINDEX_BITS);
+	}
 	
 	public static void setFontFamily(long [] buf, int offset, int family) {
-		buf[offset + IDX_FONT] |= maskToInt(family, FONT_FAMILY_SHIFT, FONT_FAMILY_BITS);
+		buf[offset + IDX_FONT_ZINDEX] |= maskToLong(family, FONT_FAMILY_SHIFT, FONT_FAMILY_BITS);
 	}
 	
 	public static void setFontName(long [] buf, int offset, int name) {
-		buf[offset + IDX_FONT] |= maskToInt(name, FONT_NAME_SHIFT, FONT_NAME_BITS);
+		buf[offset + IDX_FONT_ZINDEX] |= maskToLong(name, FONT_NAME_SHIFT, FONT_NAME_BITS);
 	}
 	
 	public static void setFontSize(long [] buf, int offset, int size) {
-		buf[offset + IDX_FONT] |= maskToInt(size, FONT_SIZE_SHIFT, FONT_SIZE_BITS);
+		buf[offset + IDX_FONT_ZINDEX] |= maskToLong(size, FONT_SIZE_SHIFT, FONT_SIZE_BITS);
 	}
 	
 	public static void setFontStyle(long [] buf, int offset, int style) {
-		buf[offset + IDX_FONT] |= maskToInt(style, FONT_STYLE_SHIFT, FONT_STYLE_BITS);
+		buf[offset + IDX_FONT_ZINDEX] |= maskToLong(style, FONT_STYLE_SHIFT, FONT_STYLE_BITS);
+	}
+
+	public static  short getZIndex(long [] buf, int offset) {
+		return (short)getValue(buf, offset + IDX_FONT_ZINDEX, ZINDEX_SHIFT, ZINDEX_BITS);
 	}
 
 	public static int getFontFamily(long [] buf, int offset) {
-		return getValue(buf, offset + IDX_FONT, FONT_FAMILY_SHIFT, FONT_FAMILY_BITS);
+		return getValue(buf, offset + IDX_FONT_ZINDEX, FONT_FAMILY_SHIFT, FONT_FAMILY_BITS);
 	}
 	
 	public static int getFontName(long [] buf, int offset) {
-		return getValue(buf, offset + IDX_FONT, FONT_NAME_SHIFT, FONT_NAME_BITS);
+		return getValue(buf, offset + IDX_FONT_ZINDEX, FONT_NAME_SHIFT, FONT_NAME_BITS);
 	}
 	
 	public static short getFontSize(long [] buf, int offset) {
-		return (short)getValue(buf, offset + IDX_FONT, FONT_SIZE_SHIFT, FONT_SIZE_BITS);
+		return (short)getValue(buf, offset + IDX_FONT_ZINDEX, FONT_SIZE_SHIFT, FONT_SIZE_BITS);
 	}
 	
 	public static short getFontStyle(long [] buf, int offset) {
-		return (short)getValue(buf, offset + IDX_FONT, FONT_STYLE_SHIFT, FONT_STYLE_BITS);
+		return (short)getValue(buf, offset + IDX_FONT_ZINDEX, FONT_STYLE_SHIFT, FONT_STYLE_BITS);
 	}
 }

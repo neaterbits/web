@@ -8,12 +8,11 @@ import java.util.Map;
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.common.CSSLayoutStyles;
 import com.test.web.css.common.ICSSDocument;
-import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.document.common.Document;
-import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io.common.Tokenizer;
+import com.test.web.render.common.IRenderFactory;
 
 
 /*
@@ -42,9 +41,13 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	private final List<ElementLayout> stack;
 	private final Map<FontKey, IFont> fonts;
 	
+	private final PageLayout<ELEMENT> pageLayout;
+	
+	private final IRenderFactory renderFactory;
+	
 	private int curDepth;
 	
-	public LayoutAlgorithm(ViewPort viewPort, ITextExtent textExtent) {
+	public LayoutAlgorithm(ViewPort viewPort, ITextExtent textExtent, IRenderFactory renderFactory) {
 		
 		this.viewPort = viewPort;
 		this.textExtent = textExtent;
@@ -57,11 +60,15 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		this.curDepth = 0;
 
 		this.fonts = new HashMap<>();
+
+		this.pageLayout = new PageLayout<>();
+		this.renderFactory = renderFactory;
 	}
 
     @Override
 	public void onElementStart(Document<ELEMENT> document, ELEMENT element, CSSContext<ELEMENT> cssContext) {
-		cssContext.getCSSLayoutStyles(
+		
+    	cssContext.getCSSLayoutStyles(
 				document.getId(element),
 				document.getTag(element),
 				document.getClasses(element),
@@ -80,6 +87,11 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		// Now should have collected relevant information to do layout and find the dimensions
 		// of the element and also the margins and padding
 		computeLayout(layoutStyles, cur, sub, document, element);
+		
+		// Got layout, add to layer
+		final short zIndex = layoutStyles.getZIndex();
+		
+		pageLayout.addOrGetLayer(zIndex, renderFactory);
 	}
 	
     @Override

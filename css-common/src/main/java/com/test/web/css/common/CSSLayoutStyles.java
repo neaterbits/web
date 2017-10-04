@@ -28,11 +28,14 @@ public class CSSLayoutStyles {
 	
 	private CSSDimensions padding;
 	private CSSDimensions margins;
+	
+	private short zIndex;
 
 	void init(CSSDisplay display, CSSPosition position, CSSFloat cssFloat,
 			
 			int positionLeft, CSSUnit positionLeftUnit, int positionTop, CSSUnit positionTopUnit,
-			int width, CSSUnit widthUnit, int height , CSSUnit heightUnit) {
+			int width, CSSUnit widthUnit, int height , CSSUnit heightUnit,
+			short zIndex) {
 
 		if (display != null) {
 			this.display = display;
@@ -65,6 +68,8 @@ public class CSSLayoutStyles {
 			this.height = height;
 			this.heightUnit = heightUnit;
 		}
+		
+		this.zIndex = zIndex;
 	}
 	
 	public CSSDisplay getDisplay() {
@@ -125,5 +130,9 @@ public class CSSLayoutStyles {
 	
 	public CSSDimensions getMargins() {
 		return margins;
+	}
+
+	public short getZIndex() {
+		return zIndex;
 	}
 }

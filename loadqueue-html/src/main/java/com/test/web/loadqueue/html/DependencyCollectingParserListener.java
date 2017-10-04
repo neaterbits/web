@@ -17,6 +17,7 @@ import com.test.web.loadqueue.common.LoadCompletionListener;
 import com.test.web.loadqueue.common.LoadQueue;
 import com.test.web.parse.html.HTMLParserListener;
 import com.test.web.parse.html.IDocumentParserListener;
+import com.test.web.render.common.IRenderFactory;
 
 /*
  * Collects dependencies, ie. CSS style sheets during parser and utilizes these to perform layout and rendering during the loading phase
@@ -48,12 +49,13 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 			IDocumentParserListener<ELEMENT, TOKENIZER> delegate,
 			ILoadQueue loadQueue,
 			ViewPort viewPort,
-			ITextExtent textExtent) {
+			ITextExtent textExtent,
+			IRenderFactory renderFactory) {
 
 		this.delegate = delegate;
 		this.loadQueue = loadQueue;
 	
-		this.layoutAlgorithm = new LayoutAlgorithm<>(viewPort, textExtent);
+		this.layoutAlgorithm = new LayoutAlgorithm<>(viewPort, textExtent, renderFactory);
 		
 		this.tempLayoutStyles = new CSSLayoutStyles();
 	}

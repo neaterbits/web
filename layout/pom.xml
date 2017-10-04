@@ -20,6 +20,12 @@
 
 	<dependency>
 		<groupId>com.test.web</groupId>
+		<artifactId>io-common</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</dependency>
+
+	<dependency>
+		<groupId>com.test.web</groupId>
 		<artifactId>css-common</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</dependency>
@@ -32,6 +38,13 @@
 
 	<dependency>
 		<groupId>com.test.web</groupId>
+		<artifactId>render-common</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+
+<!-- 
+	<dependency>
+		<groupId>com.test.web</groupId>
 		<artifactId>parse-common</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</dependency>
@@ -42,20 +55,8 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</dependency>
 
-
-	<dependency>
-		<groupId>com.test.web</groupId>
-		<artifactId>parse-html</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</dependency>
-
-<!--
-	<dependency>
-		<groupId>com.test.web</groupId>
-		<artifactId>document-common</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</dependency>
--->
+ -->
+ 
 	<!-- test dependencies --> 
 
     <dependency>

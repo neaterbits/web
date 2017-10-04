@@ -70,4 +70,5 @@ public interface ICSSDocument<TARGET> {
 	
 	int getFontSize(TARGET ref);
 	
+	short getZIndex(TARGET ref);
 }

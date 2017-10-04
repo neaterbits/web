@@ -36,6 +36,10 @@
 	    <module>document-long</module>
 	    <module>loadqueue-common</module>
 	    <module>loadqueue-html</module>
+	    <module>render-common</module>
+	    <module>render-queue</module>
+	    <module>render-html</module>
+	    <module>render-awt</module>
 	    <module>testdata</module>
   </modules>
   <repositories>

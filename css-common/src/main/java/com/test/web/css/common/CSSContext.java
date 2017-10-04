@@ -9,6 +9,7 @@ import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.css.common.enums.CSStyle;
 
 /*
  * CSS context for a document, used for figuring out CSS style when having multiple elements
@@ -77,10 +78,15 @@ public class CSSContext<TARGET> {
 		
 		final int height = document.getHeight(target);
 		final CSSUnit heightUnit = document.getHeightUnit(target);
-		
+
+		final short zIndex = document.isSet(target, CSStyle.Z_INDEX)
+			? document.getZIndex(target)
+			: (short)0;
+
 		result.init(display, position, cssFloat,
 				positionLeft, positionLeftUnit, positionTop, positionTopUnit,
-				width, widthUnit, height, heightUnit);
+				width, widthUnit, height, heightUnit,
+				zIndex);
 		
 		document.getMargins(target, dimensionsSetter, result.getMargins());
 		document.getPadding(target, dimensionsSetter, result.getPadding());
