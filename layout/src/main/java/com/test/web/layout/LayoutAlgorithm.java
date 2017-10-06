@@ -165,6 +165,69 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	return availableWidth == -1 ? width : Math.min(width, availableWidth);
     }
     
+    private int findNumberOfChars(String string, int availableWidth, IFont font) {
+    	// figure out approximate number of characters
+
+    	final int guessCharacters = availableWidth / font.getAverageWidth();
+    	final int tryCharacters = Math.min(string.length(), guessCharacters);
+    	final String s = string.substring(0, tryCharacters);
+    	final int width = textExtent.getTextExtent(font, s);
+    	
+    	final int ret;
+    	
+    	if (width > availableWidth) {
+    		// try with fewer characters
+    		if (tryCharacters == 0) {
+    			ret = 0;
+    		}
+    		else {
+	    		int numChars = tryCharacters - 1;
+	    		
+	    		for (;;) {
+	    			final int w = textExtent.getTextExtent(font, string.substring(0, numChars));
+	    			
+	    			if (w <= availableWidth) {
+	    				break;
+	    			}
+	    			
+	    			-- numChars;
+	    		}
+	    		
+	    		ret = numChars;
+    		}
+    	}
+    	else  if (width == availableWidth) {
+    		ret = tryCharacters;
+    	}
+    	else {
+    		int numChars = tryCharacters - 1;
+    		
+    		for (;;) {
+    			final int w = textExtent.getTextExtent(font, string.substring(0, numChars));
+    			
+    			if (w > availableWidth) {
+    				-- numChars;
+    				break;
+    			}
+    			else if (w == availableWidth) {
+    				break;
+    			}
+    			
+    			++ numChars;
+    		}
+    		
+    		ret = numChars;
+    	}
+    	
+    	return ret;
+    }
+    
+    
+    private int getTextLineHeight(StackElement cur, IFont font) {
+		// TODO add spacing between text lines
+    	return font.getHeight();
+    }
+    
     @Override
 	public void onText(Document<ELEMENT> document, String text, CSSContext<ELEMENT> cssContext) {
 		// We have a text element, compute text extents according to current mode
@@ -172,7 +235,41 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 		final StackElement cur = getCur();
 
-		final int width = getTextLengthOrAvailableWidth(text, cur.getAvailableWidth(), cur.resultingLayout.getFont());
+		final IFont font = cur.resultingLayout.getFont();
+		
+		final int width = getTextLengthOrAvailableWidth(text, cur.getAvailableWidth(), font);
+		
+		int height = 0;
+		
+		if (cur.getAvailableWidth() != -1) {
+			// We have to compute number of lines for this text
+			// TODO: floats
+			
+			String s = text;
+			
+			for (;;) {
+			
+				// For each line, find with of text
+				int numChars = findNumberOfChars(s, cur.getAvailableWidth(), font);
+				
+				height += getTextLineHeight(cur, font);
+				
+				if (numChars == s.length()) {
+					// was room for rest of string, exit
+					break;
+				}
+				
+				s = s.substring(numChars);
+			}
+		}
+		else {
+			// height is size of text line
+			height = getTextLineHeight(cur, font);
+		}
+
+		if (height > maxBlockElementHeight) {
+			maxBlockElementHeight = height;
+		}
 
 		switch (cur.layoutStyles.getDisplay()) {
 		case BLOCK:

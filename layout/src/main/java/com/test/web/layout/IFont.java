@@ -6,4 +6,8 @@ package com.test.web.layout;
 
 public interface IFont {
 
+	int getAverageWidth();
+	
+	int getHeight();
+	
 }
