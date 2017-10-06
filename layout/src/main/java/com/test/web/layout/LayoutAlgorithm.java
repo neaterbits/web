@@ -26,36 +26,38 @@ import com.test.web.render.common.IRenderFactory;
 public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	implements HTMLElementListener<ELEMENT, CSSContext<ELEMENT>> {
 
+	// The input viewport, eg. size of browser window
 	private final ViewPort viewPort;
-	private final ITextExtent textExtent;
-	
-	// Work area for singlethreaded algorithm, storing non threadsafe data here, but should be ok since HTML document parsing happens on one thread
-	private final CSSLayoutStyles layoutStyles;
-	
-	// Compute element dimensions into a map? Or just in/order? Position?
-	private final Dimensions dimensions;
-	private final Wrapping margin;
-	private final Wrapping padding;
 
-	// We have to maintain a stack so that if width and height is computed
-	private final List<ElementLayout> stack;
+	// For finding size of text strings when using a particular font for rendering
+	private final ITextExtent textExtent;
+
+	// We have to maintain a stack for computed elements, ElementLayout contains computed values for element at that level
+	private final List<StackElement> stack;
+	private int curDepth;
+
+	// Cache of fonts used during layout
 	private final Map<FontKey, IFont> fonts;
 	
+	// Resulting page layout dimensionsn are collected here
 	private final PageLayout<ELEMENT> pageLayout;
 	
+	// For creating renderers, rendering occurs in the same pass (but renderer implenentation might just queue operations for later)
 	private final IRenderFactory renderFactory;
 	
-	private int curDepth;
+
+	// Position of current display block
+	private int curBlockYPos;
+	
+	// Max height for elements in this block, we'll advance element position with this many
+	private int maxBlockElementHeight;
+	
 	
 	public LayoutAlgorithm(ViewPort viewPort, ITextExtent textExtent, IRenderFactory renderFactory) {
 		
 		this.viewPort = viewPort;
 		this.textExtent = textExtent;
 
-		this.layoutStyles = new CSSLayoutStyles();
-		this.dimensions = new Dimensions();
-		this.margin = new Wrapping();
-		this.padding = new Wrapping();
 		this.stack = new ArrayList<>();
 		this.curDepth = 0;
 
@@ -63,101 +65,148 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 		this.pageLayout = new PageLayout<>();
 		this.renderFactory = renderFactory;
+		
+		// TODO how does this work for other zIndex? Will they have their separate layout?
+		this.curBlockYPos = 0;
+		this.maxBlockElementHeight = 0;
+		
+		// Push intial element on stack
+		push(viewPort.getViewPortWidth(), viewPort.getViewPortHeight());
 	}
 
     @Override
 	public void onElementStart(Document<ELEMENT> document, ELEMENT element, CSSContext<ELEMENT> cssContext) {
-		
+   	
+    	final StackElement cur = getCur();
+
+    	// Push new sub-element onto stack
+    	final StackElement sub = push(-1, -1);
+    	
+    	// Collect all layout styles from CSS
     	cssContext.getCSSLayoutStyles(
 				document.getId(element),
 				document.getTag(element),
 				document.getClasses(element),
-				layoutStyles);
+				sub.layoutStyles);
 
+    	// Also apply style attribute if defined
 		final ICSSDocument<ELEMENT> styleAttribute = document.getStyles(element);
 
 		if (styleAttribute != null) {
 			// Get CSS document from style-tag of element
-			cssContext.applyLayoutStyles(styleAttribute, element, layoutStyles);
+			cssContext.applyLayoutStyles(styleAttribute, element, sub.layoutStyles);
 		}
+		
+		// Adjust sub available width/height if is set
+		// TODO: what if no width/height here and specified as percent? 
+		
+		if (sub.layoutStyles.hasWidth()) {
+			// has width, compute and update
+			final int width = computeWidthPx(sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), cur.getAvailableWidth());
+			
+			if (width != -1) {
+				sub.resultingLayout.setHasCSSWidth(true);
+				sub.resultingLayout.getDimensions().setWidth(width);
 
-		final ElementLayout cur = getCur();
-		final ElementLayout sub = push();
+				sub.setAvailableWidth(width);
+			}
+		}
 		
-		// Now should have collected relevant information to do layout and find the dimensions
-		// of the element and also the margins and padding
-		computeLayout(layoutStyles, cur, sub, document, element);
-		
-		// Got layout, add to layer
-		final short zIndex = layoutStyles.getZIndex();
-		
-		pageLayout.addOrGetLayer(zIndex, renderFactory);
+		if (sub.layoutStyles.hasHeight()) {
+			// has width, compute and update
+			final int height = computeHeightPx(sub.layoutStyles.getHeight(), sub.layoutStyles.getHeightUnit(), cur.getAvailableHeight());
+			
+			if (height != -1) {
+				sub.resultingLayout.setHasCSSHeight(true);
+				sub.resultingLayout.getDimensions().setHeight(height);
+
+				sub.setAvailableHeight(height);
+			}
+		}
 	}
-	
+
     @Override
 	public void onElementEnd(Document<ELEMENT> document, ELEMENT element, CSSContext<ELEMENT> cssContext) {
-		
-		final ElementLayout cur = getCur();
+	
+		final StackElement cur = getCur();
 		
 		pop();
 		
-		final ElementLayout parent  = getCur();
+		final StackElement parent  = getCur();
+	
+		// Now should have collected relevant information to do layout and find the dimensions
+		// of the element and also the margins and padding?
+		// does not know size of content yet so cannot for sure know height of element
+		computeLayout(cur.layoutStyles, parent, cur, document, element);
+		
+		// Got layout, add to layer
+		final short zIndex = cur.layoutStyles.getZIndex();
+		
+		final PageLayer<ELEMENT>layer = pageLayout.addOrGetLayer(zIndex, renderFactory);
 		
 		// Has computed sub element size by now so can add
-		if (!parent.hasCSSWidth()) {
+		if (!parent.resultingLayout.hasCSSWidth()) {
 			// no width from CSS so must add this element to size
-			parent.getDimensions().addToWidth(cur.getDimensions().getWidth());
+			parent.resultingLayout.getDimensions().addToWidth(cur.resultingLayout.getDimensions().getWidth());
 		}
-		
-		if (!parent.hasCSSHeight()) {
+	
+		if (!parent.resultingLayout.hasCSSHeight()) {
 			// no width from CSS so must add this element to size
-			parent.getDimensions().addToHeight(cur.getDimensions().getHeight());
+			parent.resultingLayout.getDimensions().addToHeight(cur.resultingLayout.getDimensions().getHeight());
 		}
 	}
-	
+
+    // Get text length or available width, whichever is longer
+    private int getTextLengthOrAvailableWidth(String text, int availableWidth, IFont font) {
+    	// TODO: does not have to get extent of complete text, can do an approximization to check whether > availableWidh, since text can be quite long
+
+    	final int width = textExtent.getTextExtent(font, text);
+    	
+    	return availableWidth == -1 ? width : Math.min(width, availableWidth);
+    }
+    
     @Override
 	public void onText(Document<ELEMENT> document, String text, CSSContext<ELEMENT> cssContext) {
 		// We have a text element, compute text extents according to current mode
 		// TODO: text-align, overflow
 
-		final ElementLayout cur = getCur();
-		
-		final int width = textExtent.getTextExtent(cur.getFont(), text);
-		
-		switch (cur.getDisplay()) {
+		final StackElement cur = getCur();
+
+		final int width = getTextLengthOrAvailableWidth(text, cur.getAvailableWidth(), cur.resultingLayout.getFont());
+
+		switch (cur.layoutStyles.getDisplay()) {
 		case BLOCK:
 			// adds to width if is larger than current width
 			// TODO margin and padding?
 			break;
-			
+
 		case INLINE:
 			// text adds to width of element
-			cur.getDimensions().addToWidth(width);
+			cur.resultingLayout.getDimensions().addToWidth(width);
 			break;
-			
+
 		default:
-			throw new UnsupportedOperationException("Unknown display " + cur.getDisplay());
+			throw new UnsupportedOperationException("Unknown display " + cur.layoutStyles.getDisplay());
 		}
 	}
 	
+	private void computeLayout(CSSLayoutStyles styles, StackElement cur, StackElement sub, Document<ELEMENT> document, ELEMENT element) {
+
+		// Can we compute the dimensions of the element regardless of the position? Depends on overflow property etc, whether can scroll? Has to takes current layout into account
 	
-	private void computeLayout(CSSLayoutStyles styles, ElementLayout cur, ElementLayout sub, Document<ELEMENT> document, ELEMENT element) {
-		// Can we compute the dimensions of the element regardless of the position? Depends on overflow property etc, whether can scroll? Has to takse current rlayout into account
-		
 		if (styles.getFloat() != null) {
 			throw new UnsupportedOperationException("TODO: support floats");
 		}
 
-		computeElementDimensionsOnElementStart(styles, cur, sub);
-
 		switch (styles.getDisplay()) {
 		case BLOCK:
 			// continue after next element on this index
-			computeBlockElementPosition(styles, dimensions);
+			// computeBlockElementPosition(styles, dimensions);
+			// Since this a block
 			break;
 			
 		case INLINE:
-			computeInlineElementPosition(styles, dimensions);
+			// computeInlineElementPosition(styles, dimensions);
 			break;
 		
 		default:
@@ -174,16 +223,16 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		
 	}
 
-	private ElementLayout getCur() {
+	private StackElement getCur() {
 		return curDepth == 0 ? null : stack.get(curDepth - 1);
 	}
 	
-	private ElementLayout push() {
+	private StackElement push(int availableWidth, int availableHeight) {
 		
-		final ElementLayout ret;
+		final StackElement ret;
 		
 		if (curDepth == stack.size()) {
-			ret = new ElementLayout();
+			ret = new StackElement(availableWidth, availableHeight);
 			
 			stack.add(ret);
 		}
@@ -191,9 +240,9 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			// reuse existing
 			ret = stack.get(curDepth);
 		}
-		
+
 		++ curDepth;
-		
+	
 		return ret;
 	}
 	
@@ -201,35 +250,8 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		-- curDepth;
 	}
 	
-	
-	private void computeElementDimensionsOnElementStart(CSSLayoutStyles styles,  ElementLayout cur, ElementLayout sub) {
-		// Does it have width set?
-		if (styles.hasWidth()) {
-			final int width = computeWidthPx(styles.getWidth(), styles.getWidthUnit(), cur.getDimensions(), viewPort);
-			
-			sub.setHasCSSWidth(true);
-			sub.getDimensions().setWidth(width);
-		}
-		else {
-			// No width set as part of CSS so we must compute element size from the element itself.
-			// This depends on the type of element, the available space etc.
-		}
-		
-		
-		// Does it have height? If not, compute height of element
-		if (styles.hasHeight()) {
-			final int height = computeWidthPx(styles.getHeight(), styles.getHeightUnit(), cur.getDimensions(), viewPort);
-			
-			sub.setHasCSSHeight(true);
-			sub.getDimensions().setHeight(height);
-		}
-		else {
-			// No width set as part of CSS so we must compute element size from the element itself.
-			// This depends on the type of element, the available space etc.
-		}
-	}
-	
-	private static int computeWidthPx(int width, CSSUnit widthUnit, Dimensions cur,  ViewPort viewPort) {
+
+	private static int computeWidthPx(int width, CSSUnit widthUnit, int curWidth) {
 
 		final int ret;
 		
@@ -243,7 +265,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			break;
 			
 		case PCT:
-			ret = percentOf(cur != null ? cur.getWidth() : viewPort.getViewPortWidth(), width);
+			ret = curWidth == -1 ? -1 : percentOf(curWidth, width);
 			break;
 			
 		default:
@@ -253,7 +275,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		return ret;
 	}
 
-	private static int computeHeightPx(int height, CSSUnit heightUnit, Dimensions cur,  ViewPort viewPort) {
+	private static int computeHeightPx(int height, CSSUnit heightUnit, int curHeight) {
 
 		final int ret;
 		
@@ -267,7 +289,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			break;
 			
 		case PCT:
-			ret = percentOf(cur != null ? cur.getHeight() : viewPort.getViewPortHeight(), height);
+			ret = curHeight == -1 ? -1 : percentOf(curHeight, height);
 			break;
 			
 		default:
@@ -277,11 +299,6 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		return ret;
 	}
 	
-	private static class ElemenSums {
-		private int width;
-		private int height;
-	}
-
 	private static int pxFromEm(int em) {
 		// TODO
 		return em;
