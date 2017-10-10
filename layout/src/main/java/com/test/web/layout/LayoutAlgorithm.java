@@ -31,6 +31,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 	// For finding size of text strings when using a particular font for rendering
 	private final ITextExtent textExtent;
+	private final TextUtil textUtil;
 
 	// We have to maintain a stack for computed elements, ElementLayout contains computed values for element at that level
 	private final List<StackElement> stack;
@@ -57,6 +58,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		
 		this.viewPort = viewPort;
 		this.textExtent = textExtent;
+		this.textUtil = new TextUtil(textExtent);
 
 		this.stack = new ArrayList<>();
 		this.curDepth = 0;
@@ -128,6 +130,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     @Override
 	public void onElementEnd(Document<ELEMENT> document, ELEMENT element, CSSContext<ELEMENT> cssContext) {
 	
+    	// End of element where wer're at
 		final StackElement cur = getCur();
 		
 		pop();
@@ -146,88 +149,17 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		
 		// Has computed sub element size by now so can add
 		if (!parent.resultingLayout.hasCSSWidth()) {
-			// no width from CSS so must add this element to size
+			// no width from CSS so must add this element to size of curent element
 			parent.resultingLayout.getDimensions().addToWidth(cur.resultingLayout.getDimensions().getWidth());
 		}
 	
 		if (!parent.resultingLayout.hasCSSHeight()) {
-			// no width from CSS so must add this element to size
+			// no width from CSS so must add this element to size of current element
 			parent.resultingLayout.getDimensions().addToHeight(cur.resultingLayout.getDimensions().getHeight());
 		}
 	}
 
-    // Get text length or available width, whichever is longer
-    private int getTextLengthOrAvailableWidth(String text, int availableWidth, IFont font) {
-    	// TODO: does not have to get extent of complete text, can do an approximization to check whether > availableWidh, since text can be quite long
 
-    	final int width = textExtent.getTextExtent(font, text);
-    	
-    	return availableWidth == -1 ? width : Math.min(width, availableWidth);
-    }
-    
-    private int findNumberOfChars(String string, int availableWidth, IFont font) {
-    	// figure out approximate number of characters
-
-    	final int guessCharacters = availableWidth / font.getAverageWidth();
-    	final int tryCharacters = Math.min(string.length(), guessCharacters);
-    	final String s = string.substring(0, tryCharacters);
-    	final int width = textExtent.getTextExtent(font, s);
-    	
-    	final int ret;
-    	
-    	if (width > availableWidth) {
-    		// try with fewer characters
-    		if (tryCharacters == 0) {
-    			ret = 0;
-    		}
-    		else {
-	    		int numChars = tryCharacters - 1;
-	    		
-	    		for (;;) {
-	    			final int w = textExtent.getTextExtent(font, string.substring(0, numChars));
-	    			
-	    			if (w <= availableWidth) {
-	    				break;
-	    			}
-	    			
-	    			-- numChars;
-	    		}
-	    		
-	    		ret = numChars;
-    		}
-    	}
-    	else  if (width == availableWidth) {
-    		ret = tryCharacters;
-    	}
-    	else {
-    		int numChars = tryCharacters - 1;
-    		
-    		for (;;) {
-    			final int w = textExtent.getTextExtent(font, string.substring(0, numChars));
-    			
-    			if (w > availableWidth) {
-    				-- numChars;
-    				break;
-    			}
-    			else if (w == availableWidth) {
-    				break;
-    			}
-    			
-    			++ numChars;
-    		}
-    		
-    		ret = numChars;
-    	}
-    	
-    	return ret;
-    }
-    
-    
-    private int getTextLineHeight(StackElement cur, IFont font) {
-		// TODO add spacing between text lines
-    	return font.getHeight();
-    }
-    
     @Override
 	public void onText(Document<ELEMENT> document, String text, CSSContext<ELEMENT> cssContext) {
 		// We have a text element, compute text extents according to current mode
@@ -237,7 +169,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 		final IFont font = cur.resultingLayout.getFont();
 		
-		final int width = getTextLengthOrAvailableWidth(text, cur.getAvailableWidth(), font);
+		final int width = textUtil.getTextLengthOrAvailableWidth(text, cur.getAvailableWidth(), font);
 		
 		int height = 0;
 		
@@ -250,9 +182,9 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			for (;;) {
 			
 				// For each line, find with of text
-				int numChars = findNumberOfChars(s, cur.getAvailableWidth(), font);
+				int numChars = textUtil.findNumberOfChars(s, cur.getAvailableWidth(), font);
 				
-				height += getTextLineHeight(cur, font);
+				height += textUtil.getTextLineHeight(cur, font);
 				
 				if (numChars == s.length()) {
 					// was room for rest of string, exit
@@ -264,7 +196,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		}
 		else {
 			// height is size of text line
-			height = getTextLineHeight(cur, font);
+			height = textUtil.getTextLineHeight(cur, font);
 		}
 
 		if (height > maxBlockElementHeight) {

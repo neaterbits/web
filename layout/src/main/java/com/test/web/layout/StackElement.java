@@ -4,16 +4,17 @@ import com.test.web.css.common.CSSLayoutStyles;
 
 // Stack element on the layout stack, we add information here at time of start tag
 // and then just fetch that information when getting to end tag
+// Mutable so can be reused within stack
 final class StackElement {
-	// available width and height at this level.
-	// width is given by the viewport
+	// available width and height at this level, ie. the max dimension that the element at this level can have
+	// width is given by the viewport at the window level mainly for width but also for height if specified as 100%
 	private int availableWidth;
 	private int availableHeight;
 	
 	// Work area for singlethreaded algorithm, storing non threadsafe data here, but should be ok since HTML document parsing happens on one thread
 	final CSSLayoutStyles layoutStyles;
 	
-	// The resulting layout after computation
+	// The resulting layout after computation of width and height
 	final ElementLayout resultingLayout;
 
 	StackElement(int availableWidth, int availableHeight) {
