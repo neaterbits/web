@@ -12,6 +12,8 @@ import com.test.web.testdata.TestData;
 
 import junit.framework.TestCase;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class LayoutTest extends TestCase {
 	
 	public void testLayout() throws IOException, ParserException {
@@ -39,10 +41,11 @@ public class LayoutTest extends TestCase {
 				viewPort,
 				textExtent,
 				renderFactory);
-		
+
 		final CSSContext<Integer> cssContext = new CSSContext<>();
 
-		doc.iterate(layoutAgorithm, cssContext);
+		final PageLayout<Integer> pageLayout = layoutAgorithm.layout(doc, cssContext);
 		
+		assertThat(pageLayout.getLayers().size()).isEqualTo(1);
 	}
 }

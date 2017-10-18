@@ -1,6 +1,7 @@
 package com.test.web.layout;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.test.web.render.common.IRenderFactory;
@@ -35,5 +36,9 @@ public final class PageLayout<ELEMENT> {
 		}
 		
 		return found;
+	}
+	
+	public List<PageLayer<ELEMENT>> getLayers() {
+		return Collections.unmodifiableList(layers);
 	}
 }

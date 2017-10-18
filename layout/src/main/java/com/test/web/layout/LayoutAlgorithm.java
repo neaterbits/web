@@ -69,6 +69,13 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		push(viewPort.getViewPortWidth(), viewPort.getViewPortHeight());
 	}
 
+	public PageLayout<ELEMENT> layout(Document<ELEMENT> document, CSSContext<ELEMENT> cssContext) {
+		
+		document.iterate(this, cssContext);
+		
+		return this.pageLayout;
+	}
+	
     @Override
 	public void onElementStart(Document<ELEMENT> document, ELEMENT element, CSSContext<ELEMENT> cssContext) {
    	
