@@ -28,6 +28,7 @@ public abstract class BaseParser<TOKEN extends Enum<TOKEN> & IToken, INPUT exten
 		return lexer;
 	}
 	
+	@SafeVarargs
 	protected final TOKEN [] merge(TOKEN token, TOKEN ... otherTokens) {
 		final TOKEN [] copy = Arrays.copyOf(otherTokens, otherTokens.length + 1);
 
@@ -37,6 +38,7 @@ public abstract class BaseParser<TOKEN extends Enum<TOKEN> & IToken, INPUT exten
 		return copy;
 	}
 
+	@SafeVarargs
 	protected final TOKEN [] merge(TOKEN [] tokens, TOKEN ... otherTokens) {
 		final TOKEN [] copy = Arrays.copyOf(tokens, tokens.length + otherTokens.length);
 
@@ -46,6 +48,7 @@ public abstract class BaseParser<TOKEN extends Enum<TOKEN> & IToken, INPUT exten
 		return copy;
 	}
 
+	@SafeVarargs
 	protected final TOKEN lexSkipWS(TOKEN ... tokens) throws IOException {
 
 		TOKEN token = lexer.lex(merge(wsToken, tokens));

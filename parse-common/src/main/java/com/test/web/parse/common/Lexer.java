@@ -50,7 +50,7 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	}
 	
 	
-	public TOKEN lex(TOKEN ... tokens) throws IOException {
+	public TOKEN lex(@SuppressWarnings("unchecked") TOKEN ... tokens) throws IOException {
 		
 		if (DEBUG) {
 			System.out.println("----");

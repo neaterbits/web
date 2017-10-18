@@ -30,7 +30,6 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	private final ViewPort viewPort;
 
 	// For finding size of text strings when using a particular font for rendering
-	private final ITextExtent textExtent;
 	private final TextUtil textUtil;
 
 	// We have to maintain a stack for computed elements, ElementLayout contains computed values for element at that level
@@ -55,7 +54,6 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	public LayoutAlgorithm(ViewPort viewPort, ITextExtent textExtent, IRenderFactory renderFactory) {
 		
 		this.viewPort = viewPort;
-		this.textExtent = textExtent;
 		this.textUtil = new TextUtil(textExtent);
 
 		this.stack = new ArrayList<>();
