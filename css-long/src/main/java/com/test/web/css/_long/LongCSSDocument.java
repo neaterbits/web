@@ -10,13 +10,13 @@ import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
+import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
-import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.parse.css.CSSParserListener;
 

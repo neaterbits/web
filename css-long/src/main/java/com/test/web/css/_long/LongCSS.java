@@ -10,11 +10,7 @@ import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.css.common.enums.CSSJustify;
 
-import static com.test.web.buffers.BitOperations.max;
-
 import com.test.web.buffers.BufferUtil;
-
-import static com.test.web.buffers.BitOperations.maskToInt;
 
 /**
  * For storing styling information in a long [] array for this purpose

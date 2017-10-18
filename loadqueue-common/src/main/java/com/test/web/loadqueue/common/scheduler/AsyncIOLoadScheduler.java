@@ -2,7 +2,6 @@ package com.test.web.loadqueue.common.scheduler;
 
 import java.util.function.BiFunction;
 
-import com.test.web.io.common.StreamStatus;
 import com.test.web.loadqueue.common.ILoadQueue;
 import com.test.web.loadqueue.common.LoadCompletionListener;
 import com.test.web.loadqueue.common.LoadQueueAndStream;

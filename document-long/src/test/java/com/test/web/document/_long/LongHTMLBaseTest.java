@@ -1,8 +1,8 @@
 package com.test.web.document._long;
 
-import junit.framework.TestCase;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import junit.framework.TestCase;
 
 public class LongHTMLBaseTest extends TestCase {
 

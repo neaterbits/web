@@ -1,7 +1,7 @@
 package com.test.web.parse.css;
 
-import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSSJustify;
+import com.test.web.css.common.enums.CSSUnit;
 
 interface IJustifyFunction {
 

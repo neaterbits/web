@@ -2,12 +2,12 @@ package com.test.web.parse.css;
 
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
+import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSUnit;
-import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.io.common.Tokenizer;
 
 public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {

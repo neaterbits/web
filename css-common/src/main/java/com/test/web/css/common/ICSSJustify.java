@@ -1,7 +1,7 @@
 package com.test.web.css.common;
 
-import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSSJustify;
+import com.test.web.css.common.enums.CSSUnit;
 
 /**
  * For reading back CSS justify values back from buffer 

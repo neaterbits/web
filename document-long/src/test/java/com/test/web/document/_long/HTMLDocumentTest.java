@@ -1,11 +1,8 @@
 package com.test.web.document._long;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,8 +15,6 @@ import com.test.web.parse.html.HTMLParser;
 import com.test.web.testdata.TestData;
 
 import junit.framework.TestCase;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class HTMLDocumentTest extends TestCase {
 	public void testParser() throws IOException, ParserException {

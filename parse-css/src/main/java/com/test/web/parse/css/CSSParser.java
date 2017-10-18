@@ -1,15 +1,14 @@
 package com.test.web.parse.css;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
-import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.io.common.CharInput;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.BaseParser;

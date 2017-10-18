@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.test.web.render.common.IRenderFactory;
-import com.test.web.render.common.IRenderer;
 
 /*
  * Page layout consists of a number of page layers, each page
