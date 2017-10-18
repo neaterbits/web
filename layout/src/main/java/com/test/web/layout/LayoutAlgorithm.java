@@ -50,8 +50,6 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	// Position of current display block
 	private int curBlockYPos;
 	
-	// Max height for elements in this block, we'll advance element position with this many
-	private int maxBlockElementHeight;
 	
 	
 	public LayoutAlgorithm(ViewPort viewPort, ITextExtent textExtent, IRenderFactory renderFactory) {
@@ -70,7 +68,6 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		
 		// TODO how does this work for other zIndex? Will they have their separate layout?
 		this.curBlockYPos = 0;
-		this.maxBlockElementHeight = 0;
 		
 		// Push intial element on stack
 		push(viewPort.getViewPortWidth(), viewPort.getViewPortHeight());
@@ -136,7 +133,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		pop();
 		
 		final StackElement parent  = getCur();
-	
+
 		// Now should have collected relevant information to do layout and find the dimensions
 		// of the element and also the margins and padding?
 		// does not know size of content yet so cannot for sure know height of element
@@ -152,11 +149,20 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			// no width from CSS so must add this element to size of curent element
 			parent.resultingLayout.getDimensions().addToWidth(cur.resultingLayout.getDimensions().getWidth());
 		}
+
+		// Add to height of current element if is taller than max for current element
+		final int height = cur.resultingLayout.getDimensions().getHeight();
+
+		if (height > parent.getMaxBlockElementHeight()) {
+			parent.setMaxBlockElementHeight(height);
+		}
 	
+		/*
 		if (!parent.resultingLayout.hasCSSHeight()) {
 			// no width from CSS so must add this element to size of current element
 			parent.resultingLayout.getDimensions().addToHeight(cur.resultingLayout.getDimensions().getHeight());
 		}
+		*/
 	}
 
 
@@ -199,10 +205,14 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			height = textUtil.getTextLineHeight(cur, font);
 		}
 
-		if (height > maxBlockElementHeight) {
-			maxBlockElementHeight = height;
+		if (height > cur.getMaxBlockElementHeight()) {
+			cur.setMaxBlockElementHeight(height);
 		}
 
+		addWidthToCur(cur, width);
+	}
+    
+    private void addWidthToCur(StackElement cur, int width) {
 		switch (cur.layoutStyles.getDisplay()) {
 		case BLOCK:
 			// adds to width if is larger than current width
@@ -217,7 +227,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		default:
 			throw new UnsupportedOperationException("Unknown display " + cur.layoutStyles.getDisplay());
 		}
-	}
+    }
 	
 	private void computeLayout(CSSLayoutStyles styles, StackElement cur, StackElement sub, Document<ELEMENT> document, ELEMENT element) {
 
@@ -229,6 +239,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 		switch (styles.getDisplay()) {
 		case BLOCK:
+			
 			// continue after next element on this index
 			// computeBlockElementPosition(styles, dimensions);
 			// Since this a block

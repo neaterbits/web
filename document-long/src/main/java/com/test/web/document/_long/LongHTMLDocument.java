@@ -1,5 +1,8 @@
 package com.test.web.document._long;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,11 +14,15 @@ import java.util.Map;
 import com.test.web.buffers.LongBuffersIntegerIndex;
 import com.test.web.buffers.StringStorageBuffer;
 import com.test.web.css.common.ICSSDocument;
+import com.test.web.document.common.Document;
 import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.io._long.StringBuffers;
+import com.test.web.io.common.SimpleLoadStream;
+import com.test.web.parse.common.ParserException;
+import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.IDocumentParserListener;
 import com.test.web.parse.html.enums.HTMLDirection;
 import com.test.web.types.Debug;
@@ -722,5 +729,25 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		
 		// Iterate all elements and collect those of type
 		return ret;
+	}
+
+
+	// Helper method for loading a document, useful from unit tests
+	public static LongHTMLDocument loadHTMLDocument(String fileName)  throws IOException, ParserException {
+		
+		final LongHTMLDocument doc;
+		
+		try (InputStream inputStream = new FileInputStream(fileName)) {
+		
+			final StringBuffers buffers = new StringBuffers(new SimpleLoadStream(inputStream));
+	
+			doc = new LongHTMLDocument(buffers);
+			
+			final HTMLParser<Integer, LongTokenizer> parser = new HTMLParser<>(buffers, buffers, doc);
+			
+			parser.parseHTMLFile();
+		}
+
+		return doc;
 	}
 }

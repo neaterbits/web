@@ -17,13 +17,22 @@ final class StackElement {
 	// The resulting layout after computation of width and height
 	final ElementLayout resultingLayout;
 
+	// Max height for elements in this block, we'll advance position with this many
+	private int maxBlockElementHeight;
+
 	StackElement(int availableWidth, int availableHeight) {
 		
-		this.availableWidth = availableWidth;
-		this.availableHeight = availableHeight;
+		init(availableWidth, availableHeight);
 		
 		this.layoutStyles = new CSSLayoutStyles();
 		this.resultingLayout = new ElementLayout();
+	}
+	
+	void init(int availableWidth, int availableHeight) {
+		this.availableWidth = availableWidth;
+		this.availableHeight = availableHeight;
+
+		this.maxBlockElementHeight = 0;
 	}
 
 	int getAvailableWidth() {
@@ -48,6 +57,14 @@ final class StackElement {
 
 	ElementLayout getResultingLayout() {
 		return resultingLayout;
+	}
+
+	int getMaxBlockElementHeight() {
+		return maxBlockElementHeight;
+	}
+
+	void setMaxBlockElementHeight(int maxBlockElementHeight) {
+		this.maxBlockElementHeight = maxBlockElementHeight;
 	}
 }
 

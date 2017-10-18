@@ -2,6 +2,7 @@ package com.test.web.io.common;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
@@ -18,6 +19,9 @@ public class SimpleLoadStream extends LoadStream {
 		this.reader = new InputStreamReader(new ByteArrayInputStream(data));
 	}
 	
+	public SimpleLoadStream(InputStream inputStream) {
+		this.reader = new InputStreamReader(inputStream);
+	}
 
 	public boolean isBlocked() {
 		return isBlocked;
