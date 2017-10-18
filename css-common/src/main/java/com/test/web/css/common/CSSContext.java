@@ -22,7 +22,7 @@ public class CSSContext<TARGET> {
 	
 	private final List<ICSSDocument<TARGET>> documents;
 	
-	CSSContext() {
+	public CSSContext() {
 		this.documents = new ArrayList<>();
 	}
 

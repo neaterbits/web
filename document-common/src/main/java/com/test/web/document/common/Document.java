@@ -40,5 +40,7 @@ public interface Document<ELEMENT> {
 
 	String getImgUrl(ELEMENT element);
 	
+	<PARAM> void iterate(HTMLElementListener<ELEMENT, PARAM> listener, PARAM param);
+	
 	<PARAM> void iterateFrom(ELEMENT element, HTMLElementListener<ELEMENT, PARAM> listener, PARAM param);
 }

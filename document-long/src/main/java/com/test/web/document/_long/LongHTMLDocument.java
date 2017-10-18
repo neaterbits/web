@@ -1,5 +1,6 @@
 package com.test.web.document._long;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -581,15 +582,26 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		
 		return count;
 	}
-
 	
+	
+
+	@Override
+	public <PARAM> void iterate(HTMLElementListener<Integer, PARAM> listener, PARAM param) {
+		iterate(INITIAL_ELEMENT, listener, param, INITIAL_ELEMENT,  false);
+	}
 	
 	@Override
 	public <PARAM> void iterateFrom(Integer element, HTMLElementListener<Integer, PARAM> listener, PARAM param) {
 		iterate(INITIAL_ELEMENT, listener, param, element, false);
 	}
 	
-	private <PARAM> boolean iterate(int element, HTMLElementListener<Integer, PARAM> listener, PARAM param, int startElement, boolean callListener) {
+	private <PARAM> boolean iterate(
+			int element,
+			HTMLElementListener<Integer, PARAM> listener,
+			PARAM param,
+			int startElement,
+			boolean callListener) {
+		
 		final int elementOffset = offset(element);
 		final long [] elementBuf = buf(element);
 
@@ -729,22 +741,33 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		// Iterate all elements and collect those of type
 		return ret;
 	}
+	
+	public static LongHTMLDocument parseHTMLDocument(String text)  throws IOException, ParserException {
+		return loadHTMLDocument(new SimpleLoadStream(text));
+	}
 
-
-	// Helper method for loading a document, useful from unit tests
-	public static LongHTMLDocument loadHTMLDocument(String fileName)  throws IOException, ParserException {
+	private static LongHTMLDocument loadHTMLDocument(SimpleLoadStream stream)  throws IOException, ParserException {
 		
 		final LongHTMLDocument doc;
 		
-		try (InputStream inputStream = new FileInputStream(fileName)) {
+		final StringBuffers buffers = new StringBuffers(stream);
+
+		doc = new LongHTMLDocument(buffers);
 		
-			final StringBuffers buffers = new StringBuffers(new SimpleLoadStream(inputStream));
-	
-			doc = new LongHTMLDocument(buffers);
-			
-			final HTMLParser<Integer, LongTokenizer> parser = new HTMLParser<>(buffers, buffers, doc);
-			
-			parser.parseHTMLFile();
+		final HTMLParser<Integer, LongTokenizer> parser = new HTMLParser<>(buffers, buffers, doc);
+		
+		parser.parseHTMLFile();
+
+		return doc;
+	}
+
+	// Helper method for loading a document, useful from unit tests
+	public static LongHTMLDocument loadHTMLDocument(File file)  throws IOException, ParserException {
+		
+		final LongHTMLDocument doc;
+		
+		try (InputStream inputStream = new FileInputStream(file)) {
+			doc = loadHTMLDocument(new SimpleLoadStream(inputStream));
 		}
 
 		return doc;

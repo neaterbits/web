@@ -24,9 +24,11 @@ public class TestData {
 		"}\n";				
 			
 	
+	private static final String DOCTYPE = "<!DOCTYPE HTML PUBLIC \"-//W3C/DTD HTML 4.01 Frameset//EN\" \"http://w3.org/TR/html4/frameset.dtd\">";
+	
 	public static final String HTML =
 	
-	"<!DOCTYPE HTML PUBLIC \"-//W3C/DTD HTML 4.01 Frameset//EN\" \"http://w3.org/TR/html4/frameset.dtd\">" +				
+	DOCTYPE  + "\n" +			
 	"<html>\n" +
 	"<!-- a single line comment -->\n" +
 	"<head>\n" +
@@ -48,4 +50,18 @@ public class TestData {
 	"   </div>\n" +
 	" </body>\n" +
 	"</html>";
+	
+	public static String wrap(String htmlBody) {
+		return DOCTYPE + "\n" +
+				"<html>\n" +
+				"<head>\n" +
+				"</head>\n" +
+				" <body>\n" +
+
+				htmlBody +
+
+				" </body>\n" +
+				"</html>";
+		
+	}
 }
