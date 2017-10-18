@@ -23,7 +23,9 @@ public enum HTMLToken implements IToken {
 	TAG_END(' '),
 
 	QUOTE('"'),
+	SINGLE_QUOTE('\''),
 	EQUALS('='),
+	SEMICOLON(';'),
 	
 	QUOTED_STRING('"', '"'),
 	

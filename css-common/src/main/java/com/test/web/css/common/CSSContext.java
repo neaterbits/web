@@ -60,7 +60,7 @@ public class CSSContext<TARGET> {
 		}
 	}
 	
-	// eg for styles element
+	// eg for styles attribute within any html tag
 	public void applyLayoutStyles(ICSSDocument<TARGET> document, TARGET target, CSSLayoutStyles result) {
 		// Apply dimensions from document
 		final CSSDisplay display = document.getDisplay(target);

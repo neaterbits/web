@@ -55,8 +55,11 @@ public class HTMLLoadQueueTest extends TestCase {
 		final DependencyCollectingParserListener<Integer, LongTokenizer> parserListener
 			= new DependencyCollectingParserListener<>(doc, loadQueue.getQueue(), null, null, null);
 		
-
-		final HTMLParser<Integer, LongTokenizer> parser = new HTMLParser<Integer, LongTokenizer>(buffers, buffers, parserListener);
+		final HTMLParser<Integer, LongTokenizer> parser = new HTMLParser<Integer, LongTokenizer>(
+				buffers,
+				buffers,
+				parserListener,
+				doc.getStyleParserListener());
 		
 		parser.parseHTMLFile();
 	}

@@ -24,6 +24,7 @@ import com.test.web.io.common.SimpleLoadStream;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.IDocumentParserListener;
+import com.test.web.parse.html.IHTMLStyleParserListener;
 import com.test.web.parse.html.enums.HTMLDirection;
 import com.test.web.types.Debug;
 
@@ -69,15 +70,15 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	private final Map<String, Integer> elementById;
 	private final Map<String, List<Integer>> elementsByClass;
 
+	private final LongStyleDocument styleDocument;
+	
 	// Array of element classes that are appended to every time we read an element
 	// TODO: perhaps use a linked-list? We can only add classes here since we only stor index and count for each element, class would seldom be updated dynamically though
 	
 	private int [] elementClasses;
 	private int numElementClasses;
 	
-	
 	private int rootElement;
-	
 	
 	public LongHTMLDocument(StringBuffers textBuffer) {
 		
@@ -98,6 +99,8 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		this.accessKeyBuffer = this.contextMenuBuffer = this.langBuffer = this.titleBuffer = this.relBuffer = this.typeBuffer = this.hrefBuffer = new StringStorageBuffer();
 		
 		this.rootElement = LongHTML.END_OF_LIST_MARKER;
+	
+		this.styleDocument = new LongStyleDocument();
 	}
 
 
@@ -742,23 +745,31 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		return ret;
 	}
 	
+	public IHTMLStyleParserListener<Integer, LongTokenizer> getStyleParserListener() {
+		return styleDocument;
+	}
+	
 	public static LongHTMLDocument parseHTMLDocument(String text)  throws IOException, ParserException {
 		return loadHTMLDocument(new SimpleLoadStream(text));
 	}
 
 	private static LongHTMLDocument loadHTMLDocument(SimpleLoadStream stream)  throws IOException, ParserException {
 		
-		final LongHTMLDocument doc;
+		final LongHTMLDocument htmlDocument;
 		
 		final StringBuffers buffers = new StringBuffers(stream);
 
-		doc = new LongHTMLDocument(buffers);
+		htmlDocument = new LongHTMLDocument(buffers);
 		
-		final HTMLParser<Integer, LongTokenizer> parser = new HTMLParser<>(buffers, buffers, doc);
+		final HTMLParser<Integer, LongTokenizer> parser = new HTMLParser<>(
+				buffers,
+				buffers,
+				htmlDocument,
+				htmlDocument.getStyleParserListener());
 		
 		parser.parseHTMLFile();
 
-		return doc;
+		return htmlDocument;
 	}
 
 	// Helper method for loading a document, useful from unit tests

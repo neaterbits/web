@@ -110,6 +110,8 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		
 		listener.onEntityEnd(context);
 	}
+
+	private static final CSSToken [] STYLE_TOKENS = copyTokens(token -> token.getElement() != null);
 	
 	private static final CSSToken [] BLOCK_TOKENS = copyTokens(
 			token -> token.getElement() != null, 
@@ -203,8 +205,19 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	private void skipAnyWS() throws IOException {
 		lexer.lex(CSSToken.WS);
 	}
+
+	public boolean parseElement(LISTENER_CONTEXT context) throws IOException, ParserException {
+		
+		final CSSToken token = lexSkipWS(STYLE_TOKENS);
+		
+		if (token == CSSToken.NONE) {
+			throw new ParserException("No CSS style token found");
+		}
+		
+		return parseElementWithoutCheckingForSemiColon(context, token.getElement());
+	}
 	
-	private void parseElement(LISTENER_CONTEXT context, CSStyle element) throws IOException, ParserException {
+	private boolean parseElementWithoutCheckingForSemiColon(LISTENER_CONTEXT context, CSStyle element) throws IOException, ParserException {
 		CSSToken token = lexSkipWS(CSSToken.COLON);
 		
 		if (token != CSSToken.COLON) {
@@ -213,7 +226,6 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		
 		// Skip any WS
 		skipAnyWS();
-		
 
 		// Now read value, this depends on input style
 		final boolean semiColonRead;
@@ -275,8 +287,15 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			throw new UnsupportedOperationException("Unknown element " + element);
 		}
 		
+		return semiColonRead;
+	}
+
+	private void parseElement(LISTENER_CONTEXT context, CSStyle element) throws IOException, ParserException {
+
+		final boolean semiColonRead = parseElementWithoutCheckingForSemiColon(context, element);
+
 		if (!semiColonRead) {
-			token = lexer.lex(CSSToken.SEMICOLON);
+			final CSSToken token = lexer.lex(CSSToken.SEMICOLON);
 
 			if (token != CSSToken.SEMICOLON) {
 				throw lexer.unexpectedToken();

@@ -13,20 +13,16 @@ import com.test.web.testdata.TestData;
 import junit.framework.TestCase;
 
 public class LayoutTest extends TestCase {
-
 	
 	public void testLayout() throws IOException, ParserException {
-
 		
 		final String html = TestData.wrap(
-				"<div style='width:100px'>\n" +
+				"<div style='width:100px;height:300px'>\n" +
 				"This is a test text that will wrap after 100 pixels" +
 				"</div>\n"
 		);
 		
-		
 		final LongHTMLDocument doc = LongHTMLDocument.parseHTMLDocument(html);
-		
 		
 		final IRenderFactory renderFactory = new IRenderFactory() {
 			@Override

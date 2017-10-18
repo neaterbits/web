@@ -49,8 +49,6 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	// Position of current display block
 	private int curBlockYPos;
 	
-	
-	
 	public LayoutAlgorithm(ViewPort viewPort, ITextExtent textExtent, IRenderFactory renderFactory) {
 		
 		this.viewPort = viewPort;

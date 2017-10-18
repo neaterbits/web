@@ -10,32 +10,48 @@ import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.BaseParser;
 import com.test.web.parse.common.Lexer;
 import com.test.web.parse.common.ParserException;
+import com.test.web.parse.css.CSSParser;
 import com.test.web.types.IIndent;
 
-public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer> extends BaseParser<HTMLToken, CharInput> implements IIndent {
+public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer>
+	extends BaseParser<HTMLToken, CharInput>
+	implements IIndent {
 	
 	private static final boolean DEBUG = true;
 	private static final PrintStream DEBUG_OUT = System.out;
 	
 	private int debugStackLevel;
 	
-	
 	private final TOKENIZER tokenizer;
 	private final Lexer<HTMLToken, CharInput> lexer;
-	private final HTMLParserListener<ELEMENT, TOKENIZER> listener;
+	private final HTMLParserListener<ELEMENT, TOKENIZER> htmlListener;
+
+	private final IHTMLStyleParserListener<ELEMENT, TOKENIZER> styleAttributeListener;
+	private final CSSParser<TOKENIZER, Void> styleAttributeParser;
 	
-	public HTMLParser(CharInput input, TOKENIZER tokenizer, HTMLParserListener<ELEMENT, TOKENIZER> listener) {
-		super(new Lexer<HTMLToken, CharInput>(input, HTMLToken.class, HTMLToken.NONE, null), HTMLToken.WS);
-		
+	private static Lexer<HTMLToken, CharInput> createLexer(CharInput input) {
+		return new Lexer<HTMLToken, CharInput>(input, HTMLToken.class, HTMLToken.NONE, null);
+	}
+
+	public HTMLParser(
+			CharInput input,
+			TOKENIZER tokenizer,
+			HTMLParserListener<ELEMENT, TOKENIZER> htmlListener,
+			IHTMLStyleParserListener<ELEMENT, TOKENIZER> styleAttributeListener) {
+
+		super(createLexer(input), HTMLToken.WS);
+	
 		this.tokenizer = tokenizer;
 		this.lexer = getLexer();
-		this.listener = listener;
+		this.htmlListener = htmlListener;
+		
+		this.styleAttributeListener = styleAttributeListener;
+		this.styleAttributeParser = new CSSParser<>(input, styleAttributeListener);
 	}
-	
+
 	private HTMLToken rootTag(HTMLToken ... tagTokens) throws IOException, ParserException {
 		return endTagOrSub(null, true, tagTokens);
 	}
-	
 	
 	private HTMLToken endTagOrSubOrText(HTMLToken currentTag, boolean allowNone, boolean allowText, HTMLToken ... tagTokens) throws IOException, ParserException {
 		final HTMLToken found;
@@ -97,7 +113,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer> extends Base
 					
 					debugExit(currentTag.getElement().getName());
 
-					listener.onElementEnd(tokenizer, currentTag.getElement());
+					htmlListener.onElementEnd(tokenizer, currentTag.getElement());
 	
 					// Skip '>' too
 					if (lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
@@ -110,13 +126,13 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer> extends Base
 				default:
 					// Found element
 					debugEnter(tagToken.getElement().getName());
-					listener.onElementStart(tokenizer, tagToken.getElement());
+					final ELEMENT documentElement = htmlListener.onElementStart(tokenizer, tagToken.getElement());
 					
 					// Parse any attributes
 					final HTMLToken [] attributeTokens = tagToken.getAttributeTokens();
 					
 					if (attributeTokens != null && attributeTokens.length > 0) {
-						switch (parseTagAttributes(tagToken.getElement(), attributeTokens)) {
+						switch (parseTagAttributes(tagToken.getElement(), documentElement, attributeTokens)) {
 						// In '/' then this is start and end tag in one 
 						case TAG_SLASH:
 							if (lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
@@ -124,7 +140,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer> extends Base
 							}
 							debugExit(tagToken.getElement().getName());
 
-							listener.onElementEnd(tokenizer, tagToken.getElement());
+							htmlListener.onElementEnd(tokenizer, tagToken.getElement());
 							break;
 							
 						case TAG_GREATER_THAN:
@@ -339,7 +355,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer> extends Base
 				break;
 				
 			case TEXT:
-				listener.onText(tokenizer, 0, lexer.getEndSkip());
+				htmlListener.onText(tokenizer, 0, lexer.getEndSkip());
 				break;
 				
 			case TAG_END:
@@ -352,7 +368,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer> extends Base
 		} while (!done);
 	}
 	
-	private HTMLToken parseTagAttributes(HTMLElement element, HTMLToken ... attributes) throws IOException, ParserException {
+	private HTMLToken parseTagAttributes(HTMLElement element, ELEMENT documentElement, HTMLToken ... attributes) throws IOException, ParserException {
 
 		// Look for any attributes or for tag start
 		final HTMLToken [] tokens = Arrays.copyOf(attributes, attributes.length + 3);
@@ -397,6 +413,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer> extends Base
 				
 			case STYLE:
 				// Special handling of style attribute as we parse this as a CSS document
+				parseStyleAttribute(documentElement);
 				break;
 
 			default:
@@ -416,7 +433,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer> extends Base
 		switch (lexer.lex(HTMLToken.TEXT, HTMLToken.TAG_LESS_THAN)) {
 		case TEXT:
 			debugText();
-			listener.onText(tokenizer, 0, lexer.getEndSkip());
+			htmlListener.onText(tokenizer, 0, lexer.getEndSkip());
 			checkTagEnd(elementToken);
 			break;
 
@@ -449,7 +466,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer> extends Base
 				break;
 
 			case NONE:
-				listener.onAttributeWithoutValue(tokenizer, attributeToken.getAttribute());
+				htmlListener.onAttributeWithoutValue(tokenizer, attributeToken.getAttribute());
 				done = true;
 				break;
 
@@ -467,7 +484,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer> extends Base
 		switch (token) {
 		case QUOTED_STRING:
 			// Read until end of quote or whitespace
-			listener.onAttributeWithValue(tokenizer, attributeToken.getAttribute(), 1, 1, element);
+			htmlListener.onAttributeWithValue(tokenizer, attributeToken.getAttribute(), 1, 1, element);
 			break;
 			
 		default:
@@ -496,7 +513,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer> extends Base
 				
 			case CLASS_NAME:
 				// TODO: must skip 1 at end since lexer has read one past, find more elegant solution
-				listener.onClassAttributeValue(tokenizer, 0, lexer.getEndSkip());
+				htmlListener.onClassAttributeValue(tokenizer, 0, lexer.getEndSkip());
 				break;
 				
 			case QUOTE:
@@ -508,6 +525,62 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer> extends Base
 			}
 		} while (!done);
 	}
+	
+	// style attribute requires special parsing,  we parse utilizing the CSS parser for the style attribute
+	private void parseStyleAttribute(ELEMENT documentElement) throws IOException, ParserException {
+
+		// Parse style attribute contents using CSS parser, but we have to skip  ' and ;
+		final HTMLToken equalsToken = lexSkipWS(HTMLToken.EQUALS);
+		
+		if (equalsToken != HTMLToken.EQUALS) {
+			throw lexer.unexpectedToken();
+		}
+		
+		final HTMLToken token = lexSkipWS(HTMLToken.QUOTE, HTMLToken.SINGLE_QUOTE);
+
+		switch (token) {
+		case QUOTE:
+		case SINGLE_QUOTE:
+			break;
+			
+		default:
+			throw lexer.unexpectedToken();
+		}
+		
+		// Now parse CSS elements in a loop
+		for (;;) {
+			
+			// Must set HTML element in CSS document so that we can later find back to CSS element from HTML element
+			styleAttributeListener.startParseStyleElement(documentElement);
+			
+			// Call CSS parser to parse element
+			final boolean semiColonRead = styleAttributeParser.parseElement(null);
+			
+			final HTMLToken [] tokens;
+			
+			// TOO maybe move allocation outside loop
+			if (semiColonRead) {
+				tokens = new HTMLToken [] { token };
+			}
+			else {
+				tokens = new HTMLToken [] { token, HTMLToken.SEMICOLON };
+			}
+			
+			// Now expect end quote or semicolon
+			final HTMLToken t = lexSkipWS(tokens);
+			
+			if (t == token) {
+				break;
+			}
+			else if (t == HTMLToken.SEMICOLON) {
+				// continue one more iteration
+			}
+			else {
+				throw lexer.unexpectedToken();
+			}
+		}
+	}
+
 	
 	private HTMLToken tags(HTMLToken ... htmlTokens) throws IOException, ParserException {
 
@@ -571,6 +644,6 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer> extends Base
 
 		debugExit(elementToken.getElement().getName());
 
-		listener.onElementEnd(tokenizer, elementToken.getElement());
+		htmlListener.onElementEnd(tokenizer, elementToken.getElement());
 	}
 }
