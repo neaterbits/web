@@ -39,13 +39,12 @@ public class LayoutTest extends TestCase {
 		final ITextExtent textExtent = new MockTextExtent();
 		
 		final LayoutAlgorithm<Integer, LongTokenizer> layoutAgorithm = new LayoutAlgorithm<>(
-				viewPort,
 				textExtent,
 				renderFactory);
 
 		final CSSContext<Integer> cssContext = new CSSContext<>();
 
-		final PageLayout<Integer> pageLayout = layoutAgorithm.layout(doc, cssContext);
+		final PageLayout<Integer> pageLayout = layoutAgorithm.layout(doc, viewPort, cssContext);
 		
 		assertThat(pageLayout.getLayers().size()).isEqualTo(1);
 	}

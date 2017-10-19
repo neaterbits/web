@@ -1,9 +1,5 @@
 package com.test.web.layout;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.common.CSSLayoutStyles;
@@ -26,68 +22,37 @@ import com.test.web.render.common.ITextExtent;
  */
 
 public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
-	implements HTMLElementListener<ELEMENT, CSSContext<ELEMENT>> {
+	implements HTMLElementListener<ELEMENT, LayoutState<ELEMENT>> {
 
-	// The input viewport, eg. size of browser window
-	private final ViewPort viewPort;
-
-	// For finding size of text strings when using a particular font for rendering
-	private final TextUtil textUtil;
-
-	// We have to maintain a stack for computed elements, ElementLayout contains computed values for element at that level
-	private final List<StackElement> stack;
-	private int curDepth;
-
-	// Cache of fonts used during layout
-	private final Map<FontKey, IFont> fonts;
-	
-	// Resulting page layout dimensionsn are collected here
-	private final PageLayout<ELEMENT> pageLayout;
-	
 	// For creating renderers, rendering occurs in the same pass (but renderer implenentation might just queue operations for later)
 	private final IRenderFactory renderFactory;
-	
 
-	// Position of current display block
-	private int curBlockYPos;
-	
-	public LayoutAlgorithm(ViewPort viewPort, ITextExtent textExtent, IRenderFactory renderFactory) {
-		
-		this.viewPort = viewPort;
+	private final TextUtil textUtil;
+
+	public LayoutAlgorithm(ITextExtent textExtent, IRenderFactory renderFactory) {
 		this.textUtil = new TextUtil(textExtent);
-
-		this.stack = new ArrayList<>();
-		this.curDepth = 0;
-
-		this.fonts = new HashMap<>();
-
-		this.pageLayout = new PageLayout<>();
 		this.renderFactory = renderFactory;
-		
-		// TODO how does this work for other zIndex? Will they have their separate layout?
-		this.curBlockYPos = 0;
-		
-		// Push intial element on stack
-		push(viewPort.getViewPortWidth(), viewPort.getViewPortHeight());
 	}
 
-	public PageLayout<ELEMENT> layout(Document<ELEMENT> document, CSSContext<ELEMENT> cssContext) {
+	public PageLayout<ELEMENT> layout(Document<ELEMENT> document, ViewPort viewPort, CSSContext<ELEMENT> cssContext) {
 		
-		document.iterate(this, cssContext);
+		final LayoutState<ELEMENT> state = new LayoutState<>(viewPort, cssContext);
 		
-		return this.pageLayout;
+		document.iterate(this, state);
+		
+		return state.getPageLayout();
 	}
 	
     @Override
-	public void onElementStart(Document<ELEMENT> document, ELEMENT element, CSSContext<ELEMENT> cssContext) {
+	public void onElementStart(Document<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
    	
-    	final StackElement cur = getCur();
+    	final StackElement cur = state.getCur();
 
     	// Push new sub-element onto stack
-    	final StackElement sub = push(-1, -1);
+    	final StackElement sub = state.push(-1, -1);
     	
     	// Collect all layout styles from CSS
-    	cssContext.getCSSLayoutStyles(
+    	state.getCSSContext().getCSSLayoutStyles(
 				document.getId(element),
 				document.getTag(element),
 				document.getClasses(element),
@@ -98,7 +63,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 		if (styleAttribute != null) {
 			// Get CSS document from style-tag of element
-			cssContext.applyLayoutStyles(styleAttribute, element, sub.layoutStyles);
+			state.getCSSContext().applyLayoutStyles(styleAttribute, element, sub.layoutStyles);
 		}
 		
 		// Adjust sub available width/height if is set
@@ -130,14 +95,14 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	}
 
     @Override
-	public void onElementEnd(Document<ELEMENT> document, ELEMENT element, CSSContext<ELEMENT> cssContext) {
+	public void onElementEnd(Document<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
 	
     	// End of element where wer're at
-		final StackElement cur = getCur();
+		final StackElement cur = state.getCur();
 		
-		pop();
+		state.pop();
 		
-		final StackElement parent  = getCur();
+		final StackElement parent  = state.getCur();
 
 		// Now should have collected relevant information to do layout and find the dimensions
 		// of the element and also the margins and padding?
@@ -147,7 +112,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		// Got layout, add to layer
 		final short zIndex = cur.layoutStyles.getZIndex();
 		
-		final PageLayer<ELEMENT>layer = pageLayout.addOrGetLayer(zIndex, renderFactory);
+		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, renderFactory);
 		
 		// Has computed sub element size by now so can add
 		if (!parent.resultingLayout.hasCSSWidth()) {
@@ -172,11 +137,11 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 
     @Override
-	public void onText(Document<ELEMENT> document, String text, CSSContext<ELEMENT> cssContext) {
+	public void onText(Document<ELEMENT> document, String text, LayoutState<ELEMENT> state) {
 		// We have a text element, compute text extents according to current mode
 		// TODO: text-align, overflow
 
-		final StackElement cur = getCur();
+		final StackElement cur = state.getCur();
 
 		final IFont font = cur.resultingLayout.getFont();
 		
@@ -268,33 +233,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		
 	}
 
-	private StackElement getCur() {
-		return curDepth == 0 ? null : stack.get(curDepth - 1);
-	}
-	
-	private StackElement push(int availableWidth, int availableHeight) {
-		
-		final StackElement ret;
-		
-		if (curDepth == stack.size()) {
-			ret = new StackElement(availableWidth, availableHeight);
-			
-			stack.add(ret);
-		}
-		else {
-			// reuse existing
-			ret = stack.get(curDepth);
-		}
 
-		++ curDepth;
-	
-		return ret;
-	}
-	
-	private void pop() {
-		-- curDepth;
-	}
-	
 
 	private static int computeWidthPx(int width, CSSUnit widthUnit, int curWidth) {
 

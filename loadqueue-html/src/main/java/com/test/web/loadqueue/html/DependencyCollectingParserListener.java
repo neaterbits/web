@@ -8,6 +8,7 @@ import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.LayoutAlgorithm;
+import com.test.web.layout.LayoutState;
 import com.test.web.layout.ViewPort;
 import com.test.web.loadqueue.common.ILoadQueue;
 import com.test.web.loadqueue.common.LoadCompletionListener;
@@ -40,7 +41,11 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 	private String linkType;
 	private String linkHRef;
 	
+	private final ViewPort viewPort;
+	
 	private CSSContext<ELEMENT> cssContext;
+
+	private final LayoutState<ELEMENT>layoutState;
 	
 	public DependencyCollectingParserListener(
 			IDocumentParserListener<ELEMENT, TOKENIZER> delegate,
@@ -51,10 +56,13 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 
 		this.delegate = delegate;
 		this.loadQueue = loadQueue;
+		this.viewPort = viewPort;
 	
-		this.layoutAlgorithm = new LayoutAlgorithm<>(viewPort, textExtent, renderFactory);
+		this.layoutAlgorithm = new LayoutAlgorithm<>(textExtent, renderFactory);
 		
 		this.tempLayoutStyles = new CSSLayoutStyles();
+		
+		this.layoutState = new LayoutState<>(viewPort, cssContext);
 	}
 
 	@Override
@@ -74,7 +82,7 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 		// as long as there are no stylesheets or retrieving image dimensions, we might forward directly to layout algorith and compute layout on the fly as we parse
 		
 		if (canProcessElements()) {
-			layoutAlgorithm.onElementStart(delegate, element, cssContext);
+			layoutAlgorithm.onElementStart(delegate, element, layoutState);
 		}
 		
 		return element;
@@ -120,7 +128,7 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 		}
 		
 		if (canProcessElements()) {
-			layoutAlgorithm.onElementEnd(delegate, elementRef, cssContext);
+			layoutAlgorithm.onElementEnd(delegate, elementRef, layoutState);
 		}
 
 		return elementRef;
@@ -152,7 +160,7 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 	
 	private void layoutElementsFrom(ELEMENT elementRef) {
 		// Must run thorugh document from the elementRef onto end and call onElementStart and onElementEnd etc for each element
-		delegate.iterateFrom(elementRef, layoutAlgorithm, cssContext);
+		delegate.iterateFrom(elementRef, layoutAlgorithm, layoutState);
 	}
 	
 	private boolean canProcessElements() {

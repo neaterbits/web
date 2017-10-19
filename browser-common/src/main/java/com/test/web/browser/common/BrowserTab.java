@@ -3,7 +3,6 @@ package com.test.web.browser.common;
 import java.net.URL;
 
 import com.test.web.document.common.Document;
-import com.test.web.layout.LayoutAlgorithm;
 import com.test.web.parse.common.ParserException;
 import com.test.web.ui.common.IUICanvas;
 
