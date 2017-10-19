@@ -10,6 +10,17 @@
   <packaging>jar</packaging>
   <dependencies>
 
+  	<dependency>
+  		<groupId>${project.groupId}</groupId>
+  		<artifactId>browser-common</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
+
+  	<dependency>
+  		<groupId>${project.groupId}</groupId>
+  		<artifactId>ui-swing</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
 
 	<!-- test dependencies --> 
 

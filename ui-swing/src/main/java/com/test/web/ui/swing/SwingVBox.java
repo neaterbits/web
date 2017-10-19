@@ -2,9 +2,11 @@ package com.test.web.ui.swing;
 
 import java.awt.Container;
 
-final class SwingVBox extends SwingContainer {
+import com.test.web.ui.common.IUIVBox;
 
-	public SwingVBox(Container container) {
+final class SwingVBox extends SwingPanel implements IUIVBox {
+
+	SwingVBox(Container container) {
 		super(container);
 	}
 }

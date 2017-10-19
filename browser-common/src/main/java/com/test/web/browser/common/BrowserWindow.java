@@ -3,16 +3,16 @@ package com.test.web.browser.common;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.test.web.ui.common.IUIWIndow;
+import com.test.web.ui.common.IUIWindow;
 
 public class BrowserWindow<ELEMENT> {
 
-	private final IUIWIndow uiWindow;
+	private final IUIWindow uiWindow;
 	
 	// One or more browser tabs, if only one then we will not show tabs in the UI but that is handled elsewhere
 	private final List<BrowserTab<ELEMENT>> tabs;
 	
-	BrowserWindow(IUIWIndow uiWindow, BrowserTab<ELEMENT> initialTab) {
+	BrowserWindow(IUIWindow uiWindow, BrowserTab<ELEMENT> initialTab) {
 		
 		if (uiWindow == null) {
 			throw new IllegalArgumentException("uiWindow == null");
@@ -26,5 +26,14 @@ public class BrowserWindow<ELEMENT> {
 		this.tabs = new ArrayList<>();
 		
 		tabs.add(initialTab);
+	}
+	
+	boolean hasUIWindow(IUIWindow uiWindow) {
+		
+		if (uiWindow == null) {
+			throw new IllegalArgumentException("uiWindow == null");
+		}
+
+		return this.uiWindow == uiWindow;
 	}
 }

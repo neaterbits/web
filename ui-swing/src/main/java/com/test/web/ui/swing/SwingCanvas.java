@@ -1,5 +1,6 @@
 package com.test.web.ui.swing;
 
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 
 import javax.swing.JComponent;
@@ -19,8 +20,10 @@ final class SwingCanvas extends JComponent implements IUICanvas {
 	public SwingCanvas() {
 		this.renderOperations = new AWTRenderOperations((Graphics2D)this.getGraphics());
 		this.textExtent = new AWTTextExtent();
+		
+		setPreferredSize(new Dimension(1000, 700));
+		setSize(1000, 700); // TODO quick-fix for layout
 	}
-	
 
 	@Override
 	public void setFgColor(int r, int g, int b) {
@@ -62,3 +65,4 @@ final class SwingCanvas extends JComponent implements IUICanvas {
 		return textExtent.getTextExtent(font, text);
 	}
 }
+

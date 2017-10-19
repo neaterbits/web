@@ -120,7 +120,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		
 		// Has computed sub element size by now so can add
 		if (!parent.resultingLayout.hasCSSWidth()) {
-			// no width from CSS so must add this element to size of curent element
+			// no width from CSS so must add this element to size of current element
 			parent.resultingLayout.getDimensions().addToWidth(cur.resultingLayout.getDimensions().getWidth());
 		}
 

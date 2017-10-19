@@ -2,8 +2,9 @@ package com.test.web.ui.common;
 
 public interface IUIFactory extends IUIElements {
 
-	IUIWIndow createWindow(String title);
+	IUIWindow createWindow(String title, int width, int height, IWindowCloseListener closeListener);
 
 	void mainLoop();
 	
+	void exitMainLoop();
 }

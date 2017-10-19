@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.test.web.ui.common.IUIFactory;
-import com.test.web.ui.common.IUIWIndow;
+import com.test.web.ui.common.IUIWindow;
+import com.test.web.ui.common.IWindowCloseListener;
 
 public class SwingUIFactory implements IUIFactory {
 	
 	private final List<SwingUIWindow> windows = new ArrayList<>();
 	
 	@Override
-	public IUIWIndow createWindow(String title) {
+	public IUIWindow createWindow(String title, int width, int height, IWindowCloseListener closeListener) {
 		
-		final SwingUIWindow uiWindow = new SwingUIWindow(title);
+		final SwingUIWindow uiWindow = new SwingUIWindow(title, width, height, closeListener);
 		
 		windows.add(uiWindow);
 		
@@ -31,5 +32,10 @@ public class SwingUIFactory implements IUIFactory {
 				}
 			}
 		});
+	}
+
+	@Override
+	public void exitMainLoop() {
+		// TODO implement exit of mainloop
 	}
 }

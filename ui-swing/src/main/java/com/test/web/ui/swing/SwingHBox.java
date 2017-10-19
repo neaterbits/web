@@ -2,9 +2,11 @@ package com.test.web.ui.swing;
 
 import java.awt.Container;
 
-final class SwingHBox extends SwingContainer {
+import com.test.web.ui.common.IUIHBox;
 
-	public SwingHBox(Container container) {
+final class SwingHBox extends SwingPanel implements IUIHBox {
+
+	SwingHBox(Container container) {
 		super(container);
 	}
 }

@@ -1,6 +1,10 @@
 package com.test.web.ui.swing;
 
+import java.awt.Component;
 import java.awt.Container;
+
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 
 import com.test.web.ui.common.IUIContainers;
 import com.test.web.ui.common.IUIHBox;
@@ -17,20 +21,35 @@ abstract class SwingContainer implements IUIContainers {
 	@Override
 	public final IUIHBox createHBox() {
 		
-		//final BoxLayout boxLayout = new BoxLayout(target, axis)
+		final JPanel subContainer = new JPanel();
 		
-		//final JPanel subContainer = new JPanel(boxLayout);
+		final BoxLayout boxLayout = new BoxLayout(subContainer, BoxLayout.X_AXIS);
 		
-		return null;
+		subContainer.setLayout(boxLayout);
+		
+		add(subContainer);
+		
+		return new SwingHBox(subContainer);
 	}
 
 	@Override
 	public final IUIVBox createVBox() {
-		// TODO Auto-generated method stub
-		return null;
+		final JPanel subContainer = new JPanel();
+		
+		final BoxLayout boxLayout = new BoxLayout(subContainer, BoxLayout.Y_AXIS);
+
+		subContainer.setLayout(boxLayout);
+
+		add(subContainer);
+		
+		return new SwingVBox(subContainer);
 	}
 
 	final Container getContainer() {
 		return container;
+	}
+	
+	final void add(Component component) {
+		container.add(component);
 	}
 }
