@@ -3,24 +3,17 @@ package com.test.web.render.html;
 import com.test.web.document.common.Document;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
-import com.test.web.layout.IElementLayout;
-import com.test.web.render.common.IRenderOperations;
+import com.test.web.layout.IElementRenderLayout;
 
-public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElementLayout>{
+public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElementRenderLayout>{
 
-	private final IRenderOperations renderOps;
-
-	public HTMLRenderer(IRenderOperations renderOps) {
-		this.renderOps = renderOps;
-	}
-	
 	@Override
-	public void onElementStart(Document<ELEMENT> document, ELEMENT element, IElementLayout param) {
+	public void onElementStart(Document<ELEMENT> document, ELEMENT element, IElementRenderLayout param) {
 		// Cannot call rendering here since element may not have proper layout yet
 	}
 
 	@Override
-	public void onElementEnd(Document<ELEMENT> document, ELEMENT element, IElementLayout param) {
+	public void onElementEnd(Document<ELEMENT> document, ELEMENT element, IElementRenderLayout param) {
 
 		final HTMLElement type = document.getType(element);
 		
@@ -33,8 +26,7 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 	}
 
 	@Override
-	public void onText(Document<ELEMENT> document, String text, IElementLayout param) {
+	public void onText(Document<ELEMENT> document, String text, IElementRenderLayout param) {
 		// TODO Auto-generated method stub
-		
 	}
 }

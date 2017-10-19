@@ -2,8 +2,9 @@ package com.test.web.layout;
 
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.render.common.IFont;
+import com.test.web.render.common.IRenderer;
 
-final class ElementLayout {
+final class ElementLayout implements IElementRenderLayout {
 	
 	// display class for this element
 	private CSSDisplay display;
@@ -29,8 +30,13 @@ final class ElementLayout {
 	// padding in pixels
 	private final Wrapping padding;
 	
+	private final Dimensions inner;
+
+	private IRenderer renderer;
+	
 	ElementLayout() {
 		this.dimensions = new Dimensions();
+		this.inner = new Dimensions();
 		this.margin = new Wrapping();
 		this.padding = new Wrapping();
 		
@@ -44,6 +50,10 @@ final class ElementLayout {
 
 	void setDisplay(CSSDisplay display) {
 		this.display = display;
+	}
+	
+	void setRenderer(IRenderer renderer) {
+		this.renderer = renderer;
 	}
 
 	IFont getFont() {
@@ -70,15 +80,44 @@ final class ElementLayout {
 		return hasCSSHeight;
 	}
 
-	public Dimensions getDimensions() {
+	Dimensions getDimensions() {
 		return dimensions;
 	}
 
-	public Wrapping getMargin() {
+	Dimensions getInner() {
+		return inner;
+	}
+
+	Wrapping getMarginWrapping() {
+		return margin;
+	}
+	
+	Wrapping getPaddingWrapping() {
+		return padding;
+	}
+
+	@Override
+	public IBounds getOuterBounds() {
+		return dimensions;
+	}
+
+	@Override
+	public IBounds getInnerBounds() {
+		return inner;
+	}
+
+	@Override
+	public IWrapping getMargins() {
 		return margin;
 	}
 
-	public Wrapping getPadding() {
+	@Override
+	public IWrapping getPadding() {
 		return padding;
+	}
+
+	@Override
+	public IRenderer getRenderer() {
+		return renderer;
 	}
 }

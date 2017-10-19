@@ -5,7 +5,7 @@ package com.test.web.layout;
  * Everything is given in pixels.
  */
 
-final class Dimensions {
+final class Dimensions implements IBounds {
 	private int left;
 	private int top;
 	private int width;
@@ -42,18 +42,22 @@ final class Dimensions {
 		this.height += height;
 	}
 
+	@Override
 	public int getLeft() {
 		return left;
 	}
 
+	@Override
 	public int getTop() {
 		return top;
 	}
 
+	@Override
 	public int getWidth() {
 		return width;
 	}
 
+	@Override
 	public int getHeight() {
 		return height;
 	}

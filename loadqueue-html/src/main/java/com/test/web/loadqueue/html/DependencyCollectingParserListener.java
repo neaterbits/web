@@ -6,7 +6,9 @@ import com.test.web.css.common.CSSContext;
 import com.test.web.css.common.CSSLayoutStyles;
 import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
+import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io.common.Tokenizer;
+import com.test.web.layout.IElementRenderLayout;
 import com.test.web.layout.LayoutAlgorithm;
 import com.test.web.layout.LayoutState;
 import com.test.web.layout.ViewPort;
@@ -52,7 +54,8 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 			ILoadQueue loadQueue,
 			ViewPort viewPort,
 			ITextExtent textExtent,
-			IRenderFactory renderFactory) {
+			IRenderFactory renderFactory,
+			HTMLElementListener<ELEMENT, IElementRenderLayout> renderListener) {
 
 		this.delegate = delegate;
 		this.loadQueue = loadQueue;
@@ -62,7 +65,7 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 		
 		this.tempLayoutStyles = new CSSLayoutStyles();
 		
-		this.layoutState = new LayoutState<>(viewPort, cssContext);
+		this.layoutState = new LayoutState<>(viewPort, cssContext, renderListener);
 	}
 
 	@Override

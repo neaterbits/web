@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.test.web.css.common.CSSContext;
+import com.test.web.document.common.HTMLElementListener;
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.IRenderFactory;
 
@@ -14,6 +15,9 @@ public final class LayoutState<ELEMENT> {
 	// For finding size of text strings when using a particular font for rendering
 	private final CSSContext<ELEMENT> cssContext;
 
+	// Optional listener to eg do rendering in the layout flow
+	private final HTMLElementListener<ELEMENT, IElementRenderLayout> listener;
+	
 	// We have to maintain a stack for computed elements, ElementLayout contains computed values for element at that level
 	private final List<StackElement> stack;
 	private int curDepth;
@@ -28,8 +32,9 @@ public final class LayoutState<ELEMENT> {
 	private int curBlockYPos;
 
 	
-	public LayoutState(ViewPort viewPort, CSSContext<ELEMENT> cssContext) {
+	public LayoutState(ViewPort viewPort, CSSContext<ELEMENT> cssContext, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
 		this.cssContext = cssContext;
+		this.listener = listener;
 
 		this.stack = new ArrayList<>();
 		this.curDepth = 0;
@@ -51,6 +56,10 @@ public final class LayoutState<ELEMENT> {
 	
 	PageLayout<ELEMENT> getPageLayout() {
 		return pageLayout;
+	}
+	
+	HTMLElementListener<ELEMENT, IElementRenderLayout> getListener() {
+		return listener;
 	}
 
 	PageLayer<ELEMENT> addOrGetLayer(int index, IRenderFactory renderFactory) {

@@ -44,7 +44,7 @@ public class LayoutTest extends TestCase {
 
 		final CSSContext<Integer> cssContext = new CSSContext<>();
 
-		final PageLayout<Integer> pageLayout = layoutAgorithm.layout(doc, viewPort, cssContext);
+		final PageLayout<Integer> pageLayout = layoutAgorithm.layout(doc, viewPort, cssContext, null);
 		
 		assertThat(pageLayout.getLayers().size()).isEqualTo(1);
 	}

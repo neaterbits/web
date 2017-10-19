@@ -34,9 +34,9 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		this.renderFactory = renderFactory;
 	}
 
-	public PageLayout<ELEMENT> layout(Document<ELEMENT> document, ViewPort viewPort, CSSContext<ELEMENT> cssContext) {
+	public PageLayout<ELEMENT> layout(Document<ELEMENT> document, ViewPort viewPort, CSSContext<ELEMENT> cssContext, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
 		
-		final LayoutState<ELEMENT> state = new LayoutState<>(viewPort, cssContext);
+		final LayoutState<ELEMENT> state = new LayoutState<>(viewPort, cssContext, listener);
 		
 		document.iterate(this, state);
 		
@@ -51,7 +51,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	// Push new sub-element onto stack
     	final StackElement sub = state.push(-1, -1);
     	
-    	// Collect all layout styles from CSS
+    	// Collect all layout styles fmrom CSS
     	state.getCSSContext().getCSSLayoutStyles(
 				document.getId(element),
 				document.getTag(element),
@@ -91,6 +91,10 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 				sub.setAvailableHeight(height);
 			}
+		}
+		
+		if (state.getListener() != null) {
+			state.getListener().onElementStart(document, element, null);
 		}
 	}
 
@@ -133,6 +137,10 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			parent.resultingLayout.getDimensions().addToHeight(cur.resultingLayout.getDimensions().getHeight());
 		}
 		*/
+		
+		if (state.getListener() != null) {
+			state.getListener().onElementEnd(document, element, cur.resultingLayout);
+		}
 	}
 
 

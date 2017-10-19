@@ -1,7 +1,7 @@
 package com.test.web.layout;
 
 // wrapping of element, used for margin and padding, always computed in pixels
-public class Wrapping {
+public class Wrapping implements IWrapping {
 
 	private int top;
 	private int right;
@@ -15,18 +15,22 @@ public class Wrapping {
 		this.left = left;
 	}
 
+	@Override
 	public int getTop() {
 		return top;
 	}
 
+	@Override
 	public int getRight() {
 		return right;
 	}
 
+	@Override
 	public int getBottom() {
 		return bottom;
 	}
 
+	@Override
 	public int getLeft() {
 		return left;
 	}
