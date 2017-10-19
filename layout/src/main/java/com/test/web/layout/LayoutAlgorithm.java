@@ -6,6 +6,7 @@ import com.test.web.css.common.CSSLayoutStyles;
 import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.document.common.Document;
+import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.render.common.IFont;
@@ -45,7 +46,13 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	
     @Override
 	public void onElementStart(Document<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
-   	
+
+    	final HTMLElement elementType = document.getType(element);
+
+    	if (!elementType.isLayoutElement()) {
+    		return;
+    	}
+    	
     	final StackElement cur = state.getCur();
 
     	// Push new sub-element onto stack
@@ -53,6 +60,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	
     	// Collect all layout styles fmrom CSS
     	state.getCSSContext().getCSSLayoutStyles(
+    			elementType.getDefaultDisplay(),
 				document.getId(element),
 				document.getTag(element),
 				document.getClasses(element),
@@ -101,6 +109,12 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     @Override
 	public void onElementEnd(Document<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
 	
+    	final HTMLElement elementType = document.getType(element);
+    	
+    	if (!elementType.isLayoutElement()) {
+    		return;
+    	}
+    	
     	// End of element where wer're at
 		final StackElement cur = state.getCur();
 		
@@ -108,10 +122,11 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		
 		final StackElement parent  = state.getCur();
 
+		
 		// Now should have collected relevant information to do layout and find the dimensions
 		// of the element and also the margins and padding?
 		// does not know size of content yet so cannot for sure know height of element
-		computeLayout(cur.layoutStyles, parent, cur, document, element);
+		computeLayout(elementType, cur.layoutStyles, parent, cur, document, element);
 		
 		// Got layout, add to layer
 		final short zIndex = cur.layoutStyles.getZIndex();
@@ -207,12 +222,16 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		}
     }
 	
-	private void computeLayout(CSSLayoutStyles styles, StackElement cur, StackElement sub, Document<ELEMENT> document, ELEMENT element) {
+	private void computeLayout(HTMLElement elementType, CSSLayoutStyles styles, StackElement cur, StackElement sub, Document<ELEMENT> document, ELEMENT element) {
 
 		// Can we compute the dimensions of the element regardless of the position? Depends on overflow property etc, whether can scroll? Has to takes current layout into account
 	
 		if (styles.getFloat() != null) {
 			throw new UnsupportedOperationException("TODO: support floats");
+		}
+		
+		if (styles.getDisplay() == null) {
+			throw new IllegalStateException("No CSS display computed for element of type " + elementType);
 		}
 
 		switch (styles.getDisplay()) {

@@ -18,6 +18,15 @@ final class TextUtil {
 
     // Get text length or available width, whichever is longer
     int getTextLengthOrAvailableWidth(String text, int availableWidth, IFont font) {
+    	
+    	if (text == null) {
+    		throw new IllegalArgumentException("text == null");
+    	}
+    	
+    	if (font == null) {
+    		throw new IllegalArgumentException("font == null");
+    	}
+    	
     	// TODO: does not have to get extent of complete text, can do an approximization to check whether > availableWidh, since text can be quite long
 
     	final int width = textExtent.getTextExtent(font, text);

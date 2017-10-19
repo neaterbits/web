@@ -39,8 +39,12 @@ public class CSSContext<TARGET> {
 		documents.add(document);
 	}
 	
-	public void getCSSLayoutStyles(String elementId, String elementType, String [] elementClasses, CSSLayoutStyles result) {
+	public void getCSSLayoutStyles(CSSDisplay defaultDisplay, String elementId, String elementType, String [] elementClasses, CSSLayoutStyles result) {
 		
+		if (defaultDisplay != null) {
+			result.setDisplay(defaultDisplay);
+		}
+
 		// Loop through all documents from start to finish and apply styles
 		for (ICSSDocument<TARGET> document : documents) {
 
@@ -83,7 +87,7 @@ public class CSSContext<TARGET> {
 			? document.getZIndex(target)
 			: (short)0;
 
-		result.init(display, position, cssFloat,
+		result.merge(display, position, cssFloat,
 				positionLeft, positionLeftUnit, positionTop, positionTopUnit,
 				width, widthUnit, height, heightUnit,
 				zIndex);

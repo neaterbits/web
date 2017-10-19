@@ -108,6 +108,7 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 			case IMG:
 				// Image tag, may not know width or height, in that case we have to load image first before we can continue layout
 				cssContext.getCSSLayoutStyles(
+						curElement.getDefaultDisplay(),
 						delegate.getId(elementRef),
 						delegate.getTag(elementRef),
 						delegate.getClasses(elementRef),

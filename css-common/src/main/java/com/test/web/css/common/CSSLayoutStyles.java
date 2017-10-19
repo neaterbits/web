@@ -10,7 +10,7 @@ import com.test.web.css.common.enums.CSSUnit;
  *  
  */
 
-public class CSSLayoutStyles {
+public final class CSSLayoutStyles {
 
 	private CSSDisplay display;
 	private CSSPosition position;
@@ -30,8 +30,16 @@ public class CSSLayoutStyles {
 	private CSSDimensions margins;
 	
 	private short zIndex;
+	
+	void setDisplay(CSSDisplay display) {
+		if (display == null) {
+			throw new IllegalArgumentException("display == null");
+		}
+		
+		this.display = display;
+	}
 
-	void init(CSSDisplay display, CSSPosition position, CSSFloat cssFloat,
+	void merge(CSSDisplay display, CSSPosition position, CSSFloat cssFloat,
 			
 			int positionLeft, CSSUnit positionLeftUnit, int positionTop, CSSUnit positionTopUnit,
 			int width, CSSUnit widthUnit, int height , CSSUnit heightUnit,

@@ -590,7 +590,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 	@Override
 	public <PARAM> void iterate(HTMLElementListener<Integer, PARAM> listener, PARAM param) {
-		iterate(INITIAL_ELEMENT, listener, param, INITIAL_ELEMENT,  false);
+		iterate(INITIAL_ELEMENT, listener, param, INITIAL_ELEMENT,  true);
 	}
 	
 	@Override
