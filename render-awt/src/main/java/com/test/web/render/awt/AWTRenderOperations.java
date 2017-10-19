@@ -3,6 +3,7 @@ package com.test.web.render.awt;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import com.test.web.render.common.IFont;
 import com.test.web.render.common.IRenderOperations;
 
 public class AWTRenderOperations implements IRenderOperations {
@@ -29,8 +30,10 @@ public class AWTRenderOperations implements IRenderOperations {
 	}
 
 	@Override
-	public void setFont() {
-		throw new UnsupportedOperationException("TODO");
+	public void setFont(IFont font) {
+		final AWTFont f = (AWTFont)font;
+
+		gfx.setFont(f.getFont());
 	}
 
 	@Override

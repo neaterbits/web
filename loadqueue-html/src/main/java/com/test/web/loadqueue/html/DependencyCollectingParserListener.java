@@ -7,7 +7,6 @@ import com.test.web.css.common.CSSLayoutStyles;
 import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.io.common.Tokenizer;
-import com.test.web.layout.ITextExtent;
 import com.test.web.layout.LayoutAlgorithm;
 import com.test.web.layout.ViewPort;
 import com.test.web.loadqueue.common.ILoadQueue;
@@ -15,6 +14,7 @@ import com.test.web.loadqueue.common.LoadCompletionListener;
 import com.test.web.parse.html.HTMLParserListener;
 import com.test.web.parse.html.IDocumentParserListener;
 import com.test.web.render.common.IRenderFactory;
+import com.test.web.render.common.ITextExtent;
 
 /*
  * Collects dependencies, ie. CSS style sheets during parser and utilizes these to perform layout and rendering during the loading phase

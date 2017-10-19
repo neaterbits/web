@@ -1,32 +1,25 @@
-package com.test.web.layout;
+package com.test.web.render.awt;
 
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.ITextExtent;
 
-public class MockTextExtent implements ITextExtent {
+public class AWTTextExtent implements ITextExtent {
 
 	@Override
 	public IFont getFont(String fontFamily, String fontName, int fontSize, int styleFlags) {
-		return new IFont() {
-			@Override
-			public int getHeight() {
-				return 12;
-			}
-			
-			@Override
-			public int getAverageWidth() {
-				return 12;
-			}
-		};
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
 	public void closeFont(IFont font) {
-		
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
 	public int getTextExtent(IFont font, String text) {
-		return font.getAverageWidth() * text.length();
+
+		final AWTFont f = (AWTFont)font;
+		
+		return f.getTextExtent(text);
 	}
 }

@@ -1,4 +1,4 @@
-package com.test.web.layout;
+package com.test.web.render.common;
 
 /*
  * wraps a font

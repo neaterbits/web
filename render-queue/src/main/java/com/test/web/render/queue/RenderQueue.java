@@ -1,5 +1,6 @@
 package com.test.web.render.queue;
 
+import com.test.web.render.common.IFont;
 import com.test.web.render.common.IRenderOperations;
 
 // Collectes everything in a buffer of rendering operations that can be replayed
@@ -28,7 +29,7 @@ public class RenderQueue implements IRenderOperations {
 	}
 
 	@Override
-	public void setFont() {
+	public void setFont(IFont font) {
 		// TODO Auto-generated method stub
 		
 	}

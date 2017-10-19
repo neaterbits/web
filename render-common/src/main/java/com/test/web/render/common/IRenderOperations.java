@@ -8,7 +8,7 @@ public interface IRenderOperations {
 	
 	void drawLine(int x1, int y1, int x2, int y2);
 	
-	void setFont();
+	void setFont(IFont font);
 	
 	void drawText(int x, int y, String text);
 }

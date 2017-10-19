@@ -9,12 +9,12 @@ public interface IRenderer extends IRenderOperations {
 	 */
 	
 	
-	int delayedRender();
+	//int delayedRender();
 	
 	/*
 	 * Render operations for later rendering, only works for async rendering queue
 	 */
 	
-	IRenderer renderDelayed(int id);
+	//IRenderer renderDelayed(int id);
 	
 }

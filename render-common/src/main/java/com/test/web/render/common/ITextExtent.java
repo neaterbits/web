@@ -1,4 +1,4 @@
-package com.test.web.layout;
+package com.test.web.render.common;
 
 public interface ITextExtent {
 	

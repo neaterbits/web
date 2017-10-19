@@ -1,5 +1,6 @@
 package com.test.web.layout;
 
+import com.test.web.render.common.IFont;
 import com.test.web.render.common.IRenderer;
 
 public class MockRenderer implements IRenderer {
@@ -23,7 +24,7 @@ public class MockRenderer implements IRenderer {
 	}
 
 	@Override
-	public void setFont() {
+	public void setFont(IFont font) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -33,17 +34,4 @@ public class MockRenderer implements IRenderer {
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public int delayedRender() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public IRenderer renderDelayed(int id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

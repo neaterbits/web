@@ -40,6 +40,11 @@
 	    <module>render-queue</module>
 	    <module>render-html</module>
 	    <module>render-awt</module>
+	    <module>ui-common</module>
+	    <module>ui-swing</module>
+	    <module>browser-common</module>
+	    <module>browser-swing</module>
+
 	    <module>testdata</module>
   </modules>
   <repositories>

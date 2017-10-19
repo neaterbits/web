@@ -1,6 +1,7 @@
 package com.test.web.layout;
 
 import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.render.common.IFont;
 
 final class ElementLayout {
 	

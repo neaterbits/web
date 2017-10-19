@@ -12,7 +12,9 @@ import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.document.common.Document;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io.common.Tokenizer;
+import com.test.web.render.common.IFont;
 import com.test.web.render.common.IRenderFactory;
+import com.test.web.render.common.ITextExtent;
 
 
 /*

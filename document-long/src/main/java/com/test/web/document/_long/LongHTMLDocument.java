@@ -749,8 +749,12 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		return styleDocument;
 	}
 	
-	public static LongHTMLDocument parseHTMLDocument(String text)  throws IOException, ParserException {
-		return loadHTMLDocument(new SimpleLoadStream(text));
+	public static LongHTMLDocument parseHTMLDocument(String text)  throws ParserException {
+		try {
+			return loadHTMLDocument(new SimpleLoadStream(text));
+		} catch (IOException ex) {
+			throw new IllegalStateException("Should not catch IOException when parsing from a String", ex);
+		}
 	}
 
 	private static LongHTMLDocument loadHTMLDocument(SimpleLoadStream stream)  throws IOException, ParserException {

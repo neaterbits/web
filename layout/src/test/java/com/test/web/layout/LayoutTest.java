@@ -8,6 +8,7 @@ import com.test.web.io._long.LongTokenizer;
 import com.test.web.parse.common.ParserException;
 import com.test.web.render.common.IRenderFactory;
 import com.test.web.render.common.IRenderer;
+import com.test.web.render.common.ITextExtent;
 import com.test.web.testdata.TestData;
 
 import junit.framework.TestCase;
