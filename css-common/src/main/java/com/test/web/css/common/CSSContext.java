@@ -10,6 +10,7 @@ import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
+import com.test.web.types.FontSpec;
 
 /*
  * CSS context for a document, used for figuring out CSS style when having multiple elements
@@ -39,10 +40,20 @@ public class CSSContext<TARGET> {
 		documents.add(document);
 	}
 	
-	public void getCSSLayoutStyles(CSSDisplay defaultDisplay, String elementId, String elementType, String [] elementClasses, CSSLayoutStyles result) {
+	public void getCSSLayoutStyles(
+			CSSDisplay defaultDisplay,
+			FontSpec defaultFont,
+			String elementId,
+			String elementType,
+			String [] elementClasses,
+			CSSLayoutStyles result) {
 		
 		if (defaultDisplay != null) {
 			result.setDisplay(defaultDisplay);
+		}
+		
+		if (defaultFont != null) {
+			result.setFont(defaultFont);
 		}
 
 		// Loop through all documents from start to finish and apply styles
@@ -88,6 +99,9 @@ public class CSSContext<TARGET> {
 			: (short)0;
 
 		result.merge(display, position, cssFloat,
+				
+				null, // TODO: font from CSS document
+				
 				positionLeft, positionLeftUnit, positionTop, positionTopUnit,
 				width, widthUnit, height, heightUnit,
 				zIndex);

@@ -1,6 +1,5 @@
 package com.test.web.layout;
 
-
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.common.CSSLayoutStyles;
 import com.test.web.css.common.ICSSDocument;
@@ -12,6 +11,7 @@ import com.test.web.io.common.Tokenizer;
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.IRenderFactory;
 import com.test.web.render.common.ITextExtent;
+import com.test.web.types.FontSpec;
 
 
 /*
@@ -25,19 +25,24 @@ import com.test.web.render.common.ITextExtent;
 public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	implements HTMLElementListener<ELEMENT, LayoutState<ELEMENT>> {
 
+	private final ITextExtent textExtent;
+	
 	// For creating renderers, rendering occurs in the same pass (but renderer implenentation might just queue operations for later)
 	private final IRenderFactory renderFactory;
-
+	private final FontSettings fontSettings;
+	
 	private final TextUtil textUtil;
-
-	public LayoutAlgorithm(ITextExtent textExtent, IRenderFactory renderFactory) {
+	
+	public LayoutAlgorithm(ITextExtent textExtent, IRenderFactory renderFactory, FontSettings fontSettings) {
+		this.textExtent = textExtent;
 		this.textUtil = new TextUtil(textExtent);
+		this.fontSettings = fontSettings;
 		this.renderFactory = renderFactory;
 	}
 
 	public PageLayout<ELEMENT> layout(Document<ELEMENT> document, ViewPort viewPort, CSSContext<ELEMENT> cssContext, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
 		
-		final LayoutState<ELEMENT> state = new LayoutState<>(viewPort, cssContext, listener);
+		final LayoutState<ELEMENT> state = new LayoutState<>(textExtent, viewPort, cssContext, listener);
 		
 		document.iterate(this, state);
 		
@@ -58,9 +63,10 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	// Push new sub-element onto stack
     	final StackElement sub = state.push(-1, -1);
     	
-    	// Collect all layout styles fmrom CSS
+    	// Collect all layout styles from CSS
     	state.getCSSContext().getCSSLayoutStyles(
     			elementType.getDefaultDisplay(),
+    			fontSettings.getFontForElement(elementType),
 				document.getId(element),
 				document.getTag(element),
 				document.getClasses(element),
@@ -100,6 +106,13 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 				sub.setAvailableHeight(height);
 			}
 		}
+		
+		// Set resulting font
+		final FontSpec spec = sub.layoutStyles.getFont();
+
+		final IFont font = state.getOrOpenFont(spec, FontStyle.NONE); // TODO: font styles
+		
+		sub.resultingLayout.setFont(font);
 		
 		if (state.getListener() != null) {
 			state.getListener().onElementStart(document, element, null);
@@ -259,8 +272,6 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	private void computeInlineElementPosition(CSSLayoutStyles styles, Dimensions dimensions) {
 		
 	}
-
-
 
 	private static int computeWidthPx(int width, CSSUnit widthUnit, int curWidth) {
 

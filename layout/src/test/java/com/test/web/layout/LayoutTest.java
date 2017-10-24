@@ -40,12 +40,15 @@ public class LayoutTest extends TestCase {
 		
 		final LayoutAlgorithm<Integer, LongTokenizer> layoutAgorithm = new LayoutAlgorithm<>(
 				textExtent,
-				renderFactory);
+				renderFactory,
+				new FontSettings());
 
 		final CSSContext<Integer> cssContext = new CSSContext<>();
 
 		final PageLayout<Integer> pageLayout = layoutAgorithm.layout(doc, viewPort, cssContext, null);
 		
 		assertThat(pageLayout.getLayers().size()).isEqualTo(1);
+	
+		final PageLayer<Integer> layer = pageLayout.getLayers().get(0);
 	}
 }

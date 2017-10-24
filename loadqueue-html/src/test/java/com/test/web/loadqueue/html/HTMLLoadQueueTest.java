@@ -7,6 +7,7 @@ import java.io.InputStream;
 import com.test.web.document._long.LongHTMLDocument;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.io._long.StringBuffers;
+import com.test.web.layout.FontSettings;
 import com.test.web.loadqueue.common.LoadQueue;
 import com.test.web.loadqueue.common.LoadQueueAndStream;
 import com.test.web.loadqueue.common.StreamFactory;
@@ -53,7 +54,7 @@ public class HTMLLoadQueueTest extends TestCase {
 		final LongHTMLDocument doc = new LongHTMLDocument(buffers);
 		
 		final DependencyCollectingParserListener<Integer, LongTokenizer> parserListener
-			= new DependencyCollectingParserListener<>(doc, loadQueue.getQueue(), null, null, null, null);
+			= new DependencyCollectingParserListener<>(doc, loadQueue.getQueue(), null, null, null, new FontSettings(), null);
 		
 		final HTMLParser<Integer, LongTokenizer> parser = new HTMLParser<Integer, LongTokenizer>(
 				buffers,

@@ -8,6 +8,7 @@ import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io.common.Tokenizer;
+import com.test.web.layout.FontSettings;
 import com.test.web.layout.IElementRenderLayout;
 import com.test.web.layout.LayoutAlgorithm;
 import com.test.web.layout.LayoutState;
@@ -32,6 +33,8 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 
 	private final LayoutAlgorithm<ELEMENT, TOKENIZER> layoutAlgorithm;
 
+	private final FontSettings fontSettings;
+	
 	// temp var for computing styles
 	private final CSSLayoutStyles tempLayoutStyles;
 	
@@ -55,13 +58,16 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 			ViewPort viewPort,
 			ITextExtent textExtent,
 			IRenderFactory renderFactory,
+			FontSettings fontSettings,
 			HTMLElementListener<ELEMENT, IElementRenderLayout> renderListener) {
 
 		this.delegate = delegate;
 		this.loadQueue = loadQueue;
 		this.viewPort = viewPort;
+		
+		this.fontSettings = fontSettings;
 	
-		this.layoutAlgorithm = new LayoutAlgorithm<>(textExtent, renderFactory);
+		this.layoutAlgorithm = new LayoutAlgorithm<>(textExtent, renderFactory, fontSettings);
 		
 		this.tempLayoutStyles = new CSSLayoutStyles();
 		
@@ -109,6 +115,7 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 				// Image tag, may not know width or height, in that case we have to load image first before we can continue layout
 				cssContext.getCSSLayoutStyles(
 						curElement.getDefaultDisplay(),
+						fontSettings.getFontForElement(curElement),
 						delegate.getId(elementRef),
 						delegate.getTag(elementRef),
 						delegate.getClasses(elementRef),

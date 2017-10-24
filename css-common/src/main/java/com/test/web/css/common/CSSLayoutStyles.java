@@ -4,6 +4,7 @@ import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.types.FontSpec;
 
 /*
  * For collecting all styles that apply to layout.
@@ -15,6 +16,8 @@ public final class CSSLayoutStyles {
 	private CSSDisplay display;
 	private CSSPosition position;
 	private CSSFloat cssFloat;
+	
+	private FontSpec font;
 	
 	private int positionLeft;
 	private CSSUnit positionLeftUnit;
@@ -39,8 +42,18 @@ public final class CSSLayoutStyles {
 		this.display = display;
 	}
 
+	void setFont(FontSpec font) {
+		if (font == null) {
+			throw new IllegalArgumentException("font == null");
+		}
+		
+		this.font = font;
+	}
+	
 	void merge(CSSDisplay display, CSSPosition position, CSSFloat cssFloat,
-			
+
+			FontSpec font,
+	
 			int positionLeft, CSSUnit positionLeftUnit, int positionTop, CSSUnit positionTopUnit,
 			int width, CSSUnit widthUnit, int height , CSSUnit heightUnit,
 			short zIndex) {
@@ -55,6 +68,10 @@ public final class CSSLayoutStyles {
 		
 		if (cssFloat != null) {
 			this.cssFloat = cssFloat;
+		}
+		
+		if (font != null) {
+			this.font = font;
 		}
 		
 		if (positionLeftUnit != null) {
@@ -138,6 +155,10 @@ public final class CSSLayoutStyles {
 	
 	public CSSDimensions getMargins() {
 		return margins;
+	}
+	
+	public FontSpec getFont() {
+		return font;
 	}
 
 	public short getZIndex() {

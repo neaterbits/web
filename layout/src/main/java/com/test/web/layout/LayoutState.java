@@ -9,9 +9,14 @@ import com.test.web.css.common.CSSContext;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.IRenderFactory;
+import com.test.web.render.common.ITextExtent;
+import com.test.web.types.FontSpec;
 
 // State maintained while doing layout, ie. while recursing the DOM
 public final class LayoutState<ELEMENT> {
+	
+	private final ITextExtent textExtent;
+	
 	// For finding size of text strings when using a particular font for rendering
 	private final CSSContext<ELEMENT> cssContext;
 
@@ -30,9 +35,9 @@ public final class LayoutState<ELEMENT> {
 
 	// Position of current display block
 	private int curBlockYPos;
-
 	
-	public LayoutState(ViewPort viewPort, CSSContext<ELEMENT> cssContext, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
+	public LayoutState(ITextExtent textExtent, ViewPort viewPort, CSSContext<ELEMENT> cssContext, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
+		this.textExtent = textExtent;
 		this.cssContext = cssContext;
 		this.listener = listener;
 
@@ -91,5 +96,30 @@ public final class LayoutState<ELEMENT> {
 	
 	void pop() {
 		-- curDepth;
+	}
+	
+	IFont getOrOpenFont(FontSpec spec, short style) {
+		final FontKey fontKey = new FontKey(spec, style);
+		
+		IFont font = fonts.get(fontKey);
+		
+		if (font == null) {
+			font = textExtent.getFont(spec.getFamily(), spec.getName(), spec.getSize(), style);
+
+			if (font == null) {
+				throw new IllegalStateException("Failed to open font " + spec + " with style " + style);
+			}
+		}
+
+		return font;
+	}
+	
+	void close() {
+		// Close all fonts
+		for (IFont font : fonts.values()) {
+			textExtent.closeFont(font);
+		}
+
+		this.fonts.clear();
 	}
 }
