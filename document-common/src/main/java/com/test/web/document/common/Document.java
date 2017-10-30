@@ -3,6 +3,7 @@ package com.test.web.document.common;
 import java.util.List;
 
 import com.test.web.css.common.ICSSDocument;
+import com.test.web.css.common.ICSSDocumentStyles;
 
 /*
  * Represents document object model for HTML
@@ -23,7 +24,7 @@ public interface Document<ELEMENT> {
 	
 	String [] getClasses(ELEMENT element);
 	
-	ICSSDocument<ELEMENT> getStyles(ELEMENT element);
+	ICSSDocumentStyles<ELEMENT> getStyles(ELEMENT element);
 	
 	List<ELEMENT> getElementsWithClass(String _class);
 

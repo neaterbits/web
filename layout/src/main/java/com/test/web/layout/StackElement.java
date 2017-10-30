@@ -29,6 +29,15 @@ final class StackElement {
 	}
 	
 	void init(int availableWidth, int availableHeight) {
+		
+		if (availableWidth == 0)  {
+			throw new IllegalArgumentException("availableWidth == 0");
+		}
+		
+		if (availableHeight == 0) {
+			throw new IllegalArgumentException("availableHeight == 0");
+		}
+		
 		this.availableWidth = availableWidth;
 		this.availableHeight = availableHeight;
 
@@ -40,6 +49,10 @@ final class StackElement {
 	}
 
 	void setAvailableWidth(int availableWidth) {
+		if (availableWidth == 0)  {
+			throw new IllegalArgumentException("availableWidth == 0");
+		}
+
 		this.availableWidth = availableWidth;
 	}
 

@@ -56,7 +56,8 @@ final class ElementLayout implements IElementRenderLayout {
 		this.renderer = renderer;
 	}
 
-	IFont getFont() {
+	@Override
+	public IFont getFont() {
 		return font;
 	}
 

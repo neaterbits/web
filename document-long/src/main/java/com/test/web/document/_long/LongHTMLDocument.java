@@ -15,6 +15,7 @@ import java.util.Map;
 import com.test.web.buffers.LongBuffersIntegerIndex;
 import com.test.web.buffers.StringStorageBuffer;
 import com.test.web.css.common.ICSSDocument;
+import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
@@ -23,6 +24,7 @@ import com.test.web.io._long.StringBuffers;
 import com.test.web.io.common.SimpleLoadStream;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.html.HTMLParser;
+import com.test.web.parse.html.HTMLUtils;
 import com.test.web.parse.html.IDocumentParserListener;
 import com.test.web.parse.html.IHTMLStyleParserListener;
 import com.test.web.parse.html.enums.HTMLDirection;
@@ -507,9 +509,8 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 
 	@Override
-	public ICSSDocument<Integer> getStyles(Integer element) {
-		// TODO Auto-generated method stub
-		return null;
+	public ICSSDocumentStyles<Integer> getStyles(Integer element) {
+		return styleDocument.hasElement(element) ? styleDocument : null;
 	}
 
 	@Override
@@ -628,7 +629,12 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		}
 		else {
 			if (callListener) {
-				listener.onText(this, textBuffer.getString(LongHTML.getText(elementBuf, elementOffset)), param);
+				
+				String text = textBuffer.getString(LongHTML.getText(elementBuf, elementOffset));
+				
+				text = HTMLUtils.removeNewlines(text);
+				
+				listener.onText(this, text,  param);
 			}
 		}
 

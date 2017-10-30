@@ -1,5 +1,7 @@
 package com.test.web.layout;
 
+import com.test.web.render.common.IFont;
+
 public interface IElementLayout {
 
 	// Bounds outside wrapping and padding
@@ -12,4 +14,5 @@ public interface IElementLayout {
 	
 	IWrapping getPadding();
 
+	IFont getFont();
 }

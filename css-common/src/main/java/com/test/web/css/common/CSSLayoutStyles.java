@@ -29,10 +29,15 @@ public final class CSSLayoutStyles {
 	private int height;
 	private CSSUnit heightUnit;
 	
-	private CSSDimensions padding;
-	private CSSDimensions margins;
+	private final CSSDimensions margins;
+	private final CSSDimensions padding;
 	
 	private short zIndex;
+	
+	public CSSLayoutStyles() {
+		this.margins = new CSSDimensions();
+		this.padding = new CSSDimensions();
+	}
 	
 	void setDisplay(CSSDisplay display) {
 		if (display == null) {

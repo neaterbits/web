@@ -49,4 +49,8 @@ final class LongStyleDocument extends BaseLongCSSDocument
 			array[existing.length] = cssElement;
 		}
 	}
+
+	boolean hasElement(int element) {
+		return htmlToStyleElements.containsKey(element);
+	}
 }

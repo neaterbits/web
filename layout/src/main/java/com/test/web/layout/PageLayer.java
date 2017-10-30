@@ -1,8 +1,8 @@
 package com.test.web.layout;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
 
+import com.test.web.render.common.IFont;
 import com.test.web.render.common.IRenderer;
 
 /*
@@ -11,17 +11,30 @@ import com.test.web.render.common.IRenderer;
 
 public class PageLayer<ELEMENT> implements Comparable<PageLayer<ELEMENT>> {
 	private final int index;
-	private final List<ElementLayout> layout;
+	private final LinkedHashMap<ELEMENT, ElementLayout> layouts;
 	
 	// The renderer used to render this layer
 	private final IRenderer renderer;
 
-	public PageLayer(int index, IRenderer renderer) {
+	PageLayer(int index, IRenderer renderer) {
 		this.index = index;
-		this.layout = new ArrayList<>();
+		this.layouts = new LinkedHashMap<>();
 		this.renderer = renderer;
 	}
 
+	void add(ELEMENT element, ElementLayout layout) {
+		if (element == null) {
+			throw new IllegalArgumentException("element == null");
+		}
+		
+		if (layout == null) {
+			throw new IllegalArgumentException("layout == null");
+		}
+		
+		if (layouts.put(element, layout) != null) {
+			throw new IllegalStateException("Already has layout for element " + element);
+		}
+	}
 	
 	int getIndex() {
 		return index;
@@ -29,6 +42,32 @@ public class PageLayer<ELEMENT> implements Comparable<PageLayer<ELEMENT>> {
 	
 	IRenderer getRenderer() {
 		return renderer;
+	}
+	
+	private IElementLayout get(ELEMENT element) {
+		return layouts.get(element);
+	}
+	
+	// Bounds outside wrapping and padding
+	IBounds getOuterBounds(ELEMENT element) {
+		return get(element).getOuterBounds();
+	}
+	
+	// Bounds of element itself
+	IBounds getInnerBounds(ELEMENT element) {
+		return get(element).getInnerBounds();
+	}
+	
+	IWrapping getMargins(ELEMENT element) {
+		return get(element).getMargins();
+	}
+	
+	IWrapping getPadding(ELEMENT element) {
+		return get(element).getPadding();
+	}
+
+	IFont getFont(ELEMENT element) {
+		return get(element).getFont();
 	}
 
 	@Override

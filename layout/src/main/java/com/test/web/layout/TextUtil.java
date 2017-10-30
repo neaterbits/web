@@ -33,14 +33,53 @@ final class TextUtil {
     	
     	return availableWidth == -1 ? width : Math.min(width, availableWidth);
     }
+    
+    private static int indexOfNewLine(String string) {
+    	
+		int lfIdx = string.indexOf('\n');
+		int crIdx = string.indexOf('\r');
+		
+		final int ret;
+		
+    	if (lfIdx >= 0 && crIdx >= 0) {
+    		ret = Math.min(lfIdx, crIdx);
+    	}
+    	else if (lfIdx >= 0) {
+    		ret = lfIdx;
+    	}
+    	else if (crIdx >= 0) {
+    		ret = crIdx;
+    	}
+    	else {
+    		ret = -1;
+    	}
+  
+    	return ret;
+    }
 
-	int findNumberOfChars(String string, int availableWidth, IFont font) {
-    	// figure out approximate number of characters
-
+	int findNumberOfChars(String inputString, int availableWidth, IFont font) {
+    	
+		// Only until first newline
+		final int newLineIdx = indexOfNewLine(inputString);
+		
+		final String string;
+		
+		/*
+		string = newLineIdx >= 0
+				? inputString.substring(0, newLineIdx)
+				: inputString;
+		*/
+		
+		if (newLineIdx >= 0) {
+			throw new IllegalArgumentException("newline in inut string");
+		}
+		
+		string = inputString;
+		
+		// figure out approximate number of characters
     	final int guessCharacters = availableWidth / font.getAverageWidth();
     	final int tryCharacters = Math.min(string.length(), guessCharacters);
-    	final String s = string.substring(0, tryCharacters);
-    	final int width = textExtent.getTextExtent(font, s);
+    	final int width = textExtent.getTextExtent(font, string.substring(0, tryCharacters));
     	
     	final int ret;
     	
@@ -68,8 +107,11 @@ final class TextUtil {
     	else  if (width == availableWidth) {
     		ret = tryCharacters;
     	}
+    	else if (tryCharacters == string.length()) {
+    		ret = tryCharacters;
+    	}
     	else {
-    		int numChars = tryCharacters - 1;
+    		int numChars = tryCharacters + 1;
     		
     		for (;;) {
     			final int w = textExtent.getTextExtent(font, string.substring(0, numChars));

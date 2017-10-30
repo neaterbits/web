@@ -71,7 +71,7 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 		
 		this.tempLayoutStyles = new CSSLayoutStyles();
 		
-		this.layoutState = new LayoutState<>(viewPort, cssContext, renderListener);
+		this.layoutState = new LayoutState<>(textExtent, viewPort, cssContext, renderListener);
 	}
 
 	@Override

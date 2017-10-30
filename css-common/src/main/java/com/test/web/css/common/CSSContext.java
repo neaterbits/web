@@ -76,7 +76,8 @@ public class CSSContext<TARGET> {
 	}
 	
 	// eg for styles attribute within any html tag
-	public void applyLayoutStyles(ICSSDocument<TARGET> document, TARGET target, CSSLayoutStyles result) {
+	public void applyLayoutStyles(ICSSDocumentStyles<TARGET> document, TARGET target, CSSLayoutStyles result) {
+		
 		// Apply dimensions from document
 		final CSSDisplay display = document.getDisplay(target);
 		final CSSPosition position = document.getPosition(target);
@@ -84,13 +85,13 @@ public class CSSContext<TARGET> {
 		
 		final int positionLeft = document.getLeft(target);
 		final CSSUnit positionLeftUnit = document.getLeftUnit(target);
-					
+				
 		final int positionTop = document.getTop(target);
 		final CSSUnit positionTopUnit = document.getTopUnit(target);
 
 		final int width = document.getWidth(target);
 		final CSSUnit widthUnit = document.getWidthUnit(target);
-		
+	
 		final int height = document.getHeight(target);
 		final CSSUnit heightUnit = document.getHeightUnit(target);
 
@@ -128,6 +129,10 @@ public class CSSContext<TARGET> {
 				int right, CSSUnit rightUnit, CSSJustify rightType,
 				int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
 				int left, CSSUnit leftUnit, CSSJustify leftType) {
+
+			if (param == null) {
+				throw new IllegalArgumentException("param == null");
+			}
 
 			param.merge(
 					top, topUnit, topType,

@@ -3,6 +3,7 @@ package com.test.web.layout;
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.common.CSSLayoutStyles;
 import com.test.web.css.common.ICSSDocument;
+import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.document.common.Document;
 import com.test.web.document.common.HTMLElement;
@@ -52,6 +53,8 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     @Override
 	public void onElementStart(Document<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
 
+    	System.out.println("## onElementStart " + document.getType(element));
+    	
     	final HTMLElement elementType = document.getType(element);
 
     	if (!elementType.isLayoutElement()) {
@@ -73,11 +76,14 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 				sub.layoutStyles);
 
     	// Also apply style attribute if defined
-		final ICSSDocument<ELEMENT> styleAttribute = document.getStyles(element);
+		final ICSSDocumentStyles<ELEMENT> styleAttribute = document.getStyles(element);
 
 		if (styleAttribute != null) {
+			System.out.println("## applying layout styles to element of type " + document.getType(element));
 			// Get CSS document from style-tag of element
 			state.getCSSContext().applyLayoutStyles(styleAttribute, element, sub.layoutStyles);
+
+			System.out.println("## applied layout styles for " + document.getType(element));
 		}
 		
 		// Adjust sub available width/height if is set
@@ -88,6 +94,11 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			final int width = computeWidthPx(sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), cur.getAvailableWidth());
 			
 			if (width != -1) {
+				
+				if (width == 0) {
+					throw new IllegalStateException("Computed width 0 from "  + sub.layoutStyles.getWidth() + " of unit " + sub.layoutStyles.getWidthUnit());
+				}
+				
 				sub.resultingLayout.setHasCSSWidth(true);
 				sub.resultingLayout.getDimensions().setWidth(width);
 
@@ -117,6 +128,8 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		if (state.getListener() != null) {
 			state.getListener().onElementStart(document, element, null);
 		}
+
+		System.out.println("## onElementEnd" + document.getType(element));
 	}
 
     @Override
@@ -145,13 +158,15 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		final short zIndex = cur.layoutStyles.getZIndex();
 		
 		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, renderFactory);
-		
+
+		layer.add(element, cur.resultingLayout);
+
 		// Has computed sub element size by now so can add
 		if (!parent.resultingLayout.hasCSSWidth()) {
 			// no width from CSS so must add this element to size of current element
 			parent.resultingLayout.getDimensions().addToWidth(cur.resultingLayout.getDimensions().getWidth());
 		}
-
+		
 		// Add to height of current element if is taller than max for current element
 		final int height = cur.resultingLayout.getDimensions().getHeight();
 
@@ -195,6 +210,12 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			
 				// For each line, find with of text
 				int numChars = textUtil.findNumberOfChars(s, cur.getAvailableWidth(), font);
+				
+				if (numChars == 0 && !s.isEmpty()) {
+					throw new IllegalStateException("No room for characters in element of width " + cur.getAvailableWidth());
+				}
+				
+				System.out.println("## numChars "+ numChars + " of \"" + s + "\"");
 				
 				height += textUtil.getTextLineHeight(cur, font);
 				

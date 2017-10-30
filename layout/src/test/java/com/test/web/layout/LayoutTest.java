@@ -20,7 +20,7 @@ public class LayoutTest extends TestCase {
 	public void testLayout() throws IOException, ParserException {
 		
 		final String html = TestData.wrap(
-				"<div style='width:100px;height:300px'>\n" +
+				"<div id=\"element_id\" style='width:100px;height:300px'>\n" +
 				"This is a test text that will wrap after 100 pixels" +
 				"</div>\n"
 		);
@@ -50,5 +50,29 @@ public class LayoutTest extends TestCase {
 		assertThat(pageLayout.getLayers().size()).isEqualTo(1);
 	
 		final PageLayer<Integer> layer = pageLayout.getLayers().get(0);
+		
+		final Integer div = doc.getElementById("element_id");
+		assertThat(div).isNotNull();
+
+		assertThat(layer.getOuterBounds(div).getLeft()).isEqualTo(0);
+		assertThat(layer.getOuterBounds(div).getTop()).isEqualTo(0);
+		assertThat(layer.getOuterBounds(div).getWidth()).isEqualTo(100);
+		assertThat(layer.getOuterBounds(div).getHeight()).isEqualTo(300);
+
+		assertThat(layer.getInnerBounds(div).getLeft()).isEqualTo(0);
+		assertThat(layer.getInnerBounds(div).getTop()).isEqualTo(0);
+		assertThat(layer.getInnerBounds(div).getWidth()).isEqualTo(100);
+		assertThat(layer.getInnerBounds(div).getHeight()).isEqualTo(300);
+			
+		assertThat(layer.getMargins(div).getTop()).isEqualTo(0);
+		assertThat(layer.getMargins(div).getRight()).isEqualTo(0);
+		assertThat(layer.getMargins(div).getBottom()).isEqualTo(0);
+		assertThat(layer.getMargins(div).getLeft()).isEqualTo(0);
+		
+		assertThat(layer.getPadding(div).getTop()).isEqualTo(0);
+		assertThat(layer.getPadding(div).getRight()).isEqualTo(0);
+		assertThat(layer.getPadding(div).getBottom()).isEqualTo(0);
+		assertThat(layer.getPadding(div).getLeft()).isEqualTo(0);
+		
 	}
 }
