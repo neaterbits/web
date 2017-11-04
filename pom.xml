@@ -26,14 +26,19 @@
 	    <module>buffers</module>
 	    <module>css-common</module>
 	    <module>css-long</module>
+	    <module>css-oo</module>
+	    <module>css-test</module>
 	    <module>io-common</module>
 	    <module>io-long</module>
+	    <module>io-oo</module>
 	    <module>layout</module>
 	    <module>parse-common</module>
 	    <module>parse-css</module>
 	    <module>parse-html</module>
 	    <module>document-common</module>
 	    <module>document-long</module>
+	    <module>document-oo</module>
+	    <module>document-test</module>
 	    <module>loadqueue-common</module>
 	    <module>loadqueue-html</module>
 	    <module>render-common</module>

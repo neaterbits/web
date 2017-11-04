@@ -1,8 +1,8 @@
 package com.test.web.document.common;
 
+import java.io.PrintStream;
 import java.util.List;
 
-import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.ICSSDocumentStyles;
 
 /*
@@ -44,4 +44,6 @@ public interface Document<ELEMENT> {
 	<PARAM> void iterate(HTMLElementListener<ELEMENT, PARAM> listener, PARAM param);
 	
 	<PARAM> void iterateFrom(ELEMENT element, HTMLElementListener<ELEMENT, PARAM> listener, PARAM param);
+
+	void dumpFlat(PrintStream out);
 }

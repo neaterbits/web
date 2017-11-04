@@ -315,7 +315,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			break;
 			
 		case AUTO:
-			toCall.onJustify(9, null, CSSJustify.AUTO);
+			toCall.onJustify(0, null, CSSJustify.AUTO);
 			semiColonRead = false;
 			break;
 			

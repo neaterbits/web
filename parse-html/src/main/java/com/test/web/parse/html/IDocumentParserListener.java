@@ -6,4 +6,5 @@ import com.test.web.io.common.Tokenizer;
 public interface IDocumentParserListener<ELEMENT, TOKENIZER extends Tokenizer>
 		extends Document<ELEMENT>, HTMLParserListener<ELEMENT, TOKENIZER> {
 
+	IHTMLStyleParserListener<ELEMENT, TOKENIZER> getStyleParserListener();
 }

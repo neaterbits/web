@@ -7,15 +7,12 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.test.web.buffers.LongBuffersIntegerIndex;
 import com.test.web.buffers.StringStorageBuffer;
-import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.ICSSDocumentStyles;
+import com.test.web.document.common.DocumentState;
 import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
@@ -69,10 +66,9 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	private final StringStorageBuffer typeBuffer;
 	private final StringStorageBuffer hrefBuffer;
 
-	private final Map<String, Integer> elementById;
-	private final Map<String, List<Integer>> elementsByClass;
-
 	private final LongStyleDocument styleDocument;
+
+	private final DocumentState<Integer> state;
 	
 	// Array of element classes that are appended to every time we read an element
 	// TODO: perhaps use a linked-list? We can only add classes here since we only stor index and count for each element, class would seldom be updated dynamically though
@@ -87,9 +83,8 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		this.textBuffer = textBuffer;
 		
 		this.stack = new int[100];
-		
-		this.elementById = new HashMap<>();
-		this.elementsByClass = new HashMap<>();
+
+		this.state = new DocumentState<>();
 		
 		this.idBuffer = new StringStorageBuffer();
 		this.classBuffer = new StringStorageBuffer();
@@ -333,8 +328,8 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		case ID:
 			final int idStringRef = tokenizer.addToBuffer(idBuffer, startOffset, endSkip);
 			final String idString = idBuffer.getString(idStringRef);
-
-			elementById.put(idString, getCurElement());
+			
+			state.addElement(idString, getCurElement());
 			
 			LongHTML.setId(elementBuf, elementOffset, idStringRef);
 			break;
@@ -408,22 +403,10 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		final int classStringRef = tokenizer.addToBuffer(classBuffer, startOffset, endSkip);
 		
 		final String classString = classBuffer.getString(classStringRef);
-
-		List<Integer> elementsWithClass = elementsByClass.get(classString);
 		
 		final int element = getCurElement();
 		
-		if (elementsWithClass == null) {
-			elementsWithClass = new ArrayList<>();
-			elementsByClass.put(classString, elementsWithClass);
-
-			elementsWithClass.add(element);
-		}
-		else {
-			if (!elementsWithClass.contains(element)) {
-				elementsWithClass.add(element);
-			}
-		}
+		state.addElementClass(classString, element);
 		
 		final int existingClassRef = LongHTML.getClass(elementBuf, elementOffset);
 
@@ -432,7 +415,6 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		}
 		
 		final int updatedClassRef;
-		
 
 		if (existingClassRef == 0) {
 			// Not set since starts counting from 0
@@ -450,7 +432,6 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		}
 		
 		elementClasses[numElementClasses ++] = classStringRef;
-		
 
 		LongHTML.setClass(elementBuf, elementOffset, updatedClassRef);
 	}
@@ -464,7 +445,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 	@Override
 	public Integer getElementById(String id) {
-		return elementById.get(id);
+		return state.getElementById(id);
 	}
 
 	@Override
@@ -515,11 +496,8 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 	@Override
 	public List<Integer> getElementsWithClass(String _class) {
-		final List<Integer> elements = elementsByClass.get(_class);
-		
-		return elements != null ? elements : Collections.emptyList();
+		return state.getElementsWithClass(_class);
 	}
-
 
 	@Override
 	public String getScriptType(Integer element) {
@@ -600,30 +578,30 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 	
 	private <PARAM> boolean iterate(
-			int element,
+			int curElement,
 			HTMLElementListener<Integer, PARAM> listener,
 			PARAM param,
-			int startElement,
+			int startCallListenerElement,
 			boolean callListener) {
 		
-		final int elementOffset = offset(element);
-		final long [] elementBuf = buf(element);
+		final int elementOffset = offset(curElement);
+		final long [] elementBuf = buf(curElement);
 
 		if (LongHTML.isElement(elementBuf, elementOffset)) {
 
 			if (callListener) {
-				listener.onElementStart(this, element, param);
+				listener.onElementStart(this, curElement, param);
 			}
 			
 			for (int ref = LongHTML.getHead(elementBuf, elementOffset);
 					ref != LongHTML.END_OF_LIST_MARKER;
 					ref = LongHTML.getElementNext(buf(ref), offset(ref))) {
 				
-				callListener = iterate(ref, listener, param, startElement, callListener);
+				callListener = iterate(ref, listener, param, startCallListenerElement, callListener);
 			}
 			
 			if (callListener) {
-				listener.onElementEnd(this, element, param);
+				listener.onElementEnd(this, curElement, param);
 			}
 			
 		}
@@ -638,7 +616,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 			}
 		}
 
-		if (!callListener && element == startElement) {
+		if (!callListener && curElement == startCallListenerElement) {
 			// found element where we are to start call listener, call listeners for all elements after this one
 			callListener = true;
 		}
@@ -648,15 +626,15 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 
 	@FunctionalInterface
-	interface ElementVisitor {
+	interface LongElementVisitor {
 		void onElement(int ref, long [] buf, int offset, HTMLElement type);
 	}
 	
-	private void foreEachElement(ElementVisitor visitor) {
+	private void foreEachElement(LongElementVisitor visitor) {
 		foreEachElement(INITIAL_ELEMENT, visitor);
 	}
 
-	private void foreEachElement(int element, ElementVisitor visitor) {
+	private void foreEachElement(int element, LongElementVisitor visitor) {
 		for (;;) {
 			final int elementOffset = offset(element);
 			final long [] elementBuf = buf(element);
@@ -692,7 +670,8 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		}
 	}
 	
-	void dumpFlat(PrintStream out) {
+	@Override
+	public void dumpFlat(PrintStream out) {
 		dumpFlat(INITIAL_ELEMENT, out);
 	}
 	
@@ -751,6 +730,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		return ret;
 	}
 	
+	@Override
 	public IHTMLStyleParserListener<Integer, LongTokenizer> getStyleParserListener() {
 		return styleDocument;
 	}

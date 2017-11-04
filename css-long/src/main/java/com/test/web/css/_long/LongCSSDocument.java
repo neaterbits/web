@@ -1,12 +1,10 @@
 package com.test.web.css._long;
 
-
-import java.util.HashMap;
-import java.util.Map;
-
-import com.test.web.css.common.ICSSDocument;
+import com.test.web.css.common.CSSState;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSStyle;
+import com.test.web.io._long.LongTokenizer;
+import com.test.web.parse.css.ICSSDocumentParserListener;
 
 /***
  * For storing and accessing a CSS document, encoding in arrays of long [] for less GC and memory churn
@@ -19,53 +17,18 @@ import com.test.web.css.common.enums.CSStyle;
 
 public final class LongCSSDocument
 	extends BaseLongCSSDocument
-	implements ICSSDocument<Integer> {
+	implements ICSSDocumentParserListener<Integer, LongTokenizer, Void> {
 
-	// CSS types by element tag, ID and class
-	private Map<String, Integer> byTag;
-	private Map<String, Integer> byId;
-	private Map<String, Integer> byClass;
-	
+	private final CSSState<Integer> state;
 
-	private Map<String, Integer> getMap(CSSTarget target) {
-		final Map<String, Integer> map;
-		
-		switch (target) {
-		case TAG:
-			if (this.byTag == null) {
-				this.byTag = new HashMap<>();
-			}
-			map = this.byTag;
-			break;
-			
-		case ID:
-			if (this.byId == null) {
-				this.byId = new HashMap<>();
-			}
-			map = this.byId;
-			break;
-
-		case CLASS:
-			if (this.byClass == null) {
-				this.byClass = new HashMap<>();
-			}
-			map = this.byClass;
-			break;
-			
-		default:
-			throw new IllegalArgumentException("Unexpected target " + target);
-		}
-
-		return map;
+	public LongCSSDocument() {
+		this.state = new CSSState<>();
 	}
 	
-	/***************************************************** Access interface *****************************************************/ 
-	
-
 	@Override
 	public boolean isSet(CSSTarget target, String targetName, CSStyle style) {
 
-		final Integer entry = getMap(target).get(targetName);
+		final Integer entry = state.get(target, targetName);
 
 		final boolean isSet;
 
@@ -81,7 +44,7 @@ public final class LongCSSDocument
 	
 	@Override
 	public Integer get(CSSTarget target, String targetName) {
-		return getMap(target).get(targetName);
+		return state.get(target, targetName);
 	}
 	
 
@@ -90,50 +53,12 @@ public final class LongCSSDocument
 	@Override
 	public Void onEntityStart(CSSTarget target, String targetName) {
 		
-		if (targetName == null || targetName.isEmpty()) {
-			throw new IllegalArgumentException("no target name");
-		}
-		
-		final Map<String, Integer> map;
-		
-		switch (target) {
-		case TAG:
-			if (this.byTag == null) {
-				this.byTag = new HashMap<>();
-			}
-			map = this.byTag;
-			break;
-			
-		case ID:
-			if (this.byId == null) {
-				this.byId = new HashMap<>();
-			}
-			map = this.byId;
-			break;
-
-		case CLASS:
-			if (this.byClass == null) {
-				this.byClass = new HashMap<>();
-			}
-			map = this.byClass;
-			break;
-			
-		default:
-			throw new IllegalArgumentException("Unexpected target " + target);
-		}
-		
-		
 		// Started a CSS entity, must allocate out of buffer
 		// Start out allocating a compact element, we might re-allocate if turns out to have more than the standard compact elements
 		final int element = allocateCurParseElement(target.name());
 		
-		// Store in map
-		if (map.containsKey(targetName)) {
-			throw new IllegalStateException("TODO: handle multiple instanes for same target name");
-		}
+		state.add(target, targetName, element);
 		
-		map.put(targetName, element);
-
 		return null;
 	}
 

@@ -6,7 +6,6 @@ import junit.framework.TestCase;
 
 public class LongHTMLBaseTest extends TestCase {
 
-	
 	public void testSetGetLower32() {
 		
 		final long [] buf = new long [3];
