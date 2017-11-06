@@ -4,6 +4,7 @@ import com.test.web.css.common.CSSContext;
 import com.test.web.css.common.CSSDimensions;
 import com.test.web.css.common.CSSLayoutStyles;
 import com.test.web.css.common.ICSSDocumentStyles;
+import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.document.common.Document;
@@ -60,7 +61,6 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	
     @Override
 	public void onElementStart(Document<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
-
     	
     	final HTMLElement elementType = document.getType(element);
 
@@ -95,7 +95,6 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	if (debugListener != null) {
     		debugListener.onElementCSS(state.getDepth(), sub.layoutStyles);
     	}
-    	
 
     	// Also apply style attribute if defined
 		final ICSSDocumentStyles<ELEMENT> styleAttribute = document.getStyles(element);
@@ -174,7 +173,15 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		sub.setAvailableHeight(height);
 		
 		// Compute inner-dimensions
-		computeDimensionsFromOuter(width, height, sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
+		computeDimensionsFromOuter(
+				sub.layoutStyles.getDisplay(),
+				cur.getAvailableWidth(),
+				width,
+				sub.layoutStyles.hasWidth(),
+				cur.getAvailableHeight(),
+				height,
+				sub.layoutStyles.hasHeight(),
+				sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
 
 		// Set resulting font
 		final FontSpec spec = sub.layoutStyles.getFont();
@@ -189,63 +196,108 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		}
 	}
     
-    private static void computeDimensionsFromOuter(int width, int height, CSSDimensions margins, CSSDimensions padding, ElementLayout resultingLayout) {
+    private static void computeDimensionsFromOuter(
+    		CSSDisplay display,
+    		int availableWidth, int widthFromCSS, boolean hasWidthFromCSS,
+    		int availableHeight, int heightFromCSS, boolean hasHeightFromCSS,
+    		CSSDimensions margins, CSSDimensions padding,
+    		ElementLayout resultingLayout) {
     	
-    	// Outer width and outer height
-    	resultingLayout.getDimensions().setWidth(width);
-    	resultingLayout.getDimensions().setHeight(height);
     	
-    	final int topPadding 		= getPaddingSize(padding.getTop(), 		padding.getTopUnit(), 		padding.getTopType(),		height);
-    	final int rightPadding 	= getPaddingSize(padding.getRight(), 		padding.getRightUnit(), 		padding.getRightType(),		width);
-    	final int bottomPadding 	= getPaddingSize(padding.getBottom(), 	padding.getBottomUnit(), 	padding.getBottomType(),	height);
-    	final int leftPadding 		= getPaddingSize(padding.getLeft(),			padding.getLeftUnit(), 		padding.getLeftType(),		width);
+    	final int topPadding 		= getPaddingSize(padding.getTop(), 		padding.getTopUnit(), 		padding.getTopType(),		availableHeight);
+    	final int rightPadding 	= getPaddingSize(padding.getRight(), 		padding.getRightUnit(), 		padding.getRightType(),		availableWidth);
+    	final int bottomPadding 	= getPaddingSize(padding.getBottom(), 	padding.getBottomUnit(), 	padding.getBottomType(),	availableHeight);
+    	final int leftPadding 		= getPaddingSize(padding.getLeft(),			padding.getLeftUnit(), 		padding.getLeftType(),		availableWidth);
 
     	resultingLayout.getPaddingWrapping().init(topPadding, rightPadding, bottomPadding, leftPadding);
-
+    	
     	// margins can be auto so in that case must know how much space is required by element so that can supply the rest as margins
-    	final boolean mustComputeWidth  = margins.getLeftType() == CSSJustify.AUTO || margins.getRightType() == CSSJustify.AUTO;
-    	final boolean mustComputeHeight = margins.getTopType() == CSSJustify.AUTO || margins.getBottomType() == CSSJustify.AUTO;
-
-    	int innerWidth = width - leftPadding - rightPadding;
-    	int innerHeight = height - topPadding - bottomPadding;
+    	
+    	final int innerWidth;
+    	final int innerHeight;
+    	
+    	if (hasWidthFromCSS) {
+    		// width is specified in CSS, we use that
+    		innerWidth = widthFromCSS;
+    		innerHeight = heightFromCSS;
+    	}
+    	else {
+    		// no width in CSS so we'll use what space is available. For height this is probably the value -1, which means not known
+    		innerWidth = availableWidth;
+    		innerHeight = availableHeight;
+    	}
     	
     	int innerLeft = leftPadding;
     	int innerTop = topPadding;
     	
-    	if (mustComputeWidth) {
-    		// One of left or right margins are auto so must compute width of inner element first to figure out
-    		// which of these are to be set
-    		// How to solve this for nested elements? We have to compute width and height and handle this in the end-tag? At least we have to position
-    		// the element at that point since we do not know the size
+    	final int leftMargin;
+    	final int rightMargin;
+    	
+    	//I If margin is auto, we have to compute these.
+    	// - if dusplay:block abd width was specified in CSS and rhere is room for margin, it will be set to remaining
+    	// - otherwise set to 0
+    	if (margins.getLeftType() == CSSJustify.AUTO || margins.getRightType() == CSSJustify.AUTO) {
     		
-    		// !! Note that one or both of the margins can be set to auto
-    		throw new UnsupportedOperationException("TODO");
+    		final int paddingWidth = leftPadding + rightPadding;
+    		
+    		if (display == CSSDisplay.BLOCK && hasWidthFromCSS) {
+    			
+    			// We should compute margin from leftover width, but only if had CSS width that was < specified
+    			if (margins.getLeftType() == CSSJustify.AUTO && margins.getRightType() == CSSJustify.AUTO) {
+    				// both left and right margins are auto so split margin size
+
+    				final int remaining = availableWidth - (widthFromCSS + paddingWidth);
+    				
+    				final int remainingHalf = remaining / 2;
+    				
+    				leftMargin = remainingHalf + (remaining % 2);
+    				rightMargin = remainingHalf;
+    			}
+    			else if (margins.getLeftType() == CSSJustify.AUTO) {
+    				rightMargin = getNonAutoSize(margins.getRight(), margins.getRightUnit(), margins.getRightType(), availableWidth);
+    				// left is auto
+    				leftMargin = Math.max(0, availableWidth - rightMargin - paddingWidth - widthFromCSS);
+    			}
+    			else if (margins.getRightType() == CSSJustify.AUTO) {
+    				leftMargin = getNonAutoSize(margins.getLeft(), margins.getLeftUnit(), margins.getLeftType(), availableWidth);
+    				// right is auto
+    				rightMargin = Math.max(0, availableWidth - leftMargin - paddingWidth - widthFromCSS);
+    			}
+    			else {
+    				throw new IllegalStateException("Either left or right should be auto");
+    			}
+    		}
+    		else {
+    			// left and right margins are 0 since can only use auto for display:block it seems
+    			leftMargin 	 = getSizeWithAutoAsZero(margins.getLeft(), margins.getLeftUnit(), margins.getLeftType(), availableWidth);
+    			rightMargin = getSizeWithAutoAsZero(margins.getRight(), margins.getRightUnit(), margins.getRightType(), availableWidth);
+    		}
     	}
     	else {
-    		// margins can be computed
-    		final int marginLeft  = getNonAutoSize(margins.getLeft(), margins.getLeftUnit(), margins.getLeftType(), width);
-      		final int marginRight  = getNonAutoSize(margins.getRight(), margins.getRightUnit(), margins.getRightType(), width);
-      		
-      		innerWidth -= marginLeft + marginRight;
-      		
-      		innerLeft += marginLeft;
+    		// margins can be computed directly since not auto
+    		leftMargin  = getNonAutoSize(margins.getLeft(), margins.getLeftUnit(), margins.getLeftType(), availableWidth);
+      		rightMargin  = getNonAutoSize(margins.getRight(), margins.getRightUnit(), margins.getRightType(), availableWidth);
      	}
     	
-    	if (mustComputeHeight) {
-    		// !! Note that one or both of the margins can be set to auto
-    		throw new UnsupportedOperationException("TODO - see above");
-    	}
-    	else {
-    		// margins can be computed
-    		final int marginTop  = getNonAutoSize(margins.getTop(), margins.getTopUnit(), margins.getTopType(), width);
-      		final int marginBottom  = getNonAutoSize(margins.getBottom(), margins.getBottomUnit(), margins.getBottomType(), width);
-      		
-      		innerWidth -= marginTop + marginBottom;
-      		
-      		innerTop += marginTop;
-     	}
+  		innerLeft += leftMargin;
+ 	
+		// margins of auto is set to 0
+		final int topMargin  = getNonAutoSize(margins.getTop(), margins.getTopUnit(), margins.getTopType(), availableWidth);
+  		final int bottomMargin  = getNonAutoSize(margins.getBottom(), margins.getBottomUnit(), margins.getBottomType(), availableWidth);
+  		
+  		innerTop += topMargin;
     	
     	resultingLayout.getInner().init(innerLeft, innerTop, innerWidth, innerHeight);;
+    
+    	resultingLayout.getMarginWrapping().init(topMargin, rightMargin, bottomMargin, leftMargin);
+       	resultingLayout.getPaddingWrapping().init(topPadding, rightPadding, bottomPadding, leftPadding);
+   
+     	// Outer width and outer height
+    	resultingLayout.getDimensions().setWidth(innerWidth + leftPadding + rightPadding + leftMargin + rightMargin);
+    	
+    	if (innerHeight != -1) {
+    		resultingLayout.getDimensions().setHeight(innerHeight + topPadding + bottomPadding + topMargin + bottomMargin);
+    	}
     }
     
     
@@ -253,6 +305,11 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     private static int getPaddingSize(int size, CSSUnit unit, CSSJustify type, int curSize) {
     	return getNonAutoSize(size, unit, type, curSize);
     }
+    
+    private static int getSizeWithAutoAsZero(int size, CSSUnit unit, CSSJustify type, int curSize) {
+    	return type == CSSJustify.AUTO ? 0 : getNonAutoSize(size, unit, type, curSize);
+    }
+    	    
     
     private static int getNonAutoSize(int size, CSSUnit unit, CSSJustify type, int curSize) {
         
