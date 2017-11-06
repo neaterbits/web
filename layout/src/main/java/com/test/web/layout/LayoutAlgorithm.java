@@ -1,8 +1,10 @@
 package com.test.web.layout;
 
 import com.test.web.css.common.CSSContext;
+import com.test.web.css.common.CSSDimensions;
 import com.test.web.css.common.CSSLayoutStyles;
 import com.test.web.css.common.ICSSDocumentStyles;
+import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.document.common.Document;
 import com.test.web.document.common.HTMLElement;
@@ -108,56 +110,169 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		}
 		
 		// Adjust sub available width/height if is set
-		// TODO: what if no width/height here and specified as percent? 
+		
+		final int width;
 		
 		if (sub.layoutStyles.hasWidth()) {
 			// has width, compute and update
-			final int width = computeWidthPx(sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), cur.getAvailableWidth());
+			width = computeWidthPx(sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), cur.getAvailableWidth());
 
 	    	if (debugListener != null) {
 	    		debugListener.onComputedWidth(state.getDepth(), width);
 	    	}
 
-			if (width != -1) {
-				
-				if (width == 0) {
-					throw new IllegalStateException("Computed width 0 from "  + sub.layoutStyles.getWidth() + " of unit " + sub.layoutStyles.getWidthUnit());
-				}
-				
-				sub.resultingLayout.setHasCSSWidth(true);
-				sub.resultingLayout.getDimensions().setWidth(width);
-
-				sub.setAvailableWidth(width);
+	    	if (width <= 0) {
+				throw new IllegalStateException("Computed width 0 from "  + sub.layoutStyles.getWidth() + " of unit " + sub.layoutStyles.getWidthUnit());
 			}
+	    	
+			// Got width from CSS above
+			sub.resultingLayout.setHasCSSWidth(true);
 		}
+		else {
+			// No CSS width so must set width to what is available in container
+			if (cur.getAvailableWidth() < 0) {
+				throw new IllegalStateException("Should always know avaiable width");
+			}
+			
+			width = cur.getAvailableWidth();
+		}
+
+		sub.resultingLayout.getDimensions().setWidth(width);
+		sub.setAvailableWidth(width);
+		
+		int height = -1;
 		
 		if (sub.layoutStyles.hasHeight()) {
 			// has width, compute and update
-			final int height = computeHeightPx(sub.layoutStyles.getHeight(), sub.layoutStyles.getHeightUnit(), cur.getAvailableHeight());
+			height = computeHeightPx(sub.layoutStyles.getHeight(), sub.layoutStyles.getHeightUnit(), cur.getAvailableHeight());
 
 	    	if (debugListener != null) {
 	    		debugListener.onComputedHeight(state.getDepth(), height);
 	    	}
 
-			if (height != -1) {
-				sub.resultingLayout.setHasCSSHeight(true);
-				sub.resultingLayout.getDimensions().setHeight(height);
-
-				sub.setAvailableHeight(height);
-			}
+	    	// height is -1 if cur.getAvailableHeight() == -1 (scrolled webage with no specified height)
+	    	if (height != -1) {
+	    		sub.resultingLayout.setHasCSSHeight(true);
+	    	}
 		}
 		
+		if (height == -1) {
+			// No CSS height, height is computed from what is available in container, or from size of element, knowing width
+			
+			if (cur.getAvailableHeight() >= 0) {
+				// Set to rest of available height
+				height = cur.getAvailableHeight();
+			}
+			else {
+				// We must compute element height, but element is nested so we do not know yet, we must figure out
+				// after having recursed
+				sub.delayedLayout |= StackElement.UNKNOWN_HEIGHT;
+			}
+		}
+
+		sub.resultingLayout.getDimensions().setHeight(height);
+		sub.setAvailableHeight(height);
+		
+		// Compute inner-dimensions
+		computeDimensionsFromOuter(width, height, sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
+
 		// Set resulting font
 		final FontSpec spec = sub.layoutStyles.getFont();
 
 		final IFont font = state.getOrOpenFont(spec, FontStyle.NONE); // TODO: font styles
 		
 		sub.resultingLayout.setFont(font);
-		
+
+		// listener, eg renderer
 		if (state.getListener() != null) {
 			state.getListener().onElementStart(document, element, null);
 		}
 	}
+    
+    private static void computeDimensionsFromOuter(int width, int height, CSSDimensions margins, CSSDimensions padding, ElementLayout resultingLayout) {
+    	
+    	// Outer width and outer height
+    	resultingLayout.getDimensions().setWidth(width);
+    	resultingLayout.getDimensions().setHeight(height);
+    	
+    	final int topPadding 		= getPaddingSize(padding.getTop(), 		padding.getTopUnit(), 		padding.getTopType(),		height);
+    	final int rightPadding 	= getPaddingSize(padding.getRight(), 		padding.getRightUnit(), 		padding.getRightType(),		width);
+    	final int bottomPadding 	= getPaddingSize(padding.getBottom(), 	padding.getBottomUnit(), 	padding.getBottomType(),	height);
+    	final int leftPadding 		= getPaddingSize(padding.getLeft(),			padding.getLeftUnit(), 		padding.getLeftType(),		width);
+
+    	resultingLayout.getPaddingWrapping().init(topPadding, rightPadding, bottomPadding, leftPadding);
+
+    	// margins can be auto so in that case must know how much space is required by element so that can supply the rest as margins
+    	final boolean mustComputeWidth  = margins.getLeftType() == CSSJustify.AUTO || margins.getRightType() == CSSJustify.AUTO;
+    	final boolean mustComputeHeight = margins.getTopType() == CSSJustify.AUTO || margins.getBottomType() == CSSJustify.AUTO;
+
+    	int innerWidth = width - leftPadding - rightPadding;
+    	int innerHeight = height - topPadding - bottomPadding;
+    	
+    	int innerLeft = leftPadding;
+    	int innerTop = topPadding;
+    	
+    	if (mustComputeWidth) {
+    		// One of left or right margins are auto so must compute width of inner element first to figure out
+    		// which of these are to be set
+    		// How to solve this for nested elements? We have to compute width and height and handle this in the end-tag? At least we have to position
+    		// the element at that point since we do not know the size
+    		
+    		// !! Note that one or both of the margins can be set to auto
+    		throw new UnsupportedOperationException("TODO");
+    	}
+    	else {
+    		// margins can be computed
+    		final int marginLeft  = getNonAutoSize(margins.getLeft(), margins.getLeftUnit(), margins.getLeftType(), width);
+      		final int marginRight  = getNonAutoSize(margins.getRight(), margins.getRightUnit(), margins.getRightType(), width);
+      		
+      		innerWidth -= marginLeft + marginRight;
+      		
+      		innerLeft += marginLeft;
+     	}
+    	
+    	if (mustComputeHeight) {
+    		// !! Note that one or both of the margins can be set to auto
+    		throw new UnsupportedOperationException("TODO - see above");
+    	}
+    	else {
+    		// margins can be computed
+    		final int marginTop  = getNonAutoSize(margins.getTop(), margins.getTopUnit(), margins.getTopType(), width);
+      		final int marginBottom  = getNonAutoSize(margins.getBottom(), margins.getBottomUnit(), margins.getBottomType(), width);
+      		
+      		innerWidth -= marginTop + marginBottom;
+      		
+      		innerTop += marginTop;
+     	}
+    	
+    	resultingLayout.getInner().init(innerLeft, innerTop, innerWidth, innerHeight);;
+    }
+    
+    
+    
+    private static int getPaddingSize(int size, CSSUnit unit, CSSJustify type, int curSize) {
+    	return getNonAutoSize(size, unit, type, curSize);
+    }
+    
+    private static int getNonAutoSize(int size, CSSUnit unit, CSSJustify type, int curSize) {
+        
+    	final int ret;
+    	
+    	switch (type) {
+    	case NONE:
+    		ret = 0;
+    		break;
+    		
+    	case SIZE:
+    		ret = computeSizePx(size, unit, curSize);
+    		break;
+    		
+    	default:
+    		throw new UnsupportedOperationException("Unknown type " + type);
+    	}
+    	
+    	return ret;
+    }
 
     @Override
 	public void onElementEnd(Document<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
@@ -326,48 +441,31 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	}
 
 	private static int computeWidthPx(int width, CSSUnit widthUnit, int curWidth) {
-
-		final int ret;
-		
-		switch (widthUnit) {
-		case PX:
-			ret = width;
-			break;
-			
-		case EM:
-			ret = pxFromEm(width);
-			break;
-			
-		case PCT:
-			ret = curWidth == -1 ? -1 : percentOf(curWidth, width);
-			break;
-			
-		default:
-			throw new UnsupportedOperationException("Unknown unit " + widthUnit);
-		}
-		
-		return ret;
+		return computeSizePx(width, widthUnit, curWidth);
 	}
 
 	private static int computeHeightPx(int height, CSSUnit heightUnit, int curHeight) {
+		return computeSizePx(height, heightUnit, curHeight);
+	}
 
+	private static int computeSizePx(int size, CSSUnit sizeUnit, int curSize) {
 		final int ret;
 		
-		switch (heightUnit) {
+		switch (sizeUnit) {
 		case PX:
-			ret = height;
+			ret = size;
 			break;
 			
 		case EM:
-			ret = pxFromEm(height);
+			ret = pxFromEm(size);
 			break;
 			
 		case PCT:
-			ret = curHeight == -1 ? -1 : percentOf(curHeight, height);
+			ret = curSize == -1 ? -1 : percentOf(curSize, size);
 			break;
 			
 		default:
-			throw new UnsupportedOperationException("Unknown unit " + heightUnit);
+			throw new UnsupportedOperationException("Unknown unit " + sizeUnit);
 		}
 		
 		return ret;

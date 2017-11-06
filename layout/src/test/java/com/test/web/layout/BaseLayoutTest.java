@@ -85,4 +85,8 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 		assertThat(layer.getPadding(div).getLeft()).isEqualTo(0);
 		
 	}
+	
+	public void testElementWithoutWidth() {
+		assertThat(true).isFalse();
+	}
 }

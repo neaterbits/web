@@ -6,6 +6,12 @@ import com.test.web.css.common.CSSLayoutStyles;
 // and then just fetch that information when getting to end tag
 // Mutable so can be reused within stack
 final class StackElement {
+	
+	static final int UNKNOWN_HEIGHT = 0x02;
+	
+	// flags for layout dimensions that cannot be computed until we have computed dimensions of all inner-elements
+	int delayedLayout;
+	
 	// available width and height at this level, ie. the max dimension that the element at this level can have
 	// width is given by the viewport at the window level mainly for width but also for height if specified as 100%
 	private int availableWidth;
