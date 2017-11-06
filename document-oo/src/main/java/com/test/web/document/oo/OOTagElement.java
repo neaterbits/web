@@ -1,5 +1,7 @@
 package com.test.web.document.oo;
 
+import java.util.Arrays;
+
 import com.test.web.css.oo.OOCSSElement;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.parse.html.enums.HTMLDirection;
@@ -71,6 +73,20 @@ public abstract class OOTagElement extends OODocumentElement {
 	}
 
 	void setStyleElement(OOCSSElement styleElement) {
+
+		if (styleElement == null) {
+			throw new IllegalArgumentException("styleElement == null");
+		}
+		
 		this.styleElement = styleElement;
 	}
+
+	@Override
+	public String toString() {
+		return "OOTagElement [type=" + getType() + ", id=" + id + ", classes=" + Arrays.toString(classes) + ", contentEditable="
+				+ contentEditable + ", accessKey=" + accessKey + ", contextMenu=" + contextMenu + ", direction="
+				+ direction + ", styleElement=" + styleElement + "]";
+	}
+	
+	
 }

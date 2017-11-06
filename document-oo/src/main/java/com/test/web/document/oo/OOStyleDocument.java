@@ -27,12 +27,13 @@ public class OOStyleDocument extends BaseOOCSSDocument
 	// to the HTML element that contains it
 	@Override
 	public void startParseStyleElement(OOTagElement htmlElement) {
-		if (htmlElement.getStyleElement() != null) {
-			throw new IllegalStateException("already has style element");
+		
+		OOCSSElement cssElement = htmlElement.getStyleElement();
+		
+		if (cssElement == null) {
+			cssElement = allocateCurParseElement("style_element");
+
+			htmlElement.setStyleElement(cssElement);
 		}
-		
-		final OOCSSElement cssElement = new OOCSSElement("style_element");
-		
-		htmlElement.setStyleElement(cssElement);
 	}
 }

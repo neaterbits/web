@@ -105,9 +105,11 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 		return ((OOTagElement)element).getClasses();
 	}
 
+	private static final OOHTMLStyleDocumentWrapper styleWrapper = new OOHTMLStyleDocumentWrapper();
+	
 	@Override
 	public ICSSDocumentStyles<OOTagElement> getStyles(OOTagElement element) {
-		throw new UnsupportedOperationException("TODO");
+		return styleWrapper;
 	}
 
 	@Override

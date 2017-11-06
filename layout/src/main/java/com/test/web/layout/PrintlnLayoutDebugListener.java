@@ -37,7 +37,7 @@ public class PrintlnLayoutDebugListener implements ILayoutDebugListener, IIndent
 
 	@Override
 	public void onComputedHeight(int depth, int height) {
-		indent(depth, out).println("LAYOUT width: " + height);
+		indent(depth, out).println("LAYOUT height: " + height);
 	}
 
 	@Override

@@ -10,7 +10,6 @@ import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
-import com.test.web.io._long.LongTokenizer;
 import com.test.web.io.oo.OOTokenizer;
 import com.test.web.parse.css.CSSParserListener;
 
