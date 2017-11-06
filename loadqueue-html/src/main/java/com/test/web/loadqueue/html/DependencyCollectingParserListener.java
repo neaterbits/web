@@ -67,7 +67,7 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 		
 		this.fontSettings = fontSettings;
 	
-		this.layoutAlgorithm = new LayoutAlgorithm<>(textExtent, renderFactory, fontSettings);
+		this.layoutAlgorithm = new LayoutAlgorithm<>(textExtent, renderFactory, fontSettings, null);
 		
 		this.tempLayoutStyles = new CSSLayoutStyles();
 		

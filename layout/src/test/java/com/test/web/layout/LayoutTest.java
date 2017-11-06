@@ -41,7 +41,8 @@ public class LayoutTest extends TestCase {
 		final LayoutAlgorithm<Integer, LongTokenizer> layoutAgorithm = new LayoutAlgorithm<>(
 				textExtent,
 				renderFactory,
-				new FontSettings());
+				new FontSettings(),
+				new PrintlnLayoutDebugListener(System.out));
 
 		final CSSContext<Integer> cssContext = new CSSContext<>();
 

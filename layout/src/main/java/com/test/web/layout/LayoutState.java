@@ -122,4 +122,8 @@ public final class LayoutState<ELEMENT> {
 
 		this.fonts.clear();
 	}
+	
+	int getDepth() {
+		return curDepth;
+	}
 }

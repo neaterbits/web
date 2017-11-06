@@ -29,15 +29,22 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	
 	// For creating renderers, rendering occurs in the same pass (but renderer implenentation might just queue operations for later)
 	private final IRenderFactory renderFactory;
+	private final ILayoutDebugListener debugListener;
+	
 	private final FontSettings fontSettings;
 	
 	private final TextUtil textUtil;
 	
-	public LayoutAlgorithm(ITextExtent textExtent, IRenderFactory renderFactory, FontSettings fontSettings) {
+	public LayoutAlgorithm(
+			ITextExtent textExtent,
+			IRenderFactory renderFactory,
+			FontSettings fontSettings,
+			ILayoutDebugListener debugListener) {
 		this.textExtent = textExtent;
 		this.textUtil = new TextUtil(textExtent);
 		this.fontSettings = fontSettings;
 		this.renderFactory = renderFactory;
+		this.debugListener = debugListener;
 	}
 
 	public PageLayout<ELEMENT> layout(Document<ELEMENT> document, ViewPort viewPort, CSSContext<ELEMENT> cssContext, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
@@ -52,7 +59,6 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     @Override
 	public void onElementStart(Document<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
 
-    	System.out.println("## onElementStart " + document.getType(element));
     	
     	final HTMLElement elementType = document.getType(element);
 
@@ -60,6 +66,16 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     		return;
     	}
     	
+    	if (debugListener != null) {
+    		debugListener.onElementStart(
+    				state.getDepth(),
+    				elementType,
+    				document.getId(element),
+    				document.getTag(element),
+    				document.getClasses(element)
+    				);
+    	}
+
     	final StackElement cur = state.getCur();
 
     	// Push new sub-element onto stack
@@ -73,16 +89,22 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 				document.getTag(element),
 				document.getClasses(element),
 				sub.layoutStyles);
+    	
+    	if (debugListener != null) {
+    		debugListener.onElementCSS(state.getDepth(), sub.layoutStyles);
+    	}
+    	
 
     	// Also apply style attribute if defined
 		final ICSSDocumentStyles<ELEMENT> styleAttribute = document.getStyles(element);
 
 		if (styleAttribute != null) {
-			System.out.println("## applying layout styles to element of type " + document.getType(element));
 			// Get CSS document from style-tag of element
 			state.getCSSContext().applyLayoutStyles(styleAttribute, element, sub.layoutStyles);
 
-			System.out.println("## applied layout styles for " + document.getType(element));
+	    	if (debugListener != null) {
+	    		debugListener.onElementStyleAttribute(state.getDepth(), sub.layoutStyles);
+	    	}
 		}
 		
 		// Adjust sub available width/height if is set
@@ -91,7 +113,11 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		if (sub.layoutStyles.hasWidth()) {
 			// has width, compute and update
 			final int width = computeWidthPx(sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), cur.getAvailableWidth());
-			
+
+	    	if (debugListener != null) {
+	    		debugListener.onComputedWidth(state.getDepth(), width);
+	    	}
+
 			if (width != -1) {
 				
 				if (width == 0) {
@@ -108,7 +134,11 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		if (sub.layoutStyles.hasHeight()) {
 			// has width, compute and update
 			final int height = computeHeightPx(sub.layoutStyles.getHeight(), sub.layoutStyles.getHeightUnit(), cur.getAvailableHeight());
-			
+
+	    	if (debugListener != null) {
+	    		debugListener.onComputedHeight(state.getDepth(), height);
+	    	}
+
 			if (height != -1) {
 				sub.resultingLayout.setHasCSSHeight(true);
 				sub.resultingLayout.getDimensions().setHeight(height);
@@ -127,8 +157,6 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		if (state.getListener() != null) {
 			state.getListener().onElementStart(document, element, null);
 		}
-
-		System.out.println("## onElementEnd" + document.getType(element));
 	}
 
     @Override
@@ -138,6 +166,10 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	
     	if (!elementType.isLayoutElement()) {
     		return;
+    	}
+    	
+    	if (debugListener != null) {
+    		debugListener.onElementEnd(state.getDepth(), elementType);
     	}
     	
     	// End of element where wer're at

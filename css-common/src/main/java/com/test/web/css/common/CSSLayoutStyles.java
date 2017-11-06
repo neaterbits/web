@@ -17,13 +17,6 @@ public final class CSSLayoutStyles {
 	private CSSPosition position;
 	private CSSFloat cssFloat;
 	
-	private FontSpec font;
-	
-	private int positionLeft;
-	private CSSUnit positionLeftUnit;
-	private int positionTop;
-	private CSSUnit positionTopUnit;
-	
 	private int width;
 	private CSSUnit widthUnit;
 	private int height;
@@ -33,6 +26,13 @@ public final class CSSLayoutStyles {
 	private final CSSDimensions padding;
 	
 	private short zIndex;
+
+	private int positionLeft;
+	private CSSUnit positionLeftUnit;
+	private int positionTop;
+	private CSSUnit positionTopUnit;
+
+	private FontSpec font;
 	
 	public CSSLayoutStyles() {
 		this.margins = new CSSDimensions();
@@ -169,4 +169,14 @@ public final class CSSLayoutStyles {
 	public short getZIndex() {
 		return zIndex;
 	}
+
+	@Override
+	public String toString() {
+		return "CSSLayoutStyles [display=" + display + ", position=" + position + ", cssFloat=" + cssFloat + ", width="
+				+ width + ", widthUnit=" + widthUnit + ", height=" + height + ", heightUnit=" + heightUnit
+				+ ", margins=" + margins + ", padding=" + padding + ", zIndex=" + zIndex + ", positionLeft="
+				+ positionLeft + ", positionLeftUnit=" + positionLeftUnit + ", positionTop=" + positionTop
+				+ ", positionTopUnit=" + positionTopUnit + ", font=" + font + "]";
+	}
+
 }

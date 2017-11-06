@@ -21,8 +21,6 @@ public class CSSDimensions {
 	private CSSUnit leftUnit;
 	private CSSJustify leftType;
 	
-	
-	
 	public CSSDimensions() {
 		this.leftType = CSSJustify.NONE;
 		this.topType = CSSJustify.NONE;
@@ -113,5 +111,13 @@ public class CSSDimensions {
 
 	private static boolean isSet(CSSJustify type) {
 		return type != null && type != CSSJustify.NONE; 
+	}
+
+	@Override
+	public String toString() {
+		return "CSSDimensions [top=" + top + ", topUnit=" + topUnit + ", topType=" + topType + ", right=" + right
+				+ ", rightUnit=" + rightUnit + ", rightType=" + rightType + ", bottom=" + bottom + ", bottomUnit="
+				+ bottomUnit + ", bottomType=" + bottomType + ", left=" + left + ", leftUnit=" + leftUnit
+				+ ", leftType=" + leftType + "]";
 	}
 }
