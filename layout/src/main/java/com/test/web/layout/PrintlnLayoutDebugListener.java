@@ -31,13 +31,18 @@ public class PrintlnLayoutDebugListener implements ILayoutDebugListener, IIndent
 	}
 
 	@Override
-	public void onComputedWidth(int depth, int width) {
-		indent(depth, out).println("LAYOUT width: " + width);
+	public void onComputedWidth(int depth, int curAvailableWidth, int subAvailableWidth, int subCSSWidth, boolean hasCSSWidth) {
+		indent(depth, out).println(
+				"LAYOUT curAvailableWidth: " + curAvailableWidth 
+				+ ", subAvailableWidth=" + subAvailableWidth
+				+ ", subCSSWidth=" + subCSSWidth);
 	}
 
 	@Override
-	public void onComputedHeight(int depth, int height) {
-		indent(depth, out).println("LAYOUT height: " + height);
+	public void onComputedHeight(int depth, int curAvailableHeight, int subAvailableHeight, int subCSSHeight, boolean hasCSSHeight) {
+		indent(depth, out).println("LAYOUT curAvailableHeight: " + curAvailableHeight
+				+ ", subAvailableHeight=" + subAvailableHeight
+				+ ", subCSSHeight=" + subCSSHeight);
 	}
 
 	@Override

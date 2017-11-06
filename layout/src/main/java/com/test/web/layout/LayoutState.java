@@ -87,6 +87,10 @@ public final class LayoutState<ELEMENT> {
 		else {
 			// reuse existing
 			ret = stack.get(curDepth);
+			
+	    	// make sure is cleared since reused
+			ret.clear();
+			ret.init(availableWidth, availableHeight);
 		}
 
 		++ curDepth;

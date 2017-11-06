@@ -7,6 +7,21 @@ public class Wrapping implements IWrapping {
 	private int right;
 	private int bottom;
 	private int left;
+
+	public Wrapping() {
+		
+	}
+	
+	private Wrapping(Wrapping toCopy) {
+		this.top = toCopy.top;
+		this.right = toCopy.right;
+		this.bottom = toCopy.bottom;
+		this.left = toCopy.left;
+	}
+	
+	public Wrapping makeCopy() {
+		return new Wrapping(this);
+	}
 	
 	public void init(int top, int right, int bottom, int left) {
 		this.top = top;

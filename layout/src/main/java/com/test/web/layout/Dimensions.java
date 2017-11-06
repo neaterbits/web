@@ -11,6 +11,21 @@ final class Dimensions implements IBounds {
 	private int width;
 	private int height;
 	
+	Dimensions() {
+		
+	}
+	
+	private Dimensions(Dimensions toCopy) {
+		this.left = toCopy.left;
+		this.top = toCopy.top;
+		this.width = toCopy.width;
+		this.height = toCopy.height;
+	}
+	
+	Dimensions makeCopy() {
+		return new Dimensions(this);
+	}
+	
 	void init(int left, int top, int width, int height) {
 		this.left = left;
 		this.top = top;
@@ -32,14 +47,6 @@ final class Dimensions implements IBounds {
 
 	void setHeight(int height) {
 		this.height = height;
-	}
-
-	void addToWidth(int width) {
-		this.width += width;
-	}
-
-	void addToHeight(int height) {
-		this.height += height;
 	}
 
 	@Override

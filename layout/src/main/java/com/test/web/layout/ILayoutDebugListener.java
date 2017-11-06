@@ -19,9 +19,9 @@ public interface ILayoutDebugListener {
 	// After also applied anything from style attribute
 	void onElementStyleAttribute(int depth, CSSLayoutStyles layoutStyles);
 	
-	void onComputedWidth(int depth, int width);
+	void onComputedWidth(int depth, int curAvailableWidth, int subAvailableWidth, int subCSSWidth, boolean hasCSSWidth);
 
-	void onComputedHeight(int depth, int height);
+	void onComputedHeight(int depth, int curAvailableHeight, int subAvailableHeight, int subCSSHeight, boolean hasCSSHeight);
 
 	// after element
 	void onElementEnd(int depth, HTMLElement element);

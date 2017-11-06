@@ -28,6 +28,24 @@ public class CSSDimensions {
 		this.bottomType = CSSJustify.NONE;
 	}
 	
+	void clear() {
+		this.top = 0;
+		this.topUnit = null;
+		this.topType = CSSJustify.NONE;
+		
+		this.right = 0;
+		this.rightUnit = null;
+		this.rightType = CSSJustify.NONE;
+
+		this.bottom = 0;
+		this.bottomUnit = null;
+		this.bottomType = CSSJustify.NONE;
+
+		this.right = 0;
+		this.rightUnit = null;
+		this.rightType = CSSJustify.NONE;
+	}
+	
 	void merge(
 			int top, CSSUnit topUnit, CSSJustify topType,
 			int right, CSSUnit rightUnit, CSSJustify rightType,

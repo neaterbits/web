@@ -16,6 +16,11 @@ final class StackElement {
 	// width is given by the viewport at the window level mainly for width but also for height if specified as 100%
 	private int availableWidth;
 	private int availableHeight;
+
+	// remaining width and height when adding elements
+	// this so that we can find the size of elements that do not haave these specified
+	private int remainingWidth;
+	private int remainingHeight;
 	
 	// Work area for singlethreaded algorithm, storing non threadsafe data here, but should be ok since HTML document parsing happens on one thread
 	final CSSLayoutStyles layoutStyles;
@@ -34,6 +39,10 @@ final class StackElement {
 		this.resultingLayout = new ElementLayout();
 	}
 	
+	void clear() {
+		layoutStyles.clear();
+	}
+	
 	void init(int availableWidth, int availableHeight) {
 		
 		if (availableWidth == 0)  {
@@ -46,6 +55,9 @@ final class StackElement {
 		
 		this.availableWidth = availableWidth;
 		this.availableHeight = availableHeight;
+		
+		this.remainingWidth = availableWidth;
+		this.remainingHeight = availableHeight;
 
 		this.maxBlockElementHeight = 0;
 	}
@@ -68,6 +80,22 @@ final class StackElement {
 
 	void setAvailableHeight(int availableHeight) {
 		this.availableHeight = availableHeight;
+	}
+	
+	int getRemainingWidth() {
+		return remainingWidth;
+	}
+
+	void setRemainingWidth(int remainingWidth) {
+		this.remainingWidth = remainingWidth;
+	}
+
+	int getRemainingHeight() {
+		return remainingHeight;
+	}
+
+	void setRemainingHeight(int remainingHeight) {
+		this.remainingHeight = remainingHeight;
 	}
 
 	CSSLayoutStyles getLayoutStyles() {

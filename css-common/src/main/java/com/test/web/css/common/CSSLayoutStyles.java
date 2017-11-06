@@ -39,6 +39,29 @@ public final class CSSLayoutStyles {
 		this.padding = new CSSDimensions();
 	}
 	
+	public void clear() {
+		this.display = null;
+		this.position = null;
+		this.cssFloat = null;
+		
+		this.width = 0;
+		this.widthUnit = null;
+		this.height = 0;
+		this.heightUnit = null;
+		
+		margins.clear();
+		padding.clear();
+		
+		
+		this.zIndex = 0;
+		this.positionLeft = 0;
+		this.positionLeftUnit = null;
+		this.positionTop = 0;
+		this.positionTopUnit = null;
+		
+		this.font = null;
+	}
+	
 	void setDisplay(CSSDisplay display) {
 		if (display == null) {
 			throw new IllegalArgumentException("display == null");

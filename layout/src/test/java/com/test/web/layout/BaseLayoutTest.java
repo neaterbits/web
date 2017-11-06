@@ -33,8 +33,59 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"This is a test text that will wrap after 100 pixels" +
 				"</div>\n"
 		);
-		
+	
 		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		
+		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
+		final HTML_ELEMENT div = doc.getElementById("element_id");
+
+		assertThat(div).isNotNull();
+
+		checkOuterBounds(layer, div, 0, 0, 100, 300);
+		checkInnerBounds(layer, div, 0, 0, 100, 300);
+		checkMargins(layer, div, 0, 0, 0, 0);
+		checkPadding(layer, div, 0, 0, 0, 0);
+	}
+
+	public void testElementWithoutWidth() throws ParserException {
+		final String html = TestData.wrap(
+				"<div id=\"element_id\" style='width:800px;height:300px'>\n" +
+				" <span id=\"span1\" style=\"width:300px\">Span 1</span>" +
+				" <span id=\"span2\">Span 2</span>" +
+				"</div>\n"
+		);
+	
+		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		
+		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
+
+		final HTML_ELEMENT span1 = doc.getElementById("span1");
+
+		assertThat(span1).isNotNull();
+
+		checkOuterBounds(layer, span1, 0, 0, 300, 600);
+		checkInnerBounds(layer, span1, 0, 0, 300, 600);
+		checkMargins(layer, span1, 0, 0, 0, 0);
+		checkPadding(layer, span1, 0, 0, 0, 0);
+		
+		final HTML_ELEMENT span2 = doc.getElementById("span2");
+
+		assertThat(span2).isNotNull();
+
+		checkOuterBounds(layer, span2, 0, 0, 500, 600);
+		checkInnerBounds(layer, span2, 0, 0, 500, 600);
+		checkMargins(layer, span2, 0, 0, 0, 0);
+		checkPadding(layer, span2, 0, 0, 0, 0);
+	}
+
+	private PageLayer<HTML_ELEMENT> layout(String html, int viewPortWidth, int viewPortHeight) throws ParserException {
+
+		final Document<HTML_ELEMENT> doc = parseDocument(html);
+	
+		return layout(doc, viewPortWidth, viewPortHeight);
+	}
+
+	private PageLayer<HTML_ELEMENT> layout(Document<HTML_ELEMENT> doc, int viewPortWidth, int viewPortHeight) {
 		
 		final IRenderFactory renderFactory = new IRenderFactory() {
 			@Override
@@ -43,7 +94,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 			}
 		};
 		
-		final ViewPort viewPort = new ViewPort(800, 600);
+		final ViewPort viewPort = new ViewPort(viewPortWidth, viewPortHeight);
 		
 		final ITextExtent textExtent = new MockTextExtent();
 		
@@ -54,39 +105,41 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				new PrintlnLayoutDebugListener(System.out));
 
 		final CSSContext<HTML_ELEMENT> cssContext = new CSSContext<>();
-
+		
 		final PageLayout<HTML_ELEMENT> pageLayout = layoutAgorithm.layout(doc, viewPort, cssContext, null);
 		
 		assertThat(pageLayout.getLayers().size()).isEqualTo(1);
 	
 		final PageLayer<HTML_ELEMENT> layer = pageLayout.getLayers().get(0);
 		
-		final HTML_ELEMENT div = doc.getElementById("element_id");
-		assertThat(div).isNotNull();
-
-		assertThat(layer.getOuterBounds(div).getLeft()).isEqualTo(0);
-		assertThat(layer.getOuterBounds(div).getTop()).isEqualTo(0);
-		assertThat(layer.getOuterBounds(div).getWidth()).isEqualTo(100);
-		assertThat(layer.getOuterBounds(div).getHeight()).isEqualTo(300);
-
-		assertThat(layer.getInnerBounds(div).getLeft()).isEqualTo(0);
-		assertThat(layer.getInnerBounds(div).getTop()).isEqualTo(0);
-		assertThat(layer.getInnerBounds(div).getWidth()).isEqualTo(100);
-		assertThat(layer.getInnerBounds(div).getHeight()).isEqualTo(300);
-			
-		assertThat(layer.getMargins(div).getTop()).isEqualTo(0);
-		assertThat(layer.getMargins(div).getRight()).isEqualTo(0);
-		assertThat(layer.getMargins(div).getBottom()).isEqualTo(0);
-		assertThat(layer.getMargins(div).getLeft()).isEqualTo(0);
-		
-		assertThat(layer.getPadding(div).getTop()).isEqualTo(0);
-		assertThat(layer.getPadding(div).getRight()).isEqualTo(0);
-		assertThat(layer.getPadding(div).getBottom()).isEqualTo(0);
-		assertThat(layer.getPadding(div).getLeft()).isEqualTo(0);
-		
+		return layer;
 	}
 	
-	public void testElementWithoutWidth() {
-		assertThat(true).isFalse();
+	private void checkOuterBounds(PageLayer<HTML_ELEMENT> layer, HTML_ELEMENT element, int left, int top, int width, int height) {
+		assertThat(layer.getOuterBounds(element).getLeft()).isEqualTo(left);
+		assertThat(layer.getOuterBounds(element).getTop()).isEqualTo(top);
+		assertThat(layer.getOuterBounds(element).getWidth()).isEqualTo(width);
+		assertThat(layer.getOuterBounds(element).getHeight()).isEqualTo(height);
+	}
+
+	private void checkInnerBounds(PageLayer<HTML_ELEMENT> layer, HTML_ELEMENT element, int left, int top, int width, int height) {
+		assertThat(layer.getInnerBounds(element).getLeft()).isEqualTo(left);
+		assertThat(layer.getInnerBounds(element).getTop()).isEqualTo(top);
+		assertThat(layer.getInnerBounds(element).getWidth()).isEqualTo(width);
+		assertThat(layer.getInnerBounds(element).getHeight()).isEqualTo(height);
+	}
+	
+	private void checkMargins(PageLayer<HTML_ELEMENT> layer, HTML_ELEMENT element, int top, int right, int bottom, int left) {
+		assertThat(layer.getMargins(element).getTop()).isEqualTo(top);
+		assertThat(layer.getMargins(element).getRight()).isEqualTo(right);
+		assertThat(layer.getMargins(element).getBottom()).isEqualTo(bottom);
+		assertThat(layer.getMargins(element).getLeft()).isEqualTo(left);
+	}
+	
+	private void checkPadding(PageLayer<HTML_ELEMENT> layer, HTML_ELEMENT element, int top, int right, int bottom, int left) {
+		assertThat(layer.getPadding(element).getTop()).isEqualTo(top);
+		assertThat(layer.getPadding(element).getRight()).isEqualTo(right);
+		assertThat(layer.getPadding(element).getBottom()).isEqualTo(bottom);
+		assertThat(layer.getPadding(element).getLeft()).isEqualTo(left);
 	}
 }

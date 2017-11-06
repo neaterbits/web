@@ -43,6 +43,28 @@ final class ElementLayout implements IElementRenderLayout {
 		this.sumWidth = 0;
 		this.sumHeight = 0;
 	}
+	
+	private ElementLayout(ElementLayout toCopy) {
+
+		this.display = toCopy.display;
+		this.font = toCopy.font;
+		this.hasCSSWidth = toCopy.hasCSSWidth;
+		this.hasCSSHeight = toCopy.hasCSSHeight;
+		
+		this.dimensions = toCopy.dimensions.makeCopy();
+		this.inner = toCopy.dimensions.makeCopy();
+		this.margin = toCopy.margin.makeCopy();
+		this.padding = toCopy.padding.makeCopy();
+		
+		this.sumWidth = toCopy.sumWidth;
+		this.sumHeight = toCopy.sumHeight;
+		
+		this.renderer = toCopy.renderer;
+	}
+	
+	ElementLayout makeCopy() {
+		return new ElementLayout(this);
+	}
 
 	CSSDisplay getDisplay() {
 		return display;
@@ -81,7 +103,7 @@ final class ElementLayout implements IElementRenderLayout {
 		return hasCSSHeight;
 	}
 
-	Dimensions getDimensions() {
+	Dimensions getOuter() {
 		return dimensions;
 	}
 
