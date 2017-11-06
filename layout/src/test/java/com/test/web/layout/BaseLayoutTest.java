@@ -3,8 +3,15 @@ package com.test.web.layout;
 import java.io.IOException;
 
 import com.test.web.css.common.CSSContext;
-import com.test.web.document._long.LongHTMLDocument;
-import com.test.web.io._long.LongTokenizer;
+import com.test.web.document.common.Document;
+import com.test.web.document.common.HTMLElement;
+import com.test.web.io.common.Tokenizer;
+import com.test.web.layout.FontSettings;
+import com.test.web.layout.LayoutAlgorithm;
+import com.test.web.layout.PageLayer;
+import com.test.web.layout.PageLayout;
+import com.test.web.layout.PrintlnLayoutDebugListener;
+import com.test.web.layout.ViewPort;
 import com.test.web.parse.common.ParserException;
 import com.test.web.render.common.IRenderFactory;
 import com.test.web.render.common.IRenderer;
@@ -15,7 +22,9 @@ import junit.framework.TestCase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LayoutTest extends TestCase {
+public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> extends TestCase {
+	
+	protected abstract Document<HTML_ELEMENT> parseDocument(String html) throws ParserException;
 	
 	public void testLayout() throws IOException, ParserException {
 		
@@ -25,7 +34,7 @@ public class LayoutTest extends TestCase {
 				"</div>\n"
 		);
 		
-		final LongHTMLDocument doc = LongHTMLDocument.parseHTMLDocument(html);
+		final Document<HTML_ELEMENT> doc = parseDocument(html);
 		
 		final IRenderFactory renderFactory = new IRenderFactory() {
 			@Override
@@ -38,21 +47,21 @@ public class LayoutTest extends TestCase {
 		
 		final ITextExtent textExtent = new MockTextExtent();
 		
-		final LayoutAlgorithm<Integer, LongTokenizer> layoutAgorithm = new LayoutAlgorithm<>(
+		final LayoutAlgorithm<HTML_ELEMENT, TOKENIZER> layoutAgorithm = new LayoutAlgorithm<>(
 				textExtent,
 				renderFactory,
 				new FontSettings(),
 				new PrintlnLayoutDebugListener(System.out));
 
-		final CSSContext<Integer> cssContext = new CSSContext<>();
+		final CSSContext<HTML_ELEMENT> cssContext = new CSSContext<>();
 
-		final PageLayout<Integer> pageLayout = layoutAgorithm.layout(doc, viewPort, cssContext, null);
+		final PageLayout<HTML_ELEMENT> pageLayout = layoutAgorithm.layout(doc, viewPort, cssContext, null);
 		
 		assertThat(pageLayout.getLayers().size()).isEqualTo(1);
 	
-		final PageLayer<Integer> layer = pageLayout.getLayers().get(0);
+		final PageLayer<HTML_ELEMENT> layer = pageLayout.getLayers().get(0);
 		
-		final Integer div = doc.getElementById("element_id");
+		final HTML_ELEMENT div = doc.getElementById("element_id");
 		assertThat(div).isNotNull();
 
 		assertThat(layer.getOuterBounds(div).getLeft()).isEqualTo(0);

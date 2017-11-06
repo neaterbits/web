@@ -4,7 +4,7 @@ import com.test.web.css.oo.OOCSSElement;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.parse.html.enums.HTMLDirection;
 
-abstract class OOTagElement extends OODocumentElement {
+public abstract class OOTagElement extends OODocumentElement {
 
 	private String id;
 	private String [] classes;
