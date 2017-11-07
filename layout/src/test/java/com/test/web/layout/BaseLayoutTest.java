@@ -77,7 +77,136 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 		checkMargins(layer, span2, 0, 0, 0, 0);
 		checkPadding(layer, span2, 0, 0, 0, 0);
 	}
+	
+	public void testAutoMarginLeftDisplayInline() throws ParserException {
+		final String html = TestData.wrap(
+				"<div id=\"element_id\" style='width:800px;height:300px'>\n" +
+				" <span id=\"span1\" style=\"width:300px;margin-left:auto;margin-right:50px\">Span 1</span>" +
+				"</div>\n"
+		);
+	
+		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		
+		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
+		final HTML_ELEMENT span1 = doc.getElementById("span1");
+
+		assertThat(span1).isNotNull();
+
+		checkOuterBounds(layer, span1, 0, 0, 350, 600);
+		checkInnerBounds(layer, span1, 0, 0, 300, 600);
+		checkMargins(layer, span1, 0, 50, 0, 0);
+		checkPadding(layer, span1, 0, 0, 0, 0);
+	}
+
+	
+	public void testAutoMarginLeftDisplayBlock() throws ParserException {
+		final String html = TestData.wrap(
+				"<div id=\"element_id\" style='width:800px;height:300px'>\n" +
+				" <div id=\"div2\" style=\"width:300px;margin-left:auto;margin-right:50px\">Div 2</div>" +
+				"</div>\n"
+		);
+	
+		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		
+		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
+
+		final HTML_ELEMENT div2 = doc.getElementById("div2");
+
+		assertThat(div2).isNotNull();
+
+		checkOuterBounds(layer, div2, 0, 0, 800, 600);
+		checkInnerBounds(layer, div2, 450, 0, 300, 600);
+		checkMargins(layer, div2, 0, 50, 0, 450);
+		checkPadding(layer, div2, 0, 0, 0, 0);
+	}
+
+	public void testAutoMarginRightDisplayInline() throws ParserException {
+		final String html = TestData.wrap(
+				"<div id=\"element_id\" style='width:800px;height:300px'>\n" +
+				" <span id=\"span1\" style=\"width:300px;margin-left:50px;margin-right:auto\">Span 1</span>" +
+				"</div>\n"
+		);
+	
+		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		
+		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
+
+		final HTML_ELEMENT span1 = doc.getElementById("span1");
+
+		assertThat(span1).isNotNull();
+
+		checkOuterBounds(layer, span1, 0, 0, 350, 600);
+		checkInnerBounds(layer, span1, 50, 0, 300, 600);
+		checkMargins(layer, span1, 0, 0, 0, 50);
+		checkPadding(layer, span1, 0, 0, 0, 0);
+	}
+
+	
+	public void testAutoMarginRightDisplayBlock() throws ParserException {
+		final String html = TestData.wrap(
+				"<div id=\"element_id\" style='width:800px;height:300px'>\n" +
+				" <div id=\"div2\" style=\"width:300px;margin-left:50px;margin-right:auto\">Div 2</div>" +
+				"</div>\n"
+		);
+	
+		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		
+		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
+
+		final HTML_ELEMENT div2 = doc.getElementById("div2");
+
+		assertThat(div2).isNotNull();
+
+		checkOuterBounds(layer, div2, 0, 0, 800, 600);
+		checkInnerBounds(layer, div2, 50, 0, 300, 600);
+		checkMargins(layer, div2, 0, 450, 0, 50);
+		checkPadding(layer, div2, 0, 0, 0, 0);
+	}
+
+	public void testAutoMarginLeftRightDisplayInline() throws ParserException {
+		final String html = TestData.wrap(
+				"<div id=\"element_id\" style='width:800px;height:300px'>\n" +
+				" <span id=\"span1\" style=\"width:300px;margin-left:auto;margin-right:auto\">Span 1</span>" +
+				"</div>\n"
+		);
+	
+		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		
+		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
+
+		final HTML_ELEMENT span1 = doc.getElementById("span1");
+
+		assertThat(span1).isNotNull();
+
+		checkOuterBounds(layer, span1, 0, 0, 300, 600);
+		checkInnerBounds(layer, span1, 0, 0, 300, 600);
+		checkMargins(layer, span1, 0, 0, 0, 0);
+		checkPadding(layer, span1, 0, 0, 0, 0);
+	}
+
+	
+	public void testAutoMarginLeftRightDisplayBlock() throws ParserException {
+		final String html = TestData.wrap(
+				"<div id=\"element_id\" style='width:800px;height:300px'>\n" +
+				" <div id=\"div2\" style=\"width:300px;margin-left:auto;margin-right:auto\">Div 2</div>" +
+				"</div>\n"
+		);
+	
+		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		
+		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
+
+		final HTML_ELEMENT div2 = doc.getElementById("div2");
+
+		assertThat(div2).isNotNull();
+
+		checkOuterBounds(layer, div2, 0, 0, 800, 600);
+		checkInnerBounds(layer, div2, 250, 0, 300, 600);
+		checkMargins(layer, div2, 0, 250, 0, 250);
+		checkPadding(layer, div2, 0, 0, 0, 0);
+	}
+	
 	private PageLayer<HTML_ELEMENT> layout(String html, int viewPortWidth, int viewPortHeight) throws ParserException {
 
 		final Document<HTML_ELEMENT> doc = parseDocument(html);

@@ -203,6 +203,10 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 				sub.layoutStyles.hasHeight(),
 				sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
 
+		if (debugListener != null) {
+			debugListener.onResultingLayout(state.getDepth(), sub.resultingLayout);
+		}
+
 		// Set resulting font
 		final FontSpec spec = sub.layoutStyles.getFont();
 
@@ -312,7 +316,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
   		
   		innerTop += topMargin;
     	
-    	resultingLayout.getInner().init(innerLeft, innerTop, innerWidth, innerHeight);;
+    	resultingLayout.getInner().init(innerLeft, innerTop, innerWidth, innerHeight);
     
     	resultingLayout.getMarginWrapping().init(topMargin, rightMargin, bottomMargin, leftMargin);
        	resultingLayout.getPaddingWrapping().init(topPadding, rightPadding, bottomPadding, leftPadding);

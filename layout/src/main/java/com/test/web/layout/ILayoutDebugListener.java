@@ -23,6 +23,8 @@ public interface ILayoutDebugListener {
 
 	void onComputedHeight(int depth, int curAvailableHeight, int subAvailableHeight, int subCSSHeight, boolean hasCSSHeight);
 
+	void onResultingLayout(int depth, IElementLayout layout);
+	
 	// after element
 	void onElementEnd(int depth, HTMLElement element);
 }

@@ -22,7 +22,7 @@ final class ElementLayout implements IElementRenderLayout {
 
 	// dimensions/position of the resulting html element, always including margins and padding
 	// so might not be same as width/height from CSS since by default padding and margin comes in addition to these
-	private final Dimensions dimensions;
+	private final Dimensions outer;
 	
 	// margin in pixels
 	private final Wrapping margin;
@@ -35,7 +35,7 @@ final class ElementLayout implements IElementRenderLayout {
 	private IRenderer renderer;
 	
 	ElementLayout() {
-		this.dimensions = new Dimensions();
+		this.outer = new Dimensions();
 		this.inner = new Dimensions();
 		this.margin = new Wrapping();
 		this.padding = new Wrapping();
@@ -51,8 +51,8 @@ final class ElementLayout implements IElementRenderLayout {
 		this.hasCSSWidth = toCopy.hasCSSWidth;
 		this.hasCSSHeight = toCopy.hasCSSHeight;
 		
-		this.dimensions = toCopy.dimensions.makeCopy();
-		this.inner = toCopy.dimensions.makeCopy();
+		this.outer = toCopy.outer.makeCopy();
+		this.inner = toCopy.inner.makeCopy();
 		this.margin = toCopy.margin.makeCopy();
 		this.padding = toCopy.padding.makeCopy();
 		
@@ -104,7 +104,7 @@ final class ElementLayout implements IElementRenderLayout {
 	}
 
 	Dimensions getOuter() {
-		return dimensions;
+		return outer;
 	}
 
 	Dimensions getInner() {
@@ -121,7 +121,7 @@ final class ElementLayout implements IElementRenderLayout {
 
 	@Override
 	public IBounds getOuterBounds() {
-		return dimensions;
+		return outer;
 	}
 
 	@Override
@@ -142,5 +142,13 @@ final class ElementLayout implements IElementRenderLayout {
 	@Override
 	public IRenderer getRenderer() {
 		return renderer;
+	}
+
+	@Override
+	public String toString() {
+		return "ElementLayout [display=" + display + ", font=" + font + ", hasCSSWidth=" + hasCSSWidth
+				+ ", hasCSSHeight=" + hasCSSHeight + ", sumWidth=" + sumWidth + ", sumHeight=" + sumHeight
+				+ ", dimensions=" + outer + ", margin=" + margin + ", padding=" + padding + ", inner=" + inner
+				+ ", renderer=" + renderer + "]";
 	}
 }

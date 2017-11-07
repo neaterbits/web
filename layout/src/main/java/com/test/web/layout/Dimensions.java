@@ -68,4 +68,9 @@ final class Dimensions implements IBounds {
 	public int getHeight() {
 		return height;
 	}
+
+	@Override
+	public String toString() {
+		return "Dimensions [left=" + left + ", top=" + top + ", width=" + width + ", height=" + height + "]";
+	}
 }

@@ -49,4 +49,9 @@ public class Wrapping implements IWrapping {
 	public int getLeft() {
 		return left;
 	}
+
+	@Override
+	public String toString() {
+		return "Wrapping [top=" + top + ", right=" + right + ", bottom=" + bottom + ", left=" + left + "]";
+	}
 }

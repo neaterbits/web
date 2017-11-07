@@ -44,6 +44,11 @@ public class PrintlnLayoutDebugListener implements ILayoutDebugListener, IIndent
 				+ ", subAvailableHeight=" + subAvailableHeight
 				+ ", subCSSHeight=" + subCSSHeight);
 	}
+	
+	@Override
+	public void onResultingLayout(int depth, IElementLayout layout) {
+		indent(depth, out).println("LAYOUT result: " + layout);
+	}
 
 	@Override
 	public void onElementEnd(int depth, HTMLElement element) {
