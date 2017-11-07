@@ -108,7 +108,6 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		}
 		
 		// Adjust sub available width/height if is set
-		
 		final int width;
 		final int cssWidth;
 
@@ -127,7 +126,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			// Got width from CSS above
 			sub.resultingLayout.setHasCSSWidth(true);
 			
-			// remaining - width may be negative below
+			// remaining - width may be negative below, eg if there is overflow
 			final int remaining = Math.max(0, cur.getRemainingWidth() - width);
 			
 			cur.setRemainingWidth(remaining);
@@ -138,7 +137,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 				throw new IllegalStateException("Should always know available width");
 			}
 			
-			// No CSS width so use all remaining width
+			// No CSS width so use all remaining width is allocated for this element, independent of content size
 			width = cur.getRemainingWidth();
 			cur.setRemainingWidth(0);
 			
@@ -152,22 +151,25 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     		debugListener.onComputedWidth(state.getDepth(), cur.getAvailableWidth(), sub.getAvailableWidth(), cssWidth, sub.layoutStyles.hasWidth());
     	}
 		
+    	final int cssHeight;
 		int height = -1;
 		
 		if (sub.layoutStyles.hasHeight()) {
 			// has width, compute and update
-			height = computeHeightPx(sub.layoutStyles.getHeight(), sub.layoutStyles.getHeightUnit(), cur.getAvailableHeight());
+			height = cssHeight = computeHeightPx(sub.layoutStyles.getHeight(), sub.layoutStyles.getHeightUnit(), cur.getAvailableHeight());
 
 	    	// height is -1 if cur.getAvailableHeight() == -1 (scrolled webage with no specified height)
 	    	if (height != -1) {
 	    		sub.resultingLayout.setHasCSSHeight(true);
 	    	}
 		}
+		else {
+			cssHeight = -1;
+		}
 		
     	if (debugListener != null) {
-    		debugListener.onComputedHeight(state.getDepth(), cur.getAvailableHeight(), sub.getAvailableHeight(), height, sub.layoutStyles.hasHeight());
+    		debugListener.onComputedHeight(state.getDepth(), cur.getAvailableHeight(), sub.getAvailableHeight(), cssHeight, sub.layoutStyles.hasHeight());
     	}
-
 		
 		if (height == -1) {
 			// No CSS height, height is computed from what is available in container, or from size of element, knowing width
@@ -183,7 +185,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			}
 			else {
 				// We must compute element height, but element is nested so we do not know yet, we must figure out
-				// after having recursed
+				// after having recursed. TODO this has impact on how render background
 				sub.delayedLayout |= StackElement.UNKNOWN_HEIGHT;
 			}
 		}
@@ -259,6 +261,44 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	int innerLeft = leftPadding;
     	int innerTop = topPadding;
     	
+    	// result is encoded in long to avoid having a separate class for returning values
+    	final long horizontalMargins = computeHorizontalMargins(
+    			margins,
+    			display,
+    			remainingWidth, widthFromCSS, hasWidthFromCSS,
+    			leftPadding, rightPadding);
+    	
+    	final int leftMargin = (int)(horizontalMargins >> 32);
+    	final int rightMargin = (int)(horizontalMargins & 0xFFFFFFFFL);
+ 	
+  		innerLeft += leftMargin;
+ 	
+		// margins of auto are always set to 0 for horizontal case
+		final int topMargin  = getNonAutoSize(margins.getTop(), margins.getTopUnit(), margins.getTopType(), remainingWidth);
+  		final int bottomMargin  = getNonAutoSize(margins.getBottom(), margins.getBottomUnit(), margins.getBottomType(), remainingWidth);
+  		
+  		innerTop += topMargin;
+    	
+    	resultingLayout.getInner().init(innerLeft, innerTop, innerWidth, innerHeight);
+    
+    	resultingLayout.getMarginWrapping().init(topMargin, rightMargin, bottomMargin, leftMargin);
+       	resultingLayout.getPaddingWrapping().init(topPadding, rightPadding, bottomPadding, leftPadding);
+   
+     	// Outer width and outer height
+    	resultingLayout.getOuter().setWidth(innerWidth + leftPadding + rightPadding + leftMargin + rightMargin);
+    	
+    	if (innerHeight != -1) {
+    		resultingLayout.getOuter().setHeight(innerHeight + topPadding + bottomPadding + topMargin + bottomMargin);
+    	}
+    }
+    
+    // Compute horizontal margins and return result as left << 32 || right
+    private static long computeHorizontalMargins(
+    		CSSDimensions margins,
+    		CSSDisplay display,
+    		int remainingWidth, int widthFromCSS, boolean hasWidthFromCSS,
+    		int leftPadding, int rightPadding) {
+    	
     	final int leftMargin;
     	final int rightMargin;
     	
@@ -308,27 +348,8 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
       		rightMargin  = getNonAutoSize(margins.getRight(), margins.getRightUnit(), margins.getRightType(), remainingWidth);
      	}
     	
-  		innerLeft += leftMargin;
- 	
-		// margins of auto is set to 0
-		final int topMargin  = getNonAutoSize(margins.getTop(), margins.getTopUnit(), margins.getTopType(), remainingWidth);
-  		final int bottomMargin  = getNonAutoSize(margins.getBottom(), margins.getBottomUnit(), margins.getBottomType(), remainingWidth);
-  		
-  		innerTop += topMargin;
-    	
-    	resultingLayout.getInner().init(innerLeft, innerTop, innerWidth, innerHeight);
-    
-    	resultingLayout.getMarginWrapping().init(topMargin, rightMargin, bottomMargin, leftMargin);
-       	resultingLayout.getPaddingWrapping().init(topPadding, rightPadding, bottomPadding, leftPadding);
-   
-     	// Outer width and outer height
-    	resultingLayout.getOuter().setWidth(innerWidth + leftPadding + rightPadding + leftMargin + rightMargin);
-    	
-    	if (innerHeight != -1) {
-    		resultingLayout.getOuter().setHeight(innerHeight + topPadding + bottomPadding + topMargin + bottomMargin);
-    	}
+    	return ((long)leftMargin) << 32 | rightMargin;
     }
-    
     
     
     private static int getPaddingSize(int size, CSSUnit unit, CSSJustify type, int curSize) {
