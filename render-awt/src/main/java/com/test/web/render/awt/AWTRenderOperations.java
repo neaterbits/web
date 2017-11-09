@@ -11,6 +11,11 @@ public class AWTRenderOperations implements IRenderOperations {
 	private final Graphics2D gfx;
 
 	public AWTRenderOperations(Graphics2D gfx) {
+		
+		if (gfx == null) {
+			throw new IllegalArgumentException("gfx == null");
+		}
+	
 		this.gfx = gfx;
 	}
 
@@ -38,6 +43,6 @@ public class AWTRenderOperations implements IRenderOperations {
 
 	@Override
 	public void drawText(int x, int y, String text) {
-		gfx.drawChars(text.toCharArray(), 0, text.length(), x, y);
+		gfx.drawChars(text.toCharArray(), 0, text.length(), x, y + gfx.getFontMetrics().getHeight());
 	}
 }

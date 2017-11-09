@@ -29,6 +29,6 @@ final class BrowserTab<ELEMENT> {
 		final Document<ELEMENT> document = documentLoader.fromHTML(html);
 
 		// Layout and render the document in one pass
-		
+		documentLoader.layout(document, uiCanvas.getWidth(), uiCanvas.getHeight(), uiCanvas);
 	}
 }

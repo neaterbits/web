@@ -18,6 +18,12 @@
 
   	<dependency>
   		<groupId>${project.groupId}</groupId>
+  		<artifactId>document-oo</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
+
+  	<dependency>
+  		<groupId>${project.groupId}</groupId>
   		<artifactId>layout</artifactId>
   		<version>${project.version}</version>
   	</dependency>
@@ -28,6 +34,11 @@
   		<version>${project.version}</version>
   	</dependency>
 
+  	<dependency>
+  		<groupId>${project.groupId}</groupId>
+  		<artifactId>render-html</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
 
 	<!-- test dependencies --> 
 

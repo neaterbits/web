@@ -2,6 +2,9 @@ package com.test.web.render.common;
 
 public interface IRenderer extends IRenderOperations {
 
+	// We're done renderinh, sync to display
+	void sync();
+	
 	/*
 	 * Render later, only works for async queue rendering, when we want add
 	 * eg rendering of element background but we do not know complete size of element

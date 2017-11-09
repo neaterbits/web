@@ -3,6 +3,7 @@ package com.test.web.browser.common;
 import com.test.web.document.common.Document;
 import com.test.web.layout.PageLayout;
 import com.test.web.parse.common.ParserException;
+import com.test.web.render.common.IRenderer;
 
 public interface IBrowserDocumentLoader<ELEMENT> {
 
@@ -18,8 +19,8 @@ public interface IBrowserDocumentLoader<ELEMENT> {
 	Document<ELEMENT> fromHTML(String html) throws ParserException;
 
 	/**
-	 * 
+	 *  TODO this would probably have to be async ?
 	 * @return layout of page
 	 */
-	PageLayout<ELEMENT> layout();
+	PageLayout<ELEMENT> layout(Document<ELEMENT> document, int viewPortWidth, int viewPortHeight, IRenderer displayRenderer);
 }
