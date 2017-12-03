@@ -35,8 +35,6 @@ final class SWTUIWindow extends SWTContainer implements IUIWindow {
 
 	@Override
 	public void open() {
-		// To make sure all components get their sizes
-		// window.layout();
 		window.open();
 	}
 
