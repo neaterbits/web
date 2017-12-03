@@ -5,11 +5,11 @@ public interface IUIWidgets {
 	
 	/**
 	 * Create single-line text widget
-	 * @param listener listener for sevents
+	 * @param listener listener for events
 	 * 
 	 * @return reference to String widget
 	 */
-	IUIString createString(IUIStringListener listener);
+	IUIString createString(UILayoutData layoutData, IUIStringListener listener);
 
 	/**
 	 * Create canvas for rendering, eg for rendering the whole
@@ -18,5 +18,5 @@ public interface IUIWidgets {
 	 * @return canvas
 	 */
 	
-	IUICanvas createCanvas();
+	IUICanvas createCanvas(UILayoutData layoutData);
 }

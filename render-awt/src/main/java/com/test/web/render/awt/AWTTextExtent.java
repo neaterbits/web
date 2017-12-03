@@ -35,6 +35,6 @@ public class AWTTextExtent implements ITextExtent {
 
 		final AWTFont f = (AWTFont)font;
 		
-		return f.getTextExtent(text);
+		return f.textExtent(text);
 	}
 }

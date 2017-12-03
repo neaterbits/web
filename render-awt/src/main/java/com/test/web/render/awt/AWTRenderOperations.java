@@ -48,4 +48,9 @@ public class AWTRenderOperations implements IRenderOperations {
 	public void drawText(int x, int y, String text) {
 		gfx.drawChars(text.toCharArray(), 0, text.length(), x, y + gfx.getFontMetrics().getHeight());
 	}
+
+	@Override
+	public void close() {
+		
+	}
 }

@@ -28,7 +28,8 @@ final class SwingUIWindow extends SwingContainer implements IUIWindow {
 		});
 	}
 	
-	void display() {
+	@Override
+	public void open() {
 		//window.pack();
 		window.setVisible(true);
 	}

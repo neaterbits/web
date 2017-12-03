@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import com.test.web.ui.common.IUIContainers;
 import com.test.web.ui.common.IUIHBox;
 import com.test.web.ui.common.IUIVBox;
+import com.test.web.ui.common.UILayoutData;
 
 abstract class SwingContainer implements IUIContainers {
 
@@ -19,7 +20,7 @@ abstract class SwingContainer implements IUIContainers {
 	}
 
 	@Override
-	public final IUIHBox createHBox() {
+	public final IUIHBox createHBox(UILayoutData layoutData) {
 		
 		final JPanel subContainer = new JPanel();
 		
@@ -27,20 +28,20 @@ abstract class SwingContainer implements IUIContainers {
 		
 		subContainer.setLayout(boxLayout);
 		
-		add(subContainer);
+		add(layoutData, subContainer);
 		
 		return new SwingHBox(subContainer);
 	}
 
 	@Override
-	public final IUIVBox createVBox() {
+	public final IUIVBox createVBox(UILayoutData layoutData) {
 		final JPanel subContainer = new JPanel();
 		
 		final BoxLayout boxLayout = new BoxLayout(subContainer, BoxLayout.Y_AXIS);
 
 		subContainer.setLayout(boxLayout);
 
-		add(subContainer);
+		add(layoutData, subContainer);
 		
 		return new SwingVBox(subContainer);
 	}
@@ -49,7 +50,7 @@ abstract class SwingContainer implements IUIContainers {
 		return container;
 	}
 	
-	final void add(Component component) {
+	final void add(UILayoutData layoutData, Component component) {
 		container.add(component);
 	}
 }

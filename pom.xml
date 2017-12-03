@@ -45,10 +45,13 @@
 	    <module>render-queue</module>
 	    <module>render-html</module>
 	    <module>render-awt</module>
+	    <module>render-swt</module>
 	    <module>ui-common</module>
 	    <module>ui-swing</module>
+	    <module>ui-swt</module>
 	    <module>browser-common</module>
 	    <module>browser-swing</module>
+	    <module>browser-swt</module>
 
 	    <module>testdata</module>
   </modules>
@@ -119,6 +122,8 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.7.0</version>
+            
             <!-- best lock down version of the plugin too -->
             <configuration>
               <source>1.8</source>

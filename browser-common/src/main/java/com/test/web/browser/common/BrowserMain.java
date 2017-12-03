@@ -6,12 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.test.web.parse.common.ParserException;
+import com.test.web.ui.common.Alignment;
+import com.test.web.ui.common.HBoxLayoutData;
 import com.test.web.ui.common.IUICanvas;
 import com.test.web.ui.common.IUIContainer;
 import com.test.web.ui.common.IUIFactory;
 import com.test.web.ui.common.IUIHBox;
 import com.test.web.ui.common.IUIVBox;
 import com.test.web.ui.common.IUIWindow;
+import com.test.web.ui.common.VBoxLayoutData;
 
 public class BrowserMain<ELEMENT> {
 
@@ -96,7 +99,7 @@ public class BrowserMain<ELEMENT> {
 				});
 
 		// Browser URL line is a horizontal line containing url string line
-		final IUIVBox vbox = window.createVBox();
+		final IUIVBox vbox = window.createVBox(null);
 
 		// The browser itself, will be created using a canvas
 		final BrowserTab<ELEMENT> tab = createBrowserTab(vbox);
@@ -105,17 +108,22 @@ public class BrowserMain<ELEMENT> {
 
 		windows.add(browserWindow);
 		
+		window.open();
+		
 		return tab;
 	}
 	
 	private BrowserTab<ELEMENT> createBrowserTab(IUIContainer container) {
-		final IUIHBox inputHBox = container.createHBox();
+		
+		final IUIHBox inputHBox = container.createHBox(new VBoxLayoutData(Alignment.BEGINNING, true));
 
-		final IUICanvas canvas = container.createCanvas();
+		final IUICanvas canvas = container.createCanvas(new VBoxLayoutData(true, true));
 
 		final BrowserTab<ELEMENT> tab = new BrowserTab<>(canvas, documentLoader);
 
-		inputHBox.createString(changedValue -> {
+		inputHBox.createString(
+			new HBoxLayoutData(true, false),
+			changedValue -> {
 			try {
 				final URL url;
 

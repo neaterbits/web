@@ -2,8 +2,8 @@ package com.test.web.ui.common;
 
 public interface IUIContainers extends IUIElements {
 
-	IUIHBox createHBox();
+	IUIHBox createHBox(UILayoutData layoutData);
 	
-	IUIVBox createVBox();
+	IUIVBox createVBox(UILayoutData layoutData);
 	
 }

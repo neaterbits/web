@@ -11,4 +11,7 @@ public interface IRenderOperations {
 	void setFont(IFont font);
 	
 	void drawText(int x, int y, String text);
+	
+	// SWT uses native resources that may have to be cleaned up
+	void close();
 }

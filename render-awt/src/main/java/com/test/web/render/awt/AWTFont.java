@@ -4,9 +4,10 @@ import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 
+import com.test.web.render.common.BaseFont;
 import com.test.web.render.common.IFont;
 
-public class AWTFont implements IFont {
+public class AWTFont extends BaseFont implements IFont {
 
 	private final Font font;
 
@@ -19,12 +20,6 @@ public class AWTFont implements IFont {
 		this.font = font;
 	}
 
-	private static final String TESTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-	
-	@Override
-	public int getAverageWidth() {
-		return roundUp(getWidthOfString(font, TESTCHARS) / (double)TESTCHARS.length());
-	}
 
 	@Override
 	public int getHeight() {
@@ -41,17 +36,8 @@ public class AWTFont implements IFont {
 		return font;
 	}
 	
-	private static int roundUp(double d) {
-		int asInteger = (int)d;
-		
-		if (d - asInteger >= 0.5) {
-			++ asInteger;
-		}
-
-		return asInteger;
-	}
-	
-	int getTextExtent(String s) {
+	@Override
+	protected int textExtent(String s) {
 		return getWidthOfString(font, s);
 	}
 	

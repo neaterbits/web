@@ -28,7 +28,7 @@ public class SwingUIFactory implements IUIFactory {
 			public void run() {
 
 				for (SwingUIWindow window : windows) {
-					window.display();
+					window.open();
 				}
 			}
 		});
