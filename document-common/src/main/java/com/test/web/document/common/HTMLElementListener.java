@@ -6,5 +6,5 @@ public interface HTMLElementListener<ELEMENT, PARAM> {
 
 	void onElementEnd(Document<ELEMENT> document,  ELEMENT element, PARAM param);
 
-	void onText(Document<ELEMENT> document,  String text, PARAM param);
+	void onText(Document<ELEMENT> document,  ELEMENT element, String text, PARAM param);
 }

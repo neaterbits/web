@@ -9,6 +9,7 @@ import com.test.web.css.common.CSSContext;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.IRenderFactory;
+import com.test.web.render.common.IRenderer;
 import com.test.web.render.common.ITextExtent;
 import com.test.web.types.FontSpec;
 
@@ -16,6 +17,7 @@ import com.test.web.types.FontSpec;
 public final class LayoutState<ELEMENT> {
 	
 	private final ITextExtent textExtent;
+	private final IRenderer displayRenderer;
 	
 	// For finding size of text strings when using a particular font for rendering
 	private final CSSContext<ELEMENT> cssContext;
@@ -36,8 +38,9 @@ public final class LayoutState<ELEMENT> {
 	// Position of current display block
 	private int curBlockYPos;
 	
-	public LayoutState(ITextExtent textExtent, ViewPort viewPort, CSSContext<ELEMENT> cssContext, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
+	public LayoutState(ITextExtent textExtent, ViewPort viewPort, IRenderer displayRenderer, CSSContext<ELEMENT> cssContext, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
 		this.textExtent = textExtent;
+		this.displayRenderer = displayRenderer;
 		this.cssContext = cssContext;
 		this.listener = listener;
 
@@ -59,6 +62,10 @@ public final class LayoutState<ELEMENT> {
 		return cssContext;
 	}
 	
+	IRenderer getDisplayRenderer()  {
+		return displayRenderer;
+	}
+	
 	PageLayout<ELEMENT> getPageLayout() {
 		return pageLayout;
 	}
@@ -68,7 +75,7 @@ public final class LayoutState<ELEMENT> {
 	}
 
 	PageLayer<ELEMENT> addOrGetLayer(int index, IRenderFactory renderFactory) {
-		return pageLayout.addOrGetLayer(index, renderFactory);
+		return pageLayout.addOrGetLayer(index, displayRenderer, renderFactory);
 	}
 
 	StackElement getCur() {

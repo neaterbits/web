@@ -612,7 +612,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 				
 				text = HTMLUtils.removeNewlines(text);
 				
-				listener.onText(this, text,  param);
+				listener.onText(this, curElement, text,  param);
 			}
 		}
 

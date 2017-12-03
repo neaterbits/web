@@ -11,8 +11,9 @@ import com.test.web.document.common.Document;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io.common.Tokenizer;
+import com.test.web.render.common.IBufferRenderFactory;
 import com.test.web.render.common.IFont;
-import com.test.web.render.common.IRenderFactory;
+import com.test.web.render.common.IRenderer;
 import com.test.web.render.common.ITextExtent;
 import com.test.web.types.FontSpec;
 
@@ -31,7 +32,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	private final ITextExtent textExtent;
 	
 	// For creating renderers, rendering occurs in the same pass (but renderer implenentation might just queue operations for later)
-	private final IRenderFactory renderFactory;
+	private final IBufferRenderFactory renderFactory;
 	private final ILayoutDebugListener debugListener;
 	
 	private final FontSettings fontSettings;
@@ -40,7 +41,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	
 	public LayoutAlgorithm(
 			ITextExtent textExtent,
-			IRenderFactory renderFactory,
+			IBufferRenderFactory renderFactory,
 			FontSettings fontSettings,
 			ILayoutDebugListener debugListener) {
 		this.textExtent = textExtent;
@@ -50,13 +51,18 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		this.debugListener = debugListener;
 	}
 
-	public PageLayout<ELEMENT> layout(Document<ELEMENT> document, ViewPort viewPort, CSSContext<ELEMENT> cssContext, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
+	public PageLayout<ELEMENT> layout(Document<ELEMENT> document, ViewPort viewPort, CSSContext<ELEMENT> cssContext, HTMLElementListener<ELEMENT, IElementRenderLayout> listener, IRenderer displayRenderer) {
 		
-		final LayoutState<ELEMENT> state = new LayoutState<>(textExtent, viewPort, cssContext, listener);
+		final LayoutState<ELEMENT> state = new LayoutState<>(textExtent, viewPort, displayRenderer, cssContext, listener);
 		
 		document.iterate(this, state);
 		
 		return state.getPageLayout();
+	}
+	
+	private int getDebugDepth(LayoutState<ELEMENT> state) {
+		// state depth includes outer viewport so has to subtract one
+		return state.getDepth() - 1;
 	}
 	
     @Override
@@ -70,7 +76,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	
     	if (debugListener != null) {
     		debugListener.onElementStart(
-    				state.getDepth(),
+    				getDebugDepth(state),
     				elementType,
     				document.getId(element),
     				document.getTag(element),
@@ -92,7 +98,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 				sub.layoutStyles);
     	
     	if (debugListener != null) {
-    		debugListener.onElementCSS(state.getDepth(), sub.layoutStyles);
+    		debugListener.onElementCSS(getDebugDepth(state), sub.layoutStyles);
     	}
 
     	// Also apply style attribute if defined
@@ -103,7 +109,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			state.getCSSContext().applyLayoutStyles(styleAttribute, element, sub.layoutStyles);
 
 	    	if (debugListener != null) {
-	    		debugListener.onElementStyleAttribute(state.getDepth(), sub.layoutStyles);
+	    		debugListener.onElementStyleAttribute(getDebugDepth(state), sub.layoutStyles);
 	    	}
 		}
 		
@@ -148,7 +154,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		sub.setRemainingWidth(width);
 		
     	if (debugListener != null) {
-    		debugListener.onComputedWidth(state.getDepth(), cur.getAvailableWidth(), sub.getAvailableWidth(), cssWidth, sub.layoutStyles.hasWidth());
+    		debugListener.onComputedWidth(getDebugDepth(state), cur.getAvailableWidth(), sub.getAvailableWidth(), cssWidth, sub.layoutStyles.hasWidth());
     	}
 		
     	final int cssHeight;
@@ -168,7 +174,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		}
 		
     	if (debugListener != null) {
-    		debugListener.onComputedHeight(state.getDepth(), cur.getAvailableHeight(), sub.getAvailableHeight(), cssHeight, sub.layoutStyles.hasHeight());
+    		debugListener.onComputedHeight(getDebugDepth(state), cur.getAvailableHeight(), sub.getAvailableHeight(), cssHeight, sub.layoutStyles.hasHeight());
     	}
 		
 		if (height == -1) {
@@ -190,9 +196,15 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			}
 		}
 
+		
 		// height might be -1
 		sub.resultingLayout.getOuter().setHeight(height);
 		sub.setAvailableHeight(height);
+		
+		// Got layout, set renderer from appropriate layer so that rendering can find it, rendering may happen already during this pass
+		final short zIndex = sub.layoutStyles.getZIndex();
+		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, renderFactory);
+		sub.resultingLayout.setRenderer(layer.getRenderer());
 		
 		// Compute inner-dimensions
 		computeDimensionsFromOuter(
@@ -206,7 +218,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 				sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
 
 		if (debugListener != null) {
-			debugListener.onResultingLayout(state.getDepth(), sub.resultingLayout);
+			debugListener.onResultingLayout(getDebugDepth(state), sub.resultingLayout);
 		}
 
 		// Set resulting font
@@ -390,17 +402,16 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     		return;
     	}
     	
-    	if (debugListener != null) {
-    		debugListener.onElementEnd(state.getDepth(), elementType);
-    	}
-    	
     	// End of element where wer're at
 		final StackElement cur = state.getCur();
 		
 		state.pop();
-		
-		final StackElement parent  = state.getCur();
+    	
+    	if (debugListener != null) {
+    		debugListener.onElementEnd(getDebugDepth(state) , elementType);
+    	}
 
+		final StackElement parent = state.getCur();
 		
 		// Now should have collected relevant information to do layout and find the dimensions
 		// of the element and also the margins and padding?
@@ -411,7 +422,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		final short zIndex = cur.layoutStyles.getZIndex();
 		
 		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, renderFactory);
-
+		
 		// make copy since resulting layout is reused
 		layer.add(element, cur.resultingLayout.makeCopy());
 
@@ -442,9 +453,15 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 
     @Override
-	public void onText(Document<ELEMENT> document, String text, LayoutState<ELEMENT> state) {
+	public void onText(Document<ELEMENT> document, ELEMENT element, String text, LayoutState<ELEMENT> state) {
 		// We have a text element, compute text extents according to current mode
 		// TODO: text-align, overflow
+
+    	final HTMLElement elementType = document.getType(element);
+
+    	if (!elementType.isLayoutElement()) {
+    		return;
+    	}
 
 		final StackElement cur = state.getCur();
 
@@ -488,6 +505,16 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 		if (height > cur.getMaxBlockElementHeight()) {
 			cur.setMaxBlockElementHeight(height);
+		}
+		
+		if (state.getListener() != null) {
+			
+			// verify that we have set a renderer for this element before calling render listener
+			if (cur.resultingLayout.getRenderer() == null) {
+				throw new IllegalStateException("No renderer set");
+			}
+			
+			state.getListener().onText(document, element, text, cur.getResultingLayout());
 		}
 
 		// addWidthToCur(cur, width);

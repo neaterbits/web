@@ -12,6 +12,8 @@ import com.test.web.render.common.IBufferRenderFactory;
 import com.test.web.render.common.IRenderer;
 import com.test.web.render.common.ITextExtent;
 import com.test.web.render.html.HTMLRenderer;
+import com.test.web.render.html.IRenderDebugListener;
+import com.test.web.render.html.PrintlnRenderDebugListener;
 
 public abstract class BaseBrowserDocumentLoader<ELEMENT, TOKENIZER extends Tokenizer>
 		implements IBrowserDocumentLoader<ELEMENT> {
@@ -47,14 +49,16 @@ public abstract class BaseBrowserDocumentLoader<ELEMENT, TOKENIZER extends Token
 		final CSSContext<ELEMENT> cssContext = new CSSContext<>();
 		
 		
-		// We add HTMLRenerer here so that we render in the parsing pass, however renderer may just be
+		// We add HTMLRenderer here so that we render in the parsing pass, however renderer may just be
 		// an async queue. The renderers are added to the computed layout for each element
 		// since elements may have different z-index.
 		
 		// On could also envision rendering happening directly for z-index 0, this all depends on
 		// what renderer is set for the element layout during layout algorithm
 		
-		final HTMLRenderer<ELEMENT> htmlRenderer = new HTMLRenderer<>();
+		final IRenderDebugListener renderDebugListener = new PrintlnRenderDebugListener(System.out);
+		
+		final HTMLRenderer<ELEMENT> htmlRenderer = new HTMLRenderer<>(renderDebugListener);
 		
 		final PageLayout<ELEMENT> pageLayout = layoutAgorithm.layout(document, viewPort, cssContext, htmlRenderer, displayRenderer);
 		

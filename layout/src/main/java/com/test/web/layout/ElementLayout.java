@@ -75,6 +75,11 @@ final class ElementLayout implements IElementRenderLayout {
 	}
 	
 	void setRenderer(IRenderer renderer) {
+		
+		if (renderer == null) {
+			throw new IllegalArgumentException("renderer == null");
+		}
+		
 		this.renderer = renderer;
 	}
 

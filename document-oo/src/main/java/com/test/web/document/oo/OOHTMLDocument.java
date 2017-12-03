@@ -189,15 +189,16 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 
 	@Override
 	public <PARAM> void iterate(HTMLElementListener<OOTagElement, PARAM> listener, PARAM param) {
-		iterate(rootElement, listener, param, rootElement,  true);
+		iterate(null, rootElement, listener, param, rootElement,  true);
 	}
 	
 	@Override
 	public <PARAM> void iterateFrom(OOTagElement element, HTMLElementListener<OOTagElement, PARAM> listener, PARAM param) {
-		iterate(rootElement, listener, param, element, false);
+		iterate(null, rootElement, listener, param, element, false);
 	}
 	
 	private <PARAM> boolean iterate(
+			OOTagElement containerElement,
 			OODocumentElement curElement,
 			HTMLElementListener<OOTagElement, PARAM> listener,
 			PARAM param,
@@ -217,7 +218,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 				final OOContainerElement container = (OOContainerElement)curElement;
 			
 				for (OODocumentElement ref = container.head; ref != null; ref = ref.next) {
-					callListener = iterate(ref, listener, param, startCallListenerElement, callListener);
+					callListener = iterate(container, ref, listener, param, startCallListenerElement, callListener);
 				}
 			}
 			
@@ -233,7 +234,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 				
 				text = HTMLUtils.removeNewlines(text);
 				
-				listener.onText(this, text,  param);
+				listener.onText(this, containerElement, text,  param);
 			}
 		}
 

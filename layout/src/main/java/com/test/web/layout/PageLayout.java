@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.test.web.render.common.IRenderFactory;
+import com.test.web.render.common.IRenderer;
 
 /*
  * Page layout consists of a number of page layers, each page
@@ -20,7 +21,7 @@ public final class PageLayout<ELEMENT> {
 		this.layers = new ArrayList<>();
 	}
 	
-	public  PageLayer<ELEMENT> addOrGetLayer(int index, IRenderFactory renderFactory) {
+	public  PageLayer<ELEMENT> addOrGetLayer(int index, IRenderer displayRenderer, IRenderFactory renderFactory) {
 		PageLayer<ELEMENT> found = null;
 		
 		for (PageLayer<ELEMENT> l : layers) {
@@ -31,7 +32,14 @@ public final class PageLayout<ELEMENT> {
 		}
 		
 		if (found == null) {
-			found = new PageLayer<>(index, renderFactory.createRenderer());
+			// if z-index 0, we can render directly onto display (which might be an offscreen buffer for doublebuffering as well)
+			
+			final IRenderer renderer = index == 0
+					? displayRenderer
+					: renderFactory.createRenderer();
+			
+			found = new PageLayer<>(index, renderer);
+
 			layers.add(found);
 		}
 		

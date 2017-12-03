@@ -2,6 +2,7 @@ package com.test.web.render.awt;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.IRenderOperations;
@@ -17,6 +18,8 @@ public class AWTRenderOperations implements IRenderOperations {
 		}
 	
 		this.gfx = gfx;
+		
+		gfx.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 	}
 
 	@Override

@@ -31,6 +31,12 @@ public class AWTFont implements IFont {
 		return font.getSize();
 	}
 	
+	
+	@Override
+	public String toString() {
+		return font.toString();
+	}
+
 	Font getFont() {
 		return font;
 	}

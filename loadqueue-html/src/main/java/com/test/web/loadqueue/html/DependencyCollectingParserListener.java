@@ -17,7 +17,8 @@ import com.test.web.loadqueue.common.ILoadQueue;
 import com.test.web.loadqueue.common.LoadCompletionListener;
 import com.test.web.parse.html.HTMLParserListener;
 import com.test.web.parse.html.IDocumentParserListener;
-import com.test.web.render.common.IRenderFactory;
+import com.test.web.render.common.IBufferRenderFactory;
+import com.test.web.render.common.IRenderer;
 import com.test.web.render.common.ITextExtent;
 
 /*
@@ -57,7 +58,8 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 			ILoadQueue loadQueue,
 			ViewPort viewPort,
 			ITextExtent textExtent,
-			IRenderFactory renderFactory,
+			IRenderer displayRenderer,
+			IBufferRenderFactory renderFactory,
 			FontSettings fontSettings,
 			HTMLElementListener<ELEMENT, IElementRenderLayout> renderListener) {
 
@@ -71,7 +73,7 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 		
 		this.tempLayoutStyles = new CSSLayoutStyles();
 		
-		this.layoutState = new LayoutState<>(textExtent, viewPort, cssContext, renderListener);
+		this.layoutState = new LayoutState<>(textExtent, viewPort, displayRenderer, cssContext, renderListener);
 	}
 
 	@Override

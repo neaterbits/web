@@ -1,7 +1,10 @@
 package com.test.web.ui.swing;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
 
@@ -10,19 +13,39 @@ import com.test.web.render.awt.AWTTextExtent;
 import com.test.web.render.common.IFont;
 import com.test.web.ui.common.IUICanvas;
 
+
 final class SwingCanvas extends JComponent implements IUICanvas {
 	
 	private static final long serialVersionUID = 1L;
 
+	private final BufferedImage image;
 	private final AWTRenderOperations renderOperations;
 	private final AWTTextExtent textExtent;
 	
 	public SwingCanvas() {
-		this.renderOperations = new AWTRenderOperations((Graphics2D)this.getGraphics());
+		
+		final int width;
+		final int height;
+		
+		// TODO quick-fix for layout
+		width = 1000;
+		height = 700;
+		
+		this.image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		
+		final Graphics2D gfx = image.createGraphics();
+
+		// Fill image with white color by default
+		gfx.setBackground(new Color(0xFF, 0xFF, 0xFF));
+		gfx.fillRect(0,  0, width, height);
+		gfx.setColor(new Color(0, 0, 0));
+		
+		// We have to paint into a backround buffer since we can only paint in paint() method
+		this.renderOperations = new AWTRenderOperations(gfx);
 		this.textExtent = new AWTTextExtent();
 		
-		setPreferredSize(new Dimension(1000, 700));
-		setSize(1000, 700); // TODO quick-fix for layout
+		setPreferredSize(new Dimension(width, height));
+		setSize(width, height); // TODO quick-fix for layout
 	}
 
 	@Override
@@ -63,6 +86,21 @@ final class SwingCanvas extends JComponent implements IUICanvas {
 	@Override
 	public int getTextExtent(IFont font, String text) {
 		return textExtent.getTextExtent(font, text);
+	}
+	
+	@Override
+	public void paint(Graphics g) {
+		g.drawImage(image, 0, 0, null);
+	}
+
+	@Override
+	public void sync() {
+		repaint();
+	}
+
+	@Override
+	public String toString() {
+		return "SwingCanvas []";
 	}
 }
 

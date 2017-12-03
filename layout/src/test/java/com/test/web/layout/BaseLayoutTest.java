@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.test.web.css.common.CSSContext;
 import com.test.web.document.common.Document;
-import com.test.web.document.common.HTMLElement;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.FontSettings;
 import com.test.web.layout.LayoutAlgorithm;
@@ -13,7 +12,7 @@ import com.test.web.layout.PageLayout;
 import com.test.web.layout.PrintlnLayoutDebugListener;
 import com.test.web.layout.ViewPort;
 import com.test.web.parse.common.ParserException;
-import com.test.web.render.common.IRenderFactory;
+import com.test.web.render.common.IBufferRenderFactory;
 import com.test.web.render.common.IRenderer;
 import com.test.web.render.common.ITextExtent;
 import com.test.web.testdata.TestData;
@@ -216,7 +215,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 
 	private PageLayer<HTML_ELEMENT> layout(Document<HTML_ELEMENT> doc, int viewPortWidth, int viewPortHeight) {
 		
-		final IRenderFactory renderFactory = new IRenderFactory() {
+		final IBufferRenderFactory renderFactory = new IBufferRenderFactory() {
 			@Override
 			public IRenderer createRenderer() {
 				return new MockRenderer();
@@ -235,7 +234,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 
 		final CSSContext<HTML_ELEMENT> cssContext = new CSSContext<>();
 		
-		final PageLayout<HTML_ELEMENT> pageLayout = layoutAgorithm.layout(doc, viewPort, cssContext, null);
+		final PageLayout<HTML_ELEMENT> pageLayout = layoutAgorithm.layout(doc, viewPort, cssContext, null, new MockRenderer());
 		
 		assertThat(pageLayout.getLayers().size()).isEqualTo(1);
 	

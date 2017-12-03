@@ -2,7 +2,6 @@ package com.test.web.css.oo;
 
 
 import com.test.web.css.common.CSSState;
-import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.io.oo.OOTokenizer;
