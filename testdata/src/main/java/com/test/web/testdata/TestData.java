@@ -14,9 +14,11 @@ public class TestData {
 		"#an_element {\n" +
 		"  margin-left : 10;\n" +
 		"  margin-right : auto;\n" +
-
 		"  float: left;\n" +
 		"  position: relative;\n" +
+		"}\n" +
+
+		"#another-element {\n" +
 		"}\n" +
 
 		".a_class {\n" +

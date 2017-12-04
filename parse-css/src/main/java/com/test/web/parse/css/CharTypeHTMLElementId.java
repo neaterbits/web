@@ -12,7 +12,7 @@ public class CharTypeHTMLElementId extends CharType {
 	}
 	
 	private static boolean isIdLetter(char c) {
-		return Character.isLetter(c) || Character.isDigit(c) || c == '_';
+		return Character.isLetter(c) || Character.isDigit(c) || c == '_' || c == '-';
 	
 	}
 	
