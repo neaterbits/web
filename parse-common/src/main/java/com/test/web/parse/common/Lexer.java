@@ -63,8 +63,10 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		
 		cur.setLength(0);
 		
-		// Mark so that tokenizer may know starting point of string
-		input.mark();
+		if (input.markSupported()) {
+			// Mark so that tokenizer may know starting point of string
+			input.mark();
+		}
 		
 		// Scan all tokens for input from reader and check whether any tokens match 
 		

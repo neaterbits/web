@@ -7,5 +7,7 @@ public interface CharInput {
 	int readNext() throws IOException;
 
 	// for tokenizer
+	boolean markSupported();
+	
 	void mark();
 }

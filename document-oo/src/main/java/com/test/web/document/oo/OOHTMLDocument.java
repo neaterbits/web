@@ -16,6 +16,7 @@ import com.test.web.io.common.LoadStream;
 import com.test.web.io.common.SimpleLoadStream;
 import com.test.web.io.oo.OOStringBuffer;
 import com.test.web.io.oo.OOTokenizer;
+import com.test.web.parse.common.IParse;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.HTMLUtils;
@@ -32,24 +33,29 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 
 	private OOTagElement rootElement;
 
-	public static HTMLParser<OOTagElement, OOTokenizer> createParser(OOHTMLDocument document, IHTMLParserListener<OOTagElement, OOTokenizer> parserListener, LoadStream stream) {
+	public static <STYLE_DOCUMENT> HTMLParser<OOTagElement, OOTokenizer, STYLE_DOCUMENT> createParser(
+			OOHTMLDocument document,
+			IHTMLParserListener<OOTagElement, OOTokenizer> parserListener,
+			LoadStream stream,
+			IParse<STYLE_DOCUMENT> parseStyleDocument) {
 
 		final OOStringBuffer input = new OOStringBuffer(stream);
 		
-		final HTMLParser<OOTagElement, OOTokenizer> parser = new HTMLParser<>(
+		final HTMLParser<OOTagElement, OOTokenizer, STYLE_DOCUMENT> parser = new HTMLParser<>(
 				input,
 				input,
 				parserListener,
-				document.getStyleParserListener());
+				document.getStyleParserListener(),
+				parseStyleDocument);
 		
 		return parser;
 	}
 	
-	public static OOHTMLDocument parseHTMLDocument(String html) throws ParserException {
+	public static <STYLE_DOCUMENT> OOHTMLDocument parseHTMLDocument(String html, IParse<STYLE_DOCUMENT> parseStyleDocument) throws ParserException {
 
 		final OOHTMLDocument document = new OOHTMLDocument();
 		
-		final HTMLParser<OOTagElement, OOTokenizer> parser = createParser(document, document, new SimpleLoadStream(html));
+		final HTMLParser<OOTagElement, OOTokenizer, STYLE_DOCUMENT> parser = createParser(document, document, new SimpleLoadStream(html), parseStyleDocument);
 		
 		try {
 			parser.parseHTMLFile();
@@ -273,6 +279,10 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			ret = new OOLink();
 			break;
 			
+		case STYLE:
+			ret = new OOStyleElement();
+			break;
+			
 		case SCRIPT:
 			ret = new OOScript();
 			break;
@@ -346,6 +356,10 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			throw new IllegalArgumentException("Unknown attribute " + attribute);
 		}
 	}
+	
+	private static boolean booleanValue(OOTokenizer tokenizer) {
+		return tokenizer.equalsIgnoreCase("true");
+	}
 
 	@Override
 	public void onAttributeWithValue(OOTokenizer tokenizer, HTMLAttribute attribute, int startOffset, int endSkip, HTMLElement element) {
@@ -370,7 +384,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			break;
 			
 		case CONTENTEDITABLE:
-			ref.setContentEditable(tokenizer.equalsIgnoreCase("true"));
+			ref.setContentEditable(booleanValue(tokenizer));
 			break;
 			
 		case CONTEXTMENU:
@@ -406,6 +420,10 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			case LINK:
 				((OOLink)ref).setLinkType(tokenizer.asString(startOffset, endSkip));
 				break;
+				
+			case STYLE:
+				((OOStyleElement)ref).setStyleType(tokenizer.asString(startOffset, endSkip));
+				break;
 
 			default:
 				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
@@ -430,6 +448,21 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 				((OOLink)ref).setMedia(tokenizer.asString(startOffset, endSkip));
 				break;
 				
+			case STYLE:
+				((OOStyleElement)ref).setMedia(tokenizer.asString(startOffset, endSkip));
+				break;
+			
+			default:
+				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
+			}
+			break;
+			
+		case SCOPED:
+			switch (element) {
+			case STYLE:
+				((OOStyleElement)ref).setScoped(booleanValue(tokenizer));
+				break;
+			
 			default:
 				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
 			}

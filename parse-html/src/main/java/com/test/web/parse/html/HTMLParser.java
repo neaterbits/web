@@ -3,17 +3,22 @@ package com.test.web.parse.html;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.test.web.document.common.HTMLElement;
 import com.test.web.io.common.CharInput;
+import com.test.web.io.common.StringCharInput;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.BaseParser;
+import com.test.web.parse.common.IParse;
 import com.test.web.parse.common.Lexer;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser;
+import com.test.web.parse.css.ICSSDocumentParserListener;
 import com.test.web.types.IIndent;
 
-public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer>
+public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUMENT>
 	extends BaseParser<HTMLToken, CharInput>
 	implements IIndent {
 	
@@ -29,6 +34,8 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer>
 	private final IHTMLStyleParserListener<ELEMENT, TOKENIZER> styleAttributeListener;
 	private final CSSParser<TOKENIZER, Void> styleAttributeParser;
 	
+	private final IParse<STYLE_DOCUMENT> parseStyleDocument;
+	
 	private static Lexer<HTMLToken, CharInput> createLexer(CharInput input) {
 		return new Lexer<HTMLToken, CharInput>(input, HTMLToken.class, HTMLToken.NONE, null);
 	}
@@ -37,7 +44,8 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer>
 			CharInput input,
 			TOKENIZER tokenizer,
 			IHTMLParserListener<ELEMENT, TOKENIZER> htmlListener,
-			IHTMLStyleParserListener<ELEMENT, TOKENIZER> styleAttributeListener) {
+			IHTMLStyleParserListener<ELEMENT, TOKENIZER> styleAttributeListener,
+			IParse<STYLE_DOCUMENT> parseStyleDocument) {
 
 		super(createLexer(input), HTMLToken.WS);
 	
@@ -47,6 +55,8 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer>
 		
 		this.styleAttributeListener = styleAttributeListener;
 		this.styleAttributeParser = new CSSParser<>(input, styleAttributeListener);
+		
+		this.parseStyleDocument = parseStyleDocument;
 	}
 
 	private HTMLToken rootTag(HTMLToken ... tagTokens) throws IOException, ParserException {
@@ -291,7 +301,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer>
 		boolean done = false;
 		
 		do {
-			switch (endTagOrSub(HTMLToken.HEAD, false, HTMLToken.TITLE, HTMLToken.META, HTMLToken.LINK, HTMLToken.SCRIPT)) {
+			switch (endTagOrSub(HTMLToken.HEAD, false, HTMLToken.TITLE, HTMLToken.META, HTMLToken.LINK, HTMLToken.SCRIPT, HTMLToken.ELEM_STYLE)) {
 
 			case TITLE:
 				parseText(HTMLToken.TITLE);
@@ -302,6 +312,10 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer>
 
 			case SCRIPT:
 				parseText(HTMLToken.SCRIPT);
+				break;
+				
+			case ELEM_STYLE:
+				parseStyleContent(HTMLToken.ELEM_STYLE);
 				break;
 				
 			case LINK:
@@ -414,7 +428,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer>
 				parseClassAttribute(token);
 				break;
 				
-			case STYLE:
+			case ATTR_STYLE:
 				// Special handling of style attribute as we parse this as a CSS document
 				parseStyleAttribute(documentElement);
 				break;
@@ -448,6 +462,56 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer>
 			throw lexer.unexpectedToken();
 		}
 	}
+	
+	
+	private STYLE_DOCUMENT parseStyleContent(HTMLToken elementToken) throws IOException, ParserException {
+		
+		final STYLE_DOCUMENT styleDocument;
+		
+		// TODO perhaps reuse CharInput to avoid reading the whole text ? Rather just continue reading from buffer
+		// TODO issue is XML comments
+		final StringBuilder sb = new StringBuilder();
+		// Scan for text or start-tag
+		boolean done = false;
+		do {
+			switch (lexer.lex(HTMLToken.TEXT, HTMLToken.COMMENT_CONTENT, HTMLToken.TAG_LESS_THAN)) {
+			case TEXT:
+				debugText();
+				
+				final String styleText = tokenizer.asString(0, lexer.getEndSkip());
+				sb.append(styleText);
+				
+			
+				// Parse this with CSS parser
+				if (checkTagEndOrComment(elementToken) != HTMLToken.COMMENT_CONTENT) {
+					done = true;
+				}
+				break;
+	
+			case TAG_LESS_THAN:
+				if (checkTagEndElementOrComment(elementToken) != HTMLToken.COMMENT_CONTENT) {
+					done = true;
+				}
+				break;
+				
+			default:
+				throw lexer.unexpectedToken();
+			}
+		} while(!done);
+		
+		final String text = sb.toString().trim();
+		
+		if (text.isEmpty()) {
+			styleDocument = null;
+		}
+		else {
+			final CharInput charInput = new StringCharInput(text);
+			
+			styleDocument = parseStyleDocument.parse(charInput);
+		}	
+		return styleDocument;
+	}
+
 
 	// Common attribute parser for any input attribute
 	
@@ -629,13 +693,38 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer>
 	}
 		
 	private void checkTagEndElement(HTMLToken elementToken) throws IOException, ParserException {
-		
+
 		HTMLToken token = lexSkipWS(HTMLToken.TAG_SLASH);
 		if (token != HTMLToken.TAG_SLASH) {
 			throw lexer.unexpectedToken();
 		}
 
-		token = lexSkipWS(elementToken);
+		checkElementEnd(elementToken);
+	}
+
+	private HTMLToken checkTagEndOrComment(HTMLToken elementToken) throws IOException, ParserException {
+		
+		final HTMLToken token = lexSkipWS(HTMLToken.TAG_LESS_THAN);
+		
+		if (token != HTMLToken.TAG_LESS_THAN) {
+			throw lexer.unexpectedToken();
+		}
+		
+		return checkTagEndElementOrComment(elementToken);
+	}
+
+	private HTMLToken checkTagEndElementOrComment(HTMLToken elementToken) throws IOException, ParserException {
+
+		HTMLToken token = lexSkipWS(HTMLToken.TAG_SLASH, HTMLToken.COMMENT_CONTENT);
+		if (token == HTMLToken.TAG_SLASH) {
+			checkElementEnd(elementToken);
+		}
+		
+		return token;
+	}
+
+	private void checkElementEnd(HTMLToken elementToken) throws IOException, ParserException {
+		HTMLToken token = lexSkipWS(elementToken);
 		if (token != elementToken) {
 			throw lexer.unexpectedToken();
 		}

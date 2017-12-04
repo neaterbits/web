@@ -1,26 +1,45 @@
 package com.test.web.browser.common;
 
+import java.io.IOException;
+
+import com.test.web.css._long.LongCSSDocument;
+import com.test.web.css.common.CSSContext;
 import com.test.web.document._long.LongHTMLDocument;
 import com.test.web.document.common.Document;
 import com.test.web.io._long.LongTokenizer;
+import com.test.web.io.common.CharInput;
 import com.test.web.io.common.LoadStream;
 import com.test.web.parse.common.ParserException;
+import com.test.web.parse.css.CSSParser;
 import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.IHTMLParserListener;
 import com.test.web.render.common.IBufferRenderFactory;
 import com.test.web.render.common.ITextExtent;
 
 public class LongBrowserDocumentLoader
-		extends BaseBrowserDocumentLoader<Integer, LongTokenizer, LongHTMLDocument>
-		implements IBrowserDocumentLoader<Integer> {
+		extends BaseBrowserDocumentLoader<Integer, LongTokenizer, LongHTMLDocument, Integer, LongCSSDocument>
+		implements IBrowserDocumentLoader<Integer, Integer> {
 
 	public LongBrowserDocumentLoader(IBufferRenderFactory renderFactory, ITextExtent textExtent) {
 		super(renderFactory, textExtent);
 	}
 
+	private LongCSSDocument parseCSS(CharInput charInput, CSSContext<Integer> cssContext) throws IOException, ParserException {
+		
+		final LongCSSDocument styleDocument = new LongCSSDocument();
+		final CSSParser<LongTokenizer, Void> cssParser = new CSSParser<>(charInput, styleDocument);
+
+		// Just parse the CSS straight away
+		cssParser.parseCSS();
+
+		cssContext.addDocument(styleDocument);
+
+		return styleDocument;
+	}
+
 	@Override
-	public Document<Integer> fromHTML(String html) throws ParserException {
-		return LongHTMLDocument.parseHTMLDocument(html);
+	public Document<Integer> fromHTML(String html, CSSContext<Integer> cssContext) throws ParserException {
+		return LongHTMLDocument.parseHTMLDocument(html, charInput -> parseCSS(charInput, cssContext));
 	}
 
 	@Override
@@ -29,8 +48,8 @@ public class LongBrowserDocumentLoader
 	}
 
 	@Override
-	protected HTMLParser<Integer, LongTokenizer> createParser(LongHTMLDocument document,
-			IHTMLParserListener<Integer, LongTokenizer> parserListener, LoadStream stream) {
+	protected HTMLParser<Integer, LongTokenizer, LongCSSDocument> createParser(LongHTMLDocument document,
+			IHTMLParserListener<Integer, LongTokenizer> parserListener, LoadStream stream, CSSContext<Integer> cssContext) {
 		throw new UnsupportedOperationException("TODO");
 	}
 }

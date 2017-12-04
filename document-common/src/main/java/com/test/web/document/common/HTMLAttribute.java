@@ -43,6 +43,9 @@ public enum HTMLAttribute implements IKeyValue {
 	
 	REV("rev", false, ValueType.ONE), // not supported in HTML 5
 	
+	// style
+	SCOPED("scoped", false, ValueType.ONE),
+	
 	// meta
 	CHARSET("charset", false, ValueType.ONE),
 	CONTENT("content", false, ValueType.ONE),

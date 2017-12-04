@@ -188,6 +188,10 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 		return bufNo == 0 ? bufOffset : (bufNo - 1) * (long)BUFFER_SIZE;
 	}
 	
+	@Override
+	public boolean markSupported() {
+		return true;
+	}
 
 	@Override
 	public void mark() {

@@ -8,6 +8,6 @@ public class HTMLDocumentTest extends BaseHTMLDocumentTest<Integer, LongHTMLDocu
 
 	@Override
 	protected LongHTMLDocument parseHTMLDocument(String html) throws ParserException {
-		return LongHTMLDocument.parseHTMLDocument(html);
+		return LongHTMLDocument.parseHTMLDocument(html, null);
 	}
 }

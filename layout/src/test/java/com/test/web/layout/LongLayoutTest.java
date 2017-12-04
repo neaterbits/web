@@ -9,6 +9,6 @@ public class LongLayoutTest extends BaseLayoutTest<Integer, LongTokenizer> {
 	
 	@Override
 	protected Document<Integer> parseDocument(String html) throws ParserException {
-		return LongHTMLDocument.parseHTMLDocument(html);
+		return LongHTMLDocument.parseHTMLDocument(html, null);
 	}
 }

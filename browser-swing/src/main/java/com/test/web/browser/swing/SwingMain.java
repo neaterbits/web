@@ -3,6 +3,7 @@ package com.test.web.browser.swing;
 import com.test.web.browser.common.BrowserMain;
 import com.test.web.browser.common.IBrowserDocumentLoader;
 import com.test.web.browser.common.OOBrowserDocumentLoader;
+import com.test.web.css.oo.OOCSSElement;
 import com.test.web.document.oo.OOTagElement;
 import com.test.web.render.awt.AWTBufferRenderFactory;
 import com.test.web.render.awt.AWTTextExtent;
@@ -19,10 +20,10 @@ public class SwingMain {
 		final IBufferRenderFactory renderFactory = new AWTBufferRenderFactory();
 		final ITextExtent textExtent = new AWTTextExtent();
 		
-		final IBrowserDocumentLoader<OOTagElement> documentLoader
+		final IBrowserDocumentLoader<OOTagElement, OOCSSElement> documentLoader
 				= new OOBrowserDocumentLoader(renderFactory, textExtent);
 		
-		final BrowserMain<OOTagElement> main = new BrowserMain<>(uiFactory, documentLoader);
+		final BrowserMain<OOTagElement, OOCSSElement> main = new BrowserMain<>(uiFactory, documentLoader);
 		
 		main.showStartPage();
 		

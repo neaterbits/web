@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.test.web.css.common.CSSContext;
 import com.test.web.parse.common.ParserException;
 import com.test.web.ui.common.Alignment;
 import com.test.web.ui.common.HBoxLayoutData;
@@ -16,16 +17,16 @@ import com.test.web.ui.common.IUIVBox;
 import com.test.web.ui.common.IUIWindow;
 import com.test.web.ui.common.VBoxLayoutData;
 
-public class BrowserMain<ELEMENT> {
+public class BrowserMain<HTML_ELEMENT, CSS_ELEMENT> {
 
 	private final int defaultWindowWidth;
 	private final int defaultWindowHeight;
 	
 	private final IUIFactory uiFactory;
-	private final IBrowserDocumentLoader<ELEMENT> documentLoader;
-	private final List<BrowserWindow<ELEMENT>> windows;
+	private final IBrowserDocumentLoader<HTML_ELEMENT, CSS_ELEMENT> documentLoader;
+	private final List<BrowserWindow<HTML_ELEMENT, CSS_ELEMENT>> windows;
 	
-	public BrowserMain(IUIFactory uiFactory, IBrowserDocumentLoader<ELEMENT> documentLoader) {
+	public BrowserMain(IUIFactory uiFactory, IBrowserDocumentLoader<HTML_ELEMENT, CSS_ELEMENT> documentLoader) {
 		
 		if (uiFactory == null) {
 			throw new IllegalArgumentException("uiFactory == null");
@@ -43,8 +44,8 @@ public class BrowserMain<ELEMENT> {
 		this.windows = new ArrayList<>();
 	}
 
-	public BrowserTab<ELEMENT> loadInNewWindow(URL url) {
-		final BrowserTab<ELEMENT> tab = openBrowserWindow();
+	public BrowserTab<HTML_ELEMENT, CSS_ELEMENT> loadInNewWindow(URL url) {
+		final BrowserTab<HTML_ELEMENT, CSS_ELEMENT> tab = openBrowserWindow();
 		
 		tab.loadURL(url);
 		
@@ -68,15 +69,17 @@ public class BrowserMain<ELEMENT> {
 	" </body>\n" +
 	"</html>";
 
-	public BrowserTab<ELEMENT> showInNewWindow(String html) throws ParserException {
-		final BrowserTab<ELEMENT> tab = openBrowserWindow();
+	public BrowserTab<HTML_ELEMENT, CSS_ELEMENT> showInNewWindow(String html) throws ParserException {
+		final BrowserTab<HTML_ELEMENT, CSS_ELEMENT> tab = openBrowserWindow();
 		
-		tab.showHTML(html);
+		final CSSContext<CSS_ELEMENT> cssContext = new CSSContext<>();
+		
+		tab.showHTML(html, cssContext);
 		
 		return tab;
 	}
 	
-	public BrowserTab<ELEMENT> showStartPage() {
+	public BrowserTab<HTML_ELEMENT, CSS_ELEMENT> showStartPage() {
 		try {
 			return showInNewWindow(HTML);
 		} catch (ParserException ex) {
@@ -84,7 +87,7 @@ public class BrowserMain<ELEMENT> {
 		}
 	}
 	
-	private BrowserTab<ELEMENT> openBrowserWindow() {
+	private BrowserTab<HTML_ELEMENT, CSS_ELEMENT> openBrowserWindow() {
 		final IUIWindow window = uiFactory.createWindow(
 				"",
 				defaultWindowWidth,
@@ -102,9 +105,9 @@ public class BrowserMain<ELEMENT> {
 		final IUIVBox vbox = window.createVBox(null);
 
 		// The browser itself, will be created using a canvas
-		final BrowserTab<ELEMENT> tab = createBrowserTab(vbox);
+		final BrowserTab<HTML_ELEMENT, CSS_ELEMENT> tab = createBrowserTab(vbox);
 
-		final BrowserWindow<ELEMENT> browserWindow = new BrowserWindow<>(window,  tab);
+		final BrowserWindow<HTML_ELEMENT, CSS_ELEMENT> browserWindow = new BrowserWindow<>(window,  tab);
 
 		windows.add(browserWindow);
 		
@@ -113,13 +116,13 @@ public class BrowserMain<ELEMENT> {
 		return tab;
 	}
 	
-	private BrowserTab<ELEMENT> createBrowserTab(IUIContainer container) {
+	private BrowserTab<HTML_ELEMENT, CSS_ELEMENT> createBrowserTab(IUIContainer container) {
 		
 		final IUIHBox inputHBox = container.createHBox(new VBoxLayoutData(Alignment.BEGINNING, true));
 
 		final IUICanvas canvas = container.createCanvas(new VBoxLayoutData(true, true));
 
-		final BrowserTab<ELEMENT> tab = new BrowserTab<>(canvas, documentLoader);
+		final BrowserTab<HTML_ELEMENT, CSS_ELEMENT> tab = new BrowserTab<>(canvas, documentLoader);
 
 		inputHBox.createString(
 			new HBoxLayoutData(true, false),

@@ -31,15 +31,19 @@ import com.test.web.render.html.HTMLRenderer;
 import com.test.web.render.html.IRenderDebugListener;
 import com.test.web.render.html.PrintlnRenderDebugListener;
 
-public abstract class BaseBrowserDocumentLoader<ELEMENT, TOKENIZER extends Tokenizer, DOCUMENT extends IDocumentParserListener<ELEMENT, TOKENIZER>>
-		implements IBrowserDocumentLoader<ELEMENT> {
+public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends Tokenizer, DOCUMENT extends IDocumentParserListener<HTML_ELEMENT, TOKENIZER>, CSS_ELEMENT, STYLE_DOCUMENT>
+		implements IBrowserDocumentLoader<HTML_ELEMENT, CSS_ELEMENT> {
 
 	private final IBufferRenderFactory renderFactory;
 	private final ITextExtent textExtent;
 	
 	protected abstract DOCUMENT createDocument();
 	
-	protected abstract HTMLParser<ELEMENT, TOKENIZER> createParser(DOCUMENT document, IHTMLParserListener<ELEMENT, TOKENIZER> parserListener, LoadStream stream);
+	protected abstract HTMLParser<HTML_ELEMENT, TOKENIZER, STYLE_DOCUMENT> createParser(
+			DOCUMENT document,
+			IHTMLParserListener<HTML_ELEMENT, TOKENIZER> parserListener,
+			LoadStream stream,
+			CSSContext<CSS_ELEMENT>cssContext);
 	
 	public BaseBrowserDocumentLoader(IBufferRenderFactory renderFactory, ITextExtent textExtent) {
 
@@ -56,17 +60,17 @@ public abstract class BaseBrowserDocumentLoader<ELEMENT, TOKENIZER extends Token
 	}
 
 	@Override
-	public final PageLayout<ELEMENT> layout(Document<ELEMENT> document, int viewPortWidth, int viewPortHeight, IRenderer displayRenderer) {
+	public final PageLayout<HTML_ELEMENT> layout(Document<HTML_ELEMENT> document, int viewPortWidth, int viewPortHeight, IRenderer displayRenderer) {
 
 		final ViewPort viewPort = new ViewPort(viewPortWidth, viewPortHeight);
 		
-		final LayoutAlgorithm<ELEMENT, TOKENIZER> layoutAgorithm = new LayoutAlgorithm<>(
+		final LayoutAlgorithm<HTML_ELEMENT, TOKENIZER> layoutAgorithm = new LayoutAlgorithm<>(
 				textExtent,
 				renderFactory,
 				new FontSettings(),
 				new PrintlnLayoutDebugListener(System.out));
 
-		final CSSContext<ELEMENT> cssContext = new CSSContext<>();
+		final CSSContext<HTML_ELEMENT> cssContext = new CSSContext<>();
 		
 		
 		// We add HTMLRenderer here so that we render in the parsing pass, however renderer may just be
@@ -78,9 +82,9 @@ public abstract class BaseBrowserDocumentLoader<ELEMENT, TOKENIZER extends Token
 		
 		final IRenderDebugListener renderDebugListener = new PrintlnRenderDebugListener(System.out);
 		
-		final HTMLRenderer<ELEMENT> htmlRenderer = new HTMLRenderer<>(renderDebugListener);
+		final HTMLRenderer<HTML_ELEMENT> htmlRenderer = new HTMLRenderer<>(renderDebugListener);
 		
-		final PageLayout<ELEMENT> pageLayout = layoutAgorithm.layout(document, viewPort, cssContext, htmlRenderer, displayRenderer);
+		final PageLayout<HTML_ELEMENT> pageLayout = layoutAgorithm.layout(document, viewPort, cssContext, htmlRenderer, displayRenderer);
 		
 		// We should have loaded document now so sync to display. TODO should probably be done elsewhere, ie in loadqueue so that we sync as document loads
 		displayRenderer.sync();
@@ -106,11 +110,11 @@ public abstract class BaseBrowserDocumentLoader<ELEMENT, TOKENIZER extends Token
 			final DOCUMENT document = createDocument();
 			
 			// HTML renderer that will render to display
-			final HTMLElementListener<ELEMENT, IElementRenderLayout> renderListener = new HTMLRenderer<>(new PrintlnRenderDebugListener(System.out));
+			final HTMLElementListener<HTML_ELEMENT, IElementRenderLayout> renderListener = new HTMLRenderer<>(new PrintlnRenderDebugListener(System.out));
 			
 			// This parser listener will look for external dependencies and add those to the loadqueue,
 			// it will also forward parser events to the DOM and to the layout algorithm
-			final DependencyCollectingParserListener<ELEMENT, TOKENIZER> parserListener
+			final DependencyCollectingParserListener<HTML_ELEMENT, TOKENIZER> parserListener
 				= new DependencyCollectingParserListener<>(
 						url, // TODO handle redirects eg to index.html
 						document,
@@ -122,8 +126,11 @@ public abstract class BaseBrowserDocumentLoader<ELEMENT, TOKENIZER extends Token
 						fontSettings,
 						renderListener);
 			
+			// All CSS definitions collected here
+			final CSSContext<CSS_ELEMENT> cssContext = new CSSContext<>();
+			
 			// Load and parse the document throught the dependency collecting parser listener
-			final HTMLParser<ELEMENT, TOKENIZER> htmlParser = createParser(document, parserListener, loadQueueAndStream.getStream());
+			final HTMLParser<HTML_ELEMENT, TOKENIZER, STYLE_DOCUMENT> htmlParser = createParser(document, parserListener, loadQueueAndStream.getStream(), cssContext);
 	
 			// Start parsing on this thread
 			// TODO perhaps move to new thread since this is the UI thread?

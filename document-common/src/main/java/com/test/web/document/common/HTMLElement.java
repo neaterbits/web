@@ -18,6 +18,7 @@ public enum HTMLElement {
 	META(  "meta",     false,    null,							HTMLAttribute.CHARSET, HTMLAttribute.CONTENT, HTMLAttribute.HTTP_EQUIV, HTMLAttribute.NAME, HTMLAttribute.SCHEME),
 	LINK(	"link", 		false,	null, 						HTMLAttribute.REL, HTMLAttribute.TYPE, HTMLAttribute.HREF, HTMLAttribute.MEDIA, HTMLAttribute.REV),
 	SCRIPT("script", 	false,	null, 						HTMLAttribute.TYPE),
+	STYLE("style",		false,   	null,							HTMLAttribute.TYPE, HTMLAttribute.MEDIA, HTMLAttribute.SCOPED),
 	DIV("div", 				true, 	CSSDisplay.BLOCK),
 	SPAN("span", 		true, 	CSSDisplay.INLINE),
 	INPUT("input", 		false,	CSSDisplay.INLINE),

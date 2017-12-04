@@ -7,6 +7,6 @@ public class OOHTMLDocumentTest extends BaseHTMLDocumentTest<OOTagElement, OOHTM
 
 	@Override
 	protected OOHTMLDocument parseHTMLDocument(String html) throws ParserException {
-		return OOHTMLDocument.parseHTMLDocument(html);
+		return OOHTMLDocument.parseHTMLDocument(html, null);
 	}
 }

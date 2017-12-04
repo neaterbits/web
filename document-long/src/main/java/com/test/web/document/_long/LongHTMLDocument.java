@@ -19,6 +19,7 @@ import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.io._long.StringBuffers;
 import com.test.web.io.common.SimpleLoadStream;
+import com.test.web.parse.common.IParse;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.HTMLUtils;
@@ -735,15 +736,17 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		return styleDocument;
 	}
 	
-	public static LongHTMLDocument parseHTMLDocument(String text)  throws ParserException {
+	public static <STYLE_DOCUMENT> LongHTMLDocument parseHTMLDocument(String text, IParse<STYLE_DOCUMENT> parseStyleDocument)  throws ParserException {
 		try {
-			return loadHTMLDocument(new SimpleLoadStream(text));
+			return loadHTMLDocument(new SimpleLoadStream(text), parseStyleDocument);
 		} catch (IOException ex) {
 			throw new IllegalStateException("Should not catch IOException when parsing from a String", ex);
 		}
 	}
 
-	private static LongHTMLDocument loadHTMLDocument(SimpleLoadStream stream)  throws IOException, ParserException {
+	private static <STYLE_DOCUMENT> LongHTMLDocument loadHTMLDocument(
+			SimpleLoadStream stream,
+			IParse<STYLE_DOCUMENT> parseStyleDocument)  throws IOException, ParserException {
 		
 		final LongHTMLDocument htmlDocument;
 		
@@ -751,11 +754,12 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 		htmlDocument = new LongHTMLDocument(buffers);
 		
-		final HTMLParser<Integer, LongTokenizer> parser = new HTMLParser<>(
+		final HTMLParser<Integer, LongTokenizer, STYLE_DOCUMENT> parser = new HTMLParser<>(
 				buffers,
 				buffers,
 				htmlDocument,
-				htmlDocument.getStyleParserListener());
+				htmlDocument.getStyleParserListener(),
+				parseStyleDocument);
 		
 		parser.parseHTMLFile();
 
@@ -763,12 +767,12 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 
 	// Helper method for loading a document, useful from unit tests
-	public static LongHTMLDocument loadHTMLDocument(File file)  throws IOException, ParserException {
+	public static <STYLE_DOCUMENT> LongHTMLDocument loadHTMLDocument(File file, IParse<STYLE_DOCUMENT> parseStyleDocument) throws IOException, ParserException {
 		
 		final LongHTMLDocument doc;
 		
 		try (InputStream inputStream = new FileInputStream(file)) {
-			doc = loadHTMLDocument(new SimpleLoadStream(inputStream));
+			doc = loadHTMLDocument(new SimpleLoadStream(inputStream), parseStyleDocument);
 		}
 
 		return doc;

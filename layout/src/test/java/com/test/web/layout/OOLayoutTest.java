@@ -10,7 +10,7 @@ public class OOLayoutTest extends BaseLayoutTest<OOTagElement, OOTokenizer>{
 
 	@Override
 	protected Document<OOTagElement> parseDocument(String html) throws ParserException {
-		return OOHTMLDocument.parseHTMLDocument(html);
+		return OOHTMLDocument.parseHTMLDocument(html, null);
 	}
 }
 

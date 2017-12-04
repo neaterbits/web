@@ -3,12 +3,13 @@ package com.test.web.browser.common;
 import java.io.IOException;
 import java.net.URL;
 
+import com.test.web.css.common.CSSContext;
 import com.test.web.document.common.Document;
 import com.test.web.layout.PageLayout;
 import com.test.web.parse.common.ParserException;
 import com.test.web.render.common.IRenderer;
 
-public interface IBrowserDocumentLoader<ELEMENT> {
+public interface IBrowserDocumentLoader<HTML_ELEMENT, CSS_ELEMENT> {
 
 	/**
 	 * Simply create a HTML document from a HTML String, HTML should not have links to external files since they will
@@ -19,13 +20,13 @@ public interface IBrowserDocumentLoader<ELEMENT> {
 	 * @return a parsed document
 	 */
 	
-	Document<ELEMENT> fromHTML(String html) throws ParserException;
+	Document<HTML_ELEMENT> fromHTML(String html, CSSContext<CSS_ELEMENT> cssContext) throws ParserException;
 
 	/**
 	 *  TODO this would probably have to be async ?
 	 * @return layout of page
 	 */
-	PageLayout<ELEMENT> layout(Document<ELEMENT> document, int viewPortWidth, int viewPortHeight, IRenderer displayRenderer);
+	PageLayout<HTML_ELEMENT> layout(Document<HTML_ELEMENT> document, int viewPortWidth, int viewPortHeight, IRenderer displayRenderer);
 	
 	
 	/**
