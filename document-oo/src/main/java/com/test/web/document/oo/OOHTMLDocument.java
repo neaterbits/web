@@ -381,6 +381,10 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			ref.setDirection(tokenizer.asEnum(HTMLDirection.class, false));
 			break;
 			
+		case TITLE:
+			ref.setTitleAttribute(tokenizer.asString(startOffset, endSkip));
+			break;
+
 		case REL:
 			switch (element) {
 			case LINK:
@@ -518,7 +522,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 
 			
 		default:
-			throw new IllegalArgumentException("Unknown attribute " + attribute);
+			throw new IllegalArgumentException("Unknown attribute " + attribute + " for element " + element);
 		}
 	}
 

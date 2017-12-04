@@ -16,6 +16,7 @@ public abstract class OOTagElement extends OODocumentElement {
 	private String contextMenu;
 	private HTMLDirection direction;
 	private String lang;
+	private String title;
 	
 	private OOCSSElement styleElement;
 	
@@ -75,6 +76,14 @@ public abstract class OOTagElement extends OODocumentElement {
 
 	final void setLang(String lang) {
 		this.lang = lang;
+	}
+	
+	final String getTitleAttribute() {
+		return title;
+	}
+
+	final void setTitleAttribute(String title) {
+		this.title = title;
 	}
 
 	OOCSSElement getStyleElement() {
