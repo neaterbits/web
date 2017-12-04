@@ -2,6 +2,8 @@ package com.test.web.css.common;
 
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
+import com.test.web.css.common.enums.CSSMax;
+import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTextAlign;
@@ -50,4 +52,28 @@ public interface ICSSDocumentStyles<TARGET> {
 	
 	short getZIndex(TARGET ref);
 
+	// min/max dims
+	int getMinWidth(TARGET ref);
+	
+	CSSUnit getMinWidthUnit(TARGET ref);
+
+	CSSMin getMinWidthType(TARGET ref);
+	
+	int getMinHeight(TARGET ref);
+	
+	CSSUnit getMinHeightUnit(TARGET ref);
+
+	CSSMin getMinHeightType(TARGET ref);
+
+	int getMaxWidth(TARGET ref);
+	
+	CSSUnit getMaxWidthUnit(TARGET ref);
+
+	CSSMax getMaxWidthType(TARGET ref);
+	
+	int getMaxHeight(TARGET ref);
+	
+	CSSUnit getMaxHeightUnit(TARGET ref);
+
+	CSSMax getMaxHeightType(TARGET ref);
 }

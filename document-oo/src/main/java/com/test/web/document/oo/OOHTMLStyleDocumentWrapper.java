@@ -4,6 +4,8 @@ import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
+import com.test.web.css.common.enums.CSSMax;
+import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTextAlign;
@@ -162,6 +164,114 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	@Override
 	public int getFontSize(OOTagElement ref) {
 		return delegate.getFontSize(ref.getStyleElement());
+	}
+
+	@Override
+	public int getMinWidth(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getMinWidth(ref.getStyleElement());
+	}
+
+	@Override
+	public CSSUnit getMinWidthUnit(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getMinWidthUnit(ref.getStyleElement());
+	}
+
+	@Override
+	public CSSMin getMinWidthType(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getMinWidthType(ref.getStyleElement());
+	}
+
+	@Override
+	public int getMinHeight(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getMinHeight(ref.getStyleElement());
+	}
+
+	@Override
+	public CSSUnit getMinHeightUnit(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getMinHeightUnit(ref.getStyleElement());
+	}
+
+	@Override
+	public CSSMin getMinHeightType(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getMinHeightType(ref.getStyleElement());
+	}
+
+	@Override
+	public int getMaxWidth(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getMaxWidth(ref.getStyleElement());
+	}
+
+	@Override
+	public CSSUnit getMaxWidthUnit(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getMaxWidthUnit(ref.getStyleElement());
+	}
+
+	@Override
+	public CSSMax getMaxWidthType(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getMaxWidthType(ref.getStyleElement());
+	}
+
+	@Override
+	public int getMaxHeight(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getMaxHeight(ref.getStyleElement());
+	}
+
+	@Override
+	public CSSUnit getMaxHeightUnit(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getMaxHeightUnit(ref.getStyleElement());
+	}
+
+	@Override
+	public CSSMax getMaxHeightType(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getMaxHeightType(ref.getStyleElement());
 	}
 
 	public String toString() {

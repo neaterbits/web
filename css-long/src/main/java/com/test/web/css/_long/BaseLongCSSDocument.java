@@ -7,6 +7,8 @@ import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSJustify;
+import com.test.web.css.common.enums.CSSMax;
+import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTextAlign;
@@ -187,6 +189,30 @@ public abstract class BaseLongCSSDocument
 	}
 	
 	@Override
+	public void onMaxWidth(Void context, int width, CSSUnit unit, CSSMax type) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMaxHeight(Void context, int height, CSSUnit unit, CSSMax type) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMinWidth(Void context, int width, CSSUnit unit, CSSMin type) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMinHeight(Void context, int height, CSSUnit unit, CSSMin type) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public short getZIndex(Integer ref) {
 		return LongCSS.getZIndex(buf(ref), offset(ref));
 	}
@@ -210,6 +236,78 @@ public abstract class BaseLongCSSDocument
 		return LongCSS.getFontSize(buf(ref), offset(ref));
 	}
 	
+	@Override
+	public int getMinWidth(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSUnit getMinWidthUnit(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSMin getMinWidthType(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getMinHeight(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSUnit getMinHeightUnit(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSMin getMinHeightType(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getMaxWidth(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSUnit getMaxWidthUnit(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSMax getMaxWidthType(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getMaxHeight(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSUnit getMaxHeightUnit(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSMax getMaxHeightType(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	protected final int allocateCurParseElement() {
 		this.curParseElement = allocate(LongCSS.CSS_ENTITY_COMPACT, "style element");
 		

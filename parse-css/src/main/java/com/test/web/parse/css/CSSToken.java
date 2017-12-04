@@ -72,6 +72,12 @@ public enum CSSToken implements IToken {
 	CSS_TEXT_ALIGN(CSStyle.TEXT_ALIGN),
 	CSS_OVERFLOW(CSStyle.OVERFLOW),
 	
+	CSS_MAX_WIDTH(CSStyle.MAX_WIDTH),
+	CSS_MAX_HEIGHT(CSStyle.MAX_HEIGHT),
+
+	CSS_MIN_WIDTH(CSStyle.MIN_WIDTH),
+	CSS_MIN_HEIGHT(CSStyle.MIN_HEIGHT),
+	
 	DISPLAY_INLINE(CSSDisplay.INLINE),
 	DISPLAY_BLOCK(CSSDisplay.BLOCK),
 	DISPLAY_FLEX(CSSDisplay.FLEX),
@@ -121,7 +127,12 @@ public enum CSSToken implements IToken {
 	OVERFLOW_INITIAL(CSSOverflow.INITIAL),
 	OVERFLOW_INHERIT(CSSOverflow.INHERIT),
 
-	WS(CharTypeWS.INSTANCE)
+	WS(CharTypeWS.INSTANCE),
+	
+	// For those CSS types that also take sizes, eg. max-width
+	CSS_NONE("none"),
+	INITIAL("initial"),
+	INHERIT("inherit")
 	
 	// Styles
 	;

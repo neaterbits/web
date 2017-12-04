@@ -1,12 +1,13 @@
 package com.test.web.parse.css;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import com.test.web.css.common.enums.CSSJustify;
+import com.test.web.css.common.enums.CSSMax;
+import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
@@ -359,6 +360,22 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			semiColonRead = parseTextAlign(context);
 			break;
 			
+		case MAX_WIDTH:
+			semiColonRead = parseMax((size, unit, type) -> listener.onMaxWidth(context, size, unit, type));
+			break;
+			
+		case MAX_HEIGHT:
+			semiColonRead = parseMax((size, unit, type) -> listener.onMaxHeight(context, size, unit, type));
+			break;
+			
+		case MIN_WIDTH:
+			semiColonRead = parseMin((size, unit, type) -> listener.onMinWidth(context, size, unit, type));
+			break;
+			
+		case MIN_HEIGHT:
+			semiColonRead = parseMin((size, unit, type) -> listener.onMinHeight(context, size, unit, type));
+			break;
+
 		default:
 			throw new UnsupportedOperationException("Unknown element " + element);
 		}
@@ -407,6 +424,80 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 
 		return semiColonRead;
 	}
+	
+	private boolean parseMax(IMaxFunction toCall) throws IOException, ParserException {
+		CSSToken token = lexSkipWSAndComment(CSSToken.INTEGER, CSSToken.CSS_NONE, CSSToken.INITIAL, CSSToken.INHERIT, CSSToken.DOT);
+		
+		final boolean semiColonRead;
+		
+		final BiConsumer<Integer, CSSUnit> sizeCallback = (size, unit) -> toCall.onMax(size, unit, CSSMax.SIZE);
+		
+		switch (token) {
+		case INTEGER:
+			final int intValue = Integer.parseInt(lexer.get());
+			semiColonRead = parseSizeValueAfterInt(intValue, sizeCallback);
+			break;
+			
+		case NONE:
+			toCall.onMax(0, null, CSSMax.NONE);
+			semiColonRead = false;
+			break;
+	
+		case INITIAL:
+			toCall.onMax(0, null, CSSMax.INITIAL);
+			semiColonRead = false;
+			break;
+			
+		case INHERIT:
+			toCall.onMax(0, null, CSSMax.INHERIT);
+			semiColonRead = false;
+			break;
+			
+		case DOT:
+			semiColonRead = parseDecimalAfterDot(0, defaultUnit, sizeCallback);
+			break;
+			
+		default:
+			throw lexer.unexpectedToken();
+		}
+
+		return semiColonRead;
+	}
+
+	private boolean parseMin(IMinFunction toCall) throws IOException, ParserException {
+		CSSToken token = lexSkipWSAndComment(CSSToken.INTEGER, CSSToken.INITIAL, CSSToken.INHERIT, CSSToken.DOT);
+		
+		final boolean semiColonRead;
+		
+		final BiConsumer<Integer, CSSUnit> sizeCallback = (size, unit) -> toCall.onMin(size, unit, CSSMin.SIZE);
+		
+		switch (token) {
+		case INTEGER:
+			final int intValue = Integer.parseInt(lexer.get());
+			semiColonRead = parseSizeValueAfterInt(intValue, sizeCallback);
+			break;
+			
+		case INITIAL:
+			toCall.onMin(0, null, CSSMin.INITIAL);
+			semiColonRead = false;
+			break;
+			
+		case INHERIT:
+			toCall.onMin(0, null, CSSMin.INHERIT);
+			semiColonRead = false;
+			break;
+			
+		case DOT:
+			semiColonRead = parseDecimalAfterDot(0, defaultUnit, sizeCallback);
+			break;
+			
+		default:
+			throw lexer.unexpectedToken();
+		}
+
+		return semiColonRead;
+	}
+
 	
 	private boolean parseSizeValue(BiConsumer<Integer, CSSUnit> toCall) throws IOException, ParserException {
 		// Number followed by possibly units

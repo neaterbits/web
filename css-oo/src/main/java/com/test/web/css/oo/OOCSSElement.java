@@ -3,6 +3,8 @@ package com.test.web.css.oo;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSJustify;
+import com.test.web.css.common.enums.CSSMax;
+import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTextAlign;
@@ -38,7 +40,23 @@ public final class OOCSSElement {
 	private String fontFamily;
 	private String fontName;
 	private int fontSize;
+
+	private int minWidth;
+	private CSSUnit minWidthUnit;
+	private CSSMin minWidthType;
 	
+	private int minHeight;
+	private CSSUnit minHeightUnit;
+	private CSSMin minHeightType;
+	
+	private int maxWidth;
+	private CSSUnit maxWidthUnit;
+	private CSSMax maxWidthType;
+	
+	private int maxHeight;
+	private CSSUnit maxHeightUnit;
+	private CSSMax maxHeightType;
+
 	static {
 		if (CSStyle.values().length > 64) {
 			throw new IllegalStateException("CSStyle.values().length > 64");
@@ -347,6 +365,79 @@ public final class OOCSSElement {
 
 	void setFontSize(int fontSize) {
 		this.fontSize = fontSize;
+	}
+
+	int getMinWidth() {
+		return minWidth;
+	}
+
+	CSSUnit getMinWidthUnit() {
+		return minWidthUnit;
+	}
+
+	CSSMin getMinWidthType() {
+		return minWidthType;
+	}
+
+	void setMinWidth(int minWidth, CSSUnit unit, CSSMin type) {
+		this.minWidth = minWidth;
+		this.minWidthUnit = unit;
+		this.minWidthType = type;
+	}
+
+	int getMinHeight() {
+		return minHeight;
+	}
+
+	CSSUnit getMinHeightUnit() {
+		return minHeightUnit;
+	}
+
+	CSSMin getMinHeightType() {
+		return minHeightType;
+	}
+
+	void setMinHeight(int minHeight, CSSUnit unit, CSSMin type) {
+		this.minHeight = minHeight;
+		this.minHeightUnit = unit;
+		this.minHeightType = type;
+	}
+
+	int getMaxWidth() {
+		return maxWidth;
+	}
+
+	CSSUnit getMaxWidthUnit() {
+		return maxWidthUnit;
+	}
+
+	CSSMax getMaxWidthType() {
+		return maxWidthType;
+	}
+
+	void setMaxWidth(int maxWidth, CSSUnit unit, CSSMax type) {
+		this.maxWidth = maxWidth;
+		this.maxWidthUnit = unit;
+		this.maxWidthType = type;
+	}
+
+	int getMaxHeight() {
+		return maxHeight;
+	}
+
+	CSSUnit getMaxHeightUnit() {
+		return maxHeightUnit;
+	}
+
+
+	CSSMax getMaxHeightType() {
+		return maxHeightType;
+	}
+
+	void setMaxHeight(int maxHeight, CSSUnit unit, CSSMax type) {
+		this.maxHeight = maxHeight;
+		this.maxHeightUnit = unit;
+		this.maxHeightType = type;
 	}
 }
 

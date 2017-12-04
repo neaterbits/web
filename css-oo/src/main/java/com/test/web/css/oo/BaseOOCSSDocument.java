@@ -5,6 +5,8 @@ import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSJustify;
+import com.test.web.css.common.enums.CSSMax;
+import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTextAlign;
@@ -113,6 +115,66 @@ public abstract class BaseOOCSSDocument
 		return ref.getOverflow();
 	}
 
+	@Override
+	public int getMinWidth(OOCSSElement ref) {
+		return ref.getMinWidth();
+	}
+
+	@Override
+	public CSSUnit getMinWidthUnit(OOCSSElement ref) {
+		return ref.getMinWidthUnit();
+	}
+
+	@Override
+	public CSSMin getMinWidthType(OOCSSElement ref) {
+		return ref.getMinWidthType();
+	}
+
+	@Override
+	public int getMinHeight(OOCSSElement ref) {
+		return ref.getMinHeight();
+	}
+
+	@Override
+	public CSSUnit getMinHeightUnit(OOCSSElement ref) {
+		return ref.getMinHeightUnit();
+	}
+
+	@Override
+	public CSSMin getMinHeightType(OOCSSElement ref) {
+		return ref.getMinHeightType();
+	}
+
+	@Override
+	public int getMaxWidth(OOCSSElement ref) {
+		return ref.getMaxWidth();
+	}
+
+	@Override
+	public CSSUnit getMaxWidthUnit(OOCSSElement ref) {
+		return ref.getMaxWidthUnit();
+	}
+
+	@Override
+	public CSSMax getMaxWidthType(OOCSSElement ref) {
+		return ref.getMaxWidthType();
+	}
+
+	@Override
+	public int getMaxHeight(OOCSSElement ref) {
+		return ref.getMaxHeight();
+	}
+
+	@Override
+	public CSSUnit getMaxHeightUnit(OOCSSElement ref) {
+		return ref.getMaxHeightUnit();
+	}
+
+	@Override
+	public CSSMax getMaxHeightType(OOCSSElement ref) {
+		return ref.getMaxHeightType();
+	}
+
 	/***************************************************** Parse listener *****************************************************/ 
 	
 	final OOCSSElement ref() {
@@ -192,6 +254,26 @@ public abstract class BaseOOCSSDocument
 		ref().setOverflow(overflow);
 	}
 	
+	@Override
+	public void onMaxWidth(Void context, int width, CSSUnit unit, CSSMax type) {
+		ref().setMaxWidth(width, unit, type);
+	}
+
+	@Override
+	public void onMaxHeight(Void context, int height, CSSUnit unit, CSSMax type) {
+		ref().setMaxHeight(height, unit, type);
+	}
+
+	@Override
+	public void onMinWidth(Void context, int width, CSSUnit unit, CSSMin type) {
+		ref().setMinWidth(width, unit, type);
+	}
+
+	@Override
+	public void onMinHeight(Void context, int height, CSSUnit unit, CSSMin type) {
+		ref().setMinHeight(height, unit, type);
+	}
+
 	@Override
 	public short getZIndex(OOCSSElement ref) {
 		return ref.getZIndex();

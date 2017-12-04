@@ -3,6 +3,8 @@ package com.test.web.parse.css;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSJustify;
+import com.test.web.css.common.enums.CSSMax;
+import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTarget;
@@ -37,6 +39,14 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 	void onFloat(CONTEXT context, CSSFloat _float);
 	
 	void onOverflow(CONTEXT context, CSSOverflow overflow);
+
+	void onMaxWidth(CONTEXT context, int width, CSSUnit unit, CSSMax type);
+	
+	void onMaxHeight(CONTEXT context, int height, CSSUnit unit, CSSMax type);
+	
+	void onMinWidth(CONTEXT context, int width, CSSUnit unit, CSSMin type);
+	
+	void onMinHeight(CONTEXT context, int height, CSSUnit unit, CSSMin type);
 
 	void onMargin(CONTEXT context,
 			int top, CSSUnit topUnit, CSSJustify topType, 
