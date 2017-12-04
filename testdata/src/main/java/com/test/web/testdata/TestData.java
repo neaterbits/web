@@ -25,6 +25,7 @@ public class TestData {
 		"  position : absolute;\n" +
 		"  float : right;\n" +
 		"  padding-top : 30px;\n" +
+		"  text-align : left;\n" +
 		"}\n";				
 			
 	

@@ -19,6 +19,7 @@ import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser;
 import com.test.web.parse.css.ICSSDocumentParserListener;
 import com.test.web.testdata.TestData;
+import com.test.web.types.DecimalSize;
 
 import junit.framework.TestCase;
 
@@ -47,10 +48,10 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		assertThat(doc.isSet(h1Ref, CSStyle.WIDTH)).isTrue();
 		
 		assertThat(doc.getHeightUnit(h1Ref)).isEqualTo(CSSUnit.PX);
-		assertThat(doc.getHeight(h1Ref)).isEqualTo(100);
+		assertThat(DecimalSize.decodeToInt(doc.getHeight(h1Ref))).isEqualTo(100);
 		
 		assertThat(doc.getWidthUnit(h1Ref)).isEqualTo(CSSUnit.PCT);
-		assertThat(doc.getWidth(h1Ref)).isEqualTo(20);
+		assertThat(DecimalSize.decodeToInt(doc.getWidth(h1Ref))).isEqualTo(20);
 		
 		final ELEMENT idRef = doc.get(CSSTarget.ID, "an_element").get(0);
 
@@ -68,7 +69,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		
 		System.out.println("Margins: " + margins);
 		
-		assertThat(margins.left).isEqualTo(10);
+		assertThat(DecimalSize.decodeToInt(margins.left)).isEqualTo(10);
 		assertThat(margins.leftUnit).isEqualTo(CSSUnit.PX);
 		assertThat(margins.leftType).isEqualTo(CSSJustify.SIZE);
 		
@@ -96,7 +97,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		
 		System.out.println("Padding: " + padding);
 
-		assertThat(padding.top).isEqualTo(30);
+		assertThat(DecimalSize.decodeToInt(padding.top)).isEqualTo(30);
 		assertThat(padding.topUnit).isEqualTo(CSSUnit.PX);
 		assertThat(padding.topType).isEqualTo(CSSJustify.SIZE);
 	}

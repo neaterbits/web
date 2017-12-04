@@ -1,6 +1,7 @@
 package com.test.web.parse.css;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -14,6 +15,7 @@ import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.BaseParser;
 import com.test.web.parse.common.Lexer;
 import com.test.web.parse.common.ParserException;
+import com.test.web.types.DecimalSize;
 
 /**
  * For parsing CSS from file or from a style attribute
@@ -353,6 +355,10 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			semiColonRead = parsePosition(context);
 			break;
 			
+		case TEXT_ALIGN:
+			semiColonRead = parseTextAlign(context);
+			break;
+			
 		default:
 			throw new UnsupportedOperationException("Unknown element " + element);
 		}
@@ -374,19 +380,25 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	}
 	
 	private boolean parseSizeOrAuto(IJustifyFunction toCall) throws IOException, ParserException {
-		CSSToken token = lexSkipWSAndComment(CSSToken.INTEGER, CSSToken.AUTO);
+		CSSToken token = lexSkipWSAndComment(CSSToken.INTEGER, CSSToken.AUTO, CSSToken.DOT);
 		
 		final boolean semiColonRead;
+		
+		final BiConsumer<Integer, CSSUnit> sizeCallback = (size, unit) -> toCall.onJustify(size, unit, CSSJustify.SIZE);
 		
 		switch (token) {
 		case INTEGER:
 			final int intValue = Integer.parseInt(lexer.get());
-			semiColonRead = parseSizeValueAfterInt(intValue, (size, unit) -> toCall.onJustify(size, unit, CSSJustify.SIZE));
+			semiColonRead = parseSizeValueAfterInt(intValue, sizeCallback);
 			break;
 			
 		case AUTO:
-			toCall.onJustify(0, null, CSSJustify.AUTO);
+			toCall.onJustify(DecimalSize.encodeAsInt(0), null, CSSJustify.AUTO);
 			semiColonRead = false;
+			break;
+			
+		case DOT:
+			semiColonRead = parseDecimalAfterDot(0, defaultUnit, sizeCallback);
 			break;
 			
 		default:
@@ -406,16 +418,19 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		
 		int value = Integer.parseInt(lexer.get());
 		
-		
 		return parseSizeValueAfterInt(value, toCall);
 	}
+	
+	private static final CSSUnit defaultUnit = CSSUnit.PX;
 	
 	private boolean parseSizeValueAfterInt(int value, BiConsumer<Integer, CSSUnit> toCall) throws IOException, ParserException {
 			
 		// Now may be decimal-point or unit token or semicolon
 		
+		boolean gotDot = false;
+		
 		boolean semiColonRead = false;
-		CSSUnit unit = CSSUnit.PX; // default to pixels
+		CSSUnit unit = defaultUnit; // default to pixels
 		
 		CSSToken token = lexer.lex(UNIT_OR_DOT_OR_SEMICOLON_TOKENS);
 		
@@ -425,32 +440,8 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			break;
 			
 		case DOT:
-			// Decimal number, should be integer
-			token = lexer.lex(CSSToken.INTEGER);
-			if (token != CSSToken.INTEGER) {
-				throw lexer.unexpectedToken();
-			}
-			
-			final int afterDecimal = Integer.parseInt(lexer.get());
-			
-			// TODO: Shift up value by a number of decimal places
-			
-			// Parse unit
-			token = lexer.lex(UNIT_OR_SEMICOLON_TOKENS);
-			
-			switch (token) {
-			case SEMICOLON:
-				semiColonRead = true;
-				break;
-
-			case NONE:
-				throw lexer.unexpectedToken();
-				
-			default:
-				// Unit token
-				unit = token.getUnit();
-				break;
-			}
+			semiColonRead = parseDecimalAfterDot(value, unit, toCall);
+			gotDot = true;
 			break;
 			
 		case NONE:
@@ -462,7 +453,44 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			break;
 		}
 		
-		toCall.accept(value, unit);
+		if (!gotDot) {
+			toCall.accept(DecimalSize.encodeAsInt(value), unit);
+		}
+		
+		return semiColonRead;
+	}
+	
+	private boolean parseDecimalAfterDot(int beforeDecimal, CSSUnit unit, BiConsumer<Integer, CSSUnit> toCall) throws IOException, ParserException {
+		CSSToken token;
+		boolean semiColonRead = false;
+		
+		// Decimal number, should be integer
+		token = lexer.lex(CSSToken.INTEGER);
+		if (token != CSSToken.INTEGER) {
+			throw lexer.unexpectedToken();
+		}
+		
+		final int afterDecimal = Integer.parseInt(lexer.get());
+		final DecimalSize value = new DecimalSize(beforeDecimal, afterDecimal);
+		
+		// Parse unit
+		token = lexer.lex(UNIT_OR_SEMICOLON_TOKENS);
+		
+		switch (token) {
+		case SEMICOLON:
+			semiColonRead = true;
+			break;
+
+		case NONE:
+			throw lexer.unexpectedToken();
+			
+		default:
+			// Unit token
+			unit = token.getUnit();
+			break;
+		}
+		
+		toCall.accept(value.encodeAsInt(), unit);
 		
 		return semiColonRead;
 	}
@@ -510,6 +538,12 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 
 	private boolean parseFloat(LISTENER_CONTEXT context) throws IOException, ParserException {
 		return parseEnum(FLOAT_TOKENS, token -> listener.onFloat(context, token.getFloat()));
+	}
+
+	private static final CSSToken [] TEXT_ALIGN_TOKENS = copyTokens(token -> token.getTextAlign() != null);
+
+	private boolean parseTextAlign(LISTENER_CONTEXT context) throws IOException, ParserException {
+		return parseEnum(TEXT_ALIGN_TOKENS, token -> listener.onTextAlign(context, token.getTextAlign()));
 	}
 	
 	private boolean parseEnum(CSSToken [] tokens, Consumer<CSSToken> onToken) throws IOException, ParserException {
