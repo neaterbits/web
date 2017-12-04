@@ -18,6 +18,8 @@ public enum CSSToken implements IToken {
 	NONE(TokenType.NONE),
 	EOF(TokenType.EOF),
 	
+	COMMENT("/*", "*/"),
+	
 	ID_MARKER('#'),
 	CLASS_MARKER('.'),
 	
@@ -127,6 +129,7 @@ public enum CSSToken implements IToken {
 	private final TokenType tokenType;
 	private final char character;
 	private final String literal;
+	private final String toLiteral;
 	private final CharType charType;
 	private final CSStyle element;
 	private final CSSUnit unit;
@@ -145,6 +148,7 @@ public enum CSSToken implements IToken {
 		this.tokenType = tokenType;
 		this.character = 0;
 		this.literal = null;
+		this.toLiteral = null;
 		this.charType = null;
 		this.element = null;
 		this.unit = null;
@@ -159,6 +163,7 @@ public enum CSSToken implements IToken {
 		this.tokenType = TokenType.CHARACTER;
 		this.character = character;
 		this.literal = null;
+		this.toLiteral = null;
 		this.charType = null;
 		this.element = null;
 		this.unit = null;
@@ -173,6 +178,7 @@ public enum CSSToken implements IToken {
 		this.tokenType = TokenType.CS_LITERAL;
 		this.character = 0;
 		this.literal = literal;
+		this.toLiteral = null;
 		this.charType = null;
 		this.element = element;
 		this.unit = unit;
@@ -189,6 +195,21 @@ public enum CSSToken implements IToken {
 
 	private CSSToken(String literal) {
 		this(literal, null, null, null, null, null, null, null);
+	}
+
+	private CSSToken(String fromLiteral, String toLiteral) {
+		this.tokenType = TokenType.FROM_STRING_TO_STRING;
+		this.character = 0;
+		this.literal = fromLiteral;
+		this.toLiteral = toLiteral;
+		this.charType = null;
+		this.element = null;
+		this.unit = null;
+		this.display = null;
+		this.position = null;
+		this._float = null;
+		this.textAlign = null;
+		this.overflow = null;
 	}
 
 	private CSSToken(String literal, CSSUnit unit) {
@@ -219,6 +240,7 @@ public enum CSSToken implements IToken {
 		this.tokenType = TokenType.CHARTYPE;
 		this.character = 0;
 		this.literal = null;
+		this.toLiteral = null;
 		this.charType = charType;
 		this.element = null;
 		this.unit = null;
@@ -262,12 +284,12 @@ public enum CSSToken implements IToken {
 
 	@Override
 	public String getFromLiteral() {
-		throw new UnsupportedOperationException("TODO");
+		return literal;
 	}
 
 	@Override
 	public String getToLiteral() {
-		throw new UnsupportedOperationException("TODO");
+		return toLiteral;
 	}
 
 	public CSStyle getElement() {

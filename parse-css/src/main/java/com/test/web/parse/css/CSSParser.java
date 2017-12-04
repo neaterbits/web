@@ -32,12 +32,33 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		this.listener = listener;
 	}
 	
+	private static final CSSToken [] wsAndComment = new CSSToken [] { CSSToken.WS, CSSToken.COMMENT };
+	
+	@SafeVarargs
+	private final CSSToken lexSkipWSAndComment(CSSToken ... tokens) throws IOException {
+
+		// TODO avoid allocation
+		CSSToken token;
+		
+		final CSSToken [] mergedTokens = merge(wsAndComment, tokens);
+		
+		for (;;) {
+			token = lexer.lex(mergedTokens);
+
+			if (token != CSSToken.WS && token != CSSToken.COMMENT) {
+				break;
+			}
+		}
+		
+		return token;
+	}
+
 	public void parseCSS() throws IOException, ParserException {
 		
 		boolean done = false;
 		
 		do {
-			CSSToken token = lexer.lex(CSSToken.WS, CSSToken.ID_MARKER, CSSToken.CLASS_MARKER, CSSToken.TAG, CSSToken.EOF);
+			CSSToken token = lexer.lex(CSSToken.WS, CSSToken.ID_MARKER, CSSToken.CLASS_MARKER, CSSToken.TAG, CSSToken.COMMENT, CSSToken.EOF);
 			
 			if (token == CSSToken.WS) {
 				// Just continue in case of WS
@@ -55,6 +76,9 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 
 			case TAG:
 				parseTagBlock(lexer.get());
+				break;
+				
+			case COMMENT:
 				break;
 				
 			case EOF:
@@ -116,6 +140,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	private static final CSSToken [] BLOCK_TOKENS = copyTokens(
 			token -> token.getElement() != null, 
 			CSSToken.WS,
+			CSSToken.COMMENT,
 			CSSToken.BRACKET_END);
 
 	private static final CSSToken [] UNIT_OR_DOT_OR_SEMICOLON_TOKENS = copyTokens(
@@ -187,6 +212,9 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 				// End of CSS block
 				done = true;
 				break;
+			
+			case COMMENT:
+				break;
 				
 			case NONE:
 				// TODO perhaps just skip block
@@ -218,10 +246,18 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	}
 	
 	private boolean parseElementWithoutCheckingForSemiColon(LISTENER_CONTEXT context, CSStyle element) throws IOException, ParserException {
-		CSSToken token = lexSkipWS(CSSToken.COLON);
+		CSSToken token;
 		
-		if (token != CSSToken.COLON) {
-			throw lexer.unexpectedToken();
+		for (;;) {
+			token = lexSkipWS(CSSToken.COLON, CSSToken.COMMENT);
+		
+			if (token == CSSToken.COLON) {
+				break;
+			}
+			
+			if (token != CSSToken.COMMENT) {
+				throw lexer.unexpectedToken();
+			}
 		}
 		
 		// Skip any WS
@@ -304,7 +340,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	}
 	
 	private boolean parseSizeOrAuto(IJustifyFunction toCall) throws IOException, ParserException {
-		CSSToken token = lexer.lex(CSSToken.INTEGER, CSSToken.AUTO);
+		CSSToken token = lexSkipWSAndComment(CSSToken.INTEGER, CSSToken.AUTO);
 		
 		final boolean semiColonRead;
 		
@@ -328,7 +364,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	
 	private boolean parseSizeValue(BiConsumer<Integer, CSSUnit> toCall) throws IOException, ParserException {
 		// Number followed by possibly units
-		CSSToken token = lexer.lex(CSSToken.INTEGER);
+		CSSToken token = lexSkipWSAndComment(CSSToken.INTEGER);
 		
 		if (token != CSSToken.INTEGER) {
 			throw lexer.unexpectedToken();
@@ -399,7 +435,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	
 	private boolean parseColor(ColorFunction function) throws IOException, ParserException {
 
-		CSSToken token = lexer.lex(CSSToken.COLOR_MARKER);
+		CSSToken token = lexSkipWSAndComment(CSSToken.COLOR_MARKER);
 		
 		switch (token) {
 		case COLOR_MARKER:
@@ -444,7 +480,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	
 	private boolean parseEnum(CSSToken [] tokens, Consumer<CSSToken> onToken) throws IOException, ParserException {
 		
-		CSSToken token = lexer.lex(tokens);
+		CSSToken token = lexSkipWSAndComment(tokens);
 		
 		if (token == CSSToken.NONE) {
 			throw lexer.unexpectedToken();
@@ -454,8 +490,6 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		
 		return false;
 	}
-	
-	
 	
 	private static int hexValue(String s, int start, int length) {
 		

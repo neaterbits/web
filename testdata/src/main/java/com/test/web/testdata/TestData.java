@@ -4,10 +4,12 @@ public class TestData {
 
 	public static final String CSS =
 		"h1 {\n" +
-		"  width : 20%;\n" +
-		"  height : 100px;\n" +
-		"  background-color : #AABBCC;\n" +
+		" /* comment */ /* another comment */ width : 20%;\n" +
+		"  height /* comment */ /* another comment */ : 100px;\n" +
+		"  background-color : /* comment */ /* another comment */ #AABBCC;\n" +
 		"}\n" +
+		
+		"/* This is a comment */\n" +
 
 		"#an_element {\n" +
 		"  margin-left : 10;\n" +
