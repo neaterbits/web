@@ -291,10 +291,13 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer>
 		boolean done = false;
 		
 		do {
-			switch (endTagOrSub(HTMLToken.HEAD, false, HTMLToken.TITLE, HTMLToken.LINK, HTMLToken.SCRIPT)) {
+			switch (endTagOrSub(HTMLToken.HEAD, false, HTMLToken.TITLE, HTMLToken.META, HTMLToken.LINK, HTMLToken.SCRIPT)) {
 
 			case TITLE:
 				parseText(HTMLToken.TITLE);
+				break;
+				
+			case META:
 				break;
 
 			case SCRIPT:

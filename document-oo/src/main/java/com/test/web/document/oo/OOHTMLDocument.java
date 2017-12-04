@@ -281,6 +281,10 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			ret = new OOTitleElement();
 			break;
 			
+		case META:
+			ret = new OOMetaTagElement();
+			break;
+			
 		case BODY:
 			ret = new OOBodyElement();
 			break;
@@ -415,6 +419,103 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
 			}
 			break;
+			
+		case MEDIA:
+			switch (element) {
+			case LINK:
+				((OOLink)ref).setMedia(tokenizer.asString(startOffset, endSkip));
+				break;
+				
+			default:
+				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
+			}
+			break;
+
+		case REV:
+			switch (element) {
+			case LINK:
+				// not supported in HTML 5
+				break;
+				
+			default:
+				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
+			}
+			break;
+
+		case LANG:
+			ref.setLang(tokenizer.asString(startOffset, endSkip));
+			break;
+			
+		case XMLNS:
+			switch (element) {
+			case HTML:
+				((OOHTMLRootElement)ref).setXMLNS(tokenizer.asString(startOffset, endSkip));
+				break;
+
+			default:
+				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
+			}
+			break;
+			
+		case XML_LANG:
+			// ignore for now
+			break;
+			
+		case CHARSET:
+			switch (element) {
+			case META:
+				((OOMetaTagElement)ref).setCharset(tokenizer.asString(startOffset, endSkip));
+				break;
+
+			default:
+				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
+			}
+			break;
+
+		case CONTENT:
+			switch (element) {
+			case META:
+				((OOMetaTagElement)ref).setContent(tokenizer.asString(startOffset, endSkip));
+				break;
+
+			default:
+				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
+			}
+			break;
+
+		case HTTP_EQUIV:
+			switch (element) {
+			case META:
+				((OOMetaTagElement)ref).setHttpEquiv(tokenizer.asString(startOffset, endSkip));
+				break;
+
+			default:
+				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
+			}
+			break;
+
+		case NAME:
+			switch (element) {
+			case META:
+				((OOMetaTagElement)ref).setName(tokenizer.asString(startOffset, endSkip));
+				break;
+
+			default:
+				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
+			}
+			break;
+
+		case SCHEME:
+			switch (element) {
+			case META:
+				((OOMetaTagElement)ref).setScheme(tokenizer.asString(startOffset, endSkip));
+				break;
+
+			default:
+				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
+			}
+			break;
+
 			
 		default:
 			throw new IllegalArgumentException("Unknown attribute " + attribute);

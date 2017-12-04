@@ -38,7 +38,21 @@ public enum HTMLAttribute implements IKeyValue {
 	
 	REL("rel", false, ValueType.ONE),
 	TYPE("type", false, ValueType.ONE),
-	HREF("href", false, ValueType.ONE);
+	HREF("href", false, ValueType.ONE),
+	MEDIA("media", false, ValueType.ONE),
+	
+	REV("rev", false, ValueType.ONE), // not supported in HTML 5
+	
+	// meta
+	CHARSET("charset", false, ValueType.ONE),
+	CONTENT("content", false, ValueType.ONE),
+	HTTP_EQUIV("http-equiv", false, ValueType.ONE),
+	NAME("name", false, ValueType.ONE),
+	SCHEME("scheme", false, ValueType.ONE),
+	
+	XMLNS("xmlns", false, ValueType.ONE),
+	XML_LANG("xml:lang", false, ValueType.ONE)
+	;
 	// 
 	private final String name;
 	private final boolean global;

@@ -43,6 +43,7 @@ public enum HTMLToken implements IToken {
 	HTML(HTMLElement.HTML),
 	HEAD(HTMLElement.HEAD),
 	TITLE(HTMLElement.TITLE),
+	META(HTMLElement.META),
 	LINK(HTMLElement.LINK),
 	SCRIPT(HTMLElement.SCRIPT),
 	BODY(HTMLElement.BODY),
@@ -77,6 +78,17 @@ public enum HTMLToken implements IToken {
 	REL(HTMLAttribute.REL),
 	TYPE(HTMLAttribute.TYPE),
 	HREF(HTMLAttribute.HREF),
+	MEDIA(HTMLAttribute.MEDIA),
+	REV(HTMLAttribute.REV)
+	,
+	XMLNS(HTMLAttribute.XMLNS),
+	XML_LANG(HTMLAttribute.XML_LANG),
+	
+	CHARSET(HTMLAttribute.CHARSET),
+	CONTENT(HTMLAttribute.CONTENT),
+	HTTP_EQUIV(HTMLAttribute.HTTP_EQUIV),
+	NAME(HTMLAttribute.NAME),
+	SCHEME(HTMLAttribute.SCHEME),
 	
 	CLASS_NAME(CharTypeHTMLElementClass.INSTANCE),
 	ANY_TAG(CharTypeHTMLElementTag.INSTANCE)

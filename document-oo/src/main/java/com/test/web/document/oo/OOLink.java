@@ -7,6 +7,7 @@ final class OOLink extends OOReferenceElement {
 	private String rel;
 	private String linkType;
 	private String href;
+	private String media;
 	
 	@Override
 	HTMLElement getType() {
@@ -35,5 +36,13 @@ final class OOLink extends OOReferenceElement {
 
 	void setLinkType(String type) {
 		this.linkType = type;
+	}
+
+	final String getMedia() {
+		return media;
+	}
+
+	final void setMedia(String media) {
+		this.media = media;
 	}
 }

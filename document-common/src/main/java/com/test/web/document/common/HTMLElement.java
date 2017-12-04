@@ -11,11 +11,12 @@ import com.test.web.css.common.enums.CSSDisplay;
 
 public enum HTMLElement {
 
-	HTML(	"html",		true,		CSSDisplay.BLOCK),
+	HTML(	"html",		true,		CSSDisplay.BLOCK,	HTMLAttribute.XMLNS, HTMLAttribute.XML_LANG),
 	HEAD(	"head",		true,		null),
 	BODY(	"body", 		true,		null),
 	TITLE(	"title", 		false,	null),
-	LINK(	"link", 		false,	null, 						HTMLAttribute.REL, HTMLAttribute.TYPE, HTMLAttribute.HREF),
+	META(  "meta",     false,    null,							HTMLAttribute.CHARSET, HTMLAttribute.CONTENT, HTMLAttribute.HTTP_EQUIV, HTMLAttribute.NAME, HTMLAttribute.SCHEME),
+	LINK(	"link", 		false,	null, 						HTMLAttribute.REL, HTMLAttribute.TYPE, HTMLAttribute.HREF, HTMLAttribute.MEDIA, HTMLAttribute.REV),
 	SCRIPT("script", 	false,	null, 						HTMLAttribute.TYPE),
 	DIV("div", 				true, 	CSSDisplay.BLOCK),
 	SPAN("span", 		true, 	CSSDisplay.INLINE),
