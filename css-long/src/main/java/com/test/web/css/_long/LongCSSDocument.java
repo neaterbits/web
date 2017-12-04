@@ -51,19 +51,24 @@ public final class LongCSSDocument
 	/***************************************************** Parse listener *****************************************************/ 
 
 	@Override
-	public Void onEntityStart(CSSTarget target, String targetName) {
-		
-		// Started a CSS entity, must allocate out of buffer
-		// Start out allocating a compact element, we might re-allocate if turns out to have more than the standard compact elements
-		final int element = allocateCurParseElement(target.name());
-		
-		state.add(target, targetName, element);
+	public Void onBlockStart() {
+		allocateCurParseElement();
 		
 		return null;
 	}
+	
+	@Override
+	public void onEntityMap(Void context, CSSTarget target, String targetName) {
+		
+		// Started a CSS entity, must allocate out of buffer
+		// Start out allocating a compact element, we might re-allocate if turns out to have more than the standard compact elements
+		
+		state.add(target, targetName, ref());
+	}
+
 
 	@Override
-	public void onEntityEnd(Void context) {
+	public void onBlockEnd(Void context) {
 		// Nothing to do as write pos in buffer was already advanced
 	}
 }

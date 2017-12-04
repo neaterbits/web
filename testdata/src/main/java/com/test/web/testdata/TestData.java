@@ -11,7 +11,7 @@ public class TestData {
 		
 		"/* This is a comment */\n" +
 
-		"#an_element {\n" +
+		"#an_element .and_a_class {\n" +
 		"  margin-left : 10;\n" +
 		"  margin-right : auto;\n" +
 		"  float: left;\n" +
@@ -21,7 +21,7 @@ public class TestData {
 		"#another-element {\n" +
 		"}\n" +
 
-		".a_class {\n" +
+		".a_class #an_element {\n" +
 		"  position : absolute;\n" +
 		"  float : right;\n" +
 		"  padding-top : 30px;\n" +

@@ -53,20 +53,25 @@ public final class OOCSSDocument
 
 	/***************************************************** Parse listener *****************************************************/ 
 
+
 	@Override
-	public Void onEntityStart(CSSTarget target, String targetName) {
+	public Void onBlockStart() {
+		allocateCurParseElement();
+		
+		return null;
+	}
+	
+	
+	@Override
+	public void onEntityMap(Void context, CSSTarget target, String targetName) {
 		
 		//System.out.println("## CSS target start " + target + "/" + targetName);
 		
-		final OOCSSElement element = allocateCurParseElement(target.name());
-		
-	   state.add(target, targetName, element);
-
-		return null;
+	   state.add(target, targetName, ref());
 	}
 
 	@Override
-	public void onEntityEnd(Void context) {
+	public void onBlockEnd(Void context) {
 		// Nothing to do as write pos in buffer was already advanced
 	}
 }

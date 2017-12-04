@@ -13,12 +13,17 @@ public class OOStyleDocument extends BaseOOCSSDocument
 	}
 
 	@Override
-	public Void onEntityStart(CSSTarget entity, String id) {
+	public Void onBlockStart() {
 		throw new UnsupportedOperationException("Not required for styles elements");
 	}
 
 	@Override
-	public void onEntityEnd(Void context) {
+	public void onEntityMap(Void context, CSSTarget entity, String id) {
+		throw new UnsupportedOperationException("Not required for styles elements");
+	}
+
+	@Override
+	public void onBlockEnd(Void context) {
 		throw new UnsupportedOperationException("Not required for styles elements");
 	}
 
@@ -31,7 +36,7 @@ public class OOStyleDocument extends BaseOOCSSDocument
 		OOCSSElement cssElement = htmlElement.getStyleElement();
 		
 		if (cssElement == null) {
-			cssElement = allocateCurParseElement("style_element");
+			cssElement = allocateCurParseElement();
 
 			htmlElement.setStyleElement(cssElement);
 		}

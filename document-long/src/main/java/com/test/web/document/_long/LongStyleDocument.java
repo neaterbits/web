@@ -20,12 +20,17 @@ final class LongStyleDocument extends BaseLongCSSDocument
 	}
 	
 	@Override
-	public Void onEntityStart(CSSTarget entity, String id) {
+	public Void onBlockStart() {
 		throw new UnsupportedOperationException("Not required for styles elements");
 	}
 
 	@Override
-	public void onEntityEnd(Void context) {
+	public void onEntityMap(Void context, CSSTarget entity, String id) {
+		throw new UnsupportedOperationException("Not required for styles elements");
+	}
+
+	@Override
+	public void onBlockEnd(Void context) {
 		throw new UnsupportedOperationException("Not required for styles elements");
 	}
 	
@@ -35,7 +40,7 @@ final class LongStyleDocument extends BaseLongCSSDocument
 	public void startParseStyleElement(Integer htmlElement) {
 		final int [] existing = htmlToStyleElements.get(htmlElement);
 		
-		final int cssElement = allocateCurParseElement("style element");
+		final int cssElement = allocateCurParseElement();
 		
 		if (existing == null) {
 			// Allocate new array

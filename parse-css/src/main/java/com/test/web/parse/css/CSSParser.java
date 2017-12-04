@@ -67,15 +67,11 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			
 			switch (token) {
 			case ID_MARKER:
-				parseIdBlock();
-				break;
-				
 			case CLASS_MARKER:
-				parseClassBlock();
-				break;
-
 			case TAG:
-				parseTagBlock(lexer.get());
+				final LISTENER_CONTEXT context = listener.onBlockStart();
+				parseMarkedBlock(token, context);
+				listener.onBlockEnd(context);
 				break;
 				
 			case COMMENT:
@@ -90,51 +86,86 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			}
 			
 		} while (!done);
-		
 	}
 	
-	private void parseIdBlock() throws IOException, ParserException {
-		final CSSToken token = lexer.lex(CSSToken.ID);
+	private void parseMarkedBlock(CSSToken initialMarker, LISTENER_CONTEXT context) throws IOException, ParserException {
+		// First read the initial marker
+		parseMarker(initialMarker, context);
 		
-		switch (token) {
-		case ID:
-			final LISTENER_CONTEXT context = listener.onEntityStart(CSSTarget.ID, lexer.get());
+		// Parse additional markers in a loop
+		boolean done = false;
+		
+		do {
+			CSSToken token = lexer.lex(CSSToken.WS, CSSToken.ID_MARKER, CSSToken.CLASS_MARKER, CSSToken.TAG, CSSToken.COMMENT, CSSToken.BRACKET_START);
 			
-			parseBlock(context);
+			if (token == CSSToken.WS) {
+				// Just continue in case of WS
+				continue;
+			}
 			
-			listener.onEntityEnd(context);
+			switch (token) {
+			case ID_MARKER:
+			case CLASS_MARKER:
+			case TAG:
+				parseMarker(token, context);
+				break;
+				
+			case COMMENT:
+				break;
+				
+			case BRACKET_START:
+				done = true;
+				break;
+				
+			default:
+				throw lexer.unexpectedToken();
+			}
+			
+		} while (!done);
+
+		// Done, parse block
+		parseBlockContents(context);
+	}
+	
+	private void parseMarker(CSSToken marker, LISTENER_CONTEXT context) throws IOException, ParserException {
+		switch (marker) {
+		case ID_MARKER: {
+			final CSSToken token = lexer.lex(CSSToken.ID);
+			
+			switch (token) {
+			case ID:
+				listener.onEntityMap(context, CSSTarget.ID, lexer.get());
+				break;
+				
+			default:
+				throw lexer.unexpectedToken();
+			}
+			break;
+		}
+			
+		case CLASS_MARKER: {
+			final CSSToken token = lexer.lex(CSSToken.CLASS);
+			
+			switch (token) {
+			case CLASS:
+				listener.onEntityMap(context, CSSTarget.CLASS, lexer.get());
+				break;
+				
+			default:
+				throw lexer.unexpectedToken();
+			}
+			break;
+		}
+			
+		case TAG:
+			listener.onEntityMap(context, CSSTarget.TAG, lexer.get());
 			break;
 			
 		default:
-			throw lexer.unexpectedToken();
+			throw new IllegalStateException("Unknown marker " + marker);
 		}
 	}
 	
-	private void parseClassBlock() throws IOException, ParserException {
-		final CSSToken token = lexer.lex(CSSToken.CLASS);
-		
-		switch (token) {
-		case CLASS:
-			final LISTENER_CONTEXT context = listener.onEntityStart(CSSTarget.CLASS, lexer.get());
-			
-			parseBlock(context);
-			
-			listener.onEntityEnd(context);
-			break;
-			
-		default:
-			throw lexer.unexpectedToken();
-		}
-	}
-
-	private void parseTagBlock(String tag) throws IOException, ParserException {
-		final LISTENER_CONTEXT context = listener.onEntityStart(CSSTarget.TAG, tag);
-		
-		parseBlock(context);
-		
-		listener.onEntityEnd(context);
-	}
-
 	private static final CSSToken [] STYLE_TOKENS = copyTokens(token -> token.getElement() != null);
 	
 	private static final CSSToken [] BLOCK_TOKENS = copyTokens(
@@ -187,17 +218,20 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	private void parseBlock(LISTENER_CONTEXT context) throws IOException, ParserException {
 		// Parse each item within CSS
 		
-		CSSToken token = lexSkipWS(CSSToken.BRACKET_START);
+		CSSToken token = lexSkipWSAndComment(CSSToken.BRACKET_START);
 		
-		if (token == CSSToken.WS) {
-			token = lexer.lex(CSSToken.BRACKET_START);
-		}
 
 		if (token != CSSToken.BRACKET_START) {
 			throw lexer.unexpectedToken();
 		}
 		
+		parseBlockContents(context);
+	}
+
+	private void parseBlockContents(LISTENER_CONTEXT context) throws IOException, ParserException {
+		
 		// Now parse all fields in CSS until end-bracket
+		CSSToken token;
 		
 		boolean done = false;
 		do {

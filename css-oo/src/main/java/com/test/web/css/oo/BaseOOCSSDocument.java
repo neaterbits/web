@@ -115,7 +115,7 @@ public abstract class BaseOOCSSDocument
 
 	/***************************************************** Parse listener *****************************************************/ 
 	
-	private OOCSSElement ref() {
+	final OOCSSElement ref() {
 		return curParseElement;
 	}
 	
@@ -212,8 +212,8 @@ public abstract class BaseOOCSSDocument
 		return ref.getFontSize();
 	}
 	
-	protected final OOCSSElement allocateCurParseElement(String name) {
-		this.curParseElement = new OOCSSElement(name);
+	protected final OOCSSElement allocateCurParseElement() {
+		this.curParseElement = new OOCSSElement();
 		
 		return this.curParseElement;
 	}

@@ -26,6 +26,10 @@ public abstract class BaseLongCSSDocument
 
 	private int curParseElement;
 
+	final int ref() {
+		return curParseElement;
+	}
+	
 	/***************************************************** Access interface *****************************************************/ 
 	
 	@Override
@@ -206,8 +210,8 @@ public abstract class BaseLongCSSDocument
 		return LongCSS.getFontSize(buf(ref), offset(ref));
 	}
 	
-	protected final int allocateCurParseElement(String name) {
-		this.curParseElement = allocate(LongCSS.CSS_ENTITY_COMPACT, name);
+	protected final int allocateCurParseElement() {
+		this.curParseElement = allocate(LongCSS.CSS_ENTITY_COMPACT, "style element");
 		
 		return this.curParseElement;
 	}

@@ -12,9 +12,11 @@ import com.test.web.io.common.Tokenizer;
 
 public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 
-	CONTEXT onEntityStart(CSSTarget entity, String id);
+	CONTEXT onBlockStart();
 	
-	void onEntityEnd(CONTEXT context);
+	void onEntityMap(CONTEXT context, CSSTarget entity, String id);
+	
+	void onBlockEnd(CONTEXT context);
 	
 	void onLeft(CONTEXT context, int left, CSSUnit unit);
 	

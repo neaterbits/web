@@ -10,9 +10,6 @@ import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 
 public final class OOCSSElement {
-	
-	private final String targetName;
-	
 	private long styles;
 	
 	private int left;
@@ -48,14 +45,9 @@ public final class OOCSSElement {
 		}
 	}
 
-	public OOCSSElement(String targetName) {
-		this.targetName = targetName;
+	public OOCSSElement() {
 		this.margins = new OOWrapping();
 		this.padding = new OOWrapping();
-	}
-	
-	String getTargeName() {
-		return targetName;
 	}
 	
 	boolean hasStyle(CSStyle style) {
@@ -323,10 +315,6 @@ public final class OOCSSElement {
 		this.overflow = overflow;
 		
 		set(CSStyle.OVERFLOW);
-	}
-
-	String getTargetName() {
-		return targetName;
 	}
 
 	short getZIndex() {
