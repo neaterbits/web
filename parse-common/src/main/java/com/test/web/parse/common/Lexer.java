@@ -2,6 +2,7 @@ package com.test.web.parse.common;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import com.test.web.io.common.CharInput;
@@ -20,7 +21,9 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	private int buffered;
 	
 	// Scratch array for maintaining number of matching tokens at any given type
-	private final int [] matchingTokens;
+	private final TOKEN [] possiblyMatchingTokens;
+	private final boolean [] exactMatches;
+	private final TokenMatch tokenMatch;
 	
 	private int lineNo;
 	
@@ -40,7 +43,10 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		
 		this.input = input;
 		
-		this.matchingTokens = new int[tokenClass.getEnumConstants().length];
+		this.possiblyMatchingTokens = createTokenArray(tokenClass);
+		this.exactMatches = new boolean[tokenClass.getEnumConstants().length];
+		
+		this.tokenMatch = new TokenMatch();
 		
 		this.tokNone = tokNone;
 		this.tokEOF = tokEOF;
@@ -49,15 +55,25 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		this.lineNo = 1;
 	}
 	
+	@SuppressWarnings("unchecked")
+	private TOKEN [] createTokenArray(Class<TOKEN> tokenClass) {
+		return (TOKEN[])Array.newInstance(tokenClass, tokenClass.getEnumConstants().length);
+	}
 	
-	public TOKEN lex(@SuppressWarnings("unchecked") TOKEN ... tokens) throws IOException {
+	// HElper class to return multiple values
+	private static class TokenMatch {
+		private boolean matchesExactly;
+		private boolean mightMatch;
+	}
+	
+	public TOKEN lex(@SuppressWarnings("unchecked") TOKEN ... inputTokens) throws IOException {
 		
 		if (DEBUG) {
 			System.out.println("----");
-			System.out.println(PREFIX + " lex(" + Arrays.toString(tokens) + ")");
+			System.out.println(PREFIX + " lex(" + Arrays.toString(inputTokens) + ")");
 		}
 		
-		if (tokens.length > matchingTokens.length) {
+		if (inputTokens.length > possiblyMatchingTokens.length) {
 			throw new IllegalArgumentException("tokens.length > matchingTokens.length");
 		}
 		
@@ -71,25 +87,42 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		// Scan all tokens for input from reader and check whether any tokens match 
 		
 		TOKEN found = null;
-
+		
+		TOKEN longestFoundSoFar = null;
+		
+		// Start out with scanning all input tokens, we will switch to scan only those tokens left matching
+		TOKEN [] tokens = inputTokens;
+		int numTokens = inputTokens.length;
+		
 		// Read input until finds matching token
 		// TODO: exit if cannot find matching token of any length
 		do {
 			final int val = read();
 			
+			
 			if (val < 0) {
-				
-				if (tokEOF != null) {
-					for (TOKEN token : tokens) {
-						if (token == tokEOF) {
-							found = tokEOF;
-							break;
+				// If found a matching token, return that
+				if (longestFoundSoFar != null) {
+					found = longestFoundSoFar;
+					this.buffered = val; // put EOF back
+				}
+				else {
+					if (tokEOF != null) {
+						for (TOKEN token : tokens) {
+							if (token == tokEOF) {
+								found = tokEOF;
+								break;
+							}
 						}
 					}
 				}
 				
 				if (found == null) {
 					throw new EOFException("Reached EOF");
+				}
+				else {
+					// Just break out of loop since we already found a token
+					break;
 				}
 			}
 			
@@ -103,169 +136,84 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 			
 			int numPossibleMatch = 0;
 			
-			// Loop through all tokens to see if any match
-			for (int i = 0; i < tokens.length; ++ i) {
+			// Loop through all tokens to see if any match. We will return the longest-matching token so we have to keep track of that
+			TOKEN firstMatchThisIteration = null;
+			
+			for (int i = 0; i < numTokens; ++ i) {
 				// Check whether tokens match
 				final TOKEN token = tokens[i];
 				
-				if (DEBUG) {
-					System.out.println(PREFIX + " Matching token " + token + " to \"" + cur + "\"");
+				matchToken(token, c, tokenMatch);
+
+				final boolean match = tokenMatch.matchesExactly;
+				
+				// If a token went from matching to non matching, we should remove it from the array of tokens
+				// eg for a C style comment, we can continue to have a possible match against */ after found one, but we already have a match and should remove it from the list
+				// since it already stopped matching
+				final boolean wentFromMatchingToNonMatching = ! match && this.exactMatches[token.ordinal()];
+				
+				// If might match later or matches now, add to array for next iteration
+				if ((tokenMatch.mightMatch || match) && ! wentFromMatchingToNonMatching) {
+					this.possiblyMatchingTokens[numPossibleMatch] = token;
+					++ numPossibleMatch;
 				}
 				
-				final boolean match;
-				
-				switch (token.getTokenType()) {
-				case CHARACTER:
-					if (cur.length() == 1) {
-						match = c == token.getCharacter();
+				this.exactMatches[token.ordinal()] = match;
 
-						// No point in incrementing since if we matched we exit
-						// ++ numPossibleMatch;
-					}
-					else {
-						match = false;
-					}
-					break;
-					
-				case FROM_CHAR_TO_CHAR:
-					if (cur.charAt(0) != token.getFromCharacter()) {
-						match = false;
-					}
-					else if (cur.length() >= 2 && c == token.getToCharacter() ){
-						match = true;
-					}
-					else {
-						++ numPossibleMatch;
-						match = false;
-					}
-					break;
-					
-				case FROM_STRING_TO_STRING:
-					if (cur.length() <= token.getFromLiteral().length()) {
-						match = false;
-						
-						if (token.getFromLiteral().startsWith(cur.toString())) {
-							++ numPossibleMatch;
-						}
-					}
-					else if (cur.length() >= (token.getFromLiteral().length() + token.getToLiteral().length())) {
-						final String s = cur.toString();
-						
-						if (s.startsWith(token.getFromLiteral())) {
-							if (s.endsWith(token.getToLiteral())) {
-								match = true;
-							}
-							else {
-								++ numPossibleMatch;
-								match = false;
-							}
-						}
-						else {
-							match = false;
-						}
-					}
-					else {
-						// cur length is > from literal length but less than sum
-						final String s = cur.toString();
-						
-						match = false;
-						
-						if (s.startsWith(token.getFromLiteral())) {
-							++ numPossibleMatch;
-						}
-					}
-					break;
-					
-				case CS_LITERAL:
-					if (cur.length() < token.getLiteral().length()) {
-						++ numPossibleMatch;
-						match = false;
-					}
-					else if (cur.length() == token.getLiteral().length()) {
-						match = cur.toString().equals(token.getLiteral());
-					}
-					else {
-						match = false;
-					}
-					break;
-					
-				case CI_LITERAL:
-					if (cur.length() < token.getLiteral().length()) {
-						++ numPossibleMatch;
-						match = false;
-					}
-					else if (cur.length() == token.getLiteral().length()) {
-						match = cur.toString().equalsIgnoreCase(token.getLiteral());
-					}
-					else {
-						match = false;
-					}
-					break;
-
-				case CHARTYPE:
-					final boolean matches = token.getCharType().matches(cur.toString());
-					if (matches) {
-						// Matches but we should read all characters from stream
-						if (DEBUG) {
-							System.out.println(PREFIX + " matched chartype");
-						}
-						++ numPossibleMatch;
-						match = false;
-					}
-					else {
-						// Does not match, but if length > 1 that means we have a match from previous chars
-						if (   cur.length() > 1 
-							&& token.getCharType().matches(cur.toString().substring(0, cur.length() - 1))) {
-							
-							if (DEBUG) {
-								System.out.println(PREFIX + " no longer matched chartype but matched last");
-							}
-							match = true;
-							
-							// Must copy to temporary buf since we read a character that cannot be returned
-							this.buffered = val;
-							cur.setLength(cur.length() - 1);
-						}
-						else {
-							// Cannot match so buffer char
-							match = false;
-						}
-					}
-					break;
-					
-				case EOF:
-					// skip
-					match = false;
-					break;
-						
-					
-				default:
-					throw new IllegalArgumentException("Unknown token type " + token.getTokenType() + " for token " + token);
-				}
-				
 				if (DEBUG) {
-					System.out.println(PREFIX + " match to " + token + ", buf = \"" + cur + "\", match=" + match +", numPossibleMatch=" + numPossibleMatch);
+					System.out.println(PREFIX + " match to " + token + "\", match=" + match +", numPossibleMatch=" + numPossibleMatch+ ", buf = \"" + cur);
 				}
 				
 				if (match) {
-					// Return first matching token
-					found = token;
-					break;
+					if (firstMatchThisIteration == null) {
+						firstMatchThisIteration = token;
+					}
 				}
 			}
-
-			if (numPossibleMatch == 0 && found == null) {
-				
-				if (DEBUG) {
-					System.out.println(PREFIX + " No possible matches, returning");
-				}
-				
-				// No possible matches, return not-found token
-				// If read a character, buffer it for next iteration
-				this.buffered = c;
-				found = tokNone;
+			
+			if (firstMatchThisIteration != null) {
+				// found a match this iterations, set as longest so far
+				longestFoundSoFar = firstMatchThisIteration;
 			}
 
+			// No possible matches and none found, return tokNone unless have found an earlier match
+			if (numPossibleMatch == 0) {
+
+				// If read a character, buffer it for next iteration and remove from buffer
+				this.buffered = val;
+
+				if (cur.charAt(cur.length() - 1) != c) {
+					throw new IllegalStateException("Mismatch of last char: " + c);
+				}
+				
+				cur.setLength(cur.length() - 1);
+
+				if (longestFoundSoFar == null) {
+				
+					if (DEBUG) {
+						System.out.println(PREFIX + " No possible matches, returning");
+					}
+					
+					// No possible matches, return not-found token
+					found = tokNone; // triggers to break out of loop
+				}
+				else {
+					// found a token, return that
+					found = longestFoundSoFar;
+				}
+			}
+			/*
+			else if (numPossibleMatch == 1 && firstMatchThisIteration != null) {
+				// Was only one match, return that
+				found = firstMatchThisIteration;
+				// TODO what if tokens is the very last characters of a stream, will we be able to fetch that here? Could still be multiple matches
+			}
+			*/
+			else {
+				// Continue iterating, switch to iterating over only matching tokens
+				tokens = this.possiblyMatchingTokens;
+				numTokens = numPossibleMatch;
+			}
 		} while (found == null);
 		
 		if (DEBUG) {
@@ -275,6 +223,135 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		this.lastToken = found;
 		
 		return found;
+	}
+
+	private void matchToken(TOKEN token, char c, TokenMatch tokenMatch) {
+		if (DEBUG) {
+			System.out.println(PREFIX + " Matching token " + token + " to \"" + cur + "\"");
+		}
+		
+		final boolean match;
+		final boolean possibleMatch;
+		
+		switch (token.getTokenType()) {
+		case CHARACTER:
+			if (cur.length() == 1) {
+				match = c == token.getCharacter();
+
+				possibleMatch = match;
+			}
+			else {
+				match = false;
+				possibleMatch = false;
+			}
+			break;
+			
+		case FROM_CHAR_TO_CHAR:
+			if (cur.charAt(0) != token.getFromCharacter()) {
+				match = false;
+				possibleMatch = false;
+			}
+			else if (cur.length() >= 2 && c == token.getToCharacter() ){
+				match = true;
+				possibleMatch = true;
+			}
+			else {
+				possibleMatch = true;
+				match = false;
+			}
+			break;
+			
+		case FROM_STRING_TO_STRING:
+			if (cur.length() <= token.getFromLiteral().length()) {
+				match = false;
+				possibleMatch = token.getFromLiteral().startsWith(cur.toString());
+			}
+			else if (cur.length() >= (token.getFromLiteral().length() + token.getToLiteral().length())) {
+				final String s = cur.toString();
+				
+				if (s.startsWith(token.getFromLiteral())) {
+					if (s.endsWith(token.getToLiteral())) {
+						match = true;
+						possibleMatch = true;
+					}
+					else {
+						possibleMatch = true;
+						match = false;
+					}
+				}
+				else {
+					possibleMatch = false;
+					match = false;
+				}
+			}
+			else {
+				// cur length is > from literal length but less than sum
+				final String s = cur.toString();
+				
+				match = false;
+				possibleMatch = s.startsWith(token.getFromLiteral());
+			}
+			break;
+			
+		case CS_LITERAL:
+			if (cur.length() < token.getLiteral().length()) {
+				match = false;
+				possibleMatch = token.getLiteral().startsWith(cur.toString());
+			}
+			else if (cur.length() == token.getLiteral().length()) {
+				match = cur.toString().equals(token.getLiteral());
+				possibleMatch = match;
+			}
+			else {
+				match = false;
+				possibleMatch = false;
+			}
+			break;
+			
+		case CI_LITERAL:
+			if (cur.length() < token.getLiteral().length()) {
+				match = false;
+				possibleMatch = token.getLiteral().substring(0, cur.length()).equalsIgnoreCase(cur.toString());
+			}
+			else if (cur.length() == token.getLiteral().length()) {
+				match = cur.toString().equalsIgnoreCase(token.getLiteral());
+				possibleMatch = match;
+			}
+			else {
+				match = false;
+				possibleMatch = false;
+			}
+			break;
+
+		case CHARTYPE:
+			final boolean matches = token.getCharType().matches(cur.toString());
+			if (matches) {
+				// Matches but we should read all characters from stream
+				if (DEBUG) {
+					System.out.println(PREFIX + " matched chartype");
+				}
+				match = true;
+				possibleMatch = true;
+			}
+			else {
+				match = false;
+				possibleMatch = false;
+			}
+			break;
+			
+		case EOF:
+			// skip
+			match = false;
+			possibleMatch = false;
+			break;
+				
+			
+		default:
+			throw new IllegalArgumentException("Unknown token type " + token.getTokenType() + " for token " + token);
+		}
+
+		tokenMatch.matchesExactly = match;
+		tokenMatch.mightMatch = possibleMatch;
 	}
 	
 	private final int read() throws IOException {
