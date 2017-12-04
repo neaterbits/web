@@ -112,6 +112,7 @@ public abstract class BaseBrowserDocumentLoader<ELEMENT, TOKENIZER extends Token
 			// it will also forward parser events to the DOM and to the layout algorithm
 			final DependencyCollectingParserListener<ELEMENT, TOKENIZER> parserListener
 				= new DependencyCollectingParserListener<>(
+						url, // TODO handle redirects eg to index.html
 						document,
 						loadQueueAndStream.getQueue(),
 						viewPort,

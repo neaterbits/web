@@ -1,6 +1,8 @@
 package com.test.web.loadqueue.html;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.common.CSSLayoutStyles;
@@ -28,6 +30,9 @@ import com.test.web.render.common.ITextExtent;
 
 public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Tokenizer>
 			implements IHTMLParserListener<ELEMENT, TOKENIZER> {
+
+	// Base URL of the document we are loading, in order to resolve URLs to externa dependencies
+	private final URL documentURL;
 	
 	private final IDocumentParserListener<ELEMENT, TOKENIZER> delegate;
 	private final ILoadQueue loadQueue;
@@ -52,6 +57,7 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 	private final LayoutState<ELEMENT>layoutState;
 	
 	public DependencyCollectingParserListener(
+			URL documentURL,
 			IDocumentParserListener<ELEMENT, TOKENIZER> delegate,
 			ILoadQueue loadQueue,
 			ViewPort viewPort,
@@ -61,6 +67,7 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 			FontSettings fontSettings,
 			HTMLElementListener<ELEMENT, IElementRenderLayout> renderListener) {
 
+		this.documentURL = documentURL;
 		this.delegate = delegate;
 		this.loadQueue = loadQueue;
 		
@@ -145,6 +152,52 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 		return elementRef;
 	}
 	
+	private URL getBaseURL() {
+		// TODO base url tag
+		final String path = documentURL.getPath();
+		final int directoryStart = path.lastIndexOf('/');
+		final String directory = directoryStart >=0 ? path.substring(0, directoryStart) : "/";
+
+		final String urlString = documentURL.getProtocol() + "://" + documentURL.getAuthority() + directory;
+		try {
+			return new URL(urlString);
+		} catch (MalformedURLException ex) {
+			throw new IllegalStateException("Failed to parse URL \"" + urlString + "\"");
+		}
+	}
+	
+	private String resolveDependencyURL(String url) {
+		// Sometimes URls are relative so must resolve them here
+		
+		final String ret;
+		final String trimmed = url.trim();
+		
+		if (url.contains(":")) {
+			// Absolute URL with scheme
+			ret = trimmed;
+		}
+		else {
+			final URL base = getBaseURL();
+			// URL without scheme
+			if (base == null) {
+				// No base, assume local file
+				ret = "file:" + trimmed;
+			}
+			else {
+				if (trimmed.startsWith("/")) {
+					// Root of base
+					ret = base.getProtocol() + "://" + base.getAuthority() + trimmed;
+				}
+				else {
+					// Append to base
+					ret = base.toString() + "/" + trimmed;
+				}
+			}
+		}
+		
+		return ret;
+	}
+	
 	interface Queue {
 		void queue(String url, LoadCompletionListener listener) throws IOException;
 	}
@@ -155,7 +208,9 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 			this.elementWhereLayoutStoppedDueToLoadingDependencies = elementRef;
 		}
 
-		queueFunction.queue(url, () -> {
+		final String resolvedURL = resolveDependencyURL(url);
+		
+		queueFunction.queue(resolvedURL, () -> {
 			processAnyElementsParsedWhileWaitingForDependency();
 		});
 	}
