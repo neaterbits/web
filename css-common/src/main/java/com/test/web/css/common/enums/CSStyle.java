@@ -21,6 +21,7 @@ public enum CSStyle implements IKeyValueList {
 	
 	BACKGROUND_COLOR("background-color", ValueType.ONE),
 	
+	MARGIN("margin", ValueType.ONE),
 	MARGIN_LEFT("margin-left", ValueType.ONE),
 	MARGIN_RIGHT("margin-right", ValueType.ONE),
 	MARGIN_TOP("margin-top", ValueType.ONE),

@@ -26,11 +26,8 @@ import junit.framework.TestCase;
 public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> extends TestCase {
 	
 	protected abstract ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> createDocument();
-	
-	public void testParser() throws IOException, ParserException {
-		
-		final String css = TestData.CSS; 
-				
+
+	private ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> parse(String css) throws IOException, ParserException {
 		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = createDocument();
 		
 		final StringBuffers buffers = new StringBuffers(new SimpleLoadStream(css));
@@ -38,7 +35,14 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		final CSSParser<TOKENIZER, Void> parser = new CSSParser<>(buffers, doc);
 		
 		parser.parseCSS();
+	
+		return doc;
+	}
+	
+	public void testParser() throws IOException, ParserException {
 		
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS);
+	
 		final ELEMENT h1Ref = doc.get(CSSTarget.TAG, "h1").get(0);
 		
 		assertThat(doc.isSet(CSSTarget.TAG, "h1", CSStyle.HEIGHT)).isTrue();
@@ -100,6 +104,67 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		assertThat(DecimalSize.decodeToInt(padding.top)).isEqualTo(30);
 		assertThat(padding.topUnit).isEqualTo(CSSUnit.PX);
 		assertThat(padding.topType).isEqualTo(CSSJustify.SIZE);
+	}
+	
+	public void testMargins() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_MARGINS);
+	
+		checkMargin(doc, "margin_auto",
+				0, null, CSSJustify.AUTO,
+				0, null, CSSJustify.AUTO,
+				0, null, CSSJustify.AUTO,
+				0, null, CSSJustify.AUTO);
+				
+		checkMargin(doc, "margin_1",
+				25, CSSUnit.PX, CSSJustify.SIZE,
+				25, CSSUnit.PX, CSSJustify.SIZE,
+				25, CSSUnit.PX, CSSJustify.SIZE,
+				25, CSSUnit.PX, CSSJustify.SIZE);
+
+		checkMargin(doc, "margin_2",
+				50, CSSUnit.PX, CSSJustify.SIZE,
+				25, CSSUnit.PX, CSSJustify.SIZE,
+				50, CSSUnit.PX, CSSJustify.SIZE,
+				25, CSSUnit.PX, CSSJustify.SIZE);
+
+		checkMargin(doc, "margin_3",
+				45, CSSUnit.PX, CSSJustify.SIZE,
+				30, CSSUnit.PX, CSSJustify.SIZE,
+				40, CSSUnit.PX, CSSJustify.SIZE,
+				30, CSSUnit.PX, CSSJustify.SIZE);
+
+		checkMargin(doc, "margin_4",
+				35, CSSUnit.PX, CSSJustify.SIZE,
+				15, CSSUnit.PX, CSSJustify.SIZE,
+				30, CSSUnit.PX, CSSJustify.SIZE,
+				20, CSSUnit.PX, CSSJustify.SIZE);
+	}
+	
+	private void checkMargin(ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc, String id,
+			int top, CSSUnit topUnit, CSSJustify topJustify,
+			int right, CSSUnit rightUnit, CSSJustify rightJustify,
+			int bottom, CSSUnit bottomUnit, CSSJustify bottomJustify,
+			int left, CSSUnit leftUnit, CSSJustify leftJustify) {
+
+		final ELEMENT ref = doc.get(CSSTarget.ID, id).get(0);
+		
+		final TestCSSJustify margins = new TestCSSJustify();
+
+		
+		doc.getMargins(ref, margins, null);
+		
+		assertThat(DecimalSize.decodeToInt(margins.top)).isEqualTo(top);
+		assertThat(margins.topUnit).isEqualTo(topUnit);
+		assertThat(margins.topType).isEqualTo(topJustify);
+		assertThat(DecimalSize.decodeToInt(margins.right)).isEqualTo(right);
+		assertThat(margins.rightUnit).isEqualTo(rightUnit);
+		assertThat(margins.rightType).isEqualTo(rightJustify);
+		assertThat(DecimalSize.decodeToInt(margins.bottom)).isEqualTo(bottom);
+		assertThat(margins.bottomUnit).isEqualTo(bottomUnit);
+		assertThat(margins.bottomType).isEqualTo(bottomJustify);
+		assertThat(DecimalSize.decodeToInt(margins.left)).isEqualTo(left);
+		assertThat(margins.leftUnit).isEqualTo(leftUnit);
+		assertThat(margins.leftType).isEqualTo(leftJustify);
 	}
 	
 	private static class TestCSSJustify implements ICSSJustify<Void> {

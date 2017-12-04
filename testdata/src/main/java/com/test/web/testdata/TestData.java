@@ -19,6 +19,7 @@ public class TestData {
 		"}\n" +
 
 		"#another-element {\n" +
+		"  margin : auto;\n" +
 		"}\n" +
 
 		".a_class #an_element {\n" +
@@ -27,7 +28,27 @@ public class TestData {
 		"  padding-top : 30px;\n" +
 		"  text-align : left;\n" +
 		"}\n";				
-			
+
+	public static final String CSS_MARGINS =
+			"#margin_auto {\n" +
+			"  margin : auto;\n" +
+			"}\n" +
+
+			"#margin_1 {\n" +
+			"  margin : 25px;\n" +
+			"}\n" +
+
+			"#margin_2 {\n" +
+			"  margin : 50px 25px;\n" +
+			"}\n" +
+
+			"#margin_3 {\n" +
+			"  margin : 45px 30px 40px;\n" +
+			"}\n" +
+
+			"#margin_4 {\n" +
+			"  margin : 35px 15px 30px 20px;\n" +
+			"}\n";	
 	
 	private static final String DOCTYPE = "<!DOCTYPE HTML PUBLIC \"-//W3C/DTD HTML 4.01 Frameset//EN\" \"http://w3.org/TR/html4/frameset.dtd\">";
 	

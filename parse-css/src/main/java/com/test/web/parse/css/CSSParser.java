@@ -332,6 +332,10 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			semiColonRead = parseSizeOrAuto((size, unit, justify) -> listener.onMarginBottom(context, size, unit, justify));
 			break;
 			
+		case MARGIN:
+			semiColonRead = parseMargin(context);
+			break;
+			
 		case PADDING_LEFT:
 			semiColonRead = parseSizeOrAuto((size, unit, justify) -> listener.onPaddingLeft(context, size, unit, justify));
 			break;
@@ -375,7 +379,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		case MIN_HEIGHT:
 			semiColonRead = parseMin((size, unit, type) -> listener.onMinHeight(context, size, unit, type));
 			break;
-
+		
 		default:
 			throw new UnsupportedOperationException("Unknown element " + element);
 		}
@@ -394,6 +398,92 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 				throw lexer.unexpectedToken();
 			}
 		}
+	}
+	
+	private static class MarginPart {
+		private int size;
+		private CSSUnit unit;
+		private CSSJustify justify;
+		private boolean initialized;
+		
+		void init(int size, CSSUnit unit, CSSJustify justify) {
+			this.size = size;
+			this.unit = unit;
+			this.justify = justify;
+			this.initialized = true;
+		}
+	}
+	private boolean parseMargin(LISTENER_CONTEXT context) throws IOException, ParserException {
+		// margin has several combinations and number of entries
+		// margin : auto;
+		// margin: 1, 2, 3 or 4 sizes
+		
+		// TODO perhaps cache if parser is singlethreaded
+		final MarginPart part1 = new MarginPart();
+		
+		// first parse one size or auto
+		boolean semiColonRead = parseSizeOrAuto((size, unit, justify) -> part1.init(size, unit, justify));
+		
+		if (part1.justify == CSSJustify.AUTO) {
+			// margin: auto which is special-case
+			listener.onMargin(context,
+					0, null, CSSJustify.AUTO,
+					0, null, CSSJustify.AUTO,
+					0, null, CSSJustify.AUTO,
+					0, null, CSSJustify.AUTO);
+		}
+		else {
+			// We have more than one part that we have to read, which is which depends on the number of sizes found
+			// there ought to be max 4
+			final MarginPart part2 = new MarginPart();
+			final MarginPart part3 = new MarginPart();
+			final MarginPart part4 = new MarginPart();
+			
+			semiColonRead = parseSizeValueOrSemicolon((size, unit) -> part2.init(size, unit, CSSJustify.SIZE));
+			if (part2.initialized && !semiColonRead) {
+				// read a value, try part3
+				semiColonRead = parseSizeValueOrSemicolon((size, unit) -> part3.init(size, unit, CSSJustify.SIZE));
+				
+				if (part3.initialized && !semiColonRead) {
+					semiColonRead = parseSizeValueOrSemicolon((size, unit) -> part4.init(size, unit, CSSJustify.SIZE));
+				}
+			}
+			
+			if (part4.initialized) {
+				// got 4 parts, pass them all
+				listener.onMargin(context,
+						part1.size, part1.unit, part1.justify,
+						part2.size, part2.unit, part2.justify,
+						part3.size, part3.unit, part3.justify,
+						part4.size, part4.unit, part4.justify);
+			}
+			else if (part3.initialized) {
+				listener.onMargin(context,
+						part1.size, part1.unit, part1.justify,
+						part2.size, part2.unit, part2.justify,
+						part3.size, part3.unit, part3.justify,
+						part2.size, part2.unit, part2.justify);
+			}
+			else if (part2.initialized) {
+				listener.onMargin(context,
+						part1.size, part1.unit, part1.justify,
+						part2.size, part2.unit, part2.justify,
+						part1.size, part1.unit, part1.justify,
+						part2.size, part2.unit, part2.justify);
+			}
+			else if (part1.initialized) {
+				listener.onMargin(context,
+						part1.size, part1.unit, part1.justify,
+						part1.size, part1.unit, part1.justify,
+						part1.size, part1.unit, part1.justify,
+						part1.size, part1.unit, part1.justify);
+			}
+			else {
+				throw new IllegalStateException("Should have at least one margin part");
+			}
+		}
+			
+		return semiColonRead;
 	}
 	
 	private boolean parseSizeOrAuto(IJustifyFunction toCall) throws IOException, ParserException {
@@ -498,6 +588,29 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		return semiColonRead;
 	}
 
+	private boolean parseSizeValueOrSemicolon(BiConsumer<Integer, CSSUnit> toCall) throws IOException, ParserException {
+		// Number followed by possibly units
+		CSSToken token = lexSkipWSAndComment(CSSToken.INTEGER, CSSToken.SEMICOLON);
+		
+		final boolean semiColonRead;
+		
+		switch (token) {
+		case INTEGER:
+			int value = Integer.parseInt(lexer.get());
+			
+			semiColonRead = parseSizeValueAfterInt(value, toCall);
+			break;
+			
+		case SEMICOLON:
+			semiColonRead = true;
+			break;
+			
+		default:
+			throw lexer.unexpectedToken();
+		}
+
+		return semiColonRead;
+	}
 	
 	private boolean parseSizeValue(BiConsumer<Integer, CSSUnit> toCall) throws IOException, ParserException {
 		// Number followed by possibly units
