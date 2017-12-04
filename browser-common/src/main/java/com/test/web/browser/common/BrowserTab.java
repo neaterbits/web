@@ -1,5 +1,6 @@
 package com.test.web.browser.common;
 
+import java.io.IOException;
 import java.net.URL;
 
 import com.test.web.document.common.Document;
@@ -20,11 +21,16 @@ final class BrowserTab<ELEMENT> {
 		this.uiCanvas = uiCanvas;
 		this.documentLoader = documentLoader;
 	}
-	
+
 	void loadURL(URL url) {
-		throw new UnsupportedOperationException("TODO");
+		//  Load and display page using load queue, rendering while parsing
+		try {
+			documentLoader.load(url, uiCanvas.getWidth(), uiCanvas.getHeight(), uiCanvas);
+		} catch (IOException | ParserException ex) {
+			throw new IllegalStateException("Failed to load page", ex);
+		}
 	}
-	
+
 	void showHTML(String html) throws ParserException {
 		final Document<ELEMENT> document = documentLoader.fromHTML(html);
 

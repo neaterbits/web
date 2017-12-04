@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class SimpleStreamFactory implements StreamFactory {
+public class SimpleStreamFactory implements IStreamFactory {
 
 	private final String string;
 	

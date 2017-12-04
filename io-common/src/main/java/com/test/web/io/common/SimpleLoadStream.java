@@ -47,4 +47,9 @@ public class SimpleLoadStream extends LoadStream {
 		
 		return status;
 	}
+
+	@Override
+	public void close() throws IOException {
+		reader.close();
+	}
 }

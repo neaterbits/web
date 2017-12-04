@@ -12,6 +12,7 @@ import com.test.web.document.common.DocumentState;
 import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
+import com.test.web.io.common.LoadStream;
 import com.test.web.io.common.SimpleLoadStream;
 import com.test.web.io.oo.OOStringBuffer;
 import com.test.web.io.oo.OOTokenizer;
@@ -19,6 +20,7 @@ import com.test.web.parse.common.ParserException;
 import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.HTMLUtils;
 import com.test.web.parse.html.IDocumentParserListener;
+import com.test.web.parse.html.IHTMLParserListener;
 import com.test.web.parse.html.IHTMLStyleParserListener;
 import com.test.web.parse.html.enums.HTMLDirection;
 
@@ -29,18 +31,25 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 	private final DocumentState<OOTagElement> state;
 
 	private OOTagElement rootElement;
+
+	public static HTMLParser<OOTagElement, OOTokenizer> createParser(OOHTMLDocument document, IHTMLParserListener<OOTagElement, OOTokenizer> parserListener, LoadStream stream) {
+
+		final OOStringBuffer input = new OOStringBuffer(stream);
+		
+		final HTMLParser<OOTagElement, OOTokenizer> parser = new HTMLParser<>(
+				input,
+				input,
+				parserListener,
+				document.getStyleParserListener());
+		
+		return parser;
+	}
 	
 	public static OOHTMLDocument parseHTMLDocument(String html) throws ParserException {
 
 		final OOHTMLDocument document = new OOHTMLDocument();
 		
-		final OOStringBuffer input = new OOStringBuffer(new SimpleLoadStream(html));
-		
-		final HTMLParser<OOTagElement, OOTokenizer> parser = new HTMLParser<>(
-				input,
-				input,
-				document,
-				document.getStyleParserListener());
+		final HTMLParser<OOTagElement, OOTokenizer> parser = createParser(document, document, new SimpleLoadStream(html));
 		
 		try {
 			parser.parseHTMLFile();
@@ -53,7 +62,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 	}
 
 	
-	OOHTMLDocument() {
+	public OOHTMLDocument() {
 		
 		this.stack = new ArrayList<>();
 

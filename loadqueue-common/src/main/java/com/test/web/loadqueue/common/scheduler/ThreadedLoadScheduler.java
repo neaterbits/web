@@ -11,13 +11,13 @@ import com.test.web.loadqueue.common.LoadCompletionListener;
 import com.test.web.loadqueue.common.LoadQueueAndStream;
 import com.test.web.loadqueue.common.LoadScheduler;
 import com.test.web.loadqueue.common.QueueLoadStream;
-import com.test.web.loadqueue.common.StreamFactory;
+import com.test.web.loadqueue.common.IStreamFactory;
 
 public class ThreadedLoadScheduler extends LoadScheduler {
 
-	private final StreamFactory streamFactory;
+	private final IStreamFactory streamFactory;
 	
-	public ThreadedLoadScheduler(StreamFactory streamFactory) {
+	public ThreadedLoadScheduler(IStreamFactory streamFactory) {
 		
 		if (streamFactory == null) {
 			throw new IllegalArgumentException("streamFactory == null");
@@ -83,11 +83,9 @@ public class ThreadedLoadScheduler extends LoadScheduler {
 				
 				this.blockedOnDependency = true;
 			}
-			
 		}
 		
 		@Override
-		
 		public long read(char[] buffer, int offset, int length) throws IOException {
 
 			// Just read some data from reader, blocks until data available
@@ -139,6 +137,11 @@ public class ThreadedLoadScheduler extends LoadScheduler {
 			}
 			
 			return ret;
+		}
+
+		@Override
+		public void close() throws IOException {
+			reader.close();
 		}
 
 		@Override

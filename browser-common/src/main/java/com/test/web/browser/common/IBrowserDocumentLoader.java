@@ -1,5 +1,8 @@
 package com.test.web.browser.common;
 
+import java.io.IOException;
+import java.net.URL;
+
 import com.test.web.document.common.Document;
 import com.test.web.layout.PageLayout;
 import com.test.web.parse.common.ParserException;
@@ -23,4 +26,13 @@ public interface IBrowserDocumentLoader<ELEMENT> {
 	 * @return layout of page
 	 */
 	PageLayout<ELEMENT> layout(Document<ELEMENT> document, int viewPortWidth, int viewPortHeight, IRenderer displayRenderer);
+	
+	
+	/**
+	 * Load URL asynchronously, displaying it using supplied display renderer
+	 * 
+	 * @param url
+	 */
+	
+	void load(URL url, int viewPortWidth, int viewPortHeight, IRenderer displayRenderer) throws IOException, ParserException;
 }

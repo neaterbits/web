@@ -2,7 +2,7 @@ package com.test.web.render.common;
 
 public interface IRenderer extends IRenderOperations {
 
-	// We're done renderinh, sync to display
+	// We're done rendering, sync to display
 	void sync();
 	
 	/*

@@ -18,4 +18,5 @@ public abstract class LoadStream {
 	
 	public abstract long read(char [] buffer, int offset, int length) throws IOException;
 	
+	public abstract void close() throws IOException;
 }

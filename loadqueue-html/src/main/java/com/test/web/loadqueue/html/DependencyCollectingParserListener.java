@@ -15,7 +15,7 @@ import com.test.web.layout.LayoutState;
 import com.test.web.layout.ViewPort;
 import com.test.web.loadqueue.common.ILoadQueue;
 import com.test.web.loadqueue.common.LoadCompletionListener;
-import com.test.web.parse.html.HTMLParserListener;
+import com.test.web.parse.html.IHTMLParserListener;
 import com.test.web.parse.html.IDocumentParserListener;
 import com.test.web.render.common.IBufferRenderFactory;
 import com.test.web.render.common.IRenderer;
@@ -27,7 +27,7 @@ import com.test.web.render.common.ITextExtent;
  */
 
 public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Tokenizer>
-			implements HTMLParserListener<ELEMENT, TOKENIZER> {
+			implements IHTMLParserListener<ELEMENT, TOKENIZER> {
 	
 	private final IDocumentParserListener<ELEMENT, TOKENIZER> delegate;
 	private final ILoadQueue loadQueue;
@@ -47,9 +47,7 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 	private String linkType;
 	private String linkHRef;
 	
-	private final ViewPort viewPort;
-	
-	private CSSContext<ELEMENT> cssContext;
+	private final CSSContext<ELEMENT> cssContext;
 
 	private final LayoutState<ELEMENT>layoutState;
 	
@@ -65,7 +63,6 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 
 		this.delegate = delegate;
 		this.loadQueue = loadQueue;
-		this.viewPort = viewPort;
 		
 		this.fontSettings = fontSettings;
 	
@@ -73,6 +70,7 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 		
 		this.tempLayoutStyles = new CSSLayoutStyles();
 		
+		this.cssContext = new CSSContext<>();
 		this.layoutState = new LayoutState<>(textExtent, viewPort, displayRenderer, cssContext, renderListener);
 	}
 

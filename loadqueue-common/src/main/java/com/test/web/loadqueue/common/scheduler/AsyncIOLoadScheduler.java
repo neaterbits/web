@@ -1,5 +1,6 @@
 package com.test.web.loadqueue.common.scheduler;
 
+import java.io.IOException;
 import java.util.function.BiFunction;
 
 import com.test.web.loadqueue.common.ILoadQueue;
@@ -45,6 +46,11 @@ public class AsyncIOLoadScheduler extends LoadScheduler {
 
 		@Override
 		protected QueueLoadStream schedule(String url, LoadCompletionListener listener) {
+			throw new UnsupportedOperationException("TODO");
+		}
+
+		@Override
+		public void close() throws IOException {
 			throw new UnsupportedOperationException("TODO");
 		}
 	}

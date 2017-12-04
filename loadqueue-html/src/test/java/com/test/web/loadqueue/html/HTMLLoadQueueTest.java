@@ -10,7 +10,7 @@ import com.test.web.io._long.StringBuffers;
 import com.test.web.layout.FontSettings;
 import com.test.web.loadqueue.common.LoadQueue;
 import com.test.web.loadqueue.common.LoadQueueAndStream;
-import com.test.web.loadqueue.common.StreamFactory;
+import com.test.web.loadqueue.common.IStreamFactory;
 import com.test.web.loadqueue.common.scheduler.ThreadedLoadScheduler;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.html.HTMLParser;
@@ -28,7 +28,7 @@ public class HTMLLoadQueueTest extends TestCase {
 		final String html = TestData.HTML;
 		final String css = TestData.CSS;
 
-		final ThreadedLoadScheduler loadScheduler = new ThreadedLoadScheduler(new StreamFactory() {
+		final ThreadedLoadScheduler loadScheduler = new ThreadedLoadScheduler(new IStreamFactory() {
 			
 			@Override
 			public InputStream getStream(String url) throws IOException {

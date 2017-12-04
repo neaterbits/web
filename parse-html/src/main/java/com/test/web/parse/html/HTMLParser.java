@@ -24,7 +24,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer>
 	
 	private final TOKENIZER tokenizer;
 	private final Lexer<HTMLToken, CharInput> lexer;
-	private final HTMLParserListener<ELEMENT, TOKENIZER> htmlListener;
+	private final IHTMLParserListener<ELEMENT, TOKENIZER> htmlListener;
 
 	private final IHTMLStyleParserListener<ELEMENT, TOKENIZER> styleAttributeListener;
 	private final CSSParser<TOKENIZER, Void> styleAttributeParser;
@@ -36,7 +36,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer>
 	public HTMLParser(
 			CharInput input,
 			TOKENIZER tokenizer,
-			HTMLParserListener<ELEMENT, TOKENIZER> htmlListener,
+			IHTMLParserListener<ELEMENT, TOKENIZER> htmlListener,
 			IHTMLStyleParserListener<ELEMENT, TOKENIZER> styleAttributeListener) {
 
 		super(createLexer(input), HTMLToken.WS);

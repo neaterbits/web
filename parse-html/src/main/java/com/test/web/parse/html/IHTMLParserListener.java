@@ -14,7 +14,7 @@ import com.test.web.io.common.Tokenizer;
  * @param <TOKENIZER>
  */
 
-public interface HTMLParserListener<ELEMENT, TOKENIZER extends Tokenizer> {
+public interface IHTMLParserListener<ELEMENT, TOKENIZER extends Tokenizer> {
 
 	ELEMENT onElementStart(TOKENIZER tokenizer, HTMLElement element) throws IOException;
 
