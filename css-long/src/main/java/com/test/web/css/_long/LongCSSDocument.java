@@ -1,5 +1,7 @@
 package com.test.web.css._long;
 
+import java.util.List;
+
 import com.test.web.css.common.CSSState;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSStyle;
@@ -28,22 +30,30 @@ public final class LongCSSDocument
 	@Override
 	public boolean isSet(CSSTarget target, String targetName, CSStyle style) {
 
-		final Integer entry = state.get(target, targetName);
+		final List<Integer> entries = state.get(target, targetName);
 
 		final boolean isSet;
 
-		if (entry == null) {
+		if (entries == null) {
 			isSet = false;
 		}
 		else {
-			isSet = LongCSS.hasStyle(style, buf(entry), offset(entry));
+			boolean has = false;
+			for (int entry : entries) {
+				if (LongCSS.hasStyle(style, buf(entry), offset(entry))) {
+					has = true;
+					break;
+				}
+			}
+			
+			isSet = has;
 		}
 
 		return isSet;
 	}
 	
 	@Override
-	public Integer get(CSSTarget target, String targetName) {
+	public List<Integer> get(CSSTarget target, String targetName) {
 		return state.get(target, targetName);
 	}
 	

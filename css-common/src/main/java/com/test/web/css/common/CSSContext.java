@@ -113,10 +113,13 @@ public class CSSContext<TARGET> {
 		
 
 	private void applyLayoutStyles(ICSSDocument<TARGET> document, CSSTarget cssTarget, String targetName, CSSLayoutStyles result) {
-		final TARGET target = document.get(cssTarget, targetName);
+		final List<TARGET> targets = document.get(cssTarget, targetName);
 
-		if (target != null) {
-			applyLayoutStyles(document, target, result);
+		if (targets != null) {
+			
+			for (TARGET target : targets) {
+				applyLayoutStyles(document, target, result);
+			}
 		}
 	}
 	

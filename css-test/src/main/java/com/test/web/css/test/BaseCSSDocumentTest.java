@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
+import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSJustify;
@@ -37,7 +38,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		
 		parser.parseCSS();
 		
-		final ELEMENT h1Ref = doc.get(CSSTarget.TAG, "h1");
+		final ELEMENT h1Ref = doc.get(CSSTarget.TAG, "h1").get(0);
 		
 		assertThat(doc.isSet(CSSTarget.TAG, "h1", CSStyle.HEIGHT)).isTrue();
 		assertThat(doc.isSet(CSSTarget.TAG, "h1", CSStyle.WIDTH)).isTrue();
@@ -51,7 +52,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		assertThat(doc.getWidthUnit(h1Ref)).isEqualTo(CSSUnit.PCT);
 		assertThat(doc.getWidth(h1Ref)).isEqualTo(20);
 		
-		final ELEMENT idRef = doc.get(CSSTarget.ID, "an_element");
+		final ELEMENT idRef = doc.get(CSSTarget.ID, "an_element").get(0);
 
 		assertThat(doc.isSet(idRef, CSStyle.MARGIN_LEFT)).isTrue();
 		assertThat(doc.isSet(idRef, CSStyle.MARGIN_RIGHT)).isTrue();
@@ -75,16 +76,23 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		assertThat(margins.topType).isEqualTo(CSSJustify.NONE);
 		assertThat(margins.bottomType).isEqualTo(CSSJustify.NONE);
 
-		final ELEMENT classRef = doc.get(CSSTarget.CLASS, "a_class");
-		assertThat(doc.isSet(classRef, CSStyle.POSITION)).isTrue();
-		assertThat(doc.isSet(classRef, CSStyle.FLOAT)).isTrue();
-		assertThat(doc.isSet(classRef, CSStyle.PADDING_TOP)).isTrue();
+		final ELEMENT classRef = doc.get(CSSTarget.CLASS, "a_class").get(0);
+		checkThirdBlock(doc, classRef);
 
-		assertThat(doc.getFloat(classRef)).isEqualTo(CSSFloat.RIGHT);
-		assertThat(doc.getPosition(classRef)).isEqualTo(CSSPosition.ABSOLUTE);
+		final ELEMENT idRef2 = doc.get(CSSTarget.ID, "an_element").get(1);
+		checkThirdBlock(doc, idRef2);
+	}
+	
+	private void checkThirdBlock(ICSSDocument<ELEMENT> doc, ELEMENT ref) {
+		assertThat(doc.isSet(ref, CSStyle.POSITION)).isTrue();
+		assertThat(doc.isSet(ref, CSStyle.FLOAT)).isTrue();
+		assertThat(doc.isSet(ref, CSStyle.PADDING_TOP)).isTrue();
+
+		assertThat(doc.getFloat(ref)).isEqualTo(CSSFloat.RIGHT);
+		assertThat(doc.getPosition(ref)).isEqualTo(CSSPosition.ABSOLUTE);
 		
 		final TestCSSJustify padding = new TestCSSJustify();
-		doc.getPadding(classRef, padding, null);
+		doc.getPadding(ref, padding, null);
 		
 		System.out.println("Padding: " + padding);
 

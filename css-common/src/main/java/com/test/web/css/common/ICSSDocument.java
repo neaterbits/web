@@ -1,5 +1,7 @@
 package com.test.web.css.common;
 
+import java.util.List;
+
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSStyle;
 
@@ -24,6 +26,6 @@ public interface ICSSDocument<TARGET> extends ICSSDocumentStyles<TARGET> {
 	
 	boolean isSet(CSSTarget target, String targetName, CSStyle style);
 
-	TARGET get(CSSTarget target, String targetName);
+	List<TARGET> get(CSSTarget target, String targetName);
 	
 }

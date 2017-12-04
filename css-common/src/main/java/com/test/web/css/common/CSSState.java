@@ -1,41 +1,42 @@
 package com.test.web.css.common;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 
 import com.test.web.css.common.enums.CSSTarget;
+import com.test.web.types.MapOfList;
 
 public final class CSSState<ELEMENT> {
 	// CSS types by element tag, ID and class
-	private Map<String, ELEMENT> byTag;
-	private Map<String, ELEMENT> byId;
-	private Map<String, ELEMENT> byClass;
+	private MapOfList<String, ELEMENT> byTag;
+	private MapOfList<String, ELEMENT> byId;
+	private MapOfList<String, ELEMENT> byClass;
 
 	public CSSState() {
 		
 	}
 	
-	private Map<String, ELEMENT> getMap(CSSTarget target) {
-		final Map<String, ELEMENT> map;
+	private MapOfList<String, ELEMENT> getMap(CSSTarget target) {
+		final MapOfList<String, ELEMENT> map;
 		
 		switch (target) {
 		case TAG:
 			if (this.byTag == null) {
-				this.byTag = new HashMap<>();
+				this.byTag = new MapOfList<>();
 			}
 			map = this.byTag;
 			break;
 			
 		case ID:
 			if (this.byId == null) {
-				this.byId = new HashMap<>();
+				this.byId = new MapOfList<>();
 			}
 			map = this.byId;
 			break;
 
 		case CLASS:
 			if (this.byClass == null) {
-				this.byClass = new HashMap<>();
+				this.byClass = new MapOfList<>();
 			}
 			map = this.byClass;
 			break;
@@ -47,8 +48,10 @@ public final class CSSState<ELEMENT> {
 		return map;
 	}
 
-	public ELEMENT get(CSSTarget target, String targetName) {
-		return getMap(target).get(targetName);
+	public List<ELEMENT> get(CSSTarget target, String targetName) {
+		final List<ELEMENT> elems = getMap(target).get(targetName);
+		
+		return elems != null ? elems : Collections.emptyList();
 	}
 
 	public void add(CSSTarget target, String targetName, ELEMENT element) {
@@ -57,26 +60,26 @@ public final class CSSState<ELEMENT> {
 			throw new IllegalArgumentException("no target name");
 		}
 		
-		final Map<String, ELEMENT> map;
+		final MapOfList<String, ELEMENT> map;
 		
 		switch (target) {
 		case TAG:
 			if (this.byTag == null) {
-				this.byTag = new HashMap<>();
+				this.byTag = new MapOfList<>();
 			}
 			map = this.byTag;
 			break;
 			
 		case ID:
 			if (this.byId == null) {
-				this.byId = new HashMap<>();
+				this.byId = new MapOfList<>();
 			}
 			map = this.byId;
 			break;
 
 		case CLASS:
 			if (this.byClass == null) {
-				this.byClass = new HashMap<>();
+				this.byClass = new MapOfList<>();
 			}
 			map = this.byClass;
 			break;
@@ -85,11 +88,6 @@ public final class CSSState<ELEMENT> {
 			throw new IllegalArgumentException("Unexpected target " + target);
 		}
 
-		// Store in map
-		if (map.containsKey(targetName)) {
-			throw new IllegalStateException("TODO: handle multiple instances for same target name");
-		}
-
-		map.put(targetName, element);
+		map.add(targetName, element);
 	}
 }
