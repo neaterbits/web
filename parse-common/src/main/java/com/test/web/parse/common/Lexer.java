@@ -104,7 +104,7 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 				// If found a matching token, return that
 				if (longestFoundSoFar != null) {
 					found = longestFoundSoFar;
-					this.buffered = val; // put EOF back
+					bufferCharacter(val); // put EOF back
 				}
 				else {
 					if (tokEOF != null) {
@@ -128,6 +128,7 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 			
 			final char c = (char)val;
 			
+			// for showing lineno in case of error
 			if (c == '\n') {
 				++ lineNo;
 			}
@@ -180,7 +181,7 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 			if (numPossibleMatch == 0) {
 
 				// If read a character, buffer it for next iteration and remove from buffer
-				this.buffered = val;
+				bufferCharacter(val);
 
 				if (cur.charAt(cur.length() - 1) != c) {
 					throw new IllegalStateException("Mismatch of last char: " + c);
@@ -366,6 +367,15 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		}
 
 		return ret;
+	}
+	
+	private void bufferCharacter(int val) {
+		this.buffered = val;
+		
+		if ((char) val == '\n') {
+			// if buffering newline, subtract from previously increased lineNo
+			-- lineNo;
+		}
 	}
 	
 	public final String get() {
