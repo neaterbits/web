@@ -379,6 +379,10 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		case MIN_HEIGHT:
 			semiColonRead = parseMin((size, unit, type) -> listener.onMinHeight(context, size, unit, type));
 			break;
+			
+		case FONT_SIZE:
+			semiColonRead = parseFontSize(context);
+			break;
 		
 		default:
 			throw new UnsupportedOperationException("Unknown element " + element);
@@ -730,6 +734,32 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		}
 		
 		return false;
+	}
+
+	
+	private static final CSSToken [] FONTSIZE_TOKENS = copyTokens(token -> token.getFontSize() != null, CSSToken.INTEGER);
+	
+	private boolean parseFontSize(LISTENER_CONTEXT context) throws NumberFormatException, IOException, ParserException {
+		CSSToken token = lexSkipWSAndComment(FONTSIZE_TOKENS);
+		
+		final boolean semiColonRead;
+		
+		switch (token) {
+		case INTEGER:
+			// parse as size
+			semiColonRead = parseSizeValueAfterInt(Integer.parseInt(lexer.get()), (value, unit) -> listener.onFontSize(context, value, unit, null));
+			break;
+			
+		case NONE:
+			throw lexer.unexpectedToken();
+			
+		default:
+			listener.onFontSize(context, 0, null, token.getFontSize());
+			semiColonRead = false;
+			break;
+		}
+		
+		return semiColonRead;
 	}
 
 	private static final CSSToken [] POSITION_TOKENS = copyTokens(token -> token.getPosition() != null);

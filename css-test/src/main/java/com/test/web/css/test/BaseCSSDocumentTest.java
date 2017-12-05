@@ -7,6 +7,7 @@ import java.io.IOException;
 import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSFloat;
+import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTarget;
@@ -107,6 +108,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 	
 	public void testMargins() throws IOException, ParserException {
+		
 		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_MARGINS);
 	
 		checkMargin(doc, "margin_auto",
@@ -165,6 +167,22 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		assertThat(DecimalSize.decodeToInt(margins.left)).isEqualTo(left);
 		assertThat(margins.leftUnit).isEqualTo(leftUnit);
 		assertThat(margins.leftType).isEqualTo(leftJustify);
+	}
+	
+	public void testFontSize() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_FONTSIZE);
+
+		final ELEMENT medium = doc.get(CSSTarget.ID, "fontsize_medium").get(0);
+		
+		assertThat(doc.getFontSize(medium)).isEqualTo(0);
+		assertThat(doc.getFontSizeUnit(medium)).isEqualTo(null);
+		assertThat(doc.getFontSizeEnum(medium)).isEqualTo(CSSFontSize.MEDIUM);
+		
+		final ELEMENT fs20px = doc.get(CSSTarget.ID, "fontsize_20px").get(0);
+
+		assertThat(DecimalSize.decodeToInt(doc.getFontSize(fs20px))).isEqualTo(20);
+		assertThat(doc.getFontSizeUnit(fs20px)).isEqualTo(CSSUnit.PX);
+		assertThat(doc.getFontSizeEnum(fs20px)).isEqualTo(null);
 	}
 	
 	private static class TestCSSJustify implements ICSSJustify<Void> {

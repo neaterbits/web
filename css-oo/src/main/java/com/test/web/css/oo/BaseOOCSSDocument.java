@@ -4,6 +4,7 @@ import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
+import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
@@ -273,6 +274,12 @@ public abstract class BaseOOCSSDocument
 	public void onMinHeight(Void context, int height, CSSUnit unit, CSSMin type) {
 		ref().setMinHeight(height, unit, type);
 	}
+	
+	
+	@Override
+	public void onFontSize(Void context, int fontSize, CSSUnit fontSizeUnit, CSSFontSize fontSizeEnum) {
+		ref().setFontSize(fontSize, fontSizeUnit, fontSizeEnum);
+	}
 
 	@Override
 	public short getZIndex(OOCSSElement ref) {
@@ -294,6 +301,16 @@ public abstract class BaseOOCSSDocument
 		return ref.getFontSize();
 	}
 	
+	@Override
+	public CSSUnit getFontSizeUnit(OOCSSElement ref) {
+		return ref.getFontSizeUnit();
+	}
+
+	@Override
+	public CSSFontSize getFontSizeEnum(OOCSSElement ref) {
+		return ref.getFontSizeEnum();
+	}
+
 	protected final OOCSSElement allocateCurParseElement() {
 		this.curParseElement = new OOCSSElement();
 		

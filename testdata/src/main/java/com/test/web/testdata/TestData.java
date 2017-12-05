@@ -49,7 +49,17 @@ public class TestData {
 			"#margin_4 {\n" +
 			"  margin : 35px 15px 30px 20px;\n" +
 			"}\n";	
-	
+
+
+	public static final String CSS_FONTSIZE =
+			"#fontsize_medium {\n" +
+			"  font-size : medium;\n" +
+			"}\n" +
+
+			"#fontsize_20px {\n" +
+			"  font-size : 20px;\n" +
+			"}\n";
+
 	private static final String DOCTYPE = "<!DOCTYPE HTML PUBLIC \"-//W3C/DTD HTML 4.01 Frameset//EN\" \"http://w3.org/TR/html4/frameset.dtd\">";
 	
 	public static final String HTML =

@@ -2,6 +2,7 @@ package com.test.web.css.common;
 
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
+import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
@@ -49,6 +50,10 @@ public interface ICSSDocumentStyles<TARGET> {
 	String getFontName(TARGET ref);
 	
 	int getFontSize(TARGET ref);
+	
+	CSSUnit getFontSizeUnit(TARGET ref);
+	
+	CSSFontSize getFontSizeEnum(TARGET ref);
 	
 	short getZIndex(TARGET ref);
 

@@ -6,6 +6,7 @@ import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
+import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
@@ -213,6 +214,12 @@ public abstract class BaseLongCSSDocument
 	}
 
 	@Override
+	public void onFontSize(Void context, int fontSize, CSSUnit fontSizeUnit, CSSFontSize fontSizeEnum) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public short getZIndex(Integer ref) {
 		return LongCSS.getZIndex(buf(ref), offset(ref));
 	}
@@ -236,6 +243,18 @@ public abstract class BaseLongCSSDocument
 		return LongCSS.getFontSize(buf(ref), offset(ref));
 	}
 	
+	@Override
+	public CSSUnit getFontSizeUnit(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSFontSize getFontSizeEnum(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	@Override
 	public int getMinWidth(Integer ref) {
 		// TODO Auto-generated method stub
