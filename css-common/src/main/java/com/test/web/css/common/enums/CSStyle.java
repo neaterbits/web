@@ -19,6 +19,7 @@ public enum CSStyle implements IKeyValueList {
 	
 	Z_INDEX("z-index", ValueType.ONE),
 	
+	COLOR("color", ValueType.ONE),
 	BACKGROUND_COLOR("background-color", ValueType.ONE),
 	
 	MARGIN("margin", ValueType.ONE),

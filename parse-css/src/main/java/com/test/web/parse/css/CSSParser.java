@@ -5,6 +5,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSForeground;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
@@ -310,9 +312,19 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		case HEIGHT:
 			semiColonRead = parseSizeValue((size, unit) -> listener.onHeight(context, size, unit));
 			break;
+
+		case COLOR:
+			semiColonRead = parseFgColor(
+					(r, g, b, a) -> listener.onColor(context, r, g, b, a),
+					cssColor -> listener.onColor(context, cssColor),
+					type -> listener.onColor(context, type));
+			break;
 			
 		case BACKGROUND_COLOR:
-			semiColonRead = parseColor((r, g, b) -> listener.onBackgroundColor(context, r, g, b));
+			semiColonRead = parseBgColor(
+					(r, g, b, a) -> listener.onBackgroundColor(context, r, g, b, a),
+					cssColor -> listener.onBackgroundColor(context, cssColor),
+					type -> listener.onBackgroundColor(context, type));
 			break;
 			
 		case MARGIN_LEFT:
@@ -681,8 +693,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			throw lexer.unexpectedToken();
 		}
 		
-		final int afterDecimal = Integer.parseInt(lexer.get());
-		final DecimalSize value = new DecimalSize(beforeDecimal, afterDecimal);
+		final DecimalSize value = new DecimalSize(beforeDecimal, lexer.get());
 		
 		// Parse unit
 		token = lexer.lex(UNIT_OR_SEMICOLON_TOKENS);
@@ -706,9 +717,36 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		return semiColonRead;
 	}
 	
-	private boolean parseColor(ColorFunction function) throws IOException, ParserException {
+	private static final CSSToken [] COLOR_TOKENS = copyTokens(token -> token.getColor() != null, CSSToken.COLOR_MARKER, CSSToken.FUNCTION_RGB, CSSToken.FUNCTION_RGBA);
 
-		CSSToken token = lexSkipWSAndComment(CSSToken.COLOR_MARKER);
+	private static final CSSToken [] FG_COLOR_TOKENS = copyTokens(token -> token.getForeground() != null, COLOR_TOKENS);
+
+	private static final CSSToken [] BG_COLOR_TOKENS = copyTokens(token -> token.getBackground() != null, COLOR_TOKENS);
+
+	private boolean parseFgColor(IColorRGBFunction rgbColor, ICSSColorFunction cssColor, Consumer<CSSForeground> colorType) throws IOException, ParserException {
+		final CSSToken token = parseColor(rgbColor, cssColor, FG_COLOR_TOKENS);
+		
+		if (token.getForeground() != null) {
+			colorType.accept(token.getForeground());
+		}
+		
+		return false;
+	}
+
+	private boolean parseBgColor(IColorRGBFunction rgbColor, ICSSColorFunction cssColor, Consumer<CSSBackground> colorType) throws IOException, ParserException {
+		final CSSToken token = parseColor(rgbColor, cssColor, BG_COLOR_TOKENS);
+		
+		if (token.getBackground() != null) {
+			// special type, call callback
+			colorType.accept(token.getBackground());
+		}
+		
+		return false;
+	}
+
+	private CSSToken parseColor(IColorRGBFunction rgbColor, ICSSColorFunction cssColor, CSSToken [] tokens) throws IOException, ParserException {
+
+		CSSToken token = lexSkipWSAndComment(tokens);
 		
 		switch (token) {
 		case COLOR_MARKER:
@@ -725,18 +763,155 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			}
 			
 			// Parse into hex values
-			function.onColor(
+			rgbColor.onColor(
 					hexValue(hexString, 0, 2),
-					hexValue(hexString, 0, 2),
-					hexValue(hexString, 4, 2)
+					hexValue(hexString, 2, 2),
+					hexValue(hexString, 4, 2),
+					DecimalSize.NONE
 			);
+			break;
+
+		case FUNCTION_RGB:
+			parseRGBFunction(rgbColor);
+			break;
+			
+		case FUNCTION_RGBA:
+			parseRGBAFunction(rgbColor);
+			break;
+			
+		case NONE:
+			throw lexer.unexpectedToken();
+			
+		default:
+			// a CSS standard color
+			if (token.getColor() != null) {
+				cssColor.onColor(token.getColor());
+			}
+			else {
+				// One of the special enum values, like initial or inherit
+				// handle this in the calling function
+			}
+			break;
+		}
+		
+		return token;
+	}
+
+	private void assureToken(CSSToken expected) throws IOException, ParserException {
+		CSSToken token = lexer.lex(expected);
+		
+		if (token != expected) {
+			throw lexer.unexpectedToken();
+		}
+	}
+	
+	private void assureTokenSkipWSAndComment(CSSToken expected) throws IOException, ParserException {
+		CSSToken token = lexSkipWSAndComment(expected);
+		
+		if (token != expected) {
+			throw lexer.unexpectedToken();
+		}
+	}
+	
+	private int parseInt() throws IOException, ParserException {
+		assureTokenSkipWSAndComment(CSSToken.INTEGER);
+		
+		return Integer.parseInt(lexer.get());
+	}
+
+	private int parseDecimal() throws IOException, ParserException {
+		
+		// Allow to start with '.'
+		
+		CSSToken token = lexer.lex(CSSToken.INTEGER, CSSToken.DOT);
+		
+		int beforeDot;
+		String afterDot;
+		
+		switch (token) {
+		case INTEGER:
+			beforeDot = Integer.parseInt(lexer.get());
+			
+			// may or may not be a dot here
+			token = lexSkipWSAndComment(CSSToken.DOT);
+			if (token == CSSToken.DOT) {
+				assureTokenSkipWSAndComment(CSSToken.INTEGER);
+				afterDot = lexer.get();
+			}
+			else {
+				afterDot = "";
+			}
+			break;
+			
+		case DOT:
+			beforeDot = 0;
+			assureTokenSkipWSAndComment(CSSToken.INTEGER);
+			afterDot = lexer.get();
 			break;
 			
 		default:
 			throw lexer.unexpectedToken();
 		}
 		
-		return false;
+		return new DecimalSize(beforeDot, afterDot).encodeAsInt();
+	}
+
+	private void parseRGBFunction(IColorRGBFunction rgbFunction) throws IOException, ParserException {
+		final Object [] vals = parseFunctionParams(3, paramIdx -> parseInt());
+		
+		rgbFunction.onColor((int)vals[0], (int)vals[1], (int)vals[2], DecimalSize.NONE);
+	}
+
+	private void parseRGBAFunction(IColorRGBFunction rgbFunction) throws IOException, ParserException {
+		
+		final Object [] vals = parseFunctionParams(4, paramIdx -> paramIdx == 3 ? parseDecimal() : parseInt());
+		
+		rgbFunction.onColor((int)vals[0], (int)vals[1], (int)vals[2], (int)vals[3]);
+	}
+
+	@FunctionalInterface
+	interface IParseParam {
+		Object parse(int paramIdx) throws IOException, ParserException;
+	}
+	
+	private static final Object [] EMPTY_ARRAY = new Object[0];
+	
+	private Object [] parseFunctionParams(int numParams, IParseParam parseParam) throws IOException, ParserException {
+		// Parsed the function name already, parse the parameters
+		CSSToken token = lexSkipWSAndComment(CSSToken.PARENTHESIS_START);
+	
+		if (token != CSSToken.PARENTHESIS_START) {
+			throw lexer.unexpectedToken();
+		}
+		
+		final Object [] ret;
+		
+		if (numParams == 0) {
+			ret = EMPTY_ARRAY;
+		}
+		else {
+			ret = new Object[numParams];
+			
+			for (int i = 0; i < numParams; ++ i) {
+				
+				skipAnyWS();
+				
+				ret[i] = parseParam.parse(i);
+
+				// Comma or end parenthesis
+				final CSSToken nextToken = i == numParams - 1
+						? CSSToken.PARENTHESIS_END
+						: CSSToken.COMMA;
+				
+				token = lexSkipWSAndComment(nextToken);
+
+				if (token != nextToken) {
+					throw lexer.unexpectedToken();
+				}
+			}
+		}
+		
+		return ret;
 	}
 
 	

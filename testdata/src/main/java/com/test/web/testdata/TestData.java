@@ -60,7 +60,7 @@ public class TestData {
 			"  font-size : 20px;\n" +
 			"}\n";
 
-	public static final String CSS_FONTWEIGT =
+	public static final String CSS_FONTWEIGHT =
 			"#fontweight_normal {\n" +
 			"  font-weight : normal;\n" +
 			"}\n" +
@@ -68,6 +68,60 @@ public class TestData {
 			"#fontweight_300 {\n" +
 			"  font-weight : 300;\n" +
 			"}\n";
+
+	public static final String CSS_COLORS =
+			"#color_rgba1 {\n" +
+			"  color : rgba(125, 234, 83, 1);\n" +
+			"}\n" +
+
+			"#color_rgba2 {\n" +
+			"  color : rgba(134, 76, 223, .1);\n" +
+			"}\n" +
+	
+			"#color_rgba3 {\n" +
+			"  color : rgba(63, 89, 23, 0.015);\n" +
+			"}\n" +
+
+			"#color_rgb {\n" +
+			"  color : rgb(39, 43, 24);\n" +
+			"}\n" +
+			
+			"#color_turquoise {\n" +
+			"  color : turquoise;\n" +
+			"}\n" +
+
+			"#color_initial {\n" +
+			"  color : initial;\n" +
+			"}\n"
+			;
+	
+	public static final String CSS_BG_COLORS =
+			"#bgcolor_rgba1 {\n" +
+			"  background-color : rgba(125, 234, 83, 1);\n" +
+			"}\n" +
+
+			"#bgcolor_rgba2 {\n" +
+			"  background-color : rgba(134, 76, 223, .1);\n" +
+			"}\n" +
+	
+			"#bgcolor_rgba3 {\n" +
+			"  background-color : rgba(63, 89, 23, 0.015);\n" +
+			"}\n" +
+
+			"#bgcolor_rgb {\n" +
+			"  background-color : rgb(39, 43, 24);\n" +
+			"}\n" +
+			
+			"#bgcolor_turquoise {\n" +
+			"  background-color : turquoise;\n" +
+			"}\n" +
+
+			"#bgcolor_initial {\n" +
+			"  background-color : transparent;\n" +
+			"}\n"
+			;
+
+
 
 	private static final String DOCTYPE = "<!DOCTYPE HTML PUBLIC \"-//W3C/DTD HTML 4.01 Frameset//EN\" \"http://w3.org/TR/html4/frameset.dtd\">";
 	

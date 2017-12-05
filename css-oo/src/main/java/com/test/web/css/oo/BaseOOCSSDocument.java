@@ -2,10 +2,13 @@ package com.test.web.css.oo;
 
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSJustify;
+import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
+import com.test.web.css.common.enums.CSSForeground;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
@@ -118,6 +121,56 @@ public abstract class BaseOOCSSDocument
 	}
 
 	@Override
+	public int getColorR(OOCSSElement ref) {
+		return ref.getColorR();
+	}
+
+	@Override
+	public int getColorG(OOCSSElement ref) {
+		return ref.getColorG();
+	}
+
+	@Override
+	public int getColorB(OOCSSElement ref) {
+		return ref.getColorB();
+	}
+
+	@Override
+	public int getColorA(OOCSSElement ref) {
+		return ref.getColorA();
+	}
+	
+	@Override
+	public CSSForeground getColorType(OOCSSElement ref) {
+		return ref.getColorType();
+	}
+
+	@Override
+	public int getBgColorR(OOCSSElement ref) {
+		return ref.getBgColorR();
+	}
+
+	@Override
+	public int getBgColorG(OOCSSElement ref) {
+		return ref.getBgColorG();
+	}
+
+	@Override
+	public int getBgColorB(OOCSSElement ref) {
+		return ref.getBgColorB();
+	}
+
+	@Override
+	public int getBgColorA(OOCSSElement ref) {
+		return ref.getBgColorA();
+	}
+
+	@Override
+	public CSSBackground getBgColorType(OOCSSElement ref) {
+		return ref.getBgColorType();
+	}
+
+	@Override
 	public int getMinWidth(OOCSSElement ref) {
 		return ref.getMinWidth();
 	}
@@ -224,11 +277,35 @@ public abstract class BaseOOCSSDocument
 		
 		ref().setPadding(top, topUnit, topType, right, rightUnit, rightType, bottom, bottomUnit, bottomType, left, leftUnit, leftType);
 	}
+	
+	@Override
+	public void onColor(Void context, int r, int g, int b, int a) {
+		ref().setColorRGB(r, g, b, a);
+	}
 
 	@Override
-	public void onBackgroundColor(Void context, int r, int g, int b) {
-		// TODO Auto-generated method stub
-		
+	public void onColor(Void context, CSSColor color) {
+		ref().setColorCSS(color);
+	}
+	
+	@Override
+	public void onColor(Void context, CSSForeground foreground) {
+		ref().setColorType(foreground);
+	}
+
+	@Override
+	public void onBackgroundColor(Void context, int r, int g, int b, int a) {
+		ref().setBgColorRGB(r, g, b, a);
+	}
+
+	@Override
+	public void onBackgroundColor(Void context, CSSColor color) {
+		ref().setBgColorCSS(color);
+	}
+
+	@Override
+	public void onBackgroundColor(Void context, CSSBackground background) {
+		ref().setBgColorType(background);
 	}
 
 	@Override

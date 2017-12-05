@@ -4,10 +4,13 @@ import com.test.web.buffers.LongBuffersIntegerIndex;
 import com.test.web.buffers.StringStorageBuffer;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSJustify;
+import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
+import com.test.web.css.common.enums.CSSForeground;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
@@ -116,6 +119,66 @@ public abstract class BaseLongCSSDocument
 		return LongCSS.getOverflow(buf(ref), offset(ref));
 	}
 
+	@Override
+	public int getColorR(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getColorG(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getColorB(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getColorA(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	@Override
+	public CSSForeground getColorType(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getBgColorR(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getBgColorG(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getBgColorB(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getBgColorA(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSBackground getBgColorType(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	/***************************************************** Parse listener *****************************************************/ 
 	
 
@@ -160,7 +223,37 @@ public abstract class BaseLongCSSDocument
 	}
 
 	@Override
-	public void onBackgroundColor(Void context, int r, int g, int b) {
+	public void onColor(Void context, int r, int g, int b, int a) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onColor(Void context, CSSColor color) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onColor(Void context, CSSForeground foreground) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onBackgroundColor(Void context, int r, int g, int b, int a) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onBackgroundColor(Void context, CSSColor color) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onBackgroundColor(Void context, CSSBackground background) {
 		// TODO Auto-generated method stub
 		
 	}

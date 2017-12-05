@@ -6,9 +6,11 @@ import java.io.IOException;
 
 import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.ICSSJustify;
+import com.test.web.css.common.enums.CSSBackground;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
+import com.test.web.css.common.enums.CSSForeground;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTarget;
@@ -187,7 +189,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 	
 	public void testFontWeight() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_FONTWEIGT);
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_FONTWEIGHT);
 
 		final ELEMENT normal = doc.get(CSSTarget.ID, "fontweight_normal").get(0);
 		
@@ -198,6 +200,108 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 
 		assertThat(doc.getFontWeightNumber(fw300)).isEqualTo(300);
 		assertThat(doc.getFontWeightEnum(fw300)).isEqualTo(null);
+	}
+
+	public void testColor() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_COLORS);
+
+		final ELEMENT rgba1 = doc.get(CSSTarget.ID, "color_rgba1").get(0);
+		
+		assertThat(doc.getColorR(rgba1)).isEqualTo(125);
+		assertThat(doc.getColorG(rgba1)).isEqualTo(234);
+		assertThat(doc.getColorB(rgba1)).isEqualTo(83);
+		assertThat(DecimalSize.decodeToInt(doc.getColorA(rgba1))).isEqualTo(1);
+		
+		final ELEMENT rgba2 = doc.get(CSSTarget.ID, "color_rgba2").get(0);
+
+		assertThat(doc.getColorR(rgba2)).isEqualTo(134);
+		assertThat(doc.getColorG(rgba2)).isEqualTo(76);
+		assertThat(doc.getColorB(rgba2)).isEqualTo(223);
+		
+		try {
+			DecimalSize.decodeToInt(doc.getColorA(rgba2));
+			fail("Expected exception since is a decimla");
+		}
+		catch (IllegalStateException ex) {
+		}
+		
+		assertThat(DecimalSize.decodeToString(doc.getColorA(rgba2))).isEqualTo("0.1");
+
+		final ELEMENT rgba3 = doc.get(CSSTarget.ID, "color_rgba3").get(0);
+
+		assertThat(doc.getColorR(rgba3)).isEqualTo(63);
+		assertThat(doc.getColorG(rgba3)).isEqualTo(89);
+		assertThat(doc.getColorB(rgba3)).isEqualTo(23);
+		assertThat(DecimalSize.decodeToString(doc.getColorA(rgba3))).isEqualTo("0.015");
+
+		final ELEMENT rgb = doc.get(CSSTarget.ID, "color_rgb").get(0);
+
+		assertThat(doc.getColorR(rgb)).isEqualTo(39);
+		assertThat(doc.getColorG(rgb)).isEqualTo(43);
+		assertThat(doc.getColorB(rgb)).isEqualTo(24);
+		assertThat(doc.getColorA(rgb)).isEqualTo(DecimalSize.NONE);
+
+		final ELEMENT turquoise = doc.get(CSSTarget.ID, "color_turquoise").get(0);
+
+		assertThat(doc.getColorR(turquoise)).isEqualTo(0x40);
+		assertThat(doc.getColorG(turquoise)).isEqualTo(0xE0);
+		assertThat(doc.getColorB(turquoise)).isEqualTo(0xD0);
+		assertThat(doc.getColorA(turquoise)).isEqualTo(DecimalSize.NONE);
+
+		final ELEMENT initial = doc.get(CSSTarget.ID, "color_initial").get(0);
+		
+		assertThat(doc.getColorType(initial)).isEqualTo(CSSForeground.INITIAL);
+	}
+
+	public void testBgColor() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_COLORS);
+
+		final ELEMENT rgba1 = doc.get(CSSTarget.ID, "bgcolor_rgba1").get(0);
+		
+		assertThat(doc.getBgColorR(rgba1)).isEqualTo(125);
+		assertThat(doc.getBgColorG(rgba1)).isEqualTo(234);
+		assertThat(doc.getBgColorB(rgba1)).isEqualTo(83);
+		assertThat(DecimalSize.decodeToInt(doc.getBgColorA(rgba1))).isEqualTo(1);
+		
+		final ELEMENT rgba2 = doc.get(CSSTarget.ID, "bgcolor_rgba2").get(0);
+
+		assertThat(doc.getBgColorR(rgba2)).isEqualTo(134);
+		assertThat(doc.getBgColorG(rgba2)).isEqualTo(76);
+		assertThat(doc.getBgColorB(rgba2)).isEqualTo(223);
+		
+		try {
+			DecimalSize.decodeToInt(doc.getBgColorA(rgba2));
+			fail("Expected exception since is a decimal");
+		}
+		catch (IllegalStateException ex) {
+		}
+		
+		assertThat(DecimalSize.decodeToString(doc.getBgColorA(rgba2))).isEqualTo("0.1");
+
+		final ELEMENT rgba3 = doc.get(CSSTarget.ID, "bgcolor_rgba3").get(0);
+
+		assertThat(doc.getBgColorR(rgba3)).isEqualTo(63);
+		assertThat(doc.getBgColorG(rgba3)).isEqualTo(89);
+		assertThat(doc.getBgColorB(rgba3)).isEqualTo(23);
+		assertThat(DecimalSize.decodeToString(doc.getBgColorA(rgba3))).isEqualTo("0.015");
+
+		final ELEMENT rgb = doc.get(CSSTarget.ID, "bgcolor_rgb").get(0);
+
+		assertThat(doc.getBgColorR(rgb)).isEqualTo(39);
+		assertThat(doc.getBgColorG(rgb)).isEqualTo(43);
+		assertThat(doc.getBgColorB(rgb)).isEqualTo(24);
+		assertThat(doc.getBgColorA(rgb)).isEqualTo(DecimalSize.NONE);
+
+		final ELEMENT turquoise = doc.get(CSSTarget.ID, "bgcolor_turquoise").get(0);
+
+		assertThat(doc.getBgColorR(turquoise)).isEqualTo(0x40);
+		assertThat(doc.getBgColorG(turquoise)).isEqualTo(0xE0);
+		assertThat(doc.getBgColorB(turquoise)).isEqualTo(0xD0);
+		assertThat(doc.getBgColorA(turquoise)).isEqualTo(DecimalSize.NONE);
+
+		final ELEMENT initial = doc.get(CSSTarget.ID, "bgcolor_initial").get(0);
+		
+		assertThat(doc.getBgColorType(initial)).isEqualTo(CSSBackground.TRANSPARENT);
 	}
 
 	private static class TestCSSJustify implements ICSSJustify<Void> {

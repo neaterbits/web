@@ -1,9 +1,12 @@
 package com.test.web.css.oo;
 
+import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
+import com.test.web.css.common.enums.CSSForeground;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
@@ -12,6 +15,8 @@ import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
+import com.test.web.types.ColorRGB;
+import com.test.web.types.DecimalSize;
 
 public final class OOCSSElement {
 	private long styles;
@@ -37,6 +42,16 @@ public final class OOCSSElement {
 	private CSSTextAlign textAlign;
 	private CSSOverflow overflow;
 	
+	private int colorRGB; // bit-shifted, ColorRGB.NONE is not set
+	private int colorAlpha; // decimal encoded, DecimalSize.NONE if not set
+	private CSSColor colorCSS; // enumerated color
+	private CSSForeground colorType;
+	
+	private int bgColorRGB; // bit-shifted, ColorRGB.NONE is not set
+	private int bgColorAlpha; // decimal encoded, DecimalSize.NONE if not set
+	private CSSColor bgColorCSS; // enumerated color
+	private CSSBackground bgColorType;
+
 	private short zIndex;
 	
 	private String fontFamily;
@@ -73,6 +88,12 @@ public final class OOCSSElement {
 	public OOCSSElement() {
 		this.margins = new OOWrapping();
 		this.padding = new OOWrapping();
+
+		this.colorRGB = ColorRGB.NONE;
+		this.colorAlpha = DecimalSize.NONE;
+
+		this.bgColorRGB = ColorRGB.NONE;
+		this.bgColorAlpha = DecimalSize.NONE;
 	}
 	
 	boolean hasStyle(CSStyle style) {
@@ -340,6 +361,148 @@ public final class OOCSSElement {
 		this.overflow = overflow;
 		
 		set(CSStyle.OVERFLOW);
+	}
+
+	void setColorRGB(int r, int g, int b, int a) {
+		this.colorRGB = r << 16 | g << 8 | b;
+		this.colorAlpha = a;
+		this.colorCSS = null;
+		this.colorType = null;
+	}
+
+	CSSColor getColorCSS() {
+		return colorCSS;
+	}
+
+	void setColorCSS(CSSColor cssColor) {
+		this.colorCSS = cssColor;
+		this.colorRGB = ColorRGB.NONE;
+		this.colorAlpha = DecimalSize.NONE;
+		this.colorType = null;
+	}
+	
+	void setColorType(CSSForeground colorType) {
+		this.colorCSS = null;
+		this.colorRGB = ColorRGB.NONE;
+		this.colorAlpha = DecimalSize.NONE;
+		this.colorType = colorType;
+	}
+	
+	int getColorR() {
+		return getColorR(colorRGB, colorCSS);
+	}
+	
+	int getColorG() {
+		return getColorG(colorRGB, colorCSS);
+	}
+	
+	int getColorB() {
+		return getColorB(colorRGB, colorCSS);
+	}
+
+	int getColorA() {
+		return getColorA(colorAlpha);
+	}
+	
+	CSSForeground getColorType() {
+		return colorType;
+	}
+
+	void setBgColorRGB(int r, int g, int b, int a) {
+		this.bgColorRGB = r << 16 | g << 8 | b;
+		this.bgColorAlpha = a;
+		this.bgColorCSS = null;
+		this.bgColorType = null;
+	}
+
+	CSSColor getBgColorCSS() {
+		return bgColorCSS;
+	}
+
+	void setBgColorCSS(CSSColor cssColor) {
+		this.bgColorCSS = cssColor;
+		this.bgColorRGB = ColorRGB.NONE;
+		this.bgColorAlpha = DecimalSize.NONE;
+		this.bgColorType = null;
+	}
+	
+	void setBgColorType(CSSBackground colorType) {
+		this.bgColorCSS = null;
+		this.bgColorRGB = ColorRGB.NONE;
+		this.bgColorAlpha = DecimalSize.NONE;
+		this.bgColorType = colorType;
+	}
+	
+	int getBgColorR() {
+		return getColorR(bgColorRGB, bgColorCSS);
+	}
+	
+	int getBgColorG() {
+		return getColorG(bgColorRGB, bgColorCSS);
+	}
+	
+	int getBgColorB() {
+		return getColorB(bgColorRGB, bgColorCSS);
+	}
+
+	int getBgColorA() {
+		return getColorA(bgColorAlpha);
+	}
+	
+	CSSBackground getBgColorType() {
+		return bgColorType;
+	}
+
+	private static int getColorR(int rgb, CSSColor color) {
+		final int ret;
+		
+		if (color != null) {
+			ret = color.getRed();
+		}
+		else if (rgb != -1) {
+			ret = rgb >> 16;
+		}
+		else {
+			throw new IllegalStateException("color not set");
+		}
+		
+		return ret;
+	}
+
+	private static int getColorG(int rgb, CSSColor color) {
+		final int ret;
+		
+		if (color != null) {
+			ret = color.getGreen();
+		}
+		else if (rgb != -1) {
+			ret = (rgb & 0x0000FF00) >> 8;
+		}
+		else {
+			throw new IllegalStateException("color not set");
+		}
+		
+		return ret;
+	}
+
+	private static int getColorB(int rgb, CSSColor color) {
+		final int ret;
+		
+		if (color != null) {
+			ret = color.getBlue();
+		}
+		else if (rgb != -1) {
+			ret = rgb & 0x000000FF;
+		}
+		else {
+			throw new IllegalStateException("color not set");
+		}
+		
+		return ret;
+	}
+
+	private static int getColorA(int a) {
+		return a;
 	}
 
 	short getZIndex() {

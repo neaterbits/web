@@ -93,7 +93,6 @@ public class CSSColorTest extends TestCase {
 		assertThat(CSSColor.SLATE_BLUE.getLowerCaseName()).isEqualTo("slateblue");
 		assertThat(CSSColor.YELLOW.getUpperLowerCaseName()).isEqualTo("Yellow");
 		assertThat(CSSColor.YELLOW.getLowerCaseName()).isEqualTo("yellow");
-		
 	}
 	
 	public void testColorComponents() {

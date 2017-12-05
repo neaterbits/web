@@ -1,9 +1,11 @@
 package com.test.web.css.common;
 
+import com.test.web.css.common.enums.CSSBackground;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
+import com.test.web.css.common.enums.CSSForeground;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
@@ -46,6 +48,26 @@ public interface ICSSDocumentStyles<TARGET> {
 
 	CSSOverflow getOverflow(TARGET ref);
 	
+	int getColorR(TARGET ref);
+	
+	int getColorG(TARGET ref);
+	
+	int getColorB(TARGET ref);
+
+	int getColorA(TARGET ref);
+	
+	CSSForeground getColorType(TARGET ref);
+
+	int getBgColorR(TARGET ref);
+	
+	int getBgColorG(TARGET ref);
+	
+	int getBgColorB(TARGET ref);
+
+	int getBgColorA(TARGET ref);
+	
+	CSSBackground getBgColorType(TARGET ref);
+
 	String getFontFamily(TARGET ref);
 	
 	String getFontName(TARGET ref);

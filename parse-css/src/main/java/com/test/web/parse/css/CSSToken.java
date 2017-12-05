@@ -1,9 +1,12 @@
 package com.test.web.parse.css;
 
+import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
+import com.test.web.css.common.enums.CSSForeground;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTextAlign;
@@ -22,8 +25,8 @@ public enum CSSToken implements IToken {
 	
 	COMMENT("/*", "*/"),
 	
-	ID_MARKER('#'),
 	CLASS_MARKER('.'),
+	ID_MARKER('#'),
 	
 	ID(CharTypeHTMLElementId.INSTANCE),
 	CLASS(CharTypeHTMLElementClass.INSTANCE),
@@ -35,8 +38,13 @@ public enum CSSToken implements IToken {
 	
 	BRACKET_START('{'),
 	BRACKET_END('}'),
+	
+	PARENTHESIS_START('('),
+	PARENTHESIS_END(')'),
 
 	COLON(':'),
+	
+	COMMA(','),
 	
 	DOT('.'),
 	SEMICOLON(';'),
@@ -45,6 +53,9 @@ public enum CSSToken implements IToken {
 	EQUALS('='),
 	
 	COLOR_MARKER('#'),
+	
+	FUNCTION_RGB("rgb"),
+	FUNCTION_RGBA("rgba"),
 	
 	AUTO("auto"),
 	
@@ -55,6 +66,7 @@ public enum CSSToken implements IToken {
 	CSS_WIDTH(CSStyle.WIDTH),
 	CSS_HEIGHT(CSStyle.HEIGHT),
 	
+	CSS_COLOR(CSStyle.COLOR),
 	CSS_BACKGOUND_COLOR(CSStyle.BACKGROUND_COLOR),
 	
 	CSS_FONT_SIZE(CSStyle.FONT_SIZE),
@@ -82,6 +94,13 @@ public enum CSSToken implements IToken {
 
 	CSS_MIN_WIDTH(CSStyle.MIN_WIDTH),
 	CSS_MIN_HEIGHT(CSStyle.MIN_HEIGHT),
+
+	FGCOLOR_INITIAL(CSSForeground.INITIAL),
+	FGCOLOR_INHERIT(CSSForeground.INHERIT),
+	
+	BGCOLOR_TRNSPARENT(CSSBackground.TRANSPARENT),
+	BGCOLOR_INITIAL(CSSBackground.INITIAL),
+	BGCOLOR_INHERIT(CSSBackground.INHERIT),
 	
 	DISPLAY_INLINE(CSSDisplay.INLINE),
 	DISPLAY_BLOCK(CSSDisplay.BLOCK),
@@ -151,6 +170,155 @@ public enum CSSToken implements IToken {
 	FONTWEIGHT_INITIAL(CSSFontWeight.INITIAL),
 	FONTWEIGHT_INHERIT(CSSFontWeight.INHERIT),
 
+	CSSCOLOR_CSSCOLOR_ALICE_BLUE(CSSColor.ALICE_BLUE),
+	CSSCOLOR_ANTIQUE_WHITE(CSSColor.ANTIQUE_WHITE),
+	CSSCOLOR_AQUA(CSSColor.AQUA),
+	CSSCOLOR_AQUAMARINE(CSSColor.AQUAMARINE),
+	CSSCOLOR_AZURE(CSSColor.AZURE),
+	CSSCOLOR_BEIGE(CSSColor.BEIGE),
+	CSSCOLOR_BISQUE(CSSColor.BISQUE),
+	CSSCOLOR_BLACK(CSSColor.BLACK),
+	CSSCOLOR_BLANCHED_ALMOND(CSSColor.BLANCHED_ALMOND),
+	CSSCOLOR_BLUE(CSSColor.BLUE),
+	CSSCOLOR_BLUE_VIOLET(CSSColor.BLUE_VIOLET),
+	CSSCOLOR_BROWN(CSSColor.BROWN),
+	CSSCOLOR_BURLY_WOOD(CSSColor.BURLY_WOOD),
+	CSSCOLOR_CADET_BLUE(CSSColor.CADET_BLUE),
+	CSSCOLOR_CHARTREUSE(CSSColor.CHARTREUSE),
+	CSSCOLOR_CHOCOLATE(CSSColor.CHOCOLATE),
+	CSSCOLOR_CORAL(CSSColor.CORAL),
+	CSSCOLOR_CORNFLOWER_BLUE(CSSColor.CORNFLOWER_BLUE),
+	CSSCOLOR_CORNSILK(CSSColor.CORNSILK),
+	CSSCOLOR_CRIMSON(CSSColor.CRIMSON),
+	CSSCOLOR_CYAN(CSSColor.CYAN),
+	CSSCOLOR_DARK_BLUE(CSSColor.DARK_BLUE),
+	CSSCOLOR_DARK_CYAN(CSSColor.DARK_CYAN),
+	CSSCOLOR_DARK_GOLDEN_ROD(CSSColor.DARK_GOLDEN_ROD),
+	CSSCOLOR_DARK_GRAY(CSSColor.DARK_GRAY),
+	CSSCOLOR_DARK_GREY(CSSColor.DARK_GREY),
+	CSSCOLOR_DARK_GREEN(CSSColor.DARK_GREEN),
+	CSSCOLOR_DARK_KHAKI(CSSColor.DARK_KHAKI),
+	CSSCOLOR_DARK_MAGENTA(CSSColor.DARK_MAGENTA),
+	CSSCOLOR_DARK_OLIVE_GREEN(CSSColor.DARK_OLIVE_GREEN),
+	CSSCOLOR_DARK_ORANGE(CSSColor.DARK_ORANGE),
+	CSSCOLOR_DARK_ORCHID(CSSColor.DARK_ORCHID),
+	CSSCOLOR_DARK_RED(CSSColor.DARK_RED),
+	CSSCOLOR_DARK_SALMON(CSSColor.DARK_SALMON),
+	CSSCOLOR_DARK_SEA_GREEN(CSSColor.DARK_SEA_GREEN),
+	CSSCOLOR_DARK_SLATE_BLUE(CSSColor.DARK_SLATE_BLUE),
+	CSSCOLOR_DARK_SLATE_GRAY(CSSColor.DARK_SLATE_GRAY),
+	CSSCOLOR_DARK_SLATE_GREY(CSSColor.DARK_SLATE_GREY),
+	CSSCOLOR_DARK_TURQUOISE(CSSColor.DARK_TURQUOISE),
+	CSSCOLOR_DARK_VIOLET(CSSColor.DARK_VIOLET),
+	CSSCOLOR_DEEP_PINK(CSSColor.DEEP_PINK),
+	CSSCOLOR_DEEP_SKY_BLUE(CSSColor.DEEP_SKY_BLUE),
+	CSSCOLOR_DIM_GRAY(CSSColor.DIM_GRAY),
+	CSSCOLOR_DIM_GREY(CSSColor.DIM_GREY),
+	CSSCOLOR_DODGER_BLUE(CSSColor.DODGER_BLUE),
+	CSSCOLOR_FIRE_BRICK(CSSColor.FIRE_BRICK),
+	CSSCOLOR_FLORAL_WHITE(CSSColor.FLORAL_WHITE),
+	CSSCOLOR_FOREST_GREEN(CSSColor.FOREST_GREEN),
+	CSSCOLOR_FUCHSIA(CSSColor.FUCHSIA),
+	CSSCOLOR_GAINSBORO(CSSColor.GAINSBORO),
+	CSSCOLOR_GHOST_WHITE(CSSColor.GHOST_WHITE),
+	CSSCOLOR_GOLD(CSSColor.GOLD),
+	CSSCOLOR_GOLDEN_ROD(CSSColor.GOLDEN_ROD),
+	CSSCOLOR_GRAY(CSSColor.GRAY),
+	CSSCOLOR_GREY(CSSColor.GREY),
+	CSSCOLOR_GREEN(CSSColor.GREEN),
+	CSSCOLOR_GREEN_YELLOW(CSSColor.GREEN_YELLOW),
+	CSSCOLOR_HONEY_DEW(CSSColor.HONEY_DEW),
+	CSSCOLOR_HOT_PINK(CSSColor.HOT_PINK),
+	CSSCOLOR_INDIAN_RED(CSSColor.INDIAN_RED),
+	CSSCOLOR_INDIGO(CSSColor.INDIGO),
+	CSSCOLOR_IVORY(CSSColor.IVORY),
+	CSSCOLOR_KHAKI(CSSColor.KHAKI),
+	CSSCOLOR_LAVENDER(CSSColor.LAVENDER),
+	CSSCOLOR_LAVENDER_BLUSH(CSSColor.LAVENDER_BLUSH),
+	CSSCOLOR_LAWN_GREEN(CSSColor.LAWN_GREEN),
+	CSSCOLOR_LEMON_CHIFFON(CSSColor.LEMON_CHIFFON),
+	CSSCOLOR_LIGHT_BLUE(CSSColor.LIGHT_BLUE),
+	CSSCOLOR_LIGHT_CORAL(CSSColor.LIGHT_CORAL),
+	CSSCOLOR_LIGHT_CYAN(CSSColor.LIGHT_CYAN),
+	CSSCOLOR_LIGHT_GOLDEN_ROD_YELLOW(CSSColor.LIGHT_GOLDEN_ROD_YELLOW),
+	CSSCOLOR_LIGHT_GRAY(CSSColor.LIGHT_GRAY),
+	CSSCOLOR_LIGHT_GREY(CSSColor.LIGHT_GREY),
+	CSSCOLOR_LIGHT_GREEN(CSSColor.LIGHT_GREEN),
+	CSSCOLOR_LIGHT_PINK(CSSColor.LIGHT_PINK),
+	CSSCOLOR_LIGHT_SALMON(CSSColor.LIGHT_SALMON),
+	CSSCOLOR_LIGHT_SEA_GREEN(CSSColor.LIGHT_SEA_GREEN),
+	CSSCOLOR_LIGHT_SKY_BLUE(CSSColor.LIGHT_SKY_BLUE),
+	CSSCOLOR_LIGHT_SLATE_GRAY(CSSColor.LIGHT_SLATE_GRAY),
+	CSSCOLOR_LIGHT_SLATE_GREY(CSSColor.LIGHT_SLATE_GREY),
+	CSSCOLOR_LIGHT_STEEL_BLUE(CSSColor.LIGHT_STEEL_BLUE),
+	CSSCOLOR_LIGHT_YELLOW(CSSColor.LIGHT_YELLOW),
+	CSSCOLOR_LIME(CSSColor.LIME),
+	CSSCOLOR_LIME_GREEN(CSSColor.LIME_GREEN),
+	CSSCOLOR_LINEN(CSSColor.LINEN),
+	CSSCOLOR_MAGENTA(CSSColor.MAGENTA),
+	CSSCOLOR_MAROON(CSSColor.MAROON),
+	CSSCOLOR_MEDIUM_AQUA_MARINE(CSSColor.MEDIUM_AQUA_MARINE),
+	CSSCOLOR_MEDIUM_BLUE(CSSColor.MEDIUM_BLUE),
+	CSSCOLOR_MEDIUM_ORCHID(CSSColor.MEDIUM_ORCHID),
+	CSSCOLOR_MEDIUM_PURPLE(CSSColor.MEDIUM_PURPLE),
+	CSSCOLOR_MEDIUM_SEA_GREEN(CSSColor.MEDIUM_SEA_GREEN),
+	CSSCOLOR_MEDIUM_SLATE_BLUE(CSSColor.MEDIUM_SLATE_BLUE),
+	CSSCOLOR_MEDIUM_SPRING_GREEN(CSSColor.MEDIUM_SPRING_GREEN),
+	CSSCOLOR_MEDIUM_TURQUOISE(CSSColor.MEDIUM_TURQUOISE),
+	CSSCOLOR_MEDIUM_VIOLET_RED(CSSColor.MEDIUM_VIOLET_RED),
+	CSSCOLOR_MIDNIGHT_BLUE(CSSColor.MIDNIGHT_BLUE),
+	CSSCOLOR_MINT_CREAM(CSSColor.MINT_CREAM),
+	CSSCOLOR_MISTY_ROSE(CSSColor.MISTY_ROSE),
+	CSSCOLOR_MOCCASIN(CSSColor.MOCCASIN),
+	CSSCOLOR_NAVAJO_WHITE(CSSColor.NAVAJO_WHITE),
+	CSSCOLOR_NAVY(CSSColor.NAVY),
+	CSSCOLOR_OLD_LACE(CSSColor.OLD_LACE),
+	CSSCOLOR_OLIVE(CSSColor.OLIVE),
+	CSSCOLOR_OLIVE_DRAB(CSSColor.OLIVE_DRAB),
+	CSSCOLOR_ORANGE(CSSColor.ORANGE),
+	CSSCOLOR_ORANGE_RED(CSSColor.ORANGE_RED),
+	CSSCOLOR_ORCHID(CSSColor.ORCHID),
+	CSSCOLOR_PALE_GOLDEN_ROD(CSSColor.PALE_GOLDEN_ROD),
+	CSSCOLOR_PALE_GREEN(CSSColor.PALE_GREEN),
+	CSSCOLOR_PALE_TURQUIOSE(CSSColor.PALE_TURQUIOSE),
+	CSSCOLOR_PALE_VIOLET_RED(CSSColor.PALE_VIOLET_RED),
+	CSSCOLOR_PAPAYA_WHIP(CSSColor.PAPAYA_WHIP),
+	CSSCOLOR_PEACH_PUFF(CSSColor.PEACH_PUFF),
+	CSSCOLOR_PERU(CSSColor.PERU),
+	CSSCOLOR_PINK(CSSColor.PINK),
+	CSSCOLOR_PLUM(CSSColor.PLUM),
+	CSSCOLOR_POWDER_BLUE(CSSColor.POWDER_BLUE),
+	CSSCOLOR_PURPLE(CSSColor.PURPLE),
+	CSSCOLOR_REBECCA_PURPLE(CSSColor.REBECCA_PURPLE),
+	CSSCOLOR_RED(CSSColor.RED),
+	CSSCOLOR_ROSY_BROWN(CSSColor.ROSY_BROWN),
+	CSSCOLOR_ROYAL_BLUE(CSSColor.ROYAL_BLUE),
+	CSSCOLOR_SADDLE_BROWN(CSSColor.SADDLE_BROWN),
+	CSSCOLOR_SALMON(CSSColor.SALMON),
+	CSSCOLOR_SANDY_BROWN(CSSColor.SANDY_BROWN),
+	CSSCOLOR_SEA_GREEN(CSSColor.SEA_GREEN),
+	CSSCOLOR_SEA_SHELL(CSSColor.SEA_SHELL),
+	CSSCOLOR_SIENNA(CSSColor.SIENNA),
+	CSSCOLOR_SILVER(CSSColor.SILVER),
+	CSSCOLOR_SKY_BLUE(CSSColor.SKY_BLUE),
+	CSSCOLOR_SLATE_BLUE(CSSColor.SLATE_BLUE),
+	CSSCOLOR_SLATE_GRAY(CSSColor.SLATE_GRAY),
+	CSSCOLOR_SLATE_GREY(CSSColor.SLATE_GREY),
+	CSSCOLOR_SNOW(CSSColor.SNOW),
+	CSSCOLOR_SPRING_GREEN(CSSColor.SPRING_GREEN),
+	CSSCOLOR_STEEL_BLUE(CSSColor.STEEL_BLUE),
+	CSSCOLOR_TAN(CSSColor.TAN),
+	CSSCOLOR_TEAL(CSSColor.TEAL),
+	CSSCOLOR_THISTLE(CSSColor.THISTLE),
+	CSSCOLOR_TOMATO(CSSColor.TOMATO),
+	CSSCOLOR_TURQUOISE(CSSColor.TURQUOISE),
+	CSSCOLOR_VIOLET(CSSColor.VIOLET),
+	CSSCOLOR_WHEAT(CSSColor.WHEAT),
+	CSSCOLOR_WHITE(CSSColor.WHITE),
+	CSSCOLOR_WHITE_SMOKE(CSSColor.WHITE_SMOKE),
+	CSSCOLOR_YELLOW(CSSColor.YELLOW),
+	CSSCOLOR_YELLOW_GREEN(CSSColor.YELLOW_GREEN),
+
 	WS(CharTypeWS.INSTANCE),
 	
 	// For those CSS types that also take sizes, eg. max-width
@@ -166,6 +334,8 @@ public enum CSSToken implements IToken {
 	private final String literal;
 	private final String toLiteral;
 	private final CharType charType;
+	
+	// enum tokens
 	private final CSStyle element;
 	private final CSSUnit unit;
 	private final CSSDisplay display;
@@ -175,6 +345,9 @@ public enum CSSToken implements IToken {
 	private final CSSOverflow overflow;
 	private final CSSFontSize fontSize;
 	private final CSSFontWeight fontWeight;
+	private final CSSColor color;
+	private final CSSForeground foreground;
+	private final CSSBackground background;
 
 	private CSSToken(TokenType tokenType) {
 		
@@ -196,6 +369,9 @@ public enum CSSToken implements IToken {
 		this.overflow = null;
 		this.fontSize = null;
 		this.fontWeight = null;
+		this.color = null;
+		this.foreground = null;
+		this.background = null;
 	}
 	
 	private CSSToken(char character) {
@@ -213,9 +389,19 @@ public enum CSSToken implements IToken {
 		this.overflow = null;
 		this.fontSize = null;
 		this.fontWeight = null;
+		this.color = null;
+		this.foreground = null;
+		this.background = null;
 	}
 	
-	private CSSToken(String literal, CSStyle element, CSSUnit unit, CSSDisplay display, CSSPosition position, CSSFloat _float, CSSTextAlign textAlign, CSSOverflow overflow, CSSFontSize fontSize, CSSFontWeight fontWeight) {
+	private CSSToken(
+			String literal,
+			CSStyle element,
+			CSSUnit unit,
+			CSSDisplay display, CSSPosition position, CSSFloat _float, CSSTextAlign textAlign, CSSOverflow overflow,
+			CSSFontSize fontSize, CSSFontWeight fontWeight,
+			CSSColor color, CSSForeground foreground, CSSBackground background) {
+		
 		this.tokenType = TokenType.CS_LITERAL;
 		this.character = 0;
 		this.literal = literal;
@@ -230,14 +416,17 @@ public enum CSSToken implements IToken {
 		this.overflow = overflow;
 		this.fontSize = fontSize;
 		this.fontWeight = fontWeight;
+ 		this.color = color;
+		this.foreground = foreground;
+		this.background = background;
 	}
 
 	private CSSToken(CSStyle element) {
-		this(element.getName(), element, null, null, null, null, null, null, null, null);
+		this(element.getName(), element, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(String literal) {
-		this(literal, null, null, null, null, null, null, null, null, null);
+		this(literal, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(String fromLiteral, String toLiteral) {
@@ -255,38 +444,53 @@ public enum CSSToken implements IToken {
 		this.overflow = null;
 		this.fontSize = null;
 		this.fontWeight = null;
+		this.color = null;
+		this.foreground = null;
+		this.background = null;
 	}
 
 	private CSSToken(String literal, CSSUnit unit) {
-		this(literal, null, unit, null, null, null, null, null, null, null);
+		this(literal, null, unit, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSDisplay display) {
-		this(display.getName(), null, null, display, null, null, null, null, null, null);
+		this(display.getName(), null, null, display, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSPosition position) {
-		this(position.getName(), null, null, null, position, null, null, null, null, null);
+		this(position.getName(), null, null, null, position, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSFloat _float) {
-		this(_float.getName(), null, null, null, null, _float, null, null, null, null);
+		this(_float.getName(), null, null, null, null, _float, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSTextAlign textAlign) {
-		this(textAlign.getName(), null, null, null, null, null, textAlign, null, null, null);
+		this(textAlign.getName(), null, null, null, null, null, textAlign, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSOverflow overflow) {
-		this(overflow.getName(), null, null, null, null, null, null, overflow, null, null);
+		this(overflow.getName(), null, null, null, null, null, null, overflow, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSFontSize fontSize) {
-		this(fontSize.getName(), null, null, null, null, null, null, null, fontSize, null);
+		this(fontSize.getName(), null, null, null, null, null, null, null, fontSize, null, null, null, null);
 	}
 
 	private CSSToken(CSSFontWeight fontWeight) {
-		this(fontWeight.getName(), null, null, null, null, null, null, null, null, fontWeight);
+		this(fontWeight.getName(), null, null, null, null, null, null, null, null, fontWeight, null, null, null);
+	}
+
+	private CSSToken(CSSColor color) {
+		this(color.getLowerCaseName(), null, null, null, null, null, null, null, null, null, color, null, null);
+	}
+
+	private CSSToken(CSSForeground foreground) {
+		this(foreground.getName(), null, null, null, null, null, null, null, null, null, null, foreground, null);
+	}
+
+	private CSSToken(CSSBackground background) {
+		this(background.getName(), null, null, null, null, null, null, null, null, null, null, null, background);
 	}
 
 	private CSSToken(CharType charType) {
@@ -304,6 +508,9 @@ public enum CSSToken implements IToken {
 		this.overflow = null;
 		this.fontSize = null;
 		this.fontWeight = null;
+		this.color = null;
+		this.foreground = null;
+		this.background = null;
 	}
 
 	@Override
@@ -381,5 +588,17 @@ public enum CSSToken implements IToken {
 
 	public CSSFontWeight getFontWeight() {
 		return fontWeight;
+	}
+
+	public CSSColor getColor() {
+		return color;
+	}
+
+	public CSSForeground getForeground() {
+		return foreground;
+	}
+
+	public CSSBackground getBackground() {
+		return background;
 	}
 }

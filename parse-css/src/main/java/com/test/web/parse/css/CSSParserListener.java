@@ -1,9 +1,12 @@
 package com.test.web.parse.css;
 
+import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
+import com.test.web.css.common.enums.CSSForeground;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
@@ -29,8 +32,18 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 	void onWidth(CONTEXT context, int width, CSSUnit unit);
 	
 	void onHeight(CONTEXT context, int width, CSSUnit unit);
+
+	void onColor(CONTEXT context, int r, int g, int b, int a); // -1 for a if no value, otherwise decimal encoded
+
+	void onColor(CONTEXT context, CSSColor color);
+
+	void onColor(CONTEXT context, CSSForeground foreground);
 	
-	void onBackgroundColor(CONTEXT context, int r, int g, int b);
+	void onBackgroundColor(CONTEXT context, int r, int g, int b, int a); // -1 for a if no value, otherwise decimal encoded
+
+	void onBackgroundColor(CONTEXT context, CSSColor color);
+
+	void onBackgroundColor(CONTEXT context, CSSBackground background);
 
 	void onTextAlign(CONTEXT context, CSSTextAlign textAlign);
 

@@ -144,7 +144,7 @@ public enum CSSColor {
 	TEAL								("008080"),
 	THISTLE						("D8BFD8"),
 	TOMATO						("FF6347"),
-	TURQUISE					("40E0D0"),
+	TURQUOISE					("40E0D0"),
 	VIOLET							("EE82EE"),
 	WHEAT							("F5DEB3"),
 	WHITE							("FFFFFF"),

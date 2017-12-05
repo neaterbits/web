@@ -2,10 +2,12 @@ package com.test.web.document.oo;
 
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSJustify;
+import com.test.web.css.common.enums.CSSBackground;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
+import com.test.web.css.common.enums.CSSForeground;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
@@ -14,6 +16,8 @@ import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.css.oo.OOCSSElement;
+import com.test.web.types.ColorRGB;
+import com.test.web.types.DecimalSize;
 
 final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElement>{
 
@@ -146,6 +150,96 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 		return styleElement == null
 				? null
 				: delegate.getOverflow(ref.getStyleElement());
+	}
+	
+	@Override
+	public int getColorR(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? ColorRGB.NONE
+				: delegate.getColorR(ref.getStyleElement());
+	}
+
+	@Override
+	public int getColorG(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? ColorRGB.NONE
+				: delegate.getColorG(ref.getStyleElement());
+	}
+
+	@Override
+	public int getColorB(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? ColorRGB.NONE
+				: delegate.getColorB(ref.getStyleElement());
+	}
+
+	@Override
+	public int getColorA(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getColorA(ref.getStyleElement());
+	}
+	
+	@Override
+	public CSSForeground getColorType(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getColorType(ref.getStyleElement());
+	}
+
+	@Override
+	public int getBgColorR(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? ColorRGB.NONE
+				: delegate.getBgColorR(ref.getStyleElement());
+	}
+
+	@Override
+	public int getBgColorG(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? ColorRGB.NONE
+				: delegate.getBgColorG(ref.getStyleElement());
+	}
+
+	@Override
+	public int getBgColorB(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? ColorRGB.NONE
+				: delegate.getBgColorB(ref.getStyleElement());
+	}
+
+	@Override
+	public int getBgColorA(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getBgColorA(ref.getStyleElement());
+	}
+
+	@Override
+	public CSSBackground getBgColorType(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getBgColorType(ref.getStyleElement());
 	}
 
 	@Override
