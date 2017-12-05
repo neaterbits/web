@@ -39,6 +39,8 @@ public enum CSStyle implements IKeyValueList {
 	TEXT_ALIGN("text-align", ValueType.ONE),
 	OVERFLOW("overflow", ValueType.ONE),
 	
+	TEXT_DECORATION("text-decoration", ValueType.ONE),
+	
 	FONT_FAMILY("font-family", ValueType.ONE),
 	FONT_NAME("font-name", ValueType.ONE),
 	FONT_SIZE("font-size", ValueType.ONE),

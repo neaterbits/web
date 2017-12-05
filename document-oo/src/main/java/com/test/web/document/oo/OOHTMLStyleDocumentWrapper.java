@@ -13,6 +13,7 @@ import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTextAlign;
+import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.css.oo.OOCSSElement;
@@ -152,6 +153,15 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 				: delegate.getOverflow(ref.getStyleElement());
 	}
 	
+	@Override
+	public CSSTextDecoration getTextDecoration(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getTextDecoration(ref.getStyleElement());
+	}
+
 	@Override
 	public int getColorR(OOTagElement ref) {
 		final OOCSSElement styleElement = ref.getStyleElement();

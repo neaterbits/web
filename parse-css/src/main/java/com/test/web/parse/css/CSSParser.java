@@ -398,6 +398,10 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		case FONT_WEIGHT:
 			semiColonRead = parseFontWeight(context);
 			break;
+			
+		case TEXT_DECORATION:
+			semiColonRead = parseTextDecoration(context);
+			break;
 		
 		default:
 			throw new UnsupportedOperationException("Unknown element " + element);
@@ -984,7 +988,13 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	private boolean parseTextAlign(LISTENER_CONTEXT context) throws IOException, ParserException {
 		return parseEnum(TEXT_ALIGN_TOKENS, token -> listener.onTextAlign(context, token.getTextAlign()));
 	}
-	
+
+	private static final CSSToken [] TEXT_DECORATION_TOKENS = copyTokens(token -> token.getTextDecoration() != null);
+
+	private boolean parseTextDecoration(LISTENER_CONTEXT context) throws IOException, ParserException {
+		return parseEnum(TEXT_DECORATION_TOKENS, token -> listener.onTextDecoration(context, token.getTextDecoration()));
+	}
+
 	private boolean parseEnum(CSSToken [] tokens, Consumer<CSSToken> onToken) throws IOException, ParserException {
 		
 		CSSToken token = lexSkipWSAndComment(tokens);

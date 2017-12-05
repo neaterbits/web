@@ -14,6 +14,7 @@ import com.test.web.css.common.enums.CSSForeground;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTarget;
+import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.io._long.StringBuffers;
@@ -304,6 +305,15 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		assertThat(doc.getBgColorType(initial)).isEqualTo(CSSBackground.TRANSPARENT);
 	}
 
+	public void testTextDecoration() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_TEXT_DECORATION);
+
+		final ELEMENT td1 = doc.get(CSSTarget.ID, "text_decoration_1").get(0);
+		
+		assertThat(doc.getTextDecoration(td1)).isEqualTo(CSSTextDecoration.UNDERLINE);
+	}
+	
+	
 	private static class TestCSSJustify implements ICSSJustify<Void> {
 
 		int top;

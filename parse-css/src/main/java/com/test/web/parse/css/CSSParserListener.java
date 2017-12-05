@@ -1,5 +1,7 @@
 package com.test.web.parse.css;
 
+import org.assertj.core.description.TextDescription;
+
 import com.test.web.css.common.enums.CSSBackground;
 import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
@@ -14,6 +16,7 @@ import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSTextAlign;
+import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.io.common.Tokenizer;
 
@@ -55,6 +58,8 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 	
 	void onOverflow(CONTEXT context, CSSOverflow overflow);
 
+	void onTextDecoration(CONTEXT context, CSSTextDecoration textDecoration);
+	
 	void onMaxWidth(CONTEXT context, int width, CSSUnit unit, CSSMax type);
 	
 	void onMaxHeight(CONTEXT context, int height, CSSUnit unit, CSSMax type);

@@ -1,5 +1,7 @@
 package com.test.web.css.oo;
 
+import org.assertj.core.description.TextDescription;
+
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSBackground;
@@ -15,6 +17,7 @@ import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTextAlign;
+import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.io.oo.OOTokenizer;
@@ -118,6 +121,11 @@ public abstract class BaseOOCSSDocument
 	@Override
 	public CSSOverflow getOverflow(OOCSSElement ref) {
 		return ref.getOverflow();
+	}
+
+	@Override
+	public CSSTextDecoration getTextDecoration(OOCSSElement ref) {
+		return ref.getTextDecoration();
 	}
 
 	@Override
@@ -332,7 +340,12 @@ public abstract class BaseOOCSSDocument
 	public void onOverflow(Void context, CSSOverflow overflow) {
 		ref().setOverflow(overflow);
 	}
-	
+
+	@Override
+	public void onTextDecoration(Void context, CSSTextDecoration textDecoration) {
+		ref().setTextDecoration(textDecoration);
+	}
+
 	@Override
 	public void onMaxWidth(Void context, int width, CSSUnit unit, CSSMax type) {
 		ref().setMaxWidth(width, unit, type);

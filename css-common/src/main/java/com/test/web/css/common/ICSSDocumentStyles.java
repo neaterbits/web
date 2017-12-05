@@ -11,6 +11,7 @@ import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTextAlign;
+import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 
@@ -47,7 +48,9 @@ public interface ICSSDocumentStyles<TARGET> {
 	CSSTextAlign getTextAlign(TARGET ref);
 
 	CSSOverflow getOverflow(TARGET ref);
-	
+
+	CSSTextDecoration getTextDecoration(TARGET ref);
+
 	int getColorR(TARGET ref);
 	
 	int getColorG(TARGET ref);

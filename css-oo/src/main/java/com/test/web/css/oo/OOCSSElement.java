@@ -13,6 +13,7 @@ import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTextAlign;
+import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.types.ColorRGB;
@@ -41,6 +42,8 @@ public final class OOCSSElement {
 	private CSSFloat _float;
 	private CSSTextAlign textAlign;
 	private CSSOverflow overflow;
+	
+	private CSSTextDecoration textDecoration;
 	
 	private int colorRGB; // bit-shifted, ColorRGB.NONE is not set
 	private int colorAlpha; // decimal encoded, DecimalSize.NONE if not set
@@ -361,6 +364,21 @@ public final class OOCSSElement {
 		this.overflow = overflow;
 		
 		set(CSStyle.OVERFLOW);
+	}
+
+	CSSTextDecoration getTextDecoration() {
+		return textDecoration;
+	}
+
+	void setTextDecoration(CSSTextDecoration textDecoration) {
+		
+		if (textDecoration == null) {
+			throw new IllegalArgumentException("textDecoration == null");
+		}
+		
+		this.textDecoration = textDecoration;
+
+		set(CSStyle.TEXT_DECORATION);
 	}
 
 	void setColorRGB(int r, int g, int b, int a) {

@@ -1,5 +1,7 @@
 package com.test.web.css._long;
 
+import org.assertj.core.description.TextDescription;
+
 import com.test.web.buffers.LongBuffersIntegerIndex;
 import com.test.web.buffers.StringStorageBuffer;
 import com.test.web.css.common.ICSSDocumentStyles;
@@ -17,6 +19,7 @@ import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTextAlign;
+import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.io._long.LongTokenizer;
@@ -117,6 +120,12 @@ public abstract class BaseLongCSSDocument
 	@Override
 	public CSSOverflow getOverflow(Integer ref) {
 		return LongCSS.getOverflow(buf(ref), offset(ref));
+	}
+	
+	@Override
+	public CSSTextDecoration getTextDecoration(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -283,6 +292,12 @@ public abstract class BaseLongCSSDocument
 		LongCSS.setOverflow(buf(curParseElement), offset(curParseElement), overflow);
 	}
 	
+	@Override
+	public void onTextDecoration(Void context, CSSTextDecoration textDecoration) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	@Override
 	public void onMaxWidth(Void context, int width, CSSUnit unit, CSSMax type) {
 		// TODO Auto-generated method stub
