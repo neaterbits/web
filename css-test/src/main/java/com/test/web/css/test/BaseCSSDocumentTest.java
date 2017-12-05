@@ -120,6 +120,18 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 				0, null, CSSJustify.AUTO,
 				0, null, CSSJustify.AUTO,
 				0, null, CSSJustify.AUTO);
+		
+		checkMargin(doc, "margin_initial",
+				0, null, CSSJustify.INITIAL,
+				0, null, CSSJustify.INITIAL,
+				0, null, CSSJustify.INITIAL,
+				0, null, CSSJustify.INITIAL);
+
+		checkMargin(doc, "margin_inherit",
+				0, null, CSSJustify.INHERIT,
+				0, null, CSSJustify.INHERIT,
+				0, null, CSSJustify.INHERIT,
+				0, null, CSSJustify.INHERIT);
 				
 		checkMargin(doc, "margin_1",
 				25, CSSUnit.PX, CSSJustify.SIZE,
@@ -145,7 +157,58 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 				30, CSSUnit.PX, CSSJustify.SIZE,
 				20, CSSUnit.PX, CSSJustify.SIZE);
 	}
+
+	public void testPadding() throws IOException, ParserException {
+		
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_PADDING);
 	
+		checkPadding(doc, "padding_initial",
+				0, null, CSSJustify.INITIAL,
+				0, null, CSSJustify.INITIAL,
+				0, null, CSSJustify.INITIAL,
+				0, null, CSSJustify.INITIAL);
+
+		checkPadding(doc, "padding_inherit",
+				0, null, CSSJustify.INHERIT,
+				0, null, CSSJustify.INHERIT,
+				0, null, CSSJustify.INHERIT,
+				0, null, CSSJustify.INHERIT);
+				
+		checkPadding(doc, "padding_1",
+				25, CSSUnit.PX, CSSJustify.SIZE,
+				25, CSSUnit.PX, CSSJustify.SIZE,
+				25, CSSUnit.PX, CSSJustify.SIZE,
+				25, CSSUnit.PX, CSSJustify.SIZE);
+
+		checkPadding(doc, "padding_2",
+				50, CSSUnit.PX, CSSJustify.SIZE,
+				25, CSSUnit.PX, CSSJustify.SIZE,
+				50, CSSUnit.PX, CSSJustify.SIZE,
+				25, CSSUnit.PX, CSSJustify.SIZE);
+
+		checkPadding(doc, "padding_3",
+				45, CSSUnit.PX, CSSJustify.SIZE,
+				30, CSSUnit.PX, CSSJustify.SIZE,
+				40, CSSUnit.PX, CSSJustify.SIZE,
+				30, CSSUnit.PX, CSSJustify.SIZE);
+
+		checkPadding(doc, "padding_4",
+				35, CSSUnit.PX, CSSJustify.SIZE,
+				15, CSSUnit.PX, CSSJustify.SIZE,
+				30, CSSUnit.PX, CSSJustify.SIZE,
+				20, CSSUnit.PX, CSSJustify.SIZE);
+
+		final ELEMENT ref = doc.get(CSSTarget.ID, "padding_4_em").get(0);
+		final TestCSSJustify padding = new TestCSSJustify();
+		doc.getPadding(ref, padding, null);
+
+		checkWrapping(padding,
+				DecimalSize.of("0.5"), CSSUnit.EM, CSSJustify.SIZE,
+				DecimalSize.of(0), CSSUnit.PX, CSSJustify.SIZE,
+				DecimalSize.of(0), CSSUnit.PX, CSSJustify.SIZE,
+				DecimalSize.of(0), CSSUnit.PX, CSSJustify.SIZE);
+	}
+
 	private void checkMargin(ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc, String id,
 			int top, CSSUnit topUnit, CSSJustify topJustify,
 			int right, CSSUnit rightUnit, CSSJustify rightJustify,
@@ -156,21 +219,64 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		
 		final TestCSSJustify margins = new TestCSSJustify();
 
-		
 		doc.getMargins(ref, margins, null);
 		
-		assertThat(DecimalSize.decodeToInt(margins.top)).isEqualTo(top);
-		assertThat(margins.topUnit).isEqualTo(topUnit);
-		assertThat(margins.topType).isEqualTo(topJustify);
-		assertThat(DecimalSize.decodeToInt(margins.right)).isEqualTo(right);
-		assertThat(margins.rightUnit).isEqualTo(rightUnit);
-		assertThat(margins.rightType).isEqualTo(rightJustify);
-		assertThat(DecimalSize.decodeToInt(margins.bottom)).isEqualTo(bottom);
-		assertThat(margins.bottomUnit).isEqualTo(bottomUnit);
-		assertThat(margins.bottomType).isEqualTo(bottomJustify);
-		assertThat(DecimalSize.decodeToInt(margins.left)).isEqualTo(left);
-		assertThat(margins.leftUnit).isEqualTo(leftUnit);
-		assertThat(margins.leftType).isEqualTo(leftJustify);
+		checkWrapping(margins, top, topUnit, topJustify, right, rightUnit, rightJustify, bottom, bottomUnit, bottomJustify, left, leftUnit, leftJustify);
+	}
+
+	private void checkPadding(ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc, String id,
+			int top, CSSUnit topUnit, CSSJustify topJustify,
+			int right, CSSUnit rightUnit, CSSJustify rightJustify,
+			int bottom, CSSUnit bottomUnit, CSSJustify bottomJustify,
+			int left, CSSUnit leftUnit, CSSJustify leftJustify) {
+
+		final ELEMENT ref = doc.get(CSSTarget.ID, id).get(0);
+		
+		final TestCSSJustify padding = new TestCSSJustify();
+
+		doc.getPadding(ref, padding, null);
+		
+		checkWrapping(padding, top, topUnit, topJustify, right, rightUnit, rightJustify, bottom, bottomUnit, bottomJustify, left, leftUnit, leftJustify);
+	}
+
+	private void checkWrapping(TestCSSJustify wrapping,
+			int top, CSSUnit topUnit, CSSJustify topJustify,
+			int right, CSSUnit rightUnit, CSSJustify rightJustify,
+			int bottom, CSSUnit bottomUnit, CSSJustify bottomJustify,
+			int left, CSSUnit leftUnit, CSSJustify leftJustify) {
+		
+		assertThat(DecimalSize.decodeToInt(wrapping.top)).isEqualTo(top);
+		assertThat(wrapping.topUnit).isEqualTo(topUnit);
+		assertThat(wrapping.topType).isEqualTo(topJustify);
+		assertThat(DecimalSize.decodeToInt(wrapping.right)).isEqualTo(right);
+		assertThat(wrapping.rightUnit).isEqualTo(rightUnit);
+		assertThat(wrapping.rightType).isEqualTo(rightJustify);
+		assertThat(DecimalSize.decodeToInt(wrapping.bottom)).isEqualTo(bottom);
+		assertThat(wrapping.bottomUnit).isEqualTo(bottomUnit);
+		assertThat(wrapping.bottomType).isEqualTo(bottomJustify);
+		assertThat(DecimalSize.decodeToInt(wrapping.left)).isEqualTo(left);
+		assertThat(wrapping.leftUnit).isEqualTo(leftUnit);
+		assertThat(wrapping.leftType).isEqualTo(leftJustify);
+	}
+	
+	private void checkWrapping(TestCSSJustify wrapping,
+			DecimalSize top, CSSUnit topUnit, CSSJustify topJustify,
+			DecimalSize right, CSSUnit rightUnit, CSSJustify rightJustify,
+			DecimalSize bottom, CSSUnit bottomUnit, CSSJustify bottomJustify,
+			DecimalSize left, CSSUnit leftUnit, CSSJustify leftJustify) {
+		
+		assertThat(DecimalSize.decode(wrapping.top)).isEqualTo(top);
+		assertThat(wrapping.topUnit).isEqualTo(topUnit);
+		assertThat(wrapping.topType).isEqualTo(topJustify);
+		assertThat(DecimalSize.decode(wrapping.right)).isEqualTo(right);
+		assertThat(wrapping.rightUnit).isEqualTo(rightUnit);
+		assertThat(wrapping.rightType).isEqualTo(rightJustify);
+		assertThat(DecimalSize.decode(wrapping.bottom)).isEqualTo(bottom);
+		assertThat(wrapping.bottomUnit).isEqualTo(bottomUnit);
+		assertThat(wrapping.bottomType).isEqualTo(bottomJustify);
+		assertThat(DecimalSize.decode(wrapping.left)).isEqualTo(left);
+		assertThat(wrapping.leftUnit).isEqualTo(leftUnit);
+		assertThat(wrapping.leftType).isEqualTo(leftJustify);
 	}
 	
 	public void testFontSize() throws IOException, ParserException {

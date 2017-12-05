@@ -28,6 +28,7 @@ public enum CSStyle implements IKeyValueList {
 	MARGIN_TOP("margin-top", ValueType.ONE),
 	MARGIN_BOTTOM("margin-bottom", ValueType.ONE),
 	
+	PADDING("padding", ValueType.ONE),
 	PADDING_LEFT("padding-left", ValueType.ONE),
 	PADDING_RIGHT("padding-right", ValueType.ONE),
 	PADDING_TOP("padding-top", ValueType.ONE),

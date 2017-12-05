@@ -1,5 +1,7 @@
 package com.test.web.types;
 
+import java.util.function.BiFunction;
+
 // Decimal-size for HTML sizes, does not required BigDecial, we just specify as a int and a shift
 // We do not need BigInteger or unlimited precision
 // Can also encode this as an int for storage
@@ -12,6 +14,28 @@ public class DecimalSize {
 	
 	private final int value;
 	private int scale;
+
+	public static DecimalSize of(int beforeComma) {
+		return new DecimalSize(beforeComma, "");
+	}
+
+	public static DecimalSize of(int beforeComma, String afterComma) {
+		return new DecimalSize(beforeComma, afterComma);
+	}
+
+	public static DecimalSize of(String value) {
+		final int commaIndex = value.indexOf('.');
+		
+		final DecimalSize ret;
+		if (commaIndex >= 0) {
+			ret = of(Integer.parseInt(value.substring(0,  commaIndex)), value.substring(commaIndex + 1));
+		}
+		else {
+			ret = of(Integer.parseInt(value));
+		}
+
+		return ret;
+	}
 	
 	public DecimalSize(int beforeComma, String afterComma) {
 		// Multiply up with the values after comma
@@ -61,8 +85,7 @@ public class DecimalSize {
 		return encoded >> SCALE_BITS;
 	}
 	
-	
-	public static String decodeToString(int encoded) {
+	private static <T> T decode(int encoded, BiFunction<Integer, String, T> callback) {
 		int scale = encoded & SCALE_MASK;
 		int beforeComma = encoded >> SCALE_BITS;
 
@@ -70,7 +93,7 @@ public class DecimalSize {
 		
 		afterCommaString.setLength(scale);
 	
-		final String ret;
+		final String afterComma;
 		
 		if (scale != 0) {
 			for (int i = scale -1 ; i >= 0; -- i) {
@@ -82,13 +105,59 @@ public class DecimalSize {
 				// shift one decimal point to the left
 				beforeComma /= 10;
 			}
-
-			ret = String.format("%d.%s", beforeComma, afterCommaString.toString());
+			
+			afterComma = afterCommaString.toString();
 		}
 		else {
-			ret = String.valueOf(beforeComma);
+			afterComma = null;
 		}
 		
-		return ret;
+		return callback.apply(beforeComma, afterComma);
+	}
+	
+	public static String decodeToString(int encoded) {
+		return decode(encoded, (beforeComma, afterComma) -> {
+			return afterComma != null
+					? String.format("%d.%s", beforeComma, afterComma)
+					: String.valueOf(beforeComma);
+		});
+	}
+	
+	public static DecimalSize decode(int encoded) {
+		return decode(encoded, (beforeComma, afterComma) -> {
+			return afterComma != null
+					? new DecimalSize(beforeComma, afterComma)
+					: new DecimalSize(beforeComma, "");
+		});
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + scale;
+		result = prime * result + value;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DecimalSize other = (DecimalSize) obj;
+		if (scale != other.scale)
+			return false;
+		if (value != other.value)
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "DecimalSize [value=" + value + ", scale=" + scale + "]";
 	}
 }

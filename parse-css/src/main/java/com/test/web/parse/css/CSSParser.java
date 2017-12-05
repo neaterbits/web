@@ -179,10 +179,12 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			CSSToken.COMMENT,
 			CSSToken.BRACKET_END);
 
-	private static final CSSToken [] UNIT_OR_DOT_OR_SEMICOLON_TOKENS = copyTokens(
+	private static final CSSToken [] UNIT_OR_DOT_OR_SEMICOLON_OR_WS_OR_COMMENT_TOKENS = copyTokens(
 			token -> token.getUnit() != null, 
 			CSSToken.DOT,
-			CSSToken.SEMICOLON);
+			CSSToken.SEMICOLON,
+			CSSToken.WS,
+			CSSToken.COMMENT);
 
 	private static final CSSToken [] UNIT_OR_SEMICOLON_TOKENS = copyTokens(
 			token -> token.getUnit() != null, 
@@ -328,19 +330,19 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			break;
 			
 		case MARGIN_LEFT:
-			semiColonRead = parseSizeOrAuto((size, unit, justify) -> listener.onMarginLeft(context, size, unit, justify));
+			semiColonRead = parseSizeOrAutoOrInitialOrInherit((size, unit, justify) -> listener.onMarginLeft(context, size, unit, justify));
 			break;
 			
 		case MARGIN_RIGHT:
-			semiColonRead = parseSizeOrAuto((size, unit, justify) -> listener.onMarginRight(context, size, unit, justify));
+			semiColonRead = parseSizeOrAutoOrInitialOrInherit((size, unit, justify) -> listener.onMarginRight(context, size, unit, justify));
 			break;
 
 		case MARGIN_TOP:
-			semiColonRead = parseSizeOrAuto((size, unit, justify) -> listener.onMarginTop(context, size, unit, justify));
+			semiColonRead = parseSizeOrAutoOrInitialOrInherit((size, unit, justify) -> listener.onMarginTop(context, size, unit, justify));
 			break;
 
 		case MARGIN_BOTTOM:
-			semiColonRead = parseSizeOrAuto((size, unit, justify) -> listener.onMarginBottom(context, size, unit, justify));
+			semiColonRead = parseSizeOrAutoOrInitialOrInherit((size, unit, justify) -> listener.onMarginBottom(context, size, unit, justify));
 			break;
 			
 		case MARGIN:
@@ -348,19 +350,23 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			break;
 			
 		case PADDING_LEFT:
-			semiColonRead = parseSizeOrAuto((size, unit, justify) -> listener.onPaddingLeft(context, size, unit, justify));
+			semiColonRead = parseSizeOrInitialOrInherit((size, unit, justify) -> listener.onPaddingLeft(context, size, unit, justify));
 			break;
 			
 		case PADDING_RIGHT:
-			semiColonRead = parseSizeOrAuto((size, unit, justify) -> listener.onPaddingRight(context, size, unit, justify));
+			semiColonRead = parseSizeOrInitialOrInherit((size, unit, justify) -> listener.onPaddingRight(context, size, unit, justify));
 			break;
 
 		case PADDING_TOP:
-			semiColonRead = parseSizeOrAuto((size, unit, justify) -> listener.onPaddingTop(context, size, unit, justify));
+			semiColonRead = parseSizeOrInitialOrInherit((size, unit, justify) -> listener.onPaddingTop(context, size, unit, justify));
 			break;
 
 		case PADDING_BOTTOM:
-			semiColonRead = parseSizeOrAuto((size, unit, justify) -> listener.onPaddingBottom(context, size, unit, justify));
+			semiColonRead = parseSizeOrInitialOrInherit((size, unit, justify) -> listener.onPaddingBottom(context, size, unit, justify));
+			break;
+			
+		case PADDING:
+			semiColonRead = parsePadding(context);
 			break;
 
 		case FLOAT:
@@ -436,28 +442,41 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			this.initialized = true;
 		}
 	}
+	
+	@FunctionalInterface
+	interface InitialMarginOrPaddingParser {
+		boolean parse(IJustifyFunction justifyFunction) throws IOException, ParserException;
+	}
+	
 	private boolean parseMargin(LISTENER_CONTEXT context) throws IOException, ParserException {
-		// margin has several combinations and number of entries
-		// margin : auto;
-		// margin: 1, 2, 3 or 4 sizes
+		return parseMarginOrPadding(context, listener::onMargin, this::parseSizeOrAutoOrInitialOrInherit);
+	}
+
+	private boolean parsePadding(LISTENER_CONTEXT context) throws IOException, ParserException {
+		return parseMarginOrPadding(context, listener::onPadding, this::parseSizeOrInitialOrInherit);
+	}
+
+	private boolean parseMarginOrPadding(LISTENER_CONTEXT context, IWrapping<LISTENER_CONTEXT> callback, InitialMarginOrPaddingParser parseInitial) throws IOException, ParserException {
 		
 		// TODO perhaps cache if parser is singlethreaded
 		final MarginPart part1 = new MarginPart();
 		
 		// first parse one size or auto
-		boolean semiColonRead = parseSizeOrAuto((size, unit, justify) -> part1.init(size, unit, justify));
+		//boolean semiColonRead = parseSizeOrAuto((size, unit, justify) -> part1.init(size, unit, justify));
+		boolean semiColonRead = parseInitial.parse((size, unit, justify) -> part1.init(size, unit, justify));
 		
-		if (part1.justify == CSSJustify.AUTO) {
+		if (part1.justify != CSSJustify.NONE && part1.justify != CSSJustify.SIZE) {
 			// margin: auto which is special-case
-			listener.onMargin(context,
-					0, null, CSSJustify.AUTO,
-					0, null, CSSJustify.AUTO,
-					0, null, CSSJustify.AUTO,
-					0, null, CSSJustify.AUTO);
+			callback.onWrapping(context,
+					0, null, part1.justify,
+					0, null, part1.justify,
+					0, null, part1.justify,
+					0, null, part1.justify);
 		}
 		else {
 			// We have more than one part that we have to read, which is which depends on the number of sizes found
 			// there ought to be max 4
+			// TODO perhaps cache if parser is singlethreaded
 			final MarginPart part2 = new MarginPart();
 			final MarginPart part3 = new MarginPart();
 			final MarginPart part4 = new MarginPart();
@@ -474,28 +493,28 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			
 			if (part4.initialized) {
 				// got 4 parts, pass them all
-				listener.onMargin(context,
+				callback.onWrapping(context,
 						part1.size, part1.unit, part1.justify,
 						part2.size, part2.unit, part2.justify,
 						part3.size, part3.unit, part3.justify,
 						part4.size, part4.unit, part4.justify);
 			}
 			else if (part3.initialized) {
-				listener.onMargin(context,
+				callback.onWrapping(context,
 						part1.size, part1.unit, part1.justify,
 						part2.size, part2.unit, part2.justify,
 						part3.size, part3.unit, part3.justify,
 						part2.size, part2.unit, part2.justify);
 			}
 			else if (part2.initialized) {
-				listener.onMargin(context,
+				callback.onWrapping(context,
 						part1.size, part1.unit, part1.justify,
 						part2.size, part2.unit, part2.justify,
 						part1.size, part1.unit, part1.justify,
 						part2.size, part2.unit, part2.justify);
 			}
 			else if (part1.initialized) {
-				listener.onMargin(context,
+				callback.onWrapping(context,
 						part1.size, part1.unit, part1.justify,
 						part1.size, part1.unit, part1.justify,
 						part1.size, part1.unit, part1.justify,
@@ -509,8 +528,19 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		return semiColonRead;
 	}
 	
-	private boolean parseSizeOrAuto(IJustifyFunction toCall) throws IOException, ParserException {
-		CSSToken token = lexSkipWSAndComment(CSSToken.INTEGER, CSSToken.AUTO, CSSToken.DOT);
+	private static final CSSToken [] autoOrInitialOrInheritTokens = new CSSToken[] { CSSToken.INTEGER, CSSToken.AUTO, CSSToken.INITIAL, CSSToken.INHERIT, CSSToken.DOT };
+	private static final CSSToken [] initialOrInheritTokens 			   = new CSSToken[] { CSSToken.INTEGER, CSSToken.INITIAL, CSSToken.INHERIT, CSSToken.DOT };
+
+	private boolean parseSizeOrAutoOrInitialOrInherit(IJustifyFunction toCall) throws IOException, ParserException {
+		return parseSizeOrAutoOrInitialOrInherit(toCall, autoOrInitialOrInheritTokens);
+	}
+
+	private boolean parseSizeOrInitialOrInherit(IJustifyFunction toCall) throws IOException, ParserException {
+		return parseSizeOrAutoOrInitialOrInherit(toCall, initialOrInheritTokens);
+	}
+	
+	private boolean parseSizeOrAutoOrInitialOrInherit(IJustifyFunction toCall, CSSToken [] tokens) throws IOException, ParserException {
+		CSSToken token = lexSkipWSAndComment(tokens);
 		
 		final boolean semiColonRead;
 		
@@ -526,7 +556,17 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			toCall.onJustify(DecimalSize.encodeAsInt(0), null, CSSJustify.AUTO);
 			semiColonRead = false;
 			break;
+
+		case INITIAL:
+			toCall.onJustify(DecimalSize.encodeAsInt(0), null, CSSJustify.INITIAL);
+			semiColonRead = false;
+			break;
 			
+		case INHERIT:
+			toCall.onJustify(DecimalSize.encodeAsInt(0), null, CSSJustify.INHERIT);
+			semiColonRead = false;
+			break;
+
 		case DOT:
 			semiColonRead = parseDecimalAfterDot(0, defaultUnit, sizeCallback);
 			break;
@@ -659,7 +699,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		boolean semiColonRead = false;
 		CSSUnit unit = defaultUnit; // default to pixels
 		
-		CSSToken token = lexer.lex(UNIT_OR_DOT_OR_SEMICOLON_TOKENS);
+		CSSToken token = lexer.lex(UNIT_OR_DOT_OR_SEMICOLON_OR_WS_OR_COMMENT_TOKENS);
 		
 		switch (token) {
 		case SEMICOLON:
@@ -669,6 +709,11 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		case DOT:
 			semiColonRead = parseDecimalAfterDot(value, unit, toCall);
 			gotDot = true;
+			break;
+			
+		case WS:
+		case COMMENT:
+			// no '.' so not a comma-number
 			break;
 			
 		case NONE:

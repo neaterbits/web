@@ -34,6 +34,14 @@ public class TestData {
 			"  margin : auto;\n" +
 			"}\n" +
 
+			"#margin_initial {\n" +
+			"  margin : initial;\n" +
+			"}\n" +
+
+			"#margin_inherit {\n" +
+			"  margin : inherit;\n" +
+			"}\n" +
+
 			"#margin_1 {\n" +
 			"  margin : 25px;\n" +
 			"}\n" +
@@ -50,7 +58,38 @@ public class TestData {
 			"  margin : 35px 15px 30px 20px;\n" +
 			"}\n";	
 
+	public static final String CSS_PADDING =
 
+			"#padding_initial {\n" +
+			"  padding : initial;\n" +
+			"}\n" +
+
+			"#padding_inherit {\n" +
+			"  padding : inherit;\n" +
+			"}\n" +
+
+			"#padding_1 {\n" +
+			"  padding : 25px;\n" +
+			"}\n" +
+
+			"#padding_2 {\n" +
+			"  padding : 50px 25px;\n" +
+			"}\n" +
+
+			"#padding_3 {\n" +
+			"  padding : 45px 30px 40px;\n" +
+			"}\n" +
+
+			"#padding_4 {\n" +
+			"  padding : 35px 15px 30px 20px;\n" +
+			"}\n" +
+			
+			"#padding_4_em {\n" +
+			"  padding : .5em 0 0 0;\n" +
+			"}\n"
+			;	
+
+	
 	public static final String CSS_FONTSIZE =
 			"#fontsize_medium {\n" +
 			"  font-size : medium;\n" +

@@ -208,7 +208,7 @@ public final class OOCSSElement {
 	}
 	
 	private boolean isSet(CSSUnit unit, CSSJustify type) {
-		return type == CSSJustify.AUTO || (unit != null && type != null);
+		return type == CSSJustify.AUTO || type == CSSJustify.INITIAL || type == CSSJustify.INHERIT || (unit != null && type != null);
 	}
 	
 	private void set(OOWrapping ref,
