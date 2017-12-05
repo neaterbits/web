@@ -95,7 +95,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	
 	private void parseMarkedBlock(CSSToken initialMarker, LISTENER_CONTEXT context) throws IOException, ParserException {
 		// First read the initial marker
-		parseMarker(initialMarker, context);
+		parseSelector(initialMarker, context);
 		
 		// Parse additional markers in a loop
 		boolean done = false;
@@ -112,7 +112,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			case ID_MARKER:
 			case CLASS_MARKER:
 			case TAG:
-				parseMarker(token, context);
+				parseSelector(token, context);
 				break;
 				
 			case COMMENT:
@@ -132,7 +132,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		parseBlockContents(context);
 	}
 	
-	private void parseMarker(CSSToken marker, LISTENER_CONTEXT context) throws IOException, ParserException {
+	private void parseSelector(CSSToken marker, LISTENER_CONTEXT context) throws IOException, ParserException {
 		switch (marker) {
 		case ID_MARKER: {
 			final CSSToken token = lexer.lex(CSSToken.ID);
