@@ -3,6 +3,7 @@ package com.test.web.css.common;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
+import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
@@ -54,7 +55,11 @@ public interface ICSSDocumentStyles<TARGET> {
 	CSSUnit getFontSizeUnit(TARGET ref);
 	
 	CSSFontSize getFontSizeEnum(TARGET ref);
-	
+
+	int getFontWeightNumber(TARGET ref);
+
+	CSSFontWeight getFontWeightEnum(TARGET ref);
+
 	short getZIndex(TARGET ref);
 
 	// min/max dims

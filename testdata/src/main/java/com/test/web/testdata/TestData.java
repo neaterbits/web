@@ -60,6 +60,15 @@ public class TestData {
 			"  font-size : 20px;\n" +
 			"}\n";
 
+	public static final String CSS_FONTWEIGT =
+			"#fontweight_normal {\n" +
+			"  font-weight : normal;\n" +
+			"}\n" +
+
+			"#fontweight_300 {\n" +
+			"  font-weight : 300;\n" +
+			"}\n";
+
 	private static final String DOCTYPE = "<!DOCTYPE HTML PUBLIC \"-//W3C/DTD HTML 4.01 Frameset//EN\" \"http://w3.org/TR/html4/frameset.dtd\">";
 	
 	public static final String HTML =

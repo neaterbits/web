@@ -42,6 +42,8 @@ public enum CSStyle implements IKeyValueList {
 	FONT_NAME("font-name", ValueType.ONE),
 	FONT_SIZE("font-size", ValueType.ONE),
 	
+	FONT_WEIGHT("font-weight", ValueType.ONE),
+	
 	MAX_WIDTH("max-width", ValueType.ONE),
 	MAX_HEIGHT("max-height", ValueType.ONE),
 

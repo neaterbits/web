@@ -5,6 +5,7 @@ import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
+import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
@@ -280,6 +281,11 @@ public abstract class BaseOOCSSDocument
 	public void onFontSize(Void context, int fontSize, CSSUnit fontSizeUnit, CSSFontSize fontSizeEnum) {
 		ref().setFontSize(fontSize, fontSizeUnit, fontSizeEnum);
 	}
+	
+	@Override
+	public void onFontWeight(Void context, int fontWeightNumber, CSSFontWeight fontWeightEnum) {
+		ref().setFontWeight(fontWeightNumber, fontWeightEnum);
+	}
 
 	@Override
 	public short getZIndex(OOCSSElement ref) {
@@ -309,6 +315,16 @@ public abstract class BaseOOCSSDocument
 	@Override
 	public CSSFontSize getFontSizeEnum(OOCSSElement ref) {
 		return ref.getFontSizeEnum();
+	}
+
+	@Override
+	public int getFontWeightNumber(OOCSSElement ref) {
+		return ref.getFontWeightNumber();
+	}
+
+	@Override
+	public CSSFontWeight getFontWeightEnum(OOCSSElement ref) {
+		return ref.getFontWeightEnum();
 	}
 
 	protected final OOCSSElement allocateCurParseElement() {

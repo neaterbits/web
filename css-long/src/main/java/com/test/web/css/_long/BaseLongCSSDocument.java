@@ -7,6 +7,7 @@ import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
+import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
@@ -218,6 +219,12 @@ public abstract class BaseLongCSSDocument
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void onFontWeight(Void context, int fontWeightNumber, CSSFontWeight fontWeightEnum) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
 	public short getZIndex(Integer ref) {
@@ -245,6 +252,19 @@ public abstract class BaseLongCSSDocument
 	
 	@Override
 	public CSSUnit getFontSizeUnit(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+
+	@Override
+	public int getFontWeightNumber(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSFontWeight getFontWeightEnum(Integer ref) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -5,6 +5,7 @@ import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
+import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
@@ -175,6 +176,16 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	@Override
 	public CSSFontSize getFontSizeEnum(OOTagElement ref) {
 		return delegate.getFontSizeEnum(ref.getStyleElement());
+	}
+	
+	@Override
+	public int getFontWeightNumber(OOTagElement ref) {
+		return delegate.getFontWeightNumber(ref.getStyleElement());
+	}
+
+	@Override
+	public CSSFontWeight getFontWeightEnum(OOTagElement ref) {
+		return delegate.getFontWeightEnum(ref.getStyleElement());
 	}
 
 	@Override

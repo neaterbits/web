@@ -297,7 +297,6 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			}
 		}
 		
-		// Skip any WS
 		skipAnyWS();
 
 		// Now read value, this depends on input style
@@ -382,6 +381,10 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			
 		case FONT_SIZE:
 			semiColonRead = parseFontSize(context);
+			break;
+			
+		case FONT_WEIGHT:
+			semiColonRead = parseFontWeight(context);
 			break;
 		
 		default:
@@ -755,6 +758,33 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			
 		default:
 			listener.onFontSize(context, 0, null, token.getFontSize());
+			semiColonRead = false;
+			break;
+		}
+		
+		return semiColonRead;
+	}
+
+	private static final CSSToken [] FONTWEIGHT_TOKENS = copyTokens(token -> token.getFontWeight() != null, CSSToken.INTEGER);
+	
+	private boolean parseFontWeight(LISTENER_CONTEXT context) throws NumberFormatException, IOException, ParserException {
+		CSSToken token = lexSkipWSAndComment(FONTWEIGHT_TOKENS);
+		
+		final boolean semiColonRead;
+		
+		switch (token) {
+		case INTEGER:
+			// parse as size
+			final int value = Integer.parseInt(lexer.get());
+			listener.onFontWeight(context, value, null);
+			semiColonRead = false;
+			break;
+			
+		case NONE:
+			throw lexer.unexpectedToken();
+			
+		default:
+			listener.onFontWeight(context, 0, token.getFontWeight());
 			semiColonRead = false;
 			break;
 		}

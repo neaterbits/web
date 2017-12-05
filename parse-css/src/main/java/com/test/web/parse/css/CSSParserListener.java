@@ -3,6 +3,7 @@ package com.test.web.parse.css;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
+import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
@@ -50,6 +51,8 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 	void onMinHeight(CONTEXT context, int height, CSSUnit unit, CSSMin type);
 	
 	void onFontSize(CONTEXT context, int fontSize, CSSUnit fontSizeUnit, CSSFontSize fontSizeEnum);
+	
+	void onFontWeight(CONTEXT context, int fontWeightNumber, CSSFontWeight fontWeightEnum);
 
 	void onMargin(CONTEXT context,
 			int top, CSSUnit topUnit, CSSJustify topType, 

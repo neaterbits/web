@@ -3,6 +3,7 @@ package com.test.web.css.oo;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
+import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
@@ -43,6 +44,9 @@ public final class OOCSSElement {
 	private int fontSize;
 	private CSSUnit fontSizeUnit;
 	private CSSFontSize fontSizeEnum;
+	
+	private int fontWeightNumber;
+	private CSSFontWeight fontWeightEnum;
 
 	private int minWidth;
 	private CSSUnit minWidthUnit;
@@ -390,6 +394,19 @@ public final class OOCSSElement {
 
 	CSSMin getMinWidthType() {
 		return minWidthType;
+	}
+
+	int getFontWeightNumber() {
+		return fontWeightNumber;
+	}
+
+	CSSFontWeight getFontWeightEnum() {
+		return fontWeightEnum;
+	}
+
+	void setFontWeight(int fontWeightNumber, CSSFontWeight fontWeightEnum) {
+		this.fontWeightNumber = fontWeightNumber;
+		this.fontWeightEnum = fontWeightEnum;
 	}
 
 	void setMinWidth(int minWidth, CSSUnit unit, CSSMin type) {

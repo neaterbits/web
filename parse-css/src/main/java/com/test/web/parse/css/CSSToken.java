@@ -3,6 +3,7 @@ package com.test.web.parse.css;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
+import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTextAlign;
@@ -55,7 +56,9 @@ public enum CSSToken implements IToken {
 	CSS_HEIGHT(CSStyle.HEIGHT),
 	
 	CSS_BACKGOUND_COLOR(CSStyle.BACKGROUND_COLOR),
+	
 	CSS_FONT_SIZE(CSStyle.FONT_SIZE),
+	CSS_FONT_WEIGHT(CSStyle.FONT_WEIGHT),
 	
 	CSS_MARGIN_LEFT(CSStyle.MARGIN_LEFT),
 	CSS_MARGIN_RIGHT(CSStyle.MARGIN_RIGHT),
@@ -140,6 +143,13 @@ public enum CSSToken implements IToken {
 	FONTSIZE_LARGER(CSSFontSize.LARGER),
 	FONTSIZE_INITIAL(CSSFontSize.INITIAL),
 	FONTSIZE_INHERIT(CSSFontSize.INHERIT),
+	
+	FONTWEIGHT_NORMAL(CSSFontWeight.NORMAL),
+	FONTWEIGHT_BOLD(CSSFontWeight.BOLD),
+	FONTWEIGHT_BOLDER(CSSFontWeight.BOLDER),
+	FONTWEIGHT_LIGHTER(CSSFontWeight.LIGHTER),
+	FONTWEIGHT_INITIAL(CSSFontWeight.INITIAL),
+	FONTWEIGHT_INHERIT(CSSFontWeight.INHERIT),
 
 	WS(CharTypeWS.INSTANCE),
 	
@@ -164,6 +174,7 @@ public enum CSSToken implements IToken {
 	private final CSSTextAlign textAlign;
 	private final CSSOverflow overflow;
 	private final CSSFontSize fontSize;
+	private final CSSFontWeight fontWeight;
 
 	private CSSToken(TokenType tokenType) {
 		
@@ -184,6 +195,7 @@ public enum CSSToken implements IToken {
 		this.textAlign = null;
 		this.overflow = null;
 		this.fontSize = null;
+		this.fontWeight = null;
 	}
 	
 	private CSSToken(char character) {
@@ -200,9 +212,10 @@ public enum CSSToken implements IToken {
 		this.textAlign = null;
 		this.overflow = null;
 		this.fontSize = null;
+		this.fontWeight = null;
 	}
 	
-	private CSSToken(String literal, CSStyle element, CSSUnit unit, CSSDisplay display, CSSPosition position, CSSFloat _float, CSSTextAlign textAlign, CSSOverflow overflow, CSSFontSize fontSize) {
+	private CSSToken(String literal, CSStyle element, CSSUnit unit, CSSDisplay display, CSSPosition position, CSSFloat _float, CSSTextAlign textAlign, CSSOverflow overflow, CSSFontSize fontSize, CSSFontWeight fontWeight) {
 		this.tokenType = TokenType.CS_LITERAL;
 		this.character = 0;
 		this.literal = literal;
@@ -216,14 +229,15 @@ public enum CSSToken implements IToken {
 		this.textAlign = textAlign;
 		this.overflow = overflow;
 		this.fontSize = fontSize;
+		this.fontWeight = fontWeight;
 	}
 
 	private CSSToken(CSStyle element) {
-		this(element.getName(), element, null, null, null, null, null, null, null);
+		this(element.getName(), element, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(String literal) {
-		this(literal, null, null, null, null, null, null, null, null);
+		this(literal, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(String fromLiteral, String toLiteral) {
@@ -240,34 +254,39 @@ public enum CSSToken implements IToken {
 		this.textAlign = null;
 		this.overflow = null;
 		this.fontSize = null;
+		this.fontWeight = null;
 	}
 
 	private CSSToken(String literal, CSSUnit unit) {
-		this(literal, null, unit, null, null, null, null, null, null);
+		this(literal, null, unit, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSDisplay display) {
-		this(display.getName(), null, null, display, null, null, null, null, null);
+		this(display.getName(), null, null, display, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSPosition position) {
-		this(position.getName(), null, null, null, position, null, null, null, null);
+		this(position.getName(), null, null, null, position, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSFloat _float) {
-		this(_float.getName(), null, null, null, null, _float, null, null, null);
+		this(_float.getName(), null, null, null, null, _float, null, null, null, null);
 	}
 
 	private CSSToken(CSSTextAlign textAlign) {
-		this(textAlign.getName(), null, null, null, null, null, textAlign, null, null);
+		this(textAlign.getName(), null, null, null, null, null, textAlign, null, null, null);
 	}
 
 	private CSSToken(CSSOverflow overflow) {
-		this(overflow.getName(), null, null, null, null, null, null, overflow, null);
+		this(overflow.getName(), null, null, null, null, null, null, overflow, null, null);
 	}
 
 	private CSSToken(CSSFontSize fontSize) {
-		this(fontSize.getName(), null, null, null, null, null, null, null, fontSize);
+		this(fontSize.getName(), null, null, null, null, null, null, null, fontSize, null);
+	}
+
+	private CSSToken(CSSFontWeight fontWeight) {
+		this(fontWeight.getName(), null, null, null, null, null, null, null, null, fontWeight);
 	}
 
 	private CSSToken(CharType charType) {
@@ -284,6 +303,7 @@ public enum CSSToken implements IToken {
 		this.textAlign = null;
 		this.overflow = null;
 		this.fontSize = null;
+		this.fontWeight = null;
 	}
 
 	@Override
@@ -357,5 +377,9 @@ public enum CSSToken implements IToken {
 	
 	public CSSFontSize getFontSize() {
 		return fontSize;
+	}
+
+	public CSSFontWeight getFontWeight() {
+		return fontWeight;
 	}
 }

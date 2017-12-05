@@ -8,6 +8,7 @@ import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
+import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTarget;
@@ -185,6 +186,20 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		assertThat(doc.getFontSizeEnum(fs20px)).isEqualTo(null);
 	}
 	
+	public void testFontWeight() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_FONTWEIGT);
+
+		final ELEMENT normal = doc.get(CSSTarget.ID, "fontweight_normal").get(0);
+		
+		assertThat(doc.getFontWeightNumber(normal)).isEqualTo(0);
+		assertThat(doc.getFontWeightEnum(normal)).isEqualTo(CSSFontWeight.NORMAL);
+		
+		final ELEMENT fw300 = doc.get(CSSTarget.ID, "fontweight_300").get(0);
+
+		assertThat(doc.getFontWeightNumber(fw300)).isEqualTo(300);
+		assertThat(doc.getFontWeightEnum(fw300)).isEqualTo(null);
+	}
+
 	private static class TestCSSJustify implements ICSSJustify<Void> {
 
 		int top;
