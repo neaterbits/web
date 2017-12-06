@@ -3,6 +3,7 @@ package com.test.web.css.oo;
 import java.util.Arrays;
 
 import com.test.web.css.common.enums.CSSBackgroundColor;
+import com.test.web.css.common.enums.CSSClear;
 import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
@@ -41,6 +42,7 @@ public final class OOCSSElement extends OOStylesBase {
 	private CSSDisplay display;
 	private CSSPosition position;
 	private CSSFloat _float;
+	private CSSClear clear;
 	private CSSTextAlign textAlign;
 	private CSSOverflow overflow;
 	
@@ -321,6 +323,20 @@ public final class OOCSSElement extends OOStylesBase {
 		}
 		
 		this._float = _float;
+		
+		set(CSStyle.FLOAT);
+	}
+	
+	CSSClear getClear() {
+		return clear;
+	}
+	
+	void setClear(CSSClear clear) {
+		if (clear == null) {
+			throw new IllegalArgumentException("clear == null");
+		}
+		
+		this.clear = clear;
 		
 		set(CSStyle.FLOAT);
 	}

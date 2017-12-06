@@ -412,6 +412,10 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		case FLOAT:
 			semiColonRead = parseFloat(context);
 			break;
+	
+		case CLEAR:
+			semiColonRead = parseClear(context);
+			break;
 			
 		case POSITION:
 			semiColonRead = parsePosition(context);
@@ -1628,6 +1632,12 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 
 	private boolean parseFloat(LISTENER_CONTEXT context) throws IOException, ParserException {
 		return parseEnum(FLOAT_TOKENS, token -> listener.onFloat(context, token.getFloat()));
+	}
+
+	private static final CSSToken [] CLEAR_TOKENS = copyTokens(token -> token.getClear() != null);
+
+	private boolean parseClear(LISTENER_CONTEXT context) throws IOException, ParserException {
+		return parseEnum(CLEAR_TOKENS, token -> listener.onClear(context, token.getClear()));
 	}
 
 	private static final CSSToken [] TEXT_ALIGN_TOKENS = copyTokens(token -> token.getTextAlign() != null);

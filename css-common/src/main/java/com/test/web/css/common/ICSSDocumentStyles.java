@@ -5,6 +5,7 @@ import com.test.web.css.common.enums.CSSBackgroundImage;
 import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
 import com.test.web.css.common.enums.CSSBackgroundSize;
+import com.test.web.css.common.enums.CSSClear;
 import com.test.web.css.common.enums.CSSBackgroundAttachment;
 import com.test.web.css.common.enums.CSSBackgroundRepeat;
 import com.test.web.css.common.enums.CSSDisplay;
@@ -50,6 +51,8 @@ public interface ICSSDocumentStyles<TARGET> {
 	CSSPosition getPosition(TARGET ref);
 	
 	CSSFloat getFloat(TARGET ref);
+	
+	CSSClear getClear(TARGET ref);
 
 	CSSTextAlign getTextAlign(TARGET ref);
 

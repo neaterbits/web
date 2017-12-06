@@ -13,6 +13,7 @@ import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
 import com.test.web.css.common.enums.CSSBackgroundRepeat;
 import com.test.web.css.common.enums.CSSBackgroundSize;
+import com.test.web.css.common.enums.CSSClear;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
@@ -289,6 +290,14 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		assertThat(DecimalSize.decode(wrapping.left)).isEqualTo(left);
 		assertThat(wrapping.leftUnit).isEqualTo(leftUnit);
 		assertThat(wrapping.leftType).isEqualTo(leftJustify);
+	}
+
+	public void testClear() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_CLEAR);
+
+		final ELEMENT clear = doc.get(CSSTarget.ID, "clear_both").get(0);
+		
+		assertThat(doc.getClear(clear)).isEqualTo(CSSClear.BOTH);
 	}
 	
 	public void testFontSize() throws IOException, ParserException {

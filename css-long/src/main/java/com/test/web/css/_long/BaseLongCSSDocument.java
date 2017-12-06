@@ -13,6 +13,7 @@ import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
 import com.test.web.css.common.enums.CSSBackgroundRepeat;
 import com.test.web.css.common.enums.CSSBackgroundSize;
+import com.test.web.css.common.enums.CSSClear;
 import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
@@ -116,6 +117,12 @@ public abstract class BaseLongCSSDocument
 	@Override
 	public CSSFloat getFloat(Integer ref) {
 		return LongCSS.getFloat(buf(ref), offset(ref));
+	}
+
+	@Override
+	public CSSClear getClear(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -491,6 +498,12 @@ public abstract class BaseLongCSSDocument
 	@Override
 	public void onFloat(Void context, CSSFloat _float) {
 		LongCSS.setFloat(buf(curParseElement), offset(curParseElement), _float);
+	}
+
+	@Override
+	public void onClear(Void context, CSSClear clear) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override

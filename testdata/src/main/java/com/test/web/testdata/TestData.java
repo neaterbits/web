@@ -93,6 +93,10 @@ public class TestData {
 			"}\n"
 			;	
 
+	public static final String CSS_CLEAR =
+			"#clear_both {\n" +
+			"  clear : both;\n" +
+			"}\n";
 	
 	public static final String CSS_FONTSIZE =
 			"#fontsize_medium {\n" +

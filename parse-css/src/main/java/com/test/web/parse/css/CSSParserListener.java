@@ -7,6 +7,7 @@ import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
 import com.test.web.css.common.enums.CSSBackgroundRepeat;
 import com.test.web.css.common.enums.CSSBackgroundSize;
+import com.test.web.css.common.enums.CSSClear;
 import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
@@ -79,6 +80,8 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 	void onPosition(CONTEXT context, CSSPosition position);
 
 	void onFloat(CONTEXT context, CSSFloat _float);
+
+	void onClear(CONTEXT context, CSSClear clear);
 	
 	void onOverflow(CONTEXT context, CSSOverflow overflow);
 

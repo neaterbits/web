@@ -9,6 +9,7 @@ import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
 import com.test.web.css.common.enums.CSSBackgroundRepeat;
 import com.test.web.css.common.enums.CSSBackgroundSize;
+import com.test.web.css.common.enums.CSSClear;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
@@ -141,6 +142,15 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 		return styleElement == null
 				? null
 				: delegate.getFloat(ref.getStyleElement());
+	}
+	
+	@Override
+	public CSSClear getClear(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getClear(ref.getStyleElement());
 	}
 
 	public CSSTextAlign getTextAlign(OOTagElement ref) {

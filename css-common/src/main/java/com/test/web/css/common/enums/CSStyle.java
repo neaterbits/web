@@ -46,6 +46,7 @@ public enum CSStyle implements IKeyValueList {
 	DISPLAY("display", ValueType.ONE),
 	POSITION("position", ValueType.ONE),
 	FLOAT("float", ValueType.ONE),
+	CLEAR("clear", ValueType.ONE),
 	TEXT_ALIGN("text-align", ValueType.ONE),
 	OVERFLOW("overflow", ValueType.ONE),
 	

@@ -11,6 +11,7 @@ import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
 import com.test.web.css.common.enums.CSSBackgroundRepeat;
 import com.test.web.css.common.enums.CSSBackgroundSize;
+import com.test.web.css.common.enums.CSSClear;
 import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
@@ -117,6 +118,11 @@ public abstract class BaseOOCSSDocument
 	@Override
 	public CSSFloat getFloat(OOCSSElement ref) {
 		return ref.getFloat();
+	}
+
+	@Override
+	public CSSClear getClear(OOCSSElement ref) {
+		return ref.getClear();
 	}
 
 	@Override
@@ -507,6 +513,11 @@ public abstract class BaseOOCSSDocument
 	@Override
 	public void onFloat(Void context, CSSFloat _float) {
 		ref().setFloat(_float);
+	}
+
+	@Override
+	public void onClear(Void context, CSSClear clear) {
+		ref().setClear(clear);
 	}
 
 	@Override
