@@ -46,6 +46,10 @@ public class TestData {
 			"  margin : 25px;\n" +
 			"}\n" +
 
+			"#margin_1_0 {\n" +
+			"  margin : 0;\n" +
+			"}\n" +
+
 			"#margin_2 {\n" +
 			"  margin : 50px 25px;\n" +
 			"}\n" +

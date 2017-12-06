@@ -145,6 +145,12 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 				25, CSSUnit.PX, CSSJustify.SIZE,
 				25, CSSUnit.PX, CSSJustify.SIZE);
 
+		checkMargin(doc, "margin_1_0",
+				0, CSSUnit.PX, CSSJustify.SIZE,
+				0, CSSUnit.PX, CSSJustify.SIZE,
+				0, CSSUnit.PX, CSSJustify.SIZE,
+				0, CSSUnit.PX, CSSJustify.SIZE);
+
 		checkMargin(doc, "margin_2",
 				50, CSSUnit.PX, CSSJustify.SIZE,
 				25, CSSUnit.PX, CSSJustify.SIZE,

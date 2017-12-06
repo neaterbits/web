@@ -74,12 +74,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		boolean done = false;
 		
 		do {
-			CSSToken token = lexSkipWSAndComment(CSSToken.WS, CSSToken.ID_MARKER, CSSToken.CLASS_MARKER, CSSToken.TAG, CSSToken.COMMENT, CSSToken.EOF);
-			
-			if (token == CSSToken.WS) {
-				// Just continue in case of WS
-				continue;
-			}
+			CSSToken token = lexer.lex(CSSToken.WS, CSSToken.ID_MARKER, CSSToken.CLASS_MARKER, CSSToken.TAG, CSSToken.COMMENT, CSSToken.EOF);
 			
 			switch (token) {
 			case ID_MARKER:
@@ -90,7 +85,9 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 				listener.onBlockEnd(context);
 				break;
 				
+			case WS:
 			case COMMENT:
+				// skip
 				break;
 				
 			case EOF:
@@ -517,6 +514,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 					0, null, part1.justify);
 		}
 		else {
+			
 			// We have more than one part that we have to read, which is which depends on the number of sizes found
 			// there ought to be max 4
 			// TODO perhaps cache if parser is singlethreaded
@@ -524,13 +522,15 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			final MarginPart part3 = new MarginPart();
 			final MarginPart part4 = new MarginPart();
 			
-			semiColonRead = parseSizeValueOrSemicolon((size, unit) -> part2.init(size, unit, CSSJustify.SIZE));
-			if (part2.initialized && !semiColonRead) {
-				// read a value, try part3
-				semiColonRead = parseSizeValueOrSemicolon((size, unit) -> part3.init(size, unit, CSSJustify.SIZE));
-				
-				if (part3.initialized && !semiColonRead) {
-					semiColonRead = parseSizeValueOrSemicolon((size, unit) -> part4.init(size, unit, CSSJustify.SIZE));
+			if (!semiColonRead) {
+				semiColonRead = parseSizeValueOrSemicolon((size, unit) -> part2.init(size, unit, CSSJustify.SIZE));
+				if (part2.initialized && !semiColonRead) {
+					// read a value, try part3
+					semiColonRead = parseSizeValueOrSemicolon((size, unit) -> part3.init(size, unit, CSSJustify.SIZE));
+					
+					if (part3.initialized && !semiColonRead) {
+						semiColonRead = parseSizeValueOrSemicolon((size, unit) -> part4.init(size, unit, CSSJustify.SIZE));
+					}
 				}
 			}
 			
