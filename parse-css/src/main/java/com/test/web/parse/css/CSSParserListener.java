@@ -1,6 +1,7 @@
 package com.test.web.parse.css;
 
-import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundColor;
+import com.test.web.css.common.enums.CSSBackgroundImage;
 import com.test.web.css.common.enums.CSSBackgroundAttachment;
 import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
@@ -47,6 +48,8 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 	
 	void onBgImageURL(CONTEXT context, int bgLayer, String url);
 
+	void onBgImage(CONTEXT context, int bgLayer, CSSBackgroundImage image);
+
 	void onBgPosition(CONTEXT context, int bgLayer, int left, CSSUnit leftUnit, int top, CSSUnit topUnit);
 
 	void onBgPosition(CONTEXT context, int bgLayer, CSSBackgroundPosition position);
@@ -67,7 +70,7 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 
 	void onBgColor(CONTEXT context, CSSColor color);
 
-	void onBgColor(CONTEXT context, CSSBackground background);
+	void onBgColor(CONTEXT context, CSSBackgroundColor background);
 
 	void onTextAlign(CONTEXT context, CSSTextAlign textAlign);
 

@@ -163,6 +163,7 @@ public class TestData {
 	public static final String CSS_BG_IMAGE =
 			"#bgimage {\n" +
 			"  background-image : url(\"http://test.com/image1.png\"),\n" +
+			"								 none,\n" +
 			"                                url(\"http://test.com/image2.jpg\");\n" +
 			"}\n";
 
@@ -201,6 +202,22 @@ public class TestData {
 			"  background-clip : content-box,\n" +
 			"                                padding-box;\n" +
 			"}\n";
+
+	public static final String CSS_BG =
+			"#bgcoloronly {\n" +
+			"  background : #AABBCC;\n" +
+			"}\n" +
+			
+			"#bg_img_none_origin_content_box {\n" +
+			"  background : none content-box;\n" +
+			"}\n" +
+
+			"#bg_two_images {\n" +
+			"  background : url(\"http://www.test.com/image1.png\") 100px 120px / auto repeat scroll,\n" +
+			"  					   url(\"http://www.test.com/image2.jpg\") 150px 200px / 400px 300px no-repeat fixed content-box padding-box;\n" +
+			"}\n"
+			
+			;
 
 	public static final String CSS_TEXT_DECORATION =
 			"#text_decoration_1 {\n" +

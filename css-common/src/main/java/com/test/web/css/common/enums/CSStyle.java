@@ -29,6 +29,7 @@ public enum CSStyle implements IKeyValueList {
 	BACKGROUND_ORIGIN("background-origin", ValueType.ONE),
 	BACKGROUND_CLIP("background-clip", ValueType.ONE),
 	BACKGROUND_COLOR("background-color", ValueType.ONE),
+	BACKGROUND("background", ValueType.ONE),
 	
 	MARGIN("margin", ValueType.ONE),
 	MARGIN_LEFT("margin-left", ValueType.ONE),

@@ -6,7 +6,8 @@ import com.test.web.buffers.LongBuffersIntegerIndex;
 import com.test.web.buffers.StringStorageBuffer;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSJustify;
-import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundColor;
+import com.test.web.css.common.enums.CSSBackgroundImage;
 import com.test.web.css.common.enums.CSSBackgroundAttachment;
 import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
@@ -182,6 +183,12 @@ public abstract class BaseLongCSSDocument
 	}
 
 	@Override
+	public CSSBackgroundImage getBgImage(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public int getBgPositionLeft(Integer ref, int bgLayer) {
 		// TODO Auto-generated method stub
 		return 0;
@@ -265,6 +272,7 @@ public abstract class BaseLongCSSDocument
 		return null;
 	}
 
+	/*
 	@Override
 	public int getBgColorR(Integer ref, int bgLayer) {
 		// TODO Auto-generated method stub
@@ -290,10 +298,11 @@ public abstract class BaseLongCSSDocument
 	}
 
 	@Override
-	public CSSBackground getBgColorType(Integer ref, int bgLayer) {
+	public CSSBackgroundColor getBgColorType(Integer ref, int bgLayer) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	*/
 
 	@Override
 	public int getBgColorR(Integer ref) {
@@ -320,7 +329,7 @@ public abstract class BaseLongCSSDocument
 	}
 
 	@Override
-	public CSSBackground getBgColorType(Integer ref) {
+	public CSSBackgroundColor getBgColorType(Integer ref) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -391,6 +400,12 @@ public abstract class BaseLongCSSDocument
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void onBgImage(Void context, int bgLayer, CSSBackgroundImage image) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
 	public void onBgPosition(Void context, int bgLayer, int left, CSSUnit leftUnit, int top, CSSUnit topUnit) {
@@ -453,7 +468,7 @@ public abstract class BaseLongCSSDocument
 	}
 
 	@Override
-	public void onBgColor(Void context, CSSBackground background) {
+	public void onBgColor(Void context, CSSBackgroundColor background) {
 		// TODO Auto-generated method stub
 		
 	}

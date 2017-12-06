@@ -1,14 +1,14 @@
 package com.test.web.css.common.enums;
 
-public enum CSSBackground {
-	
-	TRANSPARENT("transparent"),
+public enum CSSBackgroundImage {
+
+	NONE("none"),
 	INITIAL("initial"),
 	INHERIT("inherit");
 	
 	private final String name;
 
-	private CSSBackground(String name) {
+	private CSSBackgroundImage(String name) {
 		this.name = name;
 	}
 

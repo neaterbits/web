@@ -1,13 +1,20 @@
 package com.test.web.parse.css;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundAttachment;
+import com.test.web.css.common.enums.CSSBackgroundColor;
+import com.test.web.css.common.enums.CSSBackgroundImage;
+import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
+import com.test.web.css.common.enums.CSSBackgroundRepeat;
+import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSForeground;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSMax;
@@ -22,6 +29,7 @@ import com.test.web.parse.common.BaseParser;
 import com.test.web.parse.common.Lexer;
 import com.test.web.parse.common.ParserException;
 import com.test.web.types.DecimalSize;
+import com.test.web.types.Value;
 
 /**
  * For parsing CSS from file or from a style attribute
@@ -358,6 +366,10 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 
 		case BACKGROUND_CLIP:
 			semiColonRead = parseBgClip(context);
+			break;
+			
+		case BACKGROUND:
+			semiColonRead = parseBackground(context);
 			break;
 
 		case MARGIN_LEFT:
@@ -813,7 +825,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		return false;
 	}
 
-	private boolean parseBgColor(IColorRGBFunction rgbColor, ICSSColorFunction cssColor, Consumer<CSSBackground> colorType) throws IOException, ParserException {
+	private boolean parseBgColor(IColorRGBFunction rgbColor, ICSSColorFunction cssColor, Consumer<CSSBackgroundColor> colorType) throws IOException, ParserException {
 		final CSSToken token = parseColor(rgbColor, cssColor, BG_COLOR_TOKENS);
 		
 		if (token.getBackground() != null) {
@@ -831,24 +843,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		switch (token) {
 		case COLOR_MARKER:
 			// Read color string
-			token = lexer.lex(CSSToken.HEXDIGITS);
-			if (token != CSSToken.HEXDIGITS) {
-				throw lexer.unexpectedToken();
-			}
-			
-			final String hexString = lexer.get();
-			
-			if (hexString.length() != 6) {
-				throw new ParserException("Unexpected length: " + hexString.length());
-			}
-			
-			// Parse into hex values
-			rgbColor.onColor(
-					hexValue(hexString, 0, 2),
-					hexValue(hexString, 2, 2),
-					hexValue(hexString, 4, 2),
-					DecimalSize.NONE
-			);
+			token = parseHexColor(rgbColor);
 			break;
 
 		case FUNCTION_RGB:
@@ -876,34 +871,77 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		
 		return token;
 	}
+	
+	private CSSToken parseHexColor(IColorRGBFunction rgbColor) throws IOException, ParserException {
+		CSSToken token = lexer.lex(CSSToken.HEXDIGITS);
+		if (token != CSSToken.HEXDIGITS) {
+			throw lexer.unexpectedToken();
+		}
+		
+		final String hexString = lexer.get();
+		
+		if (hexString.length() != 6) {
+			throw new ParserException("Unexpected length: " + hexString.length());
+		}
+		
+		// Parse into hex values
+		rgbColor.onColor(
+				hexValue(hexString, 0, 2),
+				hexValue(hexString, 2, 2),
+				hexValue(hexString, 4, 2),
+				DecimalSize.NONE
+		);
+		
+		return token;
+	}
 
-	private <E extends Enum<E>> boolean parseBgImage(LISTENER_CONTEXT context) throws IOException, ParserException {
+	private static final CSSToken [] BG_IMAGE_TOKENS = copyTokens(token -> token.getBgImage() != null, CSSToken.FUNCTION_URL);
+	
+	private boolean parseBgImage(LISTENER_CONTEXT context) throws IOException, ParserException {
 	
 		int bgLayer = 0;
 		boolean semiColonRead = false;
 		
 		do {
-			CSSToken token = lexSkipWSAndComment(CSSToken.FUNCTION_URL);
+			CSSToken token = lexSkipWSAndComment(BG_IMAGE_TOKENS);
 			
-			
-			if (token != CSSToken.FUNCTION_URL) {
+			switch (token) {
+			case FUNCTION_URL:
+				// parse function params
+				final String url = parseImageURL();;
+				
+				listener.onBgImageURL(context, bgLayer, url);
+				
+				semiColonRead = readCommaOrSemiColon();
+				break;
+				
+			case NONE:
 				throw lexer.unexpectedToken();
-			}
+				
+			default:
+				if (token.getBgImage() == null) {
+					throw new IllegalStateException("Expected bg image");
+				}
+				listener.onBgImage(context, bgLayer,  token.getBgImage());
 
-			// parse function params
-			final Object [] values = parseFunctionParams(1, paramIdx -> parseQuotedString());
-			
-			final String url = (String)values[0];
-			
-			listener.onBgImageURL(context, bgLayer, url);
-			
-			semiColonRead = readCommaOrSemiColon();
+				semiColonRead = readCommaOrSemiColon();
+				break;
+			}
 			
 			++ bgLayer;
 			
 		} while (!semiColonRead);
 	
 		return semiColonRead;
+	}
+	
+	private String parseImageURL() throws IOException, ParserException {
+		
+		final Object [] values = parseFunctionParams(1, paramIdx -> parseQuotedString());
+		
+		final String url = (String)values[0];
+
+		return url;
 	}
 	
 	private String parseQuotedString() throws IOException, ParserException {
@@ -942,6 +980,15 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		}
 	}
 	
+	private void parseBgPositionAfterInt(LISTENER_CONTEXT context, int bgLayer, CachedSize cachedSize) throws IOException, ParserException {
+		// we got integer so a regular size specification
+		parseSizeValueAfterInt(Integer.parseInt(lexer.get()), (value, unit) -> cachedSize.init(value, unit));
+		
+		final int bgl = bgLayer;
+		// Now should be another size value
+		parseSizeValue((value, unit) -> listener.onBgPosition(context, bgl, cachedSize.value, cachedSize.unit, value, unit));
+	}
+	
 	private boolean parseBgPosition(LISTENER_CONTEXT context) throws IOException, ParserException {
 		
 		int bgLayer = 0;
@@ -954,12 +1001,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			
 			switch (token) {
 			case INTEGER:
-				// we got integer so a regular size specification
-				parseSizeValueAfterInt(Integer.parseInt(lexer.get()), (value, unit) -> cachedSize.init(value, unit));
-				
-				final int bgl = bgLayer;
-				// Now should be another size value
-				parseSizeValue((value, unit) -> listener.onBgPosition(context, bgl, cachedSize.value, cachedSize.unit, value, unit));
+				parseBgPositionAfterInt(context, bgLayer, cachedSize);
 				
 				// next should be comma for new layer or a semicolon
 				semiColonRead = readCommaOrSemiColon();
@@ -1030,38 +1072,52 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		final CachedSize cachedSize = new CachedSize();
 		
 		do {
-			CSSToken token = lexSkipWSAndComment(BG_SIZE_TOKENS);
 			
-			switch (token) {
-			case INTEGER:
-				// we got integer so a regular size specification
-				parseSizeValueAfterInt(Integer.parseInt(lexer.get()), (value, unit) -> cachedSize.init(value, unit));
-				
-				final int bgl = bgLayer;
-				// Now should be another size value
-				parseSizeValue((value, unit) -> listener.onBgSize(context, bgl, cachedSize.value, cachedSize.unit, value, unit));
-				
-				// next should be comma for new layer or a semicolon
-				semiColonRead = readCommaOrSemiColon();
-				break;
-				
-			case NONE:
-				throw lexer.unexpectedToken();
-				
-			default:
-				// Size enum
-				if (token.getBgSize() == null) {
-					throw new IllegalStateException("Expected size: " + token);
-				}
-				listener.onBgSize(context, bgLayer, token.getBgSize());
-				semiColonRead = readCommaOrSemiColon();
-				break;
-			}
-			
+			semiColonRead = parseBgSize(context, bgLayer, cachedSize, true);
+		
 			++ bgLayer;
 			
 		} while (!semiColonRead);
 	
+		return semiColonRead;
+	}
+	
+	private boolean parseBgSize(LISTENER_CONTEXT context, int bgLayer, CachedSize cachedSize, boolean readCommaOrSemiColons) throws IOException, ParserException  {
+		CSSToken token = lexSkipWSAndComment(BG_SIZE_TOKENS);
+		
+		boolean semiColonRead = false;
+		
+		switch (token) {
+		case INTEGER:
+			// we got integer so a regular size specification
+			parseSizeValueAfterInt(Integer.parseInt(lexer.get()), (value, unit) -> cachedSize.init(value, unit));
+			
+			final int bgl = bgLayer;
+			// Now should be another size value
+			parseSizeValue((value, unit) -> listener.onBgSize(context, bgl, cachedSize.value, cachedSize.unit, value, unit));
+			
+			if (readCommaOrSemiColons) {
+				// next should be comma for new layer or a semicolon
+				semiColonRead = readCommaOrSemiColon();
+			}
+			break;
+			
+		case NONE:
+			throw lexer.unexpectedToken();
+			
+		default:
+			// Size enum
+			if (token.getBgSize() == null) {
+				throw new IllegalStateException("Expected size: " + token);
+			}
+			listener.onBgSize(context, bgLayer, token.getBgSize());
+			
+			if (readCommaOrSemiColons) {
+				semiColonRead = readCommaOrSemiColon();
+			}
+			break;
+		}
+		
 		return semiColonRead;
 	}
 	
@@ -1118,6 +1174,218 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		} while (!semiColonRead);
 	
 		return semiColonRead;
+	}
+	
+	private static final Map<CSStyle, CSSToken[]> BG_INITIAL_TOKENS;
+	
+	static {
+		BG_INITIAL_TOKENS = new HashMap<>();
+		
+		BG_INITIAL_TOKENS.put(CSStyle.BACKGROUND_IMAGE, BG_IMAGE_TOKENS);
+		BG_INITIAL_TOKENS.put(CSStyle.BACKGROUND_POSITION, BG_POSITION_TOKENS);
+		BG_INITIAL_TOKENS.put(CSStyle.BACKGROUND_REPEAT, BG_REPEAT_TOKENS);
+		BG_INITIAL_TOKENS.put(CSStyle.BACKGROUND_ATTACHMENT, BG_ATTACHMENT_TOKENS);
+		BG_INITIAL_TOKENS.put(CSStyle.BACKGROUND_ORIGIN, BG_ORIGIN_TOKENS); // clip only if origin is specified
+		BG_INITIAL_TOKENS.put(CSStyle.BACKGROUND_COLOR, BG_COLOR_TOKENS);
+	}
+	
+	// Must pass a combination of many tokens since order may vary
+	private boolean parseBackground(LISTENER_CONTEXT context) throws IOException, ParserException {
+		
+		
+		int bgLayer = 0;
+		boolean semiColonRead = false;
+		
+		do {
+			semiColonRead = parseOneLayer(context, bgLayer);
+		
+			++ bgLayer;
+		} while (!semiColonRead);
+	
+		return semiColonRead;
+
+	}
+	
+	private boolean parseOneLayer(LISTENER_CONTEXT context, int bgLayer) throws IOException, ParserException {
+
+		// Maintain a map of which tokens to still try
+		final Map<CSStyle, CSSToken[]> tokenMap = new HashMap<>(BG_INITIAL_TOKENS);
+
+		boolean layerDone = false;
+		boolean semiColonRead = false;
+		
+		final Value<Integer> numOrigin = new Value<>(0);
+		
+		do {
+			// parse for next until reaches comma or semicolon
+			final CSSToken lastToken = parseOneLayerIteration(context, bgLayer, tokenMap, numOrigin);
+			
+			if (lastToken == CSSToken.COMMA) {
+				layerDone = true;
+			}
+			else if (lastToken == CSSToken.SEMICOLON) {
+				layerDone = true;
+				semiColonRead = true;
+			}
+			
+		} while (!layerDone);
+		
+		return semiColonRead;
+	}
+	
+	private CSSToken parseOneLayerIteration(LISTENER_CONTEXT context, int bgLayer, Map<CSStyle, CSSToken[]> tokenMap, Value<Integer> numOrigin) throws IOException, ParserException {
+		
+		final CSSToken [] tokens = merge(tokenMap.values(), CSSToken.COMMA, CSSToken.SEMICOLON);
+		
+		CSSToken token = lexSkipWSAndComment(tokens);
+		
+		if (token == CSSToken.NONE) {
+			throw lexer.unexpectedToken();
+		}
+		
+		final String text = lexer.get();
+		
+		// Just check textual value for "initial" and "inherit" since these are part of multiple of the enum tokens
+		// but we should just set inherit for all in that case
+		
+		if (text.equalsIgnoreCase("initial")) {
+			setValue(
+					context, bgLayer,
+					CSSBackgroundImage.INITIAL,
+					CSSBackgroundPosition.INITIAL,
+					CSSBackgroundSize.INITIAL,
+					CSSBackgroundRepeat.INITIAL,
+					CSSBackgroundAttachment.INITIAL,
+					CSSBackgroundOrigin.INITIAL,
+					CSSBackgroundOrigin.INITIAL,
+					CSSBackgroundColor.INITIAL);
+		}
+		else if (text.equalsIgnoreCase("inherit")) {
+			setValue(
+					context, bgLayer,
+					CSSBackgroundImage.INHERIT,
+					CSSBackgroundPosition.INHERIT,
+					CSSBackgroundSize.INHERIT,
+					CSSBackgroundRepeat.INHERIT,
+					CSSBackgroundAttachment.INHERIT,
+					CSSBackgroundOrigin.INHERIT,
+					CSSBackgroundOrigin.INHERIT,
+					CSSBackgroundColor.INHERIT);
+		}
+		else if (token == CSSToken.COMMA || token == CSSToken.SEMICOLON) {
+			// return token so that we can start new layer, or exit in case of semicolon
+		}
+		// None of "initial" or "inherit", figure out the token
+		else if (token == CSSToken.FUNCTION_URL) {
+			// URL for image
+			final String url = parseImageURL();
+			
+			listener.onBgImageURL(context, bgLayer, url);
+			
+			tokenMap.remove(CSStyle.BACKGROUND_IMAGE);
+		}
+		else if (token.getBgImage() != null) {
+			listener.onBgImage(context, bgLayer, token.getBgImage());
+			
+			tokenMap.remove(CSStyle.BACKGROUND_IMAGE);
+		}
+		else if (token == CSSToken.INTEGER) {
+			// position with possible size as well after '/'
+			
+			final CachedSize cachedSize = new CachedSize();
+			
+			parseBgPositionAfterInt(context, bgLayer, cachedSize);
+
+			tokenMap.remove(CSStyle.BACKGROUND_POSITION);
+			
+			// Now we might have '/' for size
+			token = lexSkipWSAndComment(CSSToken.SLASH);
+			if (token == CSSToken.SLASH) {
+				// we should now have size
+				parseBgSize(context, bgLayer, cachedSize, false);
+			}
+		}
+		else if (token.getBgRepeat() != null) {
+			listener.onBgRepeat(context, bgLayer, token.getBgRepeat());
+
+			tokenMap.remove(CSStyle.BACKGROUND_REPEAT);
+		}
+		else if (token.getBgAttachment() != null) {
+			listener.onBgAttachment(context, bgLayer, token.getBgAttachment());
+
+			tokenMap.remove(CSStyle.BACKGROUND_ATTACHMENT);
+		}
+		else if (token.getBgOrigin() != null) {
+			
+			if (numOrigin.get() == 0) {
+				listener.onBgOrigin(context, bgLayer, token.getBgOrigin());
+				
+				numOrigin.set(numOrigin.get() + 1);
+			}
+			else if (numOrigin.get() == 1) {
+				listener.onBgClip(context, bgLayer, token.getBgOrigin());
+
+				tokenMap.remove(CSStyle.BACKGROUND_ORIGIN);
+			}
+			else {
+				throw new IllegalStateException("should never reach here since removed from tokenMap");
+			}
+		}
+		else if (token == CSSToken.COLOR_MARKER) {
+
+			token = parseHexColor((r, g, b, a) -> listener.onBgColor(context, r, g, b, a));
+			
+			tokenMap.remove(CSStyle.BACKGROUND_COLOR);
+		}
+		else if (token.getBackground() != null) {
+			
+			listener.onBgColor(context, token.getBackground());
+			
+			tokenMap.remove(CSStyle.BACKGROUND_COLOR);
+		}
+		else if (token.getColor() != null) {
+			
+			listener.onBgColor(context, token.getColor());
+			
+			tokenMap.remove(CSStyle.BACKGROUND_COLOR);
+		}
+		else if (token == CSSToken.FUNCTION_RGB) {
+			
+			parseRGBFunction((r, g, b, a) -> listener.onBgColor(context, r, g, b, a));
+			
+			tokenMap.remove(CSStyle.BACKGROUND_COLOR);
+		}
+		else if (token == CSSToken.FUNCTION_RGBA) {
+
+			parseRGBAFunction((r, g, b, a) -> listener.onBgColor(context, r, g, b, a));
+
+			tokenMap.remove(CSStyle.BACKGROUND_COLOR);
+		}
+		else {
+			throw lexer.unexpectedToken();
+		}
+		
+		return token;
+	}
+	
+	private void setValue(LISTENER_CONTEXT context, int bgLayer,
+			CSSBackgroundImage bgImage,
+			CSSBackgroundPosition bgPosition,
+			CSSBackgroundSize bgSize,
+			CSSBackgroundRepeat bgRepeat,
+			CSSBackgroundAttachment bgAttachment,
+			CSSBackgroundOrigin bgOrigin,
+			CSSBackgroundOrigin bgClip,
+			CSSBackgroundColor bgColor) {
+		
+		listener.onBgImage(context, bgLayer, bgImage);
+		listener.onBgPosition(context, bgLayer, bgPosition);
+		listener.onBgSize(context, bgLayer, bgSize);
+		listener.onBgRepeat(context, bgLayer, bgRepeat);
+		listener.onBgAttachment(context, bgLayer, bgAttachment);
+		listener.onBgOrigin(context, bgLayer, bgOrigin);
+		listener.onBgClip(context, bgLayer, bgClip);
+		listener.onBgColor(context, bgColor);
 	}
 
 

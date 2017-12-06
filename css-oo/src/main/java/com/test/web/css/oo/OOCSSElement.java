@@ -2,7 +2,7 @@ package com.test.web.css.oo;
 
 import java.util.Arrays;
 
-import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundColor;
 import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
@@ -56,7 +56,7 @@ public final class OOCSSElement extends OOStylesBase {
 	private int bgColorRGB; // bit-shifted, ColorRGB.NONE is not set
 	private int bgColorAlpha; // decimal encoded, DecimalSize.NONE if not set
 	private CSSColor bgColorCSS; // enumerated color
-	private CSSBackground bgColorType;
+	private CSSBackgroundColor bgColorType;
 
 	private short zIndex;
 	
@@ -468,7 +468,7 @@ public final class OOCSSElement extends OOStylesBase {
 		this.bgColorType = null;
 	}
 	
-	void setBgColorType(CSSBackground colorType) {
+	void setBgColorType(CSSBackgroundColor colorType) {
 		this.bgColorCSS = null;
 		this.bgColorRGB = ColorRGB.NONE;
 		this.bgColorAlpha = DecimalSize.NONE;
@@ -491,7 +491,7 @@ public final class OOCSSElement extends OOStylesBase {
 		return getColorA(bgColorAlpha);
 	}
 	
-	CSSBackground getBgColorType() {
+	CSSBackgroundColor getBgColorType() {
 		return bgColorType;
 	}
 

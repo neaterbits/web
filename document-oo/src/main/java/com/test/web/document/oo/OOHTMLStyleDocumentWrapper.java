@@ -2,7 +2,8 @@ package com.test.web.document.oo;
 
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSJustify;
-import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundColor;
+import com.test.web.css.common.enums.CSSBackgroundImage;
 import com.test.web.css.common.enums.CSSBackgroundAttachment;
 import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
@@ -240,6 +241,15 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	@Override
+	public CSSBackgroundImage getBgImage(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getBgImage(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
 	public int getBgPositionLeft(OOTagElement ref, int bgLayer) {
 		final OOCSSElement styleElement = ref.getStyleElement();
 		
@@ -365,6 +375,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 				: delegate.getBgClip(ref.getStyleElement(), bgLayer);
 	}
 
+	/*
 	@Override
 	public int getBgColorR(OOTagElement ref, int bgLayer) {
 		final OOCSSElement styleElement = ref.getStyleElement();
@@ -400,15 +411,16 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 				? DecimalSize.NONE
 				: delegate.getBgColorA(ref.getStyleElement(), bgLayer);
 	}
-
+	
 	@Override
-	public CSSBackground getBgColorType(OOTagElement ref, int bgLayer) {
+	public CSSBackgroundColor getBgColorType(OOTagElement ref, int bgLayer) {
 		final OOCSSElement styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
 				: delegate.getBgColorType(ref.getStyleElement(), bgLayer);
 	}
+	*/
 
 	@Override
 	public int getBgColorR(OOTagElement ref) {
@@ -447,7 +459,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	@Override
-	public CSSBackground getBgColorType(OOTagElement ref) {
+	public CSSBackgroundColor getBgColorType(OOTagElement ref) {
 		final OOCSSElement styleElement = ref.getStyleElement();
 		
 		return styleElement == null

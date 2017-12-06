@@ -1,6 +1,7 @@
 package com.test.web.css.oo;
 
-import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundColor;
+import com.test.web.css.common.enums.CSSBackgroundImage;
 import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
 import com.test.web.css.common.enums.CSSBackgroundSize;
@@ -19,7 +20,8 @@ public class OOBackroundLayer extends OOStylesBase {
 	
 	// Image
 	private String imageURL; // image
-	
+	private CSSBackgroundImage image;
+
 	// Position
 	private int left;
 	private CSSUnit leftUnit;
@@ -50,7 +52,7 @@ public class OOBackroundLayer extends OOStylesBase {
 	private int bgColorRGB; // bit-shifted, ColorRGB.NONE is not set
 	private int bgColorAlpha; // decimal encoded, DecimalSize.NONE if not set
 	private CSSColor bgColorCSS; // enumerated color
-	private CSSBackground bgColorType;
+	private CSSBackgroundColor bgColorType;
 
 	String getImageUrl() {
 		return imageURL;
@@ -64,6 +66,18 @@ public class OOBackroundLayer extends OOStylesBase {
 		this.imageURL = imageUrl;
 		
 		set(CSStyle.BACKGROUND_IMAGE);
+	}
+	
+	CSSBackgroundImage getImage() {
+		return image;
+	}
+
+	void setImage(CSSBackgroundImage image) {
+		if (image == null) {
+			throw new IllegalArgumentException("mage == null");
+		}
+		
+		this.image = image;
 	}
 	
 	int getPositionLeft() {
@@ -254,7 +268,7 @@ public class OOBackroundLayer extends OOStylesBase {
 		set(CSStyle.BACKGROUND_COLOR);
 	}
 	
-	void setBgColorType(CSSBackground colorType) {
+	void setBgColorType(CSSBackgroundColor colorType) {
 		this.bgColorCSS = null;
 		this.bgColorRGB = ColorRGB.NONE;
 		this.bgColorAlpha = DecimalSize.NONE;
@@ -279,7 +293,7 @@ public class OOBackroundLayer extends OOStylesBase {
 		return getColorA(bgColorAlpha);
 	}
 	
-	CSSBackground getBgColorType() {
+	CSSBackgroundColor getBgColorType() {
 		return bgColorType;
 	}
 

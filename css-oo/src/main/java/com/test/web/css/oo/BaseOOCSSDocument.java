@@ -4,7 +4,8 @@ import org.assertj.core.description.TextDescription;
 
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSJustify;
-import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundColor;
+import com.test.web.css.common.enums.CSSBackgroundImage;
 import com.test.web.css.common.enums.CSSBackgroundAttachment;
 import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
@@ -174,6 +175,11 @@ public abstract class BaseOOCSSDocument
 	}
 
 	@Override
+	public CSSBackgroundImage getBgImage(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getImage();
+	}
+
+	@Override
 	public int getBgPositionLeft(OOCSSElement ref, int bgLayer) {
 		return ref.getBgLayer(bgLayer).getPositionLeft();
 	}
@@ -243,6 +249,7 @@ public abstract class BaseOOCSSDocument
 		return ref.getBgLayer(bgLayer).getClip();
 	}
 
+	/*
 	@Override
 	public int getBgColorR(OOCSSElement ref, int bgLayer) {
 		return ref.getBgLayer(bgLayer).getBgColorR();
@@ -264,9 +271,10 @@ public abstract class BaseOOCSSDocument
 	}
 
 	@Override
-	public CSSBackground getBgColorType(OOCSSElement ref, int bgLayer) {
+	public CSSBackgroundColor getBgColorType(OOCSSElement ref, int bgLayer) {
 		return ref.getBgLayer(bgLayer).getBgColorType();
 	}
+	*/
 
 	@Override
 	public int getBgColorR(OOCSSElement ref) {
@@ -289,7 +297,7 @@ public abstract class BaseOOCSSDocument
 	}
 
 	@Override
-	public CSSBackground getBgColorType(OOCSSElement ref) {
+	public CSSBackgroundColor getBgColorType(OOCSSElement ref) {
 		return ref.getBgColorType();
 	}
 
@@ -422,6 +430,11 @@ public abstract class BaseOOCSSDocument
 	}
 
 	@Override
+	public void onBgImage(Void context, int bgLayer, CSSBackgroundImage image) {
+		ref().getOrAddBgLayer(bgLayer).setImage(image);
+	}
+
+	@Override
 	public void onBgPosition(Void context, int bgLayer, int left, CSSUnit leftUnit, int top, CSSUnit topUnit) {
 		ref().getOrAddBgLayer(bgLayer).setPosition(left, leftUnit, top, topUnit);
 	}
@@ -472,7 +485,7 @@ public abstract class BaseOOCSSDocument
 	}
 
 	@Override
-	public void onBgColor(Void context, CSSBackground background) {
+	public void onBgColor(Void context, CSSBackgroundColor background) {
 		ref().setBgColorType(background);
 	}
 

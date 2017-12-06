@@ -6,7 +6,8 @@ import java.io.IOException;
 
 import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.ICSSJustify;
-import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundColor;
+import com.test.web.css.common.enums.CSSBackgroundImage;
 import com.test.web.css.common.enums.CSSBackgroundAttachment;
 import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
@@ -413,7 +414,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 
 		final ELEMENT initial = doc.get(CSSTarget.ID, "bgcolor_initial").get(0);
 		
-		assertThat(doc.getBgColorType(initial)).isEqualTo(CSSBackground.TRANSPARENT);
+		assertThat(doc.getBgColorType(initial)).isEqualTo(CSSBackgroundColor.TRANSPARENT);
 	}
 
 	public void testBgImage() throws IOException, ParserException {
@@ -422,8 +423,13 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		final ELEMENT pos = doc.get(CSSTarget.ID, "bgimage").get(0);
 		
 		assertThat(doc.getBgImageURL(pos, 0)).isEqualTo("http://test.com/image1.png");
+		assertThat(doc.getBgImage(pos, 0)).isNull();
 	
-		assertThat(doc.getBgImageURL(pos, 1)).isEqualTo("http://test.com/image2.jpg");
+		assertThat(doc.getBgImageURL(pos, 1)).isNull();
+		assertThat(doc.getBgImage(pos, 1)).isEqualTo(CSSBackgroundImage.NONE);
+	
+		assertThat(doc.getBgImageURL(pos, 2)).isEqualTo("http://test.com/image2.jpg");
+		assertThat(doc.getBgImage(pos, 2)).isNull();
 	}
 
 	public void testBgPosition() throws IOException, ParserException {
@@ -500,6 +506,55 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		assertThat(doc.getBgClip(pos, 0)).isEqualTo(CSSBackgroundOrigin.CONTENT_BOX);
 	
 		assertThat(doc.getBgClip(pos, 1)).isEqualTo(CSSBackgroundOrigin.PADDING_BOX);
+	}
+
+	public void testBg() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG);
+
+		final ELEMENT bgColorOnly = doc.get(CSSTarget.ID, "bgcoloronly").get(0);
+		
+		assertThat(doc.getBgColorR(bgColorOnly)).isEqualTo((short)0xAA);
+		assertThat(doc.getBgColorG(bgColorOnly)).isEqualTo((short)0xBB);
+		assertThat(doc.getBgColorB(bgColorOnly)).isEqualTo((short)0xCC);
+		assertThat(doc.getBgColorA(bgColorOnly)).isEqualTo(DecimalSize.NONE);
+		
+		final ELEMENT bgImgNone = doc.get(CSSTarget.ID, "bg_img_none_origin_content_box").get(0);
+		
+		assertThat(doc.getBgImage(bgImgNone, 0)).isEqualTo(CSSBackgroundImage.NONE);
+		assertThat(doc.getBgOrigin(bgImgNone, 0)).isEqualTo(CSSBackgroundOrigin.CONTENT_BOX);
+		
+		final ELEMENT bgTwoImages = doc.get(CSSTarget.ID, "bg_two_images").get(0);
+		
+		assertThat(doc.getBgImageURL(bgTwoImages, 0)).isEqualTo("http://www.test.com/image1.png");
+		assertThat(doc.getBgImage(bgTwoImages, 0)).isNull();
+		
+		assertThat(DecimalSize.decodeToInt(doc.getBgPositionLeft(bgTwoImages, 0))).isEqualTo(100);
+		assertThat(doc.getBgPositionLeftUnit(bgTwoImages, 0)).isEqualTo(CSSUnit.PX);
+		assertThat(DecimalSize.decodeToInt(doc.getBgPositionTop(bgTwoImages, 0))).isEqualTo(120);
+		assertThat(doc.getBgPositionTopUnit(bgTwoImages, 0)).isEqualTo(CSSUnit.PX);
+
+		assertThat(doc.getBgSize(bgTwoImages, 0)).isEqualTo(CSSBackgroundSize.AUTO);
+		assertThat(doc.getBgRepeat(bgTwoImages, 0)).isEqualTo(CSSBackgroundRepeat.REPEAT);
+		assertThat(doc.getBgAttachment(bgTwoImages, 0)).isEqualTo(CSSBackgroundAttachment.SCROLL);
+
+
+		assertThat(doc.getBgImageURL(bgTwoImages, 1)).isEqualTo("http://www.test.com/image2.jpg");
+		assertThat(doc.getBgImage(bgTwoImages, 1)).isNull();
+		
+		assertThat(DecimalSize.decodeToInt(doc.getBgPositionLeft(bgTwoImages, 1))).isEqualTo(150);
+		assertThat(doc.getBgPositionLeftUnit(bgTwoImages, 1)).isEqualTo(CSSUnit.PX);
+		assertThat(DecimalSize.decodeToInt(doc.getBgPositionTop(bgTwoImages, 1))).isEqualTo(200);
+		assertThat(doc.getBgPositionTopUnit(bgTwoImages, 1)).isEqualTo(CSSUnit.PX);
+
+		assertThat(DecimalSize.decodeToInt(doc.getBgWidth(bgTwoImages, 1))).isEqualTo(400);
+		assertThat(doc.getBgWidthUnit(bgTwoImages, 1)).isEqualTo(CSSUnit.PX);
+		assertThat(DecimalSize.decodeToInt(doc.getBgHeight(bgTwoImages, 1))).isEqualTo(300);
+		assertThat(doc.getBgHeightUnit(bgTwoImages, 1)).isEqualTo(CSSUnit.PX);
+
+		assertThat(doc.getBgRepeat(bgTwoImages, 1)).isEqualTo(CSSBackgroundRepeat.NO_REPEAT);
+		assertThat(doc.getBgAttachment(bgTwoImages, 1)).isEqualTo(CSSBackgroundAttachment.FIXED);
+		assertThat(doc.getBgOrigin(bgTwoImages, 1)).isEqualTo(CSSBackgroundOrigin.CONTENT_BOX);
+		assertThat(doc.getBgClip(bgTwoImages, 1)).isEqualTo(CSSBackgroundOrigin.PADDING_BOX);
 	}
 
 	public void testTextDecoration() throws IOException, ParserException {

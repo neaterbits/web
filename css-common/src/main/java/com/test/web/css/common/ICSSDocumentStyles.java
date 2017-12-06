@@ -1,6 +1,7 @@
 package com.test.web.css.common;
 
-import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundColor;
+import com.test.web.css.common.enums.CSSBackgroundImage;
 import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
 import com.test.web.css.common.enums.CSSBackgroundSize;
@@ -72,6 +73,8 @@ public interface ICSSDocumentStyles<TARGET> {
 
 	String getBgImageURL(TARGET ref, int bgLayer);
 	
+	CSSBackgroundImage getBgImage(TARGET ref, int bgLayer);
+	
 	// bg position
 	int getBgPositionLeft(TARGET ref, int bgLayer); // set if unit is non null
 	CSSUnit getBgPositionLeftUnit(TARGET ref, int bgLayer);
@@ -103,7 +106,7 @@ public interface ICSSDocumentStyles<TARGET> {
 	CSSBackgroundOrigin getBgClip(TARGET ref, int bgLayer);
 	
 	// bg color
-	
+	/*
 	int getBgColorR(TARGET ref, int bgLayer);
 	
 	int getBgColorG(TARGET ref, int bgLayer);
@@ -112,22 +115,18 @@ public interface ICSSDocumentStyles<TARGET> {
 
 	int getBgColorA(TARGET ref, int bgLayer);
 	
-	CSSBackground getBgColorType(TARGET ref, int bgLayer);
-
-	@Deprecated
+	CSSBackgroundColor getBgColorType(TARGET ref, int bgLayer);
+	*/
+	
 	int getBgColorR(TARGET ref);
 
-	@Deprecated
 	int getBgColorG(TARGET ref);
 	
-	@Deprecated
 	int getBgColorB(TARGET ref);
 
-	@Deprecated
 	int getBgColorA(TARGET ref);
 	
-	@Deprecated
-	CSSBackground getBgColorType(TARGET ref);
+	CSSBackgroundColor getBgColorType(TARGET ref);
 
 	String getFontFamily(TARGET ref);
 	
