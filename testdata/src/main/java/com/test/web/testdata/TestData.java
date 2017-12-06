@@ -230,7 +230,12 @@ public class TestData {
 			"#bg_browser_specific {\n" +
 			"  background : -moz-linear-gradient(#112233, #AABBCC);\n" +
 			"}\n";
-	
+
+	public static final String CSS_BG_BROWSER_SPECIFIC_WITH_NESTED_FUNCTIONS =
+			"#bg_browser_specific_with_nested_functions {\n" +
+			"  background : -moz-linear-gradient(#112233, foo(#AABBCC, bar), baz(123));\n" +
+			"}\n";
+
 	public static final String CSS_TEXT_DECORATION =
 			"#text_decoration_1 {\n" +
 			"  text-decoration : underline;\n" +

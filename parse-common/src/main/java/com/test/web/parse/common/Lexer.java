@@ -65,8 +65,12 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		private boolean matchesExactly;
 		private boolean mightMatch;
 	}
-	
+
 	public TOKEN lex(@SuppressWarnings("unchecked") TOKEN ... inputTokens) throws IOException {
+		return lex(LexerMatch.LONGEST_MATCH, inputTokens);
+	}
+	
+	public TOKEN lex(LexerMatch matchMethod, @SuppressWarnings("unchecked") TOKEN ... inputTokens) throws IOException {
 		
 		if (DEBUG) {
 			System.out.println("----");
@@ -98,7 +102,6 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		// TODO: exit if cannot find matching token of any length
 		do {
 			final int val = read();
-			
 			
 			if (val < 0) {
 				// If found a matching token, return that
@@ -151,6 +154,10 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 				matchToken(token, c, tokenMatch);
 
 				final boolean match = tokenMatch.matchesExactly;
+				if (match && matchMethod == LexerMatch.FIRST_MATCH) {
+					found = token;
+					break;
+				}
 				
 				// If a token went from matching to non matching, we should remove it from the array of tokens
 				// eg for a C style comment, we can continue to have a possible match against */ after found one, but we already have a match and should remove it from the list
@@ -176,48 +183,43 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 				}
 			}
 			
-			if (firstMatchThisIteration != null) {
-				// found a match this iterations, set as longest so far
-				longestFoundSoFar = firstMatchThisIteration;
-			}
-
-			// No possible matches and none found, return tokNone unless have found an earlier match
-			if (numPossibleMatch == 0) {
-
-				// If read a character, buffer it for next iteration and remove from buffer
-				bufferCharacter(val);
-
-				if (cur.charAt(cur.length() - 1) != c) {
-					throw new IllegalStateException("Mismatch of last char: " + c);
+			if (found == null) { // found may be set in case of FIRST_MATCH matching method
+				if (firstMatchThisIteration != null) {
+					// found a match this iterations, set as longest so far
+					longestFoundSoFar = firstMatchThisIteration;
 				}
-				
-				cur.setLength(cur.length() - 1);
-
-				if (longestFoundSoFar == null) {
-				
-					if (DEBUG) {
-						System.out.println(PREFIX + " No possible matches, returning");
+	
+				// No possible matches and none found, return tokNone unless have found an earlier match
+				if (numPossibleMatch == 0) {
+	
+					// If read a character, buffer it for next iteration and remove from buffer
+					bufferCharacter(val);
+	
+					if (cur.charAt(cur.length() - 1) != c) {
+						throw new IllegalStateException("Mismatch of last char: " + c);
 					}
 					
-					// No possible matches, return not-found token
-					found = tokNone; // triggers to break out of loop
+					cur.setLength(cur.length() - 1);
+	
+					if (longestFoundSoFar == null) {
+					
+						if (DEBUG) {
+							System.out.println(PREFIX + " No possible matches, returning");
+						}
+						
+						// No possible matches, return not-found token
+						found = tokNone; // triggers to break out of loop
+					}
+					else {
+						// found a token, return that
+						found = longestFoundSoFar;
+					}
 				}
 				else {
-					// found a token, return that
-					found = longestFoundSoFar;
+					// Continue iterating, switch to iterating over only matching tokens
+					tokens = this.possiblyMatchingTokens;
+					numTokens = numPossibleMatch;
 				}
-			}
-			/*
-			else if (numPossibleMatch == 1 && firstMatchThisIteration != null) {
-				// Was only one match, return that
-				found = firstMatchThisIteration;
-				// TODO what if tokens is the very last characters of a stream, will we be able to fetch that here? Could still be multiple matches
-			}
-			*/
-			else {
-				// Continue iterating, switch to iterating over only matching tokens
-				tokens = this.possiblyMatchingTokens;
-				numTokens = numPossibleMatch;
 			}
 		} while (found == null);
 		
@@ -315,6 +317,17 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 				
 				match = false;
 				possibleMatch = s.startsWith(token.getFromLiteral());
+			}
+			break;
+			
+		case INCLUDING_CHAR:
+			if (c == token.getToCharacter()) {
+				match = true;
+				possibleMatch = true;
+			}
+			else {
+				match = false;
+				possibleMatch = true;
 			}
 			break;
 			

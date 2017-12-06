@@ -27,6 +27,7 @@ import com.test.web.io.common.CharInput;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.BaseParser;
 import com.test.web.parse.common.Lexer;
+import com.test.web.parse.common.LexerMatch;
 import com.test.web.parse.common.ParserException;
 import com.test.web.types.DecimalSize;
 import com.test.web.types.Value;
@@ -1291,7 +1292,8 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			tokenMap.remove(CSStyle.BACKGROUND_IMAGE);
 		}
 		else if (token == CSSToken.BROWSER_SPECIFIC_FUNCTION) {
-			// skip
+			// skip parameters
+			skipFunctionParamsAfterParenthesis();
 			tokenMap.remove(CSStyle.BACKGROUND_IMAGE);
 		}
 		else if (token.getBgImage() != null) {
@@ -1396,6 +1398,67 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		listener.onBgOrigin(context, bgLayer, bgOrigin);
 		listener.onBgClip(context, bgLayer, bgClip);
 		listener.onBgColor(context, bgColor);
+	}
+
+	private void skipFunctionParamsAfterParenthesis() throws IOException, ParserException {
+		
+		boolean done = false;
+
+		do {
+			
+			// must handle nested function calls as well, so must search for '('
+			// Find the FIRST that matches instead of the longest
+			CSSToken token = lexer.lex(LexerMatch.FIRST_MATCH,
+					CSSToken.INCLUDING_PARENTHESIS_START,
+					CSSToken.INCLUDING_COMMA,
+					CSSToken.INCLUDING_PARENTHESIS_END,
+					CSSToken.COMMENT,
+					CSSToken.WS);
+			
+			switch (token) {
+			case COMMENT:
+			case WS:
+				// skip to next iteration
+				break;
+				
+			case INCLUDING_PARENTHESIS_START:
+				// Parenthesis start before comma, this is a nested function, call recursively
+				skipFunctionParamsAfterParenthesis();
+				break;
+			
+			case INCLUDING_COMMA:
+				// non-functioncall parameter, just loop
+				break;
+				
+			case INCLUDING_PARENTHESIS_END:
+				// End of current function call, at som recursion level, exit
+				done = true;
+				break;
+				
+			default:
+				throw lexer.unexpectedToken();
+			}
+			
+			/*
+			CSSToken token = lexSkipWSAndComment(CSSToken.INCLUDING_PARENTHESIS_START);
+			if (token == CSSToken.INCLUDING_PARENTHESIS_START) {
+				// Nested function, recursively skip
+				skipFunctionParamsAfterParenthesis();
+			}
+			else {
+				// We can check for comma or parenthesis end
+				token = lexSkipWSAndComment(CSSToken.INCLUDING_COMMA, CSSToken.INCLUDING_PARENTHESIS_END);
+				
+				// done when found end parenthesis at this nesting level
+				if (token == CSSToken.INCLUDING_PARENTHESIS_END) {
+					done = true;
+				}
+				else if (token == CSSToken.NONE) {
+					throw lexer.unexpectedToken();
+				}
+			}
+			*/
+		} while (!done);
 	}
 
 

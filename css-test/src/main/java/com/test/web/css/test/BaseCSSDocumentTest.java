@@ -578,6 +578,14 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 
 		// Should just skip this element without exception
 	}
+	
+	public void testBgBrowserSpecificWithNestedFunctions() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_BROWSER_SPECIFIC_WITH_NESTED_FUNCTIONS);
+
+		final ELEMENT bg = doc.get(CSSTarget.ID, "bg_browser_specific_with_nested_functions").get(0);
+
+		// Should just skip this element without exception
+	}
 
 	public void testTextDecoration() throws IOException, ParserException {
 		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_TEXT_DECORATION);

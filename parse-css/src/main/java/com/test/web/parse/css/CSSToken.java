@@ -35,7 +35,11 @@ public enum CSSToken implements IToken {
 	
 	QUOTED_STRING('"', '"'),
 
-	BROWSER_SPECIFIC_FUNCTION('-', ')'),
+	BROWSER_SPECIFIC_FUNCTION('-', '('),
+	
+	INCLUDING_PARENTHESIS_START('(', true),
+	INCLUDING_PARENTHESIS_END(')', true),
+	INCLUDING_COMMA(',', true),
 
 	CLASS_MARKER('.'),
 	ID_MARKER('#'),
@@ -506,6 +510,45 @@ public enum CSSToken implements IToken {
 	private CSSToken(char fromCharacter, char toCharacter) {
 		this.tokenType = TokenType.FROM_CHAR_TO_CHAR;
 		this.character = fromCharacter;
+		this.toCharacter = toCharacter;
+		this.literal = null;
+		this.toLiteral = null;
+		this.charType = null;
+		this.element = null;
+		this.unit = null;
+		this.display = null;
+		this.position = null;
+		this._float = null;
+		this.clear = null;
+		this.textAlign = null;
+		this.overflow = null;
+		this.textDecoration = null;
+		this.positionComponent = null;
+		this.bgImage = null;
+		this.bgSize = null;
+		this.bgRepeat = null;
+		this.bgAttachment = null;
+		this.bgOrigin = null;
+		this.fontSize = null;
+		this.fontWeight = null;
+		this.color = null;
+		this.foreground = null;
+		this.background = null;
+	}
+
+	private CSSToken(char toCharacter, boolean include) {
+		
+		final TokenType tokenType;
+		
+		if (!include) {
+			throw new UnsupportedOperationException("TODO");
+		}
+		else {
+			tokenType = TokenType.INCLUDING_CHAR;
+		}
+		
+		this.tokenType = tokenType;
+		this.character = 0;
 		this.toCharacter = toCharacter;
 		this.literal = null;
 		this.toLiteral = null;
