@@ -1,5 +1,7 @@
 package com.test.web.css.oo;
 
+import java.util.Arrays;
+
 import com.test.web.css.common.enums.CSSBackground;
 import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
@@ -19,8 +21,7 @@ import com.test.web.css.common.enums.CSStyle;
 import com.test.web.types.ColorRGB;
 import com.test.web.types.DecimalSize;
 
-public final class OOCSSElement {
-	private long styles;
+public final class OOCSSElement extends OOStylesBase {
 	
 	private int left;
 	private CSSUnit leftUnit;
@@ -49,6 +50,8 @@ public final class OOCSSElement {
 	private int colorAlpha; // decimal encoded, DecimalSize.NONE if not set
 	private CSSColor colorCSS; // enumerated color
 	private CSSForeground colorType;
+	
+	private OOBackroundLayer [] bgLayers;
 	
 	private int bgColorRGB; // bit-shifted, ColorRGB.NONE is not set
 	private int bgColorAlpha; // decimal encoded, DecimalSize.NONE if not set
@@ -82,12 +85,6 @@ public final class OOCSSElement {
 	private CSSUnit maxHeightUnit;
 	private CSSMax maxHeightType;
 
-	static {
-		if (CSStyle.values().length > 64) {
-			throw new IllegalStateException("CSStyle.values().length > 64");
-		}
-	}
-
 	public OOCSSElement() {
 		this.margins = new OOWrapping();
 		this.padding = new OOWrapping();
@@ -97,14 +94,6 @@ public final class OOCSSElement {
 
 		this.bgColorRGB = ColorRGB.NONE;
 		this.bgColorAlpha = DecimalSize.NONE;
-	}
-	
-	boolean hasStyle(CSStyle style) {
-		return (styles & (1L << style.ordinal())) != 0L;
-	}
-	
-	private void set(CSStyle style) {
-		styles |= 1L << style.ordinal();
 	}
 
 	int getLeft() {
@@ -425,6 +414,41 @@ public final class OOCSSElement {
 	CSSForeground getColorType() {
 		return colorType;
 	}
+	
+	int getNumBgLayers() {
+		return bgLayers == null ? 0 : bgLayers.length;
+	}
+	
+	OOBackroundLayer getBgLayer(int idx) {
+		if (bgLayers == null || idx >= bgLayers.length) {
+			throw new IllegalArgumentException("no layer at idx " + idx);
+		}
+		
+		return bgLayers[idx];
+	}
+	
+	OOBackroundLayer getOrAddBgLayer(int idx) {
+		if (bgLayers == null) {
+			this.bgLayers = new OOBackroundLayer[idx + 1];
+
+			addBgLayers(0, idx);
+		}
+		else if (idx >= bgLayers.length) {
+			final int oldLen = bgLayers.length;
+			
+			this.bgLayers = Arrays.copyOf(this.bgLayers, idx + 1);
+			
+			addBgLayers(oldLen, idx);
+		}
+
+		return bgLayers[idx];
+	}
+	
+	private void addBgLayers(int initialIdx, int maxIdx) {
+		for (int i = initialIdx; i <= maxIdx; ++ i) {
+			this.bgLayers[i] = new OOBackroundLayer();
+		}
+	}
 
 	void setBgColorRGB(int r, int g, int b, int a) {
 		this.bgColorRGB = r << 16 | g << 8 | b;
@@ -471,57 +495,6 @@ public final class OOCSSElement {
 		return bgColorType;
 	}
 
-	private static int getColorR(int rgb, CSSColor color) {
-		final int ret;
-		
-		if (color != null) {
-			ret = color.getRed();
-		}
-		else if (rgb != -1) {
-			ret = rgb >> 16;
-		}
-		else {
-			throw new IllegalStateException("color not set");
-		}
-		
-		return ret;
-	}
-
-	private static int getColorG(int rgb, CSSColor color) {
-		final int ret;
-		
-		if (color != null) {
-			ret = color.getGreen();
-		}
-		else if (rgb != -1) {
-			ret = (rgb & 0x0000FF00) >> 8;
-		}
-		else {
-			throw new IllegalStateException("color not set");
-		}
-		
-		return ret;
-	}
-
-	private static int getColorB(int rgb, CSSColor color) {
-		final int ret;
-		
-		if (color != null) {
-			ret = color.getBlue();
-		}
-		else if (rgb != -1) {
-			ret = rgb & 0x000000FF;
-		}
-		else {
-			throw new IllegalStateException("color not set");
-		}
-		
-		return ret;
-	}
-
-	private static int getColorA(int a) {
-		return a;
-	}
 
 	short getZIndex() {
 		return zIndex;

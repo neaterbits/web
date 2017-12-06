@@ -3,13 +3,16 @@ package com.test.web.parse.css;
 import java.io.IOException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundPosition;
 import com.test.web.css.common.enums.CSSForeground;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
+import com.test.web.css.common.enums.CSSPositionComponent;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
@@ -324,11 +327,35 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			
 		case BACKGROUND_COLOR:
 			semiColonRead = parseBgColor(
-					(r, g, b, a) -> listener.onBackgroundColor(context, r, g, b, a),
-					cssColor -> listener.onBackgroundColor(context, cssColor),
-					type -> listener.onBackgroundColor(context, type));
+					(r, g, b, a) -> listener.onBgColor(context, r, g, b, a),
+					cssColor -> listener.onBgColor(context, cssColor),
+					type -> listener.onBgColor(context, type));
 			break;
 			
+		case BACKGROUND_POSITION:
+			semiColonRead = parseBgPosition(context);
+			break;
+			
+		case BACKGROUND_SIZE:
+			semiColonRead = parseBgSize(context);
+			break;
+
+		case BACKGROUND_REPEAT:
+			semiColonRead = parseBgRepeat(context);
+			break;
+
+		case BACKGROUND_ATTACHMENT:
+			semiColonRead = parseBgAttachment(context);
+			break;
+
+		case BACKGROUND_ORIGIN:
+			semiColonRead = parseBgOrigin(context);
+			break;
+
+		case BACKGROUND_CLIP:
+			semiColonRead = parseBgClip(context);
+			break;
+
 		case MARGIN_LEFT:
 			semiColonRead = parseSizeOrAutoOrInitialOrInherit((size, unit, justify) -> listener.onMarginLeft(context, size, unit, justify));
 			break;
@@ -844,6 +871,258 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		}
 		
 		return token;
+	}
+	
+	private static final CSSToken [] BG_POSITION_TOKENS
+		= copyTokens(token -> token.getPositionComponent() != null,
+					CSSToken.INTEGER,
+					CSSToken.INITIAL,
+					CSSToken.INHERIT);
+
+	private static final CSSToken [] BG_SECOND_POSITION_COMPONENT_TOKENS
+		= copyTokens(token -> token.getPositionComponent() != null,
+					CSSToken.COMMA,
+					CSSToken.SEMICOLON);
+
+	private static class CachedSize {
+		private int value;
+		private CSSUnit unit;
+		
+		void init(int value, CSSUnit unit) {
+			this.value = value;
+			this.unit = unit;
+		}
+	}
+	
+	private boolean parseBgPosition(LISTENER_CONTEXT context) throws IOException, ParserException {
+		
+		int bgLayer = 0;
+		boolean semiColonRead = false;
+		
+		final CachedSize cachedSize = new CachedSize();
+		
+		do {
+			CSSToken token = lexSkipWSAndComment(BG_POSITION_TOKENS);
+			
+			switch (token) {
+			case INTEGER:
+				// we got integer so a regular size specification
+				parseSizeValueAfterInt(Integer.parseInt(lexer.get()), (value, unit) -> cachedSize.init(value, unit));
+				
+				final int bgl = bgLayer;
+				// Now should be another size value
+				parseSizeValue((value, unit) -> listener.onBgPosition(context, bgl, cachedSize.value, cachedSize.unit, value, unit));
+				
+				// next should be comma for new layer or a semicolon
+				semiColonRead = readCommaOrSemiColon();
+				break;
+				
+			case INITIAL:
+			case INHERIT:
+				listener.onBgPosition(context, bgLayer, tokenToPosition(token));
+				
+				// next should be comma for new layer or a semicolon
+				semiColonRead = readCommaOrSemiColon();
+				break;
+				
+			case NONE:
+				throw lexer.unexpectedToken();
+				
+			default:
+				// Position component
+				if (token.getPositionComponent() == null) {
+					throw new IllegalStateException("Expected position component");
+				}
+				
+				// another position component, comma for next layer or semicolon
+				CSSToken secondPosToken = lexSkipWSAndComment(BG_SECOND_POSITION_COMPONENT_TOKENS);
+				
+				switch (secondPosToken) {
+				
+				case COMMA:
+					// Just continues to next
+					notifyPosition(context, bgLayer, token.getPositionComponent());
+					break;
+					
+				case SEMICOLON:
+					notifyPosition(context, bgLayer, token.getPositionComponent());
+					semiColonRead = true;
+					break;
+					
+				case NONE:
+					throw lexer.unexpectedToken();
+					
+				default:
+					// Position component
+					if (secondPosToken.getPositionComponent() == null) {
+						throw new IllegalStateException("Expected position component");
+					}
+					notifyPosition(context, bgLayer, token.getPositionComponent(), secondPosToken.getPositionComponent());
+					
+					semiColonRead = readCommaOrSemiColon();
+					break;
+				}
+				break;
+			}
+			
+			++ bgLayer;
+			
+		} while (!semiColonRead);
+		
+		return semiColonRead;
+	}
+
+	private static final CSSToken [] BG_SIZE_TOKENS = copyTokens(token -> token.getBgSize() != null, CSSToken.INTEGER);
+
+	private boolean parseBgSize(LISTENER_CONTEXT context) throws IOException, ParserException {
+		
+		int bgLayer = 0;
+		boolean semiColonRead = false;
+		
+		final CachedSize cachedSize = new CachedSize();
+		
+		do {
+			CSSToken token = lexSkipWSAndComment(BG_SIZE_TOKENS);
+			
+			switch (token) {
+			case INTEGER:
+				// we got integer so a regular size specification
+				parseSizeValueAfterInt(Integer.parseInt(lexer.get()), (value, unit) -> cachedSize.init(value, unit));
+				
+				final int bgl = bgLayer;
+				// Now should be another size value
+				parseSizeValue((value, unit) -> listener.onBgSize(context, bgl, cachedSize.value, cachedSize.unit, value, unit));
+				
+				// next should be comma for new layer or a semicolon
+				semiColonRead = readCommaOrSemiColon();
+				break;
+				
+			case NONE:
+				throw lexer.unexpectedToken();
+				
+			default:
+				// Size enum
+				if (token.getBgSize() == null) {
+					throw new IllegalStateException("Expected size: " + token);
+				}
+				listener.onBgSize(context, bgLayer, token.getBgSize());
+				semiColonRead = readCommaOrSemiColon();
+				break;
+			}
+			
+			++ bgLayer;
+			
+		} while (!semiColonRead);
+	
+		return semiColonRead;
+	}
+	
+	private static final CSSToken [] BG_REPEAT_TOKENS = copyTokens(token -> token.getBgRepeat() != null);
+
+	private boolean parseBgRepeat(LISTENER_CONTEXT context) throws IOException, ParserException {
+		return parseBgEnum(context, BG_REPEAT_TOKENS, CSSToken::getBgRepeat, listener::onBgRepeat);
+	}
+
+	private static final CSSToken [] BG_ATTACHMENT_TOKENS = copyTokens(token -> token.getBgAttachment() != null);
+
+	private boolean parseBgAttachment(LISTENER_CONTEXT context) throws IOException, ParserException {
+		return parseBgEnum(context, BG_ATTACHMENT_TOKENS, CSSToken::getBgAttachment, listener::onBgAttachment);
+	}
+
+	private static final CSSToken [] BG_ORIGIN_TOKENS = copyTokens(token -> token.getBgOrigin() != null);
+
+	private boolean parseBgOrigin(LISTENER_CONTEXT context) throws IOException, ParserException {
+		return parseBgEnum(context, BG_ORIGIN_TOKENS, CSSToken::getBgOrigin, listener::onBgOrigin);
+	}
+
+	private boolean parseBgClip(LISTENER_CONTEXT context) throws IOException, ParserException {
+		return parseBgEnum(context, BG_ORIGIN_TOKENS, CSSToken::getBgOrigin, listener::onBgClip);
+	}
+
+	@FunctionalInterface
+	interface ParseBgEnumResult<CONTEXT, E extends Enum<E>> {
+		void onResult(CONTEXT context, int bgLayer, E value);
+	}
+	
+	private <E extends Enum<E>> boolean parseBgEnum(
+			LISTENER_CONTEXT context,
+			CSSToken [] tokens,
+			Function<CSSToken, E> getValue,
+			ParseBgEnumResult<LISTENER_CONTEXT, E> processResult) throws IOException, ParserException {
+		int bgLayer = 0;
+		boolean semiColonRead = false;
+		
+		do {
+			CSSToken token = lexSkipWSAndComment(tokens);
+			
+			final E value = getValue.apply(token);
+			
+			if (value == null) {
+				throw lexer.unexpectedToken();
+			}
+			
+			processResult.onResult(context, bgLayer, value);
+			semiColonRead = readCommaOrSemiColon();
+			
+			++ bgLayer;
+			
+		} while (!semiColonRead);
+	
+		return semiColonRead;
+	}
+
+
+	private boolean readCommaOrSemiColon() throws IOException, ParserException {
+		boolean semiColonRead = false;
+		
+		switch(lexSkipWSAndComment(CSSToken.COMMA, CSSToken.SEMICOLON)) {
+		case COMMA: break; // continue next iteration
+		case SEMICOLON: semiColonRead = true; break;
+		default: throw lexer.unexpectedToken();
+		}
+
+		return semiColonRead;
+	}
+	
+	private static CSSBackgroundPosition tokenToPosition(CSSToken token) {
+		final CSSBackgroundPosition ret;
+		
+		switch (token) {
+		case INITIAL:
+			ret = CSSBackgroundPosition.INITIAL;
+			break;
+			
+		case INHERIT:
+			ret = CSSBackgroundPosition.INHERIT;
+			break;
+			
+		default:
+			throw new IllegalArgumentException("Unexpected token " + token);
+		}
+		
+		return ret;
+	}
+	
+	private void notifyPosition(LISTENER_CONTEXT context, int bgLayer, CSSPositionComponent pos1) throws ParserException {
+		notifyPosition(context, bgLayer, pos1, CSSPositionComponent.CENTER);
+	}
+	
+	private void notifyPosition(LISTENER_CONTEXT context, int bgLayer, CSSPositionComponent pos1, CSSPositionComponent pos2) throws ParserException {
+		
+		CSSBackgroundPosition found = null;
+		
+		for (CSSBackgroundPosition pos : CSSBackgroundPosition.values()) {
+			if ( (pos.getFirst() == pos1 && pos.getSecond() == pos2) || pos.getFirst() == pos2 && pos.getSecond() == pos1) {
+				found = pos;
+				break;
+			}
+		}
+		
+		if (found == null) {
+			throw new ParserException("Not a valid position combination of " + pos1 + "/" + pos2);
+		}
+		
+		listener.onBgPosition(context, bgLayer, found);
 	}
 
 	private void assureToken(CSSToken expected) throws IOException, ParserException {

@@ -7,6 +7,11 @@ import java.io.IOException;
 import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundAttachment;
+import com.test.web.css.common.enums.CSSBackgroundOrigin;
+import com.test.web.css.common.enums.CSSBackgroundPosition;
+import com.test.web.css.common.enums.CSSBackgroundRepeat;
+import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
@@ -409,6 +414,82 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		final ELEMENT initial = doc.get(CSSTarget.ID, "bgcolor_initial").get(0);
 		
 		assertThat(doc.getBgColorType(initial)).isEqualTo(CSSBackground.TRANSPARENT);
+	}
+
+	public void testBgPosition() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_POSITION);
+
+		final ELEMENT pos = doc.get(CSSTarget.ID, "bgposition").get(0);
+		
+		assertThat(DecimalSize.decodeToInt(doc.getBgPositionLeft(pos, 0))).isEqualTo(100);
+		assertThat(doc.getBgPositionLeftUnit(pos, 0)).isEqualTo(CSSUnit.PX);
+		assertThat(DecimalSize.decodeToInt(doc.getBgPositionTop(pos, 0))).isEqualTo(15);
+		assertThat(doc.getBgPositionTopUnit(pos, 0)).isEqualTo(CSSUnit.PCT);
+		assertThat(doc.getBgPosition(pos, 0)).isNull();
+	
+		assertThat(doc.getBgPositionLeft(pos, 1)).isEqualTo(DecimalSize.NONE);
+		assertThat(doc.getBgPositionLeftUnit(pos, 1)).isNull();
+		assertThat(doc.getBgPositionTop(pos, 1)).isEqualTo(DecimalSize.NONE);
+		assertThat(doc.getBgPositionTopUnit(pos, 1)).isNull();
+		assertThat(doc.getBgPosition(pos, 1)).isEqualTo(CSSBackgroundPosition.LEFT_TOP);
+	}
+
+	public void testBgSize() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_SIZE);
+
+		final ELEMENT pos = doc.get(CSSTarget.ID, "bgsize").get(0);
+		
+		assertThat(DecimalSize.decodeToInt(doc.getBgWidth(pos, 0))).isEqualTo(250);
+		assertThat(doc.getBgWidthUnit(pos, 0)).isEqualTo(CSSUnit.PX);
+		assertThat(DecimalSize.decodeToString(doc.getBgHeight(pos, 0))).isEqualTo("120.3");
+		assertThat(doc.getBgHeightUnit(pos, 0)).isEqualTo(CSSUnit.EM);
+		assertThat(doc.getBgSize(pos, 0)).isNull();
+	
+		assertThat(doc.getBgWidth(pos, 1)).isEqualTo(DecimalSize.NONE);
+		assertThat(doc.getBgWidthUnit(pos, 1)).isNull();
+		assertThat(doc.getBgHeight(pos, 1)).isEqualTo(DecimalSize.NONE);
+		assertThat(doc.getBgHeightUnit(pos, 1)).isNull();
+		assertThat(doc.getBgSize(pos, 1)).isEqualTo(CSSBackgroundSize.AUTO);
+	}
+
+	public void testBgRepeat() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_REPEAT);
+
+		final ELEMENT pos = doc.get(CSSTarget.ID, "bgrepeat").get(0);
+		
+		assertThat(doc.getBgRepeat(pos, 0)).isEqualTo(CSSBackgroundRepeat.REPEAT);
+	
+		assertThat(doc.getBgRepeat(pos, 1)).isEqualTo(CSSBackgroundRepeat.NO_REPEAT);
+	}
+
+	public void testBgAttachment() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_ATTACHMENT);
+
+		final ELEMENT pos = doc.get(CSSTarget.ID, "bgattachment").get(0);
+		
+		assertThat(doc.getBgAttachment(pos, 0)).isEqualTo(CSSBackgroundAttachment.SCROLL);
+	
+		assertThat(doc.getBgAttachment(pos, 1)).isEqualTo(CSSBackgroundAttachment.FIXED);
+	}
+
+	public void testBgOrigin() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_ORIGIN);
+
+		final ELEMENT pos = doc.get(CSSTarget.ID, "bgorigin").get(0);
+		
+		assertThat(doc.getBgOrigin(pos, 0)).isEqualTo(CSSBackgroundOrigin.PADDING_BOX);
+	
+		assertThat(doc.getBgOrigin(pos, 1)).isEqualTo(CSSBackgroundOrigin.BORDER_BOX);
+	}
+
+	public void testBgClip() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_CLIP);
+
+		final ELEMENT pos = doc.get(CSSTarget.ID, "bgclip").get(0);
+		
+		assertThat(doc.getBgClip(pos, 0)).isEqualTo(CSSBackgroundOrigin.CONTENT_BOX);
+	
+		assertThat(doc.getBgClip(pos, 1)).isEqualTo(CSSBackgroundOrigin.PADDING_BOX);
 	}
 
 	public void testTextDecoration() throws IOException, ParserException {

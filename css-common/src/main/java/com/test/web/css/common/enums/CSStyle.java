@@ -20,6 +20,14 @@ public enum CSStyle implements IKeyValueList {
 	Z_INDEX("z-index", ValueType.ONE),
 	
 	COLOR("color", ValueType.ONE),
+	
+	BACKGROUND_IMAGE("background-image", ValueType.ONE),
+	BACKGROUND_POSITION("background-position", ValueType.ONE),
+	BACKGROUND_SIZE("background-size", ValueType.ONE),
+	BACKGROUND_REPEAT("background-repeat", ValueType.ONE),
+	BACKGROUND_ATTACHMENT("background-attachment", ValueType.ONE),
+	BACKGROUND_ORIGIN("background-origin", ValueType.ONE),
+	BACKGROUND_CLIP("background-clip", ValueType.ONE),
 	BACKGROUND_COLOR("background-color", ValueType.ONE),
 	
 	MARGIN("margin", ValueType.ONE),

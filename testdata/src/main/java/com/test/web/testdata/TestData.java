@@ -160,6 +160,42 @@ public class TestData {
 			"}\n"
 			;
 
+	public static final String CSS_BG_POSITION =
+			"#bgposition {\n" +
+			"  background-position : 100px 15%,\n" +
+			"                                   left top;\n" +
+			"}\n";
+
+	public static final String CSS_BG_SIZE =
+			"#bgsize {\n" +
+			"  background-size : 250px 120.3em,\n" +
+			"                                   auto;\n" +
+			"}\n";
+
+	public static final String CSS_BG_REPEAT =
+			"#bgrepeat {\n" +
+			"  background-repeat : repeat,\n" +
+			"                                no-repeat;\n" +
+			"}\n";
+
+	public static final String CSS_BG_ATTACHMENT =
+			"#bgattachment {\n" +
+			"  background-attachment : scroll,\n" +
+			"                                fixed;\n" +
+			"}\n";
+
+	public static final String CSS_BG_ORIGIN =
+			"#bgorigin {\n" +
+			"  background-origin : padding-box,\n" +
+			"                                border-box;\n" +
+			"}\n";
+
+	public static final String CSS_BG_CLIP =
+			"#bgclip {\n" +
+			"  background-clip : content-box,\n" +
+			"                                padding-box;\n" +
+			"}\n";
+
 	public static final String CSS_TEXT_DECORATION =
 			"#text_decoration_1 {\n" +
 			"  text-decoration : underline;\n" +

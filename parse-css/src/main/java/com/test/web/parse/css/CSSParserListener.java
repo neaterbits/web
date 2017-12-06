@@ -1,8 +1,11 @@
 package com.test.web.parse.css;
 
-import org.assertj.core.description.TextDescription;
-
 import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundAttachment;
+import com.test.web.css.common.enums.CSSBackgroundOrigin;
+import com.test.web.css.common.enums.CSSBackgroundPosition;
+import com.test.web.css.common.enums.CSSBackgroundRepeat;
+import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
@@ -42,11 +45,27 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 
 	void onColor(CONTEXT context, CSSForeground foreground);
 	
-	void onBackgroundColor(CONTEXT context, int r, int g, int b, int a); // -1 for a if no value, otherwise decimal encoded
+	void onBgPosition(CONTEXT context, int bgLayer, int left, CSSUnit leftUnit, int top, CSSUnit topUnit);
 
-	void onBackgroundColor(CONTEXT context, CSSColor color);
+	void onBgPosition(CONTEXT context, int bgLayer, CSSBackgroundPosition position);
 
-	void onBackgroundColor(CONTEXT context, CSSBackground background);
+	void onBgSize(CONTEXT context, int bgLayer, int width, CSSUnit widthUnit, int height, CSSUnit heightUnit);
+
+	void onBgSize(CONTEXT context, int bgLayer, CSSBackgroundSize size);
+	
+	void onBgRepeat(CONTEXT context, int bgLayer, CSSBackgroundRepeat repeat);
+
+	void onBgAttachment(CONTEXT context, int bgLayer, CSSBackgroundAttachment attachment);
+
+	void onBgOrigin(CONTEXT context, int bgLayer, CSSBackgroundOrigin origin);
+	
+	void onBgClip(CONTEXT context, int bgLayer, CSSBackgroundOrigin clip);
+
+	void onBgColor(CONTEXT context, int r, int g, int b, int a); // -1 for a if no value, otherwise decimal encoded
+
+	void onBgColor(CONTEXT context, CSSColor color);
+
+	void onBgColor(CONTEXT context, CSSBackground background);
 
 	void onTextAlign(CONTEXT context, CSSTextAlign textAlign);
 

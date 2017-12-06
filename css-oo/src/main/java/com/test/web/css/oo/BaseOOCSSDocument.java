@@ -5,6 +5,11 @@ import org.assertj.core.description.TextDescription;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundAttachment;
+import com.test.web.css.common.enums.CSSBackgroundOrigin;
+import com.test.web.css.common.enums.CSSBackgroundPosition;
+import com.test.web.css.common.enums.CSSBackgroundRepeat;
+import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
@@ -151,6 +156,116 @@ public abstract class BaseOOCSSDocument
 	@Override
 	public CSSForeground getColorType(OOCSSElement ref) {
 		return ref.getColorType();
+	}
+	
+	@Override
+	public int getNumBgLayers(OOCSSElement ref) {
+		return ref.getNumBgLayers();
+	}
+	
+	@Override
+	public boolean isBgSet(OOCSSElement ref, int bgLayer, CSStyle style) {
+		return ref.getBgLayer(bgLayer).hasStyle(style);
+	}
+
+	@Override
+	public String getBgImageURL(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getImageUrl();
+	}
+
+	@Override
+	public int getBgPositionLeft(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getPositionLeft();
+	}
+
+	@Override
+	public CSSUnit getBgPositionLeftUnit(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getPositionLeftUnit();
+	}
+
+	@Override
+	public int getBgPositionTop(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getPositionTop();
+	}
+
+	@Override
+	public CSSUnit getBgPositionTopUnit(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getPositionTopUnit();
+	}
+
+	@Override
+	public CSSBackgroundPosition getBgPosition(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getPosition();
+	}
+
+	@Override
+	public int getBgWidth(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getSizeWidth();
+	}
+
+	@Override
+	public CSSUnit getBgWidthUnit(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getSizeWidthUnit();
+	}
+
+	@Override
+	public int getBgHeight(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getSizeHeight();
+	}
+
+	@Override
+	public CSSUnit getBgHeightUnit(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getSizeHeightUnit();
+	}
+
+	@Override
+	public CSSBackgroundSize getBgSize(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getSize();
+	}
+
+	@Override
+	public CSSBackgroundRepeat getBgRepeat(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getRepeat();
+	}
+
+	@Override
+	public CSSBackgroundAttachment getBgAttachment(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getAttachment();
+	}
+
+	@Override
+	public CSSBackgroundOrigin getBgOrigin(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getOrigin();
+	}
+
+	@Override
+	public CSSBackgroundOrigin getBgClip(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getClip();
+	}
+
+	@Override
+	public int getBgColorR(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getBgColorR();
+	}
+
+	@Override
+	public int getBgColorG(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getBgColorG();
+	}
+
+	@Override
+	public int getBgColorB(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getBgColorB();
+	}
+
+	@Override
+	public int getBgColorA(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getBgColorA();
+	}
+
+	@Override
+	public CSSBackground getBgColorType(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getBgColorType();
 	}
 
 	@Override
@@ -300,19 +415,59 @@ public abstract class BaseOOCSSDocument
 	public void onColor(Void context, CSSForeground foreground) {
 		ref().setColorType(foreground);
 	}
+	
+	@Override
+	public void onBgPosition(Void context, int bgLayer, int left, CSSUnit leftUnit, int top, CSSUnit topUnit) {
+		ref().getOrAddBgLayer(bgLayer).setPosition(left, leftUnit, top, topUnit);
+	}
 
 	@Override
-	public void onBackgroundColor(Void context, int r, int g, int b, int a) {
+	public void onBgPosition(Void context, int bgLayer, CSSBackgroundPosition position) {
+		ref().getOrAddBgLayer(bgLayer).setPosition(position);
+	}
+
+	@Override
+	public void onBgSize(Void context, int bgLayer, int width, CSSUnit widthUnit, int height, CSSUnit heightUnit) {
+		ref().getOrAddBgLayer(bgLayer).setSize(width, widthUnit, height, heightUnit);
+	}
+
+	@Override
+	public void onBgSize(Void context, int bgLayer, CSSBackgroundSize size) {
+		ref().getOrAddBgLayer(bgLayer).setSize(size);
+	}
+
+	@Override
+	public void onBgRepeat(Void context, int bgLayer, CSSBackgroundRepeat repeat) {
+		ref().getOrAddBgLayer(bgLayer).setRepeat(repeat);
+	}
+
+	@Override
+	public void onBgAttachment(Void context, int bgLayer, CSSBackgroundAttachment attachment) {
+		ref().getOrAddBgLayer(bgLayer).setAttachment(attachment);
+	}
+
+	@Override
+	public void onBgOrigin(Void context, int bgLayer, CSSBackgroundOrigin origin) {
+		ref().getOrAddBgLayer(bgLayer).setOrigin(origin);
+	}
+
+	@Override
+	public void onBgClip(Void context, int bgLayer, CSSBackgroundOrigin clip) {
+		ref().getOrAddBgLayer(bgLayer).setClip(clip);
+	}
+
+	@Override
+	public void onBgColor(Void context, int r, int g, int b, int a) {
 		ref().setBgColorRGB(r, g, b, a);
 	}
 
 	@Override
-	public void onBackgroundColor(Void context, CSSColor color) {
+	public void onBgColor(Void context, CSSColor color) {
 		ref().setBgColorCSS(color);
 	}
 
 	@Override
-	public void onBackgroundColor(Void context, CSSBackground background) {
+	public void onBgColor(Void context, CSSBackground background) {
 		ref().setBgColorType(background);
 	}
 

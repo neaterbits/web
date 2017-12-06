@@ -1,6 +1,10 @@
 package com.test.web.parse.css;
 
 import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundAttachment;
+import com.test.web.css.common.enums.CSSBackgroundOrigin;
+import com.test.web.css.common.enums.CSSBackgroundRepeat;
+import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
@@ -9,6 +13,7 @@ import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSForeground;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
+import com.test.web.css.common.enums.CSSPositionComponent;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
@@ -70,6 +75,13 @@ public enum CSSToken implements IToken {
 	CSS_COLOR(CSStyle.COLOR),
 	CSS_BACKGOUND_COLOR(CSStyle.BACKGROUND_COLOR),
 	
+	CSS_BACKGROUND_POSITION(CSStyle.BACKGROUND_POSITION),
+	CSS_BACKGROUND_SIZE(CSStyle.BACKGROUND_SIZE),
+	CSS_BACKGROUND_REPEAT(CSStyle.BACKGROUND_REPEAT),
+	CSS_BACKGROUND_ATTACHMENT(CSStyle.BACKGROUND_ATTACHMENT),
+	CSS_BACKGROUND_ORIGIN(CSStyle.BACKGROUND_ORIGIN),
+	CSS_BACKGROUND_CLIP(CSStyle.BACKGROUND_CLIP),
+	
 	CSS_FONT_SIZE(CSStyle.FONT_SIZE),
 	CSS_FONT_WEIGHT(CSStyle.FONT_WEIGHT),
 	
@@ -102,9 +114,11 @@ public enum CSSToken implements IToken {
 	FGCOLOR_INITIAL(CSSForeground.INITIAL),
 	FGCOLOR_INHERIT(CSSForeground.INHERIT),
 	
+	
 	BGCOLOR_TRNSPARENT(CSSBackground.TRANSPARENT),
 	BGCOLOR_INITIAL(CSSBackground.INITIAL),
 	BGCOLOR_INHERIT(CSSBackground.INHERIT),
+	
 	
 	DISPLAY_INLINE(CSSDisplay.INLINE),
 	DISPLAY_BLOCK(CSSDisplay.BLOCK),
@@ -146,7 +160,6 @@ public enum CSSToken implements IToken {
 	TA_JUSTIFY(CSSTextAlign.JUSTIFY),
 	TA_INITIAL(CSSTextAlign.INITIAL),
 	TA_INHERIT(CSSTextAlign.INHERIT),
-	
 
 	OVERFLOW_VISIBLE(CSSOverflow.VISIBLE),
 	OVERFLOW_HIDDEN(CSSOverflow.HIDDEN),
@@ -162,6 +175,39 @@ public enum CSSToken implements IToken {
 	TEXT_DECORATION_INITIAL(CSSTextDecoration.INITIAL),
 	TEXT_DECORATION_INHERIT(CSSTextDecoration.INHERIT),
 	
+	POS_COMPONENT_TOP(CSSPositionComponent.TOP),
+	POS_COMPONENT_RIGHT(CSSPositionComponent.RIGHT),
+	POS_COMPONENT_BOTTOM(CSSPositionComponent.BOTTOM),
+	POS_COMPONENT_LEFT(CSSPositionComponent.LEFT),
+	POS_COMPONENT_CENTER(CSSPositionComponent.CENTER),
+
+	BG_SIZE_AUTO(CSSBackgroundSize.AUTO),
+	BG_SIZE_COVER(CSSBackgroundSize.COVER),
+	BG_SIZE_CONTAIN(CSSBackgroundSize.CONTAIN),
+	BG_SIZE_INITIAL(CSSBackgroundSize.INITIAL),
+	BG_SIZE_INHERIT(CSSBackgroundSize.INHERIT),
+	
+	BG_REPEAT_REPEAT(CSSBackgroundRepeat.REPEAT),
+	BG_REPEAT_REPEAT_X(CSSBackgroundRepeat.REPEAT_X),
+	BG_REPEAT_REPEAT_Y(CSSBackgroundRepeat.REPEAT_Y),
+	BG_REPEAT_NO_REPEAT(CSSBackgroundRepeat.NO_REPEAT),
+	BG_REPEAT_SPACE(CSSBackgroundRepeat.SPACE),
+	BG_REPEAT_ROUND(CSSBackgroundRepeat.ROUND),
+	BG_REPEAT_INITIAL(CSSBackgroundRepeat.INITIAL),
+	BG_REPEAT_INHERIT(CSSBackgroundRepeat.INHERIT),
+	
+	BG_ATTACHMENT_SCROLL(CSSBackgroundAttachment.SCROLL),
+	BG_ATTACHMENT_FIXED(CSSBackgroundAttachment.FIXED),
+	BG_ATTACHMENT_LOCAL(CSSBackgroundAttachment.LOCAL),
+	BG_ATTACHMENT_INITIAL(CSSBackgroundAttachment.INITIAL),
+	BG_ATTACHMENT_INHERIT(CSSBackgroundAttachment.INHERIT),
+	
+	BG_ORIGIN_PADDING_BOX(CSSBackgroundOrigin.PADDING_BOX),
+	BG_ORIGIN_BORDER_BOX(CSSBackgroundOrigin.BORDER_BOX),
+	BG_ORIGIN_CONTENT_BOX(CSSBackgroundOrigin.CONTENT_BOX),
+	BG_ORIGIN_INITIAL(CSSBackgroundOrigin.INITIAL),
+	BG_ORIGIN_INHERIT(CSSBackgroundOrigin.INHERIT),
+
 	FONTSIZE_MEDIUM(CSSFontSize.MEDIUM),
 	FONTSIZE_XX_SMALL(CSSFontSize.XX_SMALL),
 	FONTSIZE_X_SMALL(CSSFontSize.X_SMALL),
@@ -355,6 +401,13 @@ public enum CSSToken implements IToken {
 	private final CSSTextAlign textAlign;
 	private final CSSOverflow overflow;
 	private final CSSTextDecoration textDecoration;
+	
+	private final CSSPositionComponent positionComponent;
+	private final CSSBackgroundSize bgSize;
+	private final CSSBackgroundRepeat bgRepeat;
+	private final CSSBackgroundAttachment bgAttachment;
+	private final CSSBackgroundOrigin bgOrigin;
+	
 	private final CSSFontSize fontSize;
 	private final CSSFontWeight fontWeight;
 	private final CSSColor color;
@@ -380,6 +433,11 @@ public enum CSSToken implements IToken {
 		this.textAlign = null;
 		this.overflow = null;
 		this.textDecoration = null;
+		this.positionComponent = null;
+		this.bgSize = null;
+		this.bgRepeat = null;
+		this.bgAttachment = null;
+		this.bgOrigin = null;
 		this.fontSize = null;
 		this.fontWeight = null;
 		this.color = null;
@@ -401,6 +459,11 @@ public enum CSSToken implements IToken {
 		this.textAlign = null;
 		this.overflow = null;
 		this.textDecoration = null;
+		this.positionComponent = null;
+		this.bgSize = null;
+		this.bgRepeat = null;
+		this.bgAttachment = null;
+		this.bgOrigin = null;
 		this.fontSize = null;
 		this.fontWeight = null;
 		this.color = null;
@@ -413,6 +476,9 @@ public enum CSSToken implements IToken {
 			CSStyle element,
 			CSSUnit unit,
 			CSSDisplay display, CSSPosition position, CSSFloat _float, CSSTextAlign textAlign, CSSOverflow overflow, CSSTextDecoration textDecoration,
+			CSSPositionComponent positionComponent, 
+			CSSBackgroundSize bgSize, CSSBackgroundRepeat bgRepeat, CSSBackgroundAttachment bgAttachment, CSSBackgroundOrigin bgOrigin,
+
 			CSSFontSize fontSize, CSSFontWeight fontWeight,
 			CSSColor color, CSSForeground foreground, CSSBackground background) {
 		
@@ -429,6 +495,11 @@ public enum CSSToken implements IToken {
 		this.textAlign = textAlign;
 		this.overflow = overflow;
 		this.textDecoration = textDecoration;
+		this.positionComponent = positionComponent;
+		this.bgSize = bgSize;
+		this.bgRepeat = bgRepeat;
+		this.bgAttachment = bgAttachment;
+		this.bgOrigin = bgOrigin;
 		this.fontSize = fontSize;
 		this.fontWeight = fontWeight;
  		this.color = color;
@@ -437,11 +508,11 @@ public enum CSSToken implements IToken {
 	}
 
 	private CSSToken(CSStyle element) {
-		this(element.getName(), element, null, null, null, null, null, null, null, null, null, null, null, null);
+		this(element.getName(), element, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(String literal) {
-		this(literal, null, null, null, null, null, null, null, null, null, null, null, null, null);
+		this(literal, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(String fromLiteral, String toLiteral) {
@@ -458,6 +529,11 @@ public enum CSSToken implements IToken {
 		this.textAlign = null;
 		this.overflow = null;
 		this.textDecoration = null;
+		this.positionComponent = null;
+		this.bgSize = null;
+		this.bgRepeat = null;
+		this.bgAttachment = null;
+		this.bgOrigin = null;
 		this.fontSize = null;
 		this.fontWeight = null;
 		this.color = null;
@@ -466,51 +542,71 @@ public enum CSSToken implements IToken {
 	}
 
 	private CSSToken(String literal, CSSUnit unit) {
-		this(literal, null, unit, null, null, null, null, null, null, null, null, null, null, null);
+		this(literal, null, unit, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSDisplay display) {
-		this(display.getName(), null, null, display, null, null, null, null, null, null, null, null, null, null);
+		this(display.getName(), null, null, display, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSPosition position) {
-		this(position.getName(), null, null, null, position, null, null, null, null, null, null, null, null, null);
+		this(position.getName(), null, null, null, position, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSFloat _float) {
-		this(_float.getName(), null, null, null, null, _float, null, null, null, null, null, null, null, null);
+		this(_float.getName(), null, null, null, null, _float, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSTextAlign textAlign) {
-		this(textAlign.getName(), null, null, null, null, null, textAlign, null, null, null, null, null, null, null);
+		this(textAlign.getName(), null, null, null, null, null, textAlign, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSOverflow overflow) {
-		this(overflow.getName(), null, null, null, null, null, null, overflow, null, null, null, null, null, null);
+		this(overflow.getName(), null, null, null, null, null, null, overflow, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSTextDecoration textDecoration) {
-		this(textDecoration.getName(), null, null, null, null, null, null, null, textDecoration, null, null, null, null, null);
+		this(textDecoration.getName(), null, null, null, null, null, null, null, textDecoration, null, null, null, null, null, null, null, null, null, null);
+	}
+
+	private CSSToken(CSSPositionComponent positionComponent) {
+		this(positionComponent.getName(), null, null, null, null, null, null, null, null, positionComponent, null, null, null, null, null, null, null, null, null);
+	}
+
+	private CSSToken(CSSBackgroundSize bgSize) {
+		this(bgSize.getName(), null, null, null, null, null, null, null, null, null, bgSize, null, null, null, null, null, null, null, null);
+	}
+
+	private CSSToken(CSSBackgroundRepeat bgRepeat) {
+		this(bgRepeat.getName(), null, null, null, null, null, null, null, null, null, null, bgRepeat, null, null, null, null, null, null, null);
+	}
+
+	private CSSToken(CSSBackgroundAttachment bgAttachment) {
+		this(bgAttachment.getName(), null, null, null, null, null, null, null, null, null, null, null, bgAttachment, null, null, null, null, null, null);
+	}
+
+	private CSSToken(CSSBackgroundOrigin bgOrigin) {
+		this(bgOrigin.getName(), null, null, null, null, null, null, null, null, null, null, null, null, bgOrigin, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSFontSize fontSize) {
-		this(fontSize.getName(), null, null, null, null, null, null, null, null, fontSize, null, null, null, null);
+		this(fontSize.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, fontSize, null, null, null, null);
 	}
 
 	private CSSToken(CSSFontWeight fontWeight) {
-		this(fontWeight.getName(), null, null, null, null, null, null, null, null, null, fontWeight, null, null, null);
+		this(fontWeight.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, fontWeight, null, null, null);
 	}
 
 	private CSSToken(CSSColor color) {
-		this(color.getLowerCaseName(), null, null, null, null, null, null, null, null, null, null, color, null, null);
+		this(color.getLowerCaseName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, color, null, null);
 	}
 
 	private CSSToken(CSSForeground foreground) {
-		this(foreground.getName(), null, null, null, null, null, null, null, null, null, null, null, foreground, null);
+		this(foreground.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, foreground, null);
 	}
 
 	private CSSToken(CSSBackground background) {
-		this(background.getName(), null, null, null, null, null, null, null, null, null, null, null, null, background);
+		this(background.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, background);
 	}
 
 	private CSSToken(CharType charType) {
@@ -527,6 +623,11 @@ public enum CSSToken implements IToken {
 		this.textAlign = null;
 		this.overflow = null;
 		this.textDecoration = null;
+		this.positionComponent = null;
+		this.bgSize = null;
+		this.bgRepeat = null;
+		this.bgAttachment = null;
+		this.bgOrigin = null;
 		this.fontSize = null;
 		this.fontWeight = null;
 		this.color = null;
@@ -605,6 +706,26 @@ public enum CSSToken implements IToken {
 	
 	public CSSTextDecoration getTextDecoration() {
 		return textDecoration;
+	}
+	
+	public CSSPositionComponent getPositionComponent() {
+		return positionComponent;
+	}
+	
+	public CSSBackgroundSize getBgSize() {
+		return bgSize;
+	}
+
+	public CSSBackgroundRepeat getBgRepeat() {
+		return bgRepeat;
+	}
+
+	public CSSBackgroundAttachment getBgAttachment() {
+		return bgAttachment;
+	}
+
+	public CSSBackgroundOrigin getBgOrigin() {
+		return bgOrigin;
 	}
 
 	public CSSFontSize getFontSize() {

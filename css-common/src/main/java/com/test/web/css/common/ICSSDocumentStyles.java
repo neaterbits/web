@@ -1,6 +1,11 @@
 package com.test.web.css.common;
 
 import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundOrigin;
+import com.test.web.css.common.enums.CSSBackgroundPosition;
+import com.test.web.css.common.enums.CSSBackgroundSize;
+import com.test.web.css.common.enums.CSSBackgroundAttachment;
+import com.test.web.css.common.enums.CSSBackgroundRepeat;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
@@ -60,15 +65,68 @@ public interface ICSSDocumentStyles<TARGET> {
 	int getColorA(TARGET ref);
 	
 	CSSForeground getColorType(TARGET ref);
-
-	int getBgColorR(TARGET ref);
 	
+	int getNumBgLayers(TARGET ref);
+
+	boolean isBgSet(TARGET ref, int bgLayer, CSStyle style);
+
+	String getBgImageURL(TARGET ref, int bgLayer);
+	
+	// bg position
+	int getBgPositionLeft(TARGET ref, int bgLayer); // set if unit is non null
+	CSSUnit getBgPositionLeftUnit(TARGET ref, int bgLayer);
+
+	int getBgPositionTop(TARGET ref, int bgLayer); // set if unit is non null
+	CSSUnit getBgPositionTopUnit(TARGET ref, int bgLayer);
+
+	CSSBackgroundPosition getBgPosition(TARGET ref, int bgLayer);
+	
+	// bg size
+	int getBgWidth(TARGET ref, int bgLayer);
+	CSSUnit getBgWidthUnit(TARGET ref, int bgLayer);
+	
+	int getBgHeight(TARGET ref, int bgLayer);
+	CSSUnit getBgHeightUnit(TARGET ref, int bgLayer);
+	
+	CSSBackgroundSize getBgSize(TARGET ref, int bgLayer);
+	
+	// bg repeat
+	CSSBackgroundRepeat getBgRepeat(TARGET ref, int bgLayer);
+	
+	// bg attachment
+	CSSBackgroundAttachment getBgAttachment(TARGET ref, int bgLayer);
+	
+	// bg origin
+	CSSBackgroundOrigin getBgOrigin(TARGET ref, int bgLayer);
+	
+	// bg clip
+	CSSBackgroundOrigin getBgClip(TARGET ref, int bgLayer);
+	
+	// bg color
+	
+	int getBgColorR(TARGET ref, int bgLayer);
+	
+	int getBgColorG(TARGET ref, int bgLayer);
+	
+	int getBgColorB(TARGET ref, int bgLayer);
+
+	int getBgColorA(TARGET ref, int bgLayer);
+	
+	CSSBackground getBgColorType(TARGET ref, int bgLayer);
+
+	@Deprecated
+	int getBgColorR(TARGET ref);
+
+	@Deprecated
 	int getBgColorG(TARGET ref);
 	
+	@Deprecated
 	int getBgColorB(TARGET ref);
 
+	@Deprecated
 	int getBgColorA(TARGET ref);
 	
+	@Deprecated
 	CSSBackground getBgColorType(TARGET ref);
 
 	String getFontFamily(TARGET ref);

@@ -7,6 +7,11 @@ import com.test.web.buffers.StringStorageBuffer;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundAttachment;
+import com.test.web.css.common.enums.CSSBackgroundOrigin;
+import com.test.web.css.common.enums.CSSBackgroundPosition;
+import com.test.web.css.common.enums.CSSBackgroundRepeat;
+import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
@@ -159,6 +164,138 @@ public abstract class BaseLongCSSDocument
 	}
 
 	@Override
+	public int getNumBgLayers(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean isBgSet(Integer ref, int bgLayer, CSStyle style) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String getBgImageURL(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getBgPositionLeft(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSUnit getBgPositionLeftUnit(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getBgPositionTop(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSUnit getBgPositionTopUnit(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSBackgroundPosition getBgPosition(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getBgWidth(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSUnit getBgWidthUnit(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getBgHeight(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSUnit getBgHeightUnit(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSBackgroundSize getBgSize(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSBackgroundRepeat getBgRepeat(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSBackgroundAttachment getBgAttachment(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSBackgroundOrigin getBgOrigin(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSBackgroundOrigin getBgClip(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getBgColorR(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getBgColorG(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getBgColorB(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getBgColorA(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSBackground getBgColorType(Integer ref, int bgLayer) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public int getBgColorR(Integer ref) {
 		// TODO Auto-generated method stub
 		return 0;
@@ -248,21 +385,69 @@ public abstract class BaseLongCSSDocument
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void onBgPosition(Void context, int bgLayer, int left, CSSUnit leftUnit, int top, CSSUnit topUnit) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
-	public void onBackgroundColor(Void context, int r, int g, int b, int a) {
+	public void onBgPosition(Void context, int bgLayer, CSSBackgroundPosition position) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onBgSize(Void context, int bgLayer, int width, CSSUnit widthUnit, int height, CSSUnit heightUnit) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onBgSize(Void context, int bgLayer, CSSBackgroundSize size) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onBgRepeat(Void context, int bgLayer, CSSBackgroundRepeat repeat) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onBgAttachment(Void context, int bgLayer, CSSBackgroundAttachment attachment) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onBgOrigin(Void context, int bgLayer, CSSBackgroundOrigin origin) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onBgClip(Void context, int bgLayer, CSSBackgroundOrigin clip) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onBgColor(Void context, int r, int g, int b, int a) {
 		// TODO Auto-generated method stub
 		
 	}
 	
 	@Override
-	public void onBackgroundColor(Void context, CSSColor color) {
+	public void onBgColor(Void context, CSSColor color) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onBackgroundColor(Void context, CSSBackground background) {
+	public void onBgColor(Void context, CSSBackground background) {
 		// TODO Auto-generated method stub
 		
 	}

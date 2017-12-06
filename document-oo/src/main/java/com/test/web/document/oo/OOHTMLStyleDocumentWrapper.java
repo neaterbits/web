@@ -3,6 +3,11 @@ package com.test.web.document.oo;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSBackground;
+import com.test.web.css.common.enums.CSSBackgroundAttachment;
+import com.test.web.css.common.enums.CSSBackgroundOrigin;
+import com.test.web.css.common.enums.CSSBackgroundPosition;
+import com.test.web.css.common.enums.CSSBackgroundRepeat;
+import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
@@ -205,6 +210,204 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 		return styleElement == null
 				? null
 				: delegate.getColorType(ref.getStyleElement());
+	}
+
+	@Override
+	public int getNumBgLayers(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? 0
+				: delegate.getNumBgLayers(ref.getStyleElement());
+	}
+
+	@Override
+	public boolean isBgSet(OOTagElement ref, int bgLayer, CSStyle style) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? false
+				: delegate.isBgSet(ref.getStyleElement(), bgLayer, style);
+	}
+
+	@Override
+	public String getBgImageURL(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getBgImageURL(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public int getBgPositionLeft(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getBgPositionLeft(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public CSSUnit getBgPositionLeftUnit(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getBgPositionLeftUnit(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public int getBgPositionTop(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getBgPositionTop(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public CSSUnit getBgPositionTopUnit(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getBgPositionTopUnit(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public CSSBackgroundPosition getBgPosition(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getBgPosition(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public int getBgWidth(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getBgWidth(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public CSSUnit getBgWidthUnit(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getBgWidthUnit(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public int getBgHeight(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getBgHeight(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public CSSUnit getBgHeightUnit(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getBgHeightUnit(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public CSSBackgroundSize getBgSize(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getBgSize(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public CSSBackgroundRepeat getBgRepeat(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getBgRepeat(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public CSSBackgroundAttachment getBgAttachment(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getBgAttachment(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public CSSBackgroundOrigin getBgOrigin(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getBgOrigin(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public CSSBackgroundOrigin getBgClip(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getBgClip(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public int getBgColorR(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? ColorRGB.NONE
+				: delegate.getBgColorR(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public int getBgColorG(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? ColorRGB.NONE
+				: delegate.getBgColorG(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public int getBgColorB(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? ColorRGB.NONE
+				: delegate.getBgColorB(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public int getBgColorA(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getBgColorA(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public CSSBackground getBgColorType(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getBgColorType(ref.getStyleElement(), bgLayer);
 	}
 
 	@Override
