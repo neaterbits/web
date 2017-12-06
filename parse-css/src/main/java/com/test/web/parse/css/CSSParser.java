@@ -895,7 +895,9 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		return token;
 	}
 
-	private static final CSSToken [] BG_IMAGE_TOKENS = copyTokens(token -> token.getBgImage() != null, CSSToken.FUNCTION_URL);
+	private static final CSSToken [] BG_IMAGE_TOKENS = copyTokens(token -> token.getBgImage() != null,
+				CSSToken.FUNCTION_URL,
+				CSSToken.BROWSER_SPECIFIC_FUNCTION); // eg -moz-linear-gradient
 	
 	private boolean parseBgImage(LISTENER_CONTEXT context) throws IOException, ParserException {
 	
@@ -1282,6 +1284,10 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			
 			listener.onBgImageURL(context, bgLayer, url);
 			
+			tokenMap.remove(CSStyle.BACKGROUND_IMAGE);
+		}
+		else if (token == CSSToken.BROWSER_SPECIFIC_FUNCTION) {
+			// skip
 			tokenMap.remove(CSStyle.BACKGROUND_IMAGE);
 		}
 		else if (token.getBgImage() != null) {

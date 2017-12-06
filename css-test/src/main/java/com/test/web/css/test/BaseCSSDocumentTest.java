@@ -537,7 +537,6 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		assertThat(doc.getBgRepeat(bgTwoImages, 0)).isEqualTo(CSSBackgroundRepeat.REPEAT);
 		assertThat(doc.getBgAttachment(bgTwoImages, 0)).isEqualTo(CSSBackgroundAttachment.SCROLL);
 
-
 		assertThat(doc.getBgImageURL(bgTwoImages, 1)).isEqualTo("http://www.test.com/image2.jpg");
 		assertThat(doc.getBgImage(bgTwoImages, 1)).isNull();
 		
@@ -555,6 +554,14 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		assertThat(doc.getBgAttachment(bgTwoImages, 1)).isEqualTo(CSSBackgroundAttachment.FIXED);
 		assertThat(doc.getBgOrigin(bgTwoImages, 1)).isEqualTo(CSSBackgroundOrigin.CONTENT_BOX);
 		assertThat(doc.getBgClip(bgTwoImages, 1)).isEqualTo(CSSBackgroundOrigin.PADDING_BOX);
+	}
+
+	public void testBgBrowserSpecific() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_BROWSER_SPECIFIC);
+
+		final ELEMENT bg = doc.get(CSSTarget.ID, "bg_browser_specific").get(0);
+
+		// Should just skip this element without exception
 	}
 
 	public void testTextDecoration() throws IOException, ParserException {

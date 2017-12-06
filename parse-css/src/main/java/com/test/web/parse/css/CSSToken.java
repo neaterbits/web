@@ -33,7 +33,9 @@ public enum CSSToken implements IToken {
 	COMMENT("/*", "*/"),
 	
 	QUOTED_STRING('"', '"'),
-	
+
+	BROWSER_SPECIFIC_FUNCTION('-', ')'),
+
 	CLASS_MARKER('.'),
 	ID_MARKER('#'),
 	

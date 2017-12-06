@@ -218,7 +218,11 @@ public class TestData {
 			"}\n"
 			
 			;
-
+	public static final String CSS_BG_BROWSER_SPECIFIC =
+			"#bg_browser_specific {\n" +
+			"  background : -moz-linear-gradient(#112233, #AABBCC);\n" +
+			"}\n";
+	
 	public static final String CSS_TEXT_DECORATION =
 			"#text_decoration_1 {\n" +
 			"  text-decoration : underline;\n" +
