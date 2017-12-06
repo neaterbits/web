@@ -139,6 +139,10 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 			
 			// Loop through all tokens to see if any match. We will return the longest-matching token so we have to keep track of that
 			TOKEN firstMatchThisIteration = null;
+
+			if (DEBUG) {
+				System.out.println(PREFIX + " matching tokens  to " + tokensToString(tokens, numTokens) + " to  buf = \"" + curForDebug());
+			}
 			
 			for (int i = 0; i < numTokens; ++ i) {
 				// Check whether tokens match
@@ -162,7 +166,7 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 				this.exactMatches[token.ordinal()] = match;
 
 				if (DEBUG) {
-					System.out.println(PREFIX + " match to " + token + "\", match=" + match +", numPossibleMatch=" + numPossibleMatch+ ", buf = \"" + cur);
+					System.out.println(PREFIX + " match to " + token + "\", match=" + match +", numPossibleMatch=" + numPossibleMatch+ ", buf = \"" + curForDebug());
 				}
 				
 				if (match) {
@@ -226,9 +230,29 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		return found;
 	}
 
+	private String tokensToString(TOKEN [] tokens, int numTokens) {
+		final StringBuilder sb = new StringBuilder("[ ");
+
+		for (int i = 0; i < numTokens; ++ i) {
+			if (i > 0) {
+				sb.append(", ");
+			}
+			
+			sb.append(tokens[i].name());
+		}
+		
+		sb.append(" ]");
+		
+		return sb.toString();
+	}
+	
+	private String curForDebug() {
+		return cur.toString().replaceAll("\n", "<newline>");
+	}
+
 	private void matchToken(TOKEN token, char c, TokenMatch tokenMatch) {
-		if (DEBUG) {
-			System.out.println(PREFIX + " Matching token " + token + " to \"" + cur + "\"");
+		if (DEBUG && false) {
+			System.out.println(PREFIX + " Matching token " + token + " to \"" + curForDebug() + "\"");
 		}
 		
 		final boolean match;
