@@ -45,6 +45,8 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 
 	void onColor(CONTEXT context, CSSForeground foreground);
 	
+	void onBgImageURL(CONTEXT context, int bgLayer, String url);
+
 	void onBgPosition(CONTEXT context, int bgLayer, int left, CSSUnit leftUnit, int top, CSSUnit topUnit);
 
 	void onBgPosition(CONTEXT context, int bgLayer, CSSBackgroundPosition position);

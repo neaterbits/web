@@ -31,6 +31,8 @@ public enum CSSToken implements IToken {
 	
 	COMMENT("/*", "*/"),
 	
+	QUOTED_STRING('"', '"'),
+	
 	CLASS_MARKER('.'),
 	ID_MARKER('#'),
 	
@@ -55,13 +57,14 @@ public enum CSSToken implements IToken {
 	DOT('.'),
 	SEMICOLON(';'),
 	
-	QUOTE('"'),
 	EQUALS('='),
 	
 	COLOR_MARKER('#'),
 	
 	FUNCTION_RGB("rgb"),
 	FUNCTION_RGBA("rgba"),
+	
+	FUNCTION_URL("url"),
 	
 	AUTO("auto"),
 	
@@ -75,6 +78,7 @@ public enum CSSToken implements IToken {
 	CSS_COLOR(CSStyle.COLOR),
 	CSS_BACKGOUND_COLOR(CSStyle.BACKGROUND_COLOR),
 	
+	CSS_BACKGROUND_IMAGE(CSStyle.BACKGROUND_IMAGE),
 	CSS_BACKGROUND_POSITION(CSStyle.BACKGROUND_POSITION),
 	CSS_BACKGROUND_SIZE(CSStyle.BACKGROUND_SIZE),
 	CSS_BACKGROUND_REPEAT(CSStyle.BACKGROUND_REPEAT),
@@ -388,6 +392,7 @@ public enum CSSToken implements IToken {
 	
 	private final TokenType tokenType;
 	private final char character;
+	private final char toCharacter;
 	private final String literal;
 	private final String toLiteral;
 	private final CharType charType;
@@ -422,6 +427,7 @@ public enum CSSToken implements IToken {
 		
 		this.tokenType = tokenType;
 		this.character = 0;
+		this.toCharacter = 0;
 		this.literal = null;
 		this.toLiteral = null;
 		this.charType = null;
@@ -448,6 +454,7 @@ public enum CSSToken implements IToken {
 	private CSSToken(char character) {
 		this.tokenType = TokenType.CHARACTER;
 		this.character = character;
+		this.toCharacter = 0;
 		this.literal = null;
 		this.toLiteral = null;
 		this.charType = null;
@@ -470,7 +477,34 @@ public enum CSSToken implements IToken {
 		this.foreground = null;
 		this.background = null;
 	}
-	
+
+	private CSSToken(char fromCharacter, char toCharacter) {
+		this.tokenType = TokenType.FROM_CHAR_TO_CHAR;
+		this.character = fromCharacter;
+		this.toCharacter = toCharacter;
+		this.literal = null;
+		this.toLiteral = null;
+		this.charType = null;
+		this.element = null;
+		this.unit = null;
+		this.display = null;
+		this.position = null;
+		this._float = null;
+		this.textAlign = null;
+		this.overflow = null;
+		this.textDecoration = null;
+		this.positionComponent = null;
+		this.bgSize = null;
+		this.bgRepeat = null;
+		this.bgAttachment = null;
+		this.bgOrigin = null;
+		this.fontSize = null;
+		this.fontWeight = null;
+		this.color = null;
+		this.foreground = null;
+		this.background = null;
+	}
+
 	private CSSToken(
 			String literal,
 			CSStyle element,
@@ -484,6 +518,7 @@ public enum CSSToken implements IToken {
 		
 		this.tokenType = TokenType.CS_LITERAL;
 		this.character = 0;
+		this.toCharacter = 0;
 		this.literal = literal;
 		this.toLiteral = null;
 		this.charType = null;
@@ -518,6 +553,7 @@ public enum CSSToken implements IToken {
 	private CSSToken(String fromLiteral, String toLiteral) {
 		this.tokenType = TokenType.FROM_STRING_TO_STRING;
 		this.character = 0;
+		this.toCharacter = 0;
 		this.literal = fromLiteral;
 		this.toLiteral = toLiteral;
 		this.charType = null;
@@ -612,6 +648,7 @@ public enum CSSToken implements IToken {
 	private CSSToken(CharType charType) {
 		this.tokenType = TokenType.CHARTYPE;
 		this.character = 0;
+		this.toCharacter = 0;
 		this.literal = null;
 		this.toLiteral = null;
 		this.charType = charType;
@@ -657,14 +694,13 @@ public enum CSSToken implements IToken {
 
 	@Override
 	public char getFromCharacter() {
-		throw new UnsupportedOperationException("TODO");
+		return character;
 	}
 
 	@Override
 	public char getToCharacter() {
-		throw new UnsupportedOperationException("TODO");
+		return toCharacter;
 	}
-	
 
 	@Override
 	public String getFromLiteral() {

@@ -160,6 +160,12 @@ public class TestData {
 			"}\n"
 			;
 
+	public static final String CSS_BG_IMAGE =
+			"#bgimage {\n" +
+			"  background-image : url(\"http://test.com/image1.png\"),\n" +
+			"                                url(\"http://test.com/image2.jpg\");\n" +
+			"}\n";
+
 	public static final String CSS_BG_POSITION =
 			"#bgposition {\n" +
 			"  background-position : 100px 15%,\n" +

@@ -332,6 +332,10 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 					type -> listener.onBgColor(context, type));
 			break;
 			
+		case BACKGROUND_IMAGE:
+			semiColonRead = parseBgImage(context);
+			break;
+
 		case BACKGROUND_POSITION:
 			semiColonRead = parseBgPosition(context);
 			break;
@@ -872,7 +876,51 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		
 		return token;
 	}
+
+	private <E extends Enum<E>> boolean parseBgImage(LISTENER_CONTEXT context) throws IOException, ParserException {
 	
+		int bgLayer = 0;
+		boolean semiColonRead = false;
+		
+		do {
+			CSSToken token = lexSkipWSAndComment(CSSToken.FUNCTION_URL);
+			
+			
+			if (token != CSSToken.FUNCTION_URL) {
+				throw lexer.unexpectedToken();
+			}
+
+			// parse function params
+			final Object [] values = parseFunctionParams(1, paramIdx -> parseQuotedString());
+			
+			final String url = (String)values[0];
+			
+			listener.onBgImageURL(context, bgLayer, url);
+			
+			semiColonRead = readCommaOrSemiColon();
+			
+			++ bgLayer;
+			
+		} while (!semiColonRead);
+	
+		return semiColonRead;
+	}
+	
+	private String parseQuotedString() throws IOException, ParserException {
+		
+		// parse until quote
+		final CSSToken token = lexSkipWSAndComment(CSSToken.QUOTED_STRING);
+		
+		if (token != CSSToken.QUOTED_STRING) {
+			throw lexer.unexpectedToken();
+		}
+		
+		final String withQuotes = lexer.get();
+		
+		// remove quotes
+		return withQuotes.substring(1, withQuotes.length() - 1);
+	}
+
 	private static final CSSToken [] BG_POSITION_TOKENS
 		= copyTokens(token -> token.getPositionComponent() != null,
 					CSSToken.INTEGER,
@@ -1049,6 +1097,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			CSSToken [] tokens,
 			Function<CSSToken, E> getValue,
 			ParseBgEnumResult<LISTENER_CONTEXT, E> processResult) throws IOException, ParserException {
+	
 		int bgLayer = 0;
 		boolean semiColonRead = false;
 		

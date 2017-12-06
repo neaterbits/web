@@ -387,6 +387,12 @@ public abstract class BaseLongCSSDocument
 	}
 	
 	@Override
+	public void onBgImageURL(Void context, int bgLayer, String url) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public void onBgPosition(Void context, int bgLayer, int left, CSSUnit leftUnit, int top, CSSUnit topUnit) {
 		// TODO Auto-generated method stub
 		

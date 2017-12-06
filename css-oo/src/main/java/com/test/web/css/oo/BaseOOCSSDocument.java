@@ -417,6 +417,11 @@ public abstract class BaseOOCSSDocument
 	}
 	
 	@Override
+	public void onBgImageURL(Void context, int bgLayer, String url) {
+		ref().getOrAddBgLayer(bgLayer).setImageURL(url);
+	}
+
+	@Override
 	public void onBgPosition(Void context, int bgLayer, int left, CSSUnit leftUnit, int top, CSSUnit topUnit) {
 		ref().getOrAddBgLayer(bgLayer).setPosition(left, leftUnit, top, topUnit);
 	}

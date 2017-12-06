@@ -416,6 +416,16 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		assertThat(doc.getBgColorType(initial)).isEqualTo(CSSBackground.TRANSPARENT);
 	}
 
+	public void testBgImage() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_IMAGE);
+
+		final ELEMENT pos = doc.get(CSSTarget.ID, "bgimage").get(0);
+		
+		assertThat(doc.getBgImageURL(pos, 0)).isEqualTo("http://test.com/image1.png");
+	
+		assertThat(doc.getBgImageURL(pos, 1)).isEqualTo("http://test.com/image2.jpg");
+	}
+
 	public void testBgPosition() throws IOException, ParserException {
 		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_POSITION);
 
