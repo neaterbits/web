@@ -38,6 +38,9 @@ public enum CSSToken implements IToken {
 	QUOTED_STRING('"', '"'),
 
 	BROWSER_SPECIFIC_FUNCTION('-', '('),
+
+	// MS specific keyword for filter
+	MS_PROGID_FUNCTION("progid", "("),
 	
 	INCLUDING_PARENTHESIS_START('(', true),
 	INCLUDING_PARENTHESIS_END(')', true),

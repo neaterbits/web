@@ -1414,7 +1414,9 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	private static final CSSToken [] FILTER_TOKENS = copyTokens(token -> token.getFilter() != null,
 			CSSToken.FUNCTION_BLUR, CSSToken.FUNCTION_BRIGHTNESS, CSSToken.FUNCTION_CONTRAST, CSSToken.FUNCTION_DROP_SHADOW,
 			CSSToken.FUNCTION_GRAYSCALE, CSSToken.FUNCTION_HUE_ROTATE, CSSToken.FUNCTION_INVERT, CSSToken.FUNCTION_OPACITY,
-			CSSToken.FUNCTION_SATURATE, CSSToken.FUNCTION_SEPIA, CSSToken.FUNCTION_URL);
+			CSSToken.FUNCTION_SATURATE, CSSToken.FUNCTION_SEPIA, CSSToken.FUNCTION_URL,
+			
+			CSSToken.MS_PROGID_FUNCTION); // MS specific
 
 	private boolean parseFilter(LISTENER_CONTEXT context) throws IOException, ParserException {
 		CSSToken token;
@@ -1429,6 +1431,15 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			token = lexSkipWSAndComment(FILTER_TOKENS);
 			
 			switch (token) {
+			
+				case MS_PROGID_FUNCTION:
+					// Skip MS specific function
+					skipFunctionParamsAfterParenthesis();
+					
+					assureTokenSkipWSAndComment(CSSToken.SEMICOLON);
+					semiColonRead = true;
+					done = true;
+					break;
 			
 				case FUNCTION_BLUR:
 					listener.onBlur(context, parsePxFunction());
@@ -1486,22 +1497,29 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 					break;
 			}
 			
-			token = lexSkipWSAndComment(CSSToken.COMMA, CSSToken.SEMICOLON);
-			
-			switch (token) {
-			case COMMA:
-				if (gotFilterEnum) {
-					throw new ParserException("filter enum followed by comma");
+			if (semiColonRead) {
+				if (!done) {
+					throw new IllegalStateException("should be done after having read semicolon");
 				}
-				break;
+			}
+			else {
+				token = lexSkipWSAndComment(CSSToken.COMMA, CSSToken.SEMICOLON);
 				
-			case SEMICOLON:
-				semiColonRead = true;
-				done = true;
-				break;
-				
-			default:
-				throw lexer.unexpectedToken();
+				switch (token) {
+				case COMMA:
+					if (gotFilterEnum) {
+						throw new ParserException("filter enum followed by comma");
+					}
+					break;
+					
+				case SEMICOLON:
+					semiColonRead = true;
+					done = true;
+					break;
+					
+				default:
+					throw lexer.unexpectedToken();
+				}
 			}
 		}
 		while (!done);
