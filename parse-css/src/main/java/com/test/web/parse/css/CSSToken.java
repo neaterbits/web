@@ -37,6 +37,8 @@ public enum CSSToken implements IToken {
 	
 	QUOTED_STRING('"', '"'),
 
+	BROWSER_SPECIFIC_ATTRIBUTE('-', ';'),
+
 	BROWSER_SPECIFIC_FUNCTION('-', '('),
 
 	// MS specific keyword for filter

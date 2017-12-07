@@ -166,10 +166,11 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		}
 	}
 	
-	private static final CSSToken [] STYLE_TOKENS = copyTokens(token -> token.getElement() != null);
+	private static final CSSToken [] STYLE_TOKENS = copyTokens(token -> token.getElement() != null, CSSToken.BROWSER_SPECIFIC_ATTRIBUTE);
 	
 	private static final CSSToken [] BLOCK_TOKENS = copyTokens(
-			token -> token.getElement() != null, 
+			token -> token.getElement() != null,
+			CSSToken.BROWSER_SPECIFIC_ATTRIBUTE,
 			CSSToken.WS,
 			CSSToken.COMMENT,
 			CSSToken.BRACKET_END);
@@ -200,6 +201,10 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			switch (token) {
 			case WS:
 				// Just skip any whitespace
+				break;
+				
+			case BROWSER_SPECIFIC_ATTRIBUTE:
+				// skip
 				break;
 				
 			case BRACKET_END:
@@ -236,7 +241,17 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			throw new ParserException("No CSS style token found");
 		}
 		
-		return parseElementWithoutCheckingForSemiColon(context, token.getElement());
+		final boolean semiColonRead;
+		
+		if (token == CSSToken.BROWSER_SPECIFIC_ATTRIBUTE) {
+			// starts with '-'
+			semiColonRead = true;
+		}
+		else {
+			semiColonRead = parseElementWithoutCheckingForSemiColon(context, token.getElement());
+		}
+		
+		return semiColonRead;
 	}
 	
 	private static final CSSUnit defaultWidthHeightUnit = CSSUnit.PX;
