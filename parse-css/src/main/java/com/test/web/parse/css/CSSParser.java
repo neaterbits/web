@@ -227,11 +227,6 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			
 		} while (!done);
 	}
-	
-
-	private void skipAnyWS() throws IOException {
-		lexer.lex(CSSToken.WS);
-	}
 
 	public boolean parseElement(LISTENER_CONTEXT context) throws IOException, ParserException {
 		
@@ -271,7 +266,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			}
 		}
 		
-		skipAnyWS();
+		CSSParserHelperWS.skipAnyWS(lexer);
 
 		// Now read value, this depends on input style
 		final boolean semiColonRead;
@@ -539,7 +534,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	private static final CSSToken [] BG_COLOR_TOKENS = copyTokens(token -> token.getBackground() != null, COLOR_TOKENS);
 
 	private boolean parseFgColor(IColorRGBFunction rgbColor, ICSSColorFunction cssColor, Consumer<CSSForeground> colorType) throws IOException, ParserException {
-		final CSSToken token = parseColor(rgbColor, cssColor, FG_COLOR_TOKENS);
+		final CSSToken token = CSSParserHelperColor.parseColor(lexer, rgbColor, cssColor, FG_COLOR_TOKENS);
 		
 		if (token.getForeground() != null) {
 			colorType.accept(token.getForeground());
@@ -549,7 +544,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	}
 
 	private boolean parseBgColor(IColorRGBFunction rgbColor, ICSSColorFunction cssColor, Consumer<CSSBackgroundColor> colorType) throws IOException, ParserException {
-		final CSSToken token = parseColor(rgbColor, cssColor, BG_COLOR_TOKENS);
+		final CSSToken token = CSSParserHelperColor.parseColor(lexer, rgbColor, cssColor, BG_COLOR_TOKENS);
 		
 		if (token.getBackground() != null) {
 			// special type, call callback
@@ -557,65 +552,6 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		}
 		
 		return false;
-	}
-
-	private CSSToken parseColor(IColorRGBFunction rgbColor, ICSSColorFunction cssColor, CSSToken [] tokens) throws IOException, ParserException {
-
-		CSSToken token = lexSkipWSAndComment(tokens);
-		
-		switch (token) {
-		case COLOR_MARKER:
-			// Read color string
-			token = parseHexColor(rgbColor);
-			break;
-
-		case FUNCTION_RGB:
-			parseRGBFunction(rgbColor);
-			break;
-			
-		case FUNCTION_RGBA:
-			parseRGBAFunction(rgbColor);
-			break;
-			
-		case NONE:
-			throw lexer.unexpectedToken();
-			
-		default:
-			// a CSS standard color
-			if (token.getColor() != null) {
-				cssColor.onColor(token.getColor());
-			}
-			else {
-				// One of the special enum values, like initial or inherit
-				// handle this in the calling function
-			}
-			break;
-		}
-		
-		return token;
-	}
-	
-	private CSSToken parseHexColor(IColorRGBFunction rgbColor) throws IOException, ParserException {
-		CSSToken token = lexer.lex(CSSToken.HEXDIGITS);
-		if (token != CSSToken.HEXDIGITS) {
-			throw lexer.unexpectedToken();
-		}
-		
-		final String hexString = lexer.get();
-		
-		if (hexString.length() != 6) {
-			throw new ParserException("Unexpected length: " + hexString.length());
-		}
-		
-		// Parse into hex values
-		rgbColor.onColor(
-				hexValue(hexString, 0, 2),
-				hexValue(hexString, 2, 2),
-				hexValue(hexString, 4, 2),
-				DecimalSize.NONE
-		);
-		
-		return token;
 	}
 
 	private static final CSSToken [] BG_IMAGE_TOKENS = copyTokens(token -> token.getBgImage() != null,
@@ -662,7 +598,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	
 	private String parseImageURL() throws IOException, ParserException {
 		
-		final Object [] values = parseFunctionParams(1, paramIdx -> parseQuotedString());
+		final Object [] values = CSSParserHelperFunction.parseFunctionParams(lexer, 1, paramIdx -> parseQuotedString());
 		
 		final String url = (String)values[0];
 
@@ -1056,7 +992,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		}
 		else if (token == CSSToken.COLOR_MARKER) {
 
-			token = parseHexColor((r, g, b, a) -> listener.onBgColor(context, r, g, b, a));
+			token = CSSParserHelperColor.parseHexColor(lexer, (r, g, b, a) -> listener.onBgColor(context, r, g, b, a));
 			
 			tokenMap.remove(CSStyle.BACKGROUND_COLOR);
 		}
@@ -1074,13 +1010,13 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		}
 		else if (token == CSSToken.FUNCTION_RGB) {
 			
-			parseRGBFunction((r, g, b, a) -> listener.onBgColor(context, r, g, b, a));
+			CSSParserHelperColor.parseRGBFunction(lexer, (r, g, b, a) -> listener.onBgColor(context, r, g, b, a));
 			
 			tokenMap.remove(CSStyle.BACKGROUND_COLOR);
 		}
 		else if (token == CSSToken.FUNCTION_RGBA) {
 
-			parseRGBAFunction((r, g, b, a) -> listener.onBgColor(context, r, g, b, a));
+			CSSParserHelperColor.parseRGBAFunction(lexer, (r, g, b, a) -> listener.onBgColor(context, r, g, b, a));
 
 			tokenMap.remove(CSStyle.BACKGROUND_COLOR);
 		}
@@ -1235,114 +1171,8 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	}
 	
 	private void assureTokenSkipWSAndComment(CSSToken expected) throws IOException, ParserException {
-		CSSToken token = lexSkipWSAndComment(expected);
-		
-		if (token != expected) {
-			throw lexer.unexpectedToken();
-		}
+		CSSParserHelperWS.assureTokenSkipWSAndComment(lexer, expected);
 	}
-	
-	private int parseInt() throws IOException, ParserException {
-		assureTokenSkipWSAndComment(CSSToken.INTEGER);
-		
-		return Integer.parseInt(lexer.get());
-	}
-
-	private int parseDecimal() throws IOException, ParserException {
-		
-		// Allow to start with '.'
-		
-		CSSToken token = lexer.lex(CSSToken.INTEGER, CSSToken.DOT);
-		
-		int beforeDot;
-		String afterDot;
-		
-		switch (token) {
-		case INTEGER:
-			beforeDot = Integer.parseInt(lexer.get());
-			
-			// may or may not be a dot here
-			token = lexSkipWSAndComment(CSSToken.DOT);
-			if (token == CSSToken.DOT) {
-				assureTokenSkipWSAndComment(CSSToken.INTEGER);
-				afterDot = lexer.get();
-			}
-			else {
-				afterDot = "";
-			}
-			break;
-			
-		case DOT:
-			beforeDot = 0;
-			assureTokenSkipWSAndComment(CSSToken.INTEGER);
-			afterDot = lexer.get();
-			break;
-			
-		default:
-			throw lexer.unexpectedToken();
-		}
-		
-		return new DecimalSize(beforeDot, afterDot).encodeAsInt();
-	}
-
-	private void parseRGBFunction(IColorRGBFunction rgbFunction) throws IOException, ParserException {
-		final Object [] vals = parseFunctionParams(3, paramIdx -> parseInt());
-		
-		rgbFunction.onColor((int)vals[0], (int)vals[1], (int)vals[2], DecimalSize.NONE);
-	}
-
-	private void parseRGBAFunction(IColorRGBFunction rgbFunction) throws IOException, ParserException {
-		
-		final Object [] vals = parseFunctionParams(4, paramIdx -> paramIdx == 3 ? parseDecimal() : parseInt());
-		
-		rgbFunction.onColor((int)vals[0], (int)vals[1], (int)vals[2], (int)vals[3]);
-	}
-
-	@FunctionalInterface
-	interface IParseParam {
-		Object parse(int paramIdx) throws IOException, ParserException;
-	}
-	
-	private static final Object [] EMPTY_ARRAY = new Object[0];
-	
-	private Object [] parseFunctionParams(int numParams, IParseParam parseParam) throws IOException, ParserException {
-		// Parsed the function name already, parse the parameters
-		CSSToken token = lexSkipWSAndComment(CSSToken.PARENTHESIS_START);
-	
-		if (token != CSSToken.PARENTHESIS_START) {
-			throw lexer.unexpectedToken();
-		}
-		
-		final Object [] ret;
-		
-		if (numParams == 0) {
-			ret = EMPTY_ARRAY;
-		}
-		else {
-			ret = new Object[numParams];
-			
-			for (int i = 0; i < numParams; ++ i) {
-				
-				skipAnyWS();
-				
-				ret[i] = parseParam.parse(i);
-
-				// Comma or end parenthesis
-				final CSSToken nextToken = i == numParams - 1
-						? CSSToken.PARENTHESIS_END
-						: CSSToken.COMMA;
-				
-				token = lexSkipWSAndComment(nextToken);
-
-				if (token != nextToken) {
-					throw lexer.unexpectedToken();
-				}
-			}
-		}
-		
-		return ret;
-	}
-
 	
 	private static final CSSToken [] FONTSIZE_TOKENS = copyTokens(token -> token.getFontSize() != null, CSSToken.INTEGER);
 	
@@ -1660,7 +1490,8 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 					
 					if (!parenthesisRead) {
 						// might still have color
-						CSSToken colorToken = parseColor(
+						CSSToken colorToken = CSSParserHelperColor.parseColor(
+								lexer,
 								(r, g, b, a) -> cachedRGBA.init(r, g, b, a),
 								cssColor -> cachedColor.set(cssColor),
 								COLOR_OR_PARENTHESIS_TOKENS);
@@ -1735,17 +1566,17 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			break;
 		
 		case FUNCTION_RGB:
-			parseRGBFunction(rgbFunction);
+			CSSParserHelperColor.parseRGBFunction(lexer, rgbFunction);
 			status.colorFound = true;
 			break;
 			
 		case FUNCTION_RGBA:
-			parseRGBAFunction(rgbFunction);
+			CSSParserHelperColor.parseRGBAFunction(lexer, rgbFunction);
 			status.colorFound = true;
 			break;
 			
 		case COLOR_MARKER:
-			parseHexColor(rgbFunction);
+			CSSParserHelperColor.parseHexColor(lexer, rgbFunction);
 			break;
 			
 		case PARENTHESIS_END:
@@ -1780,33 +1611,5 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		onToken.accept(token);
 		
 		return false;
-	}
-	
-	private static int hexValue(String s, int start, int length) {
-		
-		int num = 0;
-		
-		for (int i = 0; i < length; ++ i) {
-			final char c = s.charAt(start + i);
-			
-			final int digit;
-			
-			if (Character.isDigit(c)) {
-				digit = c - '0';
-			}
-			else if (c >= 'A' && c <= 'F') {
-				digit = c - 'A' + 10;
-			}
-			else if (c >= 'a' && c <= 'f') {
-				digit = c - 'A' + 10;
-			}
-			else {
-				throw new IllegalArgumentException("Unexpected character " + c);
-			}
-
-			num = num * 16 + digit;
-		}
-		
-		return num;
 	}
 }

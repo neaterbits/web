@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.test.web.io.common.CharInput;
 import com.test.web.parse.common.Lexer;
+import com.test.web.parse.common.ParserException;
 import com.test.web.parse.common.TokenMergeHelper;
 
 class CSSParserHelperWS {
@@ -28,4 +29,16 @@ class CSSParserHelperWS {
 		return token;
 	}
 
+
+	static void skipAnyWS(Lexer<CSSToken, CharInput> lexer) throws IOException {
+		lexer.lex(CSSToken.WS);
+	}
+
+	static void assureTokenSkipWSAndComment(Lexer<CSSToken, CharInput> lexer, CSSToken expected) throws IOException, ParserException {
+		CSSToken token = lexSkipWSAndComment(lexer, expected);
+		
+		if (token != expected) {
+			throw lexer.unexpectedToken();
+		}
+	}
 }
