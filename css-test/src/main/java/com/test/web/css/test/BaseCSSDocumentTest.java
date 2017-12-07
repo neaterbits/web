@@ -14,6 +14,8 @@ import com.test.web.css.common.enums.CSSBackgroundPosition;
 import com.test.web.css.common.enums.CSSBackgroundRepeat;
 import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSClear;
+import com.test.web.css.common.enums.CSSColor;
+import com.test.web.css.common.enums.CSSFilter;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
@@ -594,8 +596,59 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		
 		assertThat(doc.getTextDecoration(td1)).isEqualTo(CSSTextDecoration.UNDERLINE);
 	}
-	
-	
+
+	public void testFilterNone() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_FILTER_NONE);
+
+		final ELEMENT f = doc.get(CSSTarget.ID, "filter_none").get(0);
+		
+		assertThat(doc.getFilter(f)).isEqualTo(CSSFilter.NONE);
+	}
+
+	public void testFilter() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_FILTER);
+
+		final ELEMENT f = doc.get(CSSTarget.ID, "filter").get(0);
+		
+		assertThat(doc.getFilter(f)).isNull();
+		assertThat(doc.getBlur(f)).isEqualTo(3);
+		assertThat(DecimalSize.decodeToInt(doc.getBrightness(f))).isEqualTo(150);
+		assertThat(DecimalSize.decodeToInt(doc.getContrast(f))).isEqualTo(120);
+		
+		assertThat(DecimalSize.decodeToInt(doc.getDropShadowH(f))).isEqualTo(5);
+		assertThat(doc.getDropShadowHUnit(f)).isEqualTo(CSSUnit.PX);
+		assertThat(DecimalSize.decodeToInt(doc.getDropShadowV(f))).isEqualTo(7);
+		assertThat(doc.getDropShadowVUnit(f)).isEqualTo(CSSUnit.PX);
+		assertThat(doc.getDropShadowBlur(f)).isEqualTo(6);
+		assertThat(doc.getDropShadowColor(f)).isEqualTo(CSSColor.RED);
+		
+		assertThat(DecimalSize.decodeToInt(doc.getGrayscale(f))).isEqualTo(100);
+		assertThat(DecimalSize.decodeToInt(doc.getHueRotate(f))).isEqualTo(75);
+		assertThat(DecimalSize.decodeToInt(doc.getInvert(f))).isEqualTo(95);
+		assertThat(DecimalSize.decodeToInt(doc.getOpacity(f))).isEqualTo(25);
+		assertThat(DecimalSize.decodeToInt(doc.getSaturate(f))).isEqualTo(4);
+		assertThat(DecimalSize.decodeToInt(doc.getSepia(f))).isEqualTo(83);
+		assertThat(doc.getFilterURL(f)).isEqualTo("http://foo");
+	}
+
+	public void testFilter2() throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_FILTER2);
+
+		final ELEMENT f = doc.get(CSSTarget.ID, "filter2").get(0);
+		
+		assertThat(doc.getFilter(f)).isNull();
+		
+		assertThat(DecimalSize.decodeToInt(doc.getDropShadowH(f))).isEqualTo(5);
+		assertThat(doc.getDropShadowHUnit(f)).isEqualTo(CSSUnit.PX);
+		assertThat(DecimalSize.decodeToInt(doc.getDropShadowV(f))).isEqualTo(7);
+		assertThat(doc.getDropShadowVUnit(f)).isEqualTo(CSSUnit.PX);
+		assertThat(doc.getDropShadowBlur(f)).isEqualTo(6);
+		assertThat(doc.getDropShadowSpread(f)).isEqualTo(4);
+		assertThat(doc.getDropShadowR(f)).isEqualTo(0xAA);
+		assertThat(doc.getDropShadowG(f)).isEqualTo(0xBB);
+		assertThat(doc.getDropShadowB(f)).isEqualTo(0xCC);
+	}
+
 	private static class TestCSSJustify implements ICSSJustify<Void> {
 
 		int top;

@@ -10,6 +10,7 @@ import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSClear;
 import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.css.common.enums.CSSFilter;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
@@ -24,6 +25,8 @@ import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.io.common.Tokenizer;
+import com.test.web.types.ColorRGB;
+import com.test.web.types.DecimalSize;
 
 public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 
@@ -99,6 +102,45 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 	
 	void onFontWeight(CONTEXT context, int fontWeightNumber, CSSFontWeight fontWeightEnum);
 
+	// Filter
+	void onFilter(CONTEXT context, CSSFilter filter);
+	void onBlur(CONTEXT context, int blur);
+	void onBrightness(CONTEXT context, int brightness);
+	void onContrast(CONTEXT context, int contrast);
+	void onGrayscale(CONTEXT context, int grayscale);
+
+	void onDropShadow(
+			CONTEXT context, 
+			int dropShadowH,
+			CSSUnit dropShadowHUnit,
+			int dropShadowV,
+			CSSUnit dropShadowVUnit,
+			int dropShadowBlur,
+			int dropShadowSpread,
+
+			int dropShadowR,
+			int dropShadowG,
+			int dropShadowB,
+			int dropShadowA); 
+
+	void onDropShadow(
+			CONTEXT context, 
+			int dropShadowH,
+			CSSUnit dropShadowHUnit,
+			int dropShadowV,
+			CSSUnit dropShadowVUnit,
+			int dropShadowBlur,
+			int dropShadowSpread,
+
+			CSSColor dropShadowColor);
+	
+	void onHueRotate(CONTEXT context, int hueRotate);
+	void onInvert(CONTEXT context, int invert);
+	void onOpacity(CONTEXT context, int opacity);
+	void onSaturate(CONTEXT context, int saturate);
+	void onSepia(CONTEXT context, int sepia);
+	void onUrl(CONTEXT context, String url);
+	
 	void onMargin(CONTEXT context,
 			int top, CSSUnit topUnit, CSSJustify topType, 
 			int right, CSSUnit rightUnit, CSSJustify rightType,

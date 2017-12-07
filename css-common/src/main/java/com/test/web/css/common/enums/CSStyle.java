@@ -62,7 +62,9 @@ public enum CSStyle implements IKeyValueList {
 	MAX_HEIGHT("max-height", ValueType.ONE),
 
 	MIN_WIDTH("min-width", ValueType.ONE),
-	MIN_HEIGHT("min-height", ValueType.ONE)
+	MIN_HEIGHT("min-height", ValueType.ONE),
+	
+	FILTER("filter", ValueType.ONE)
 	;
 	
 	private final String name;

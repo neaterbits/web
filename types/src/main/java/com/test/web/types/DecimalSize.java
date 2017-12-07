@@ -79,7 +79,7 @@ public class DecimalSize {
 	
 	public static int decodeToInt(int encoded) {
 		if ((encoded & SCALE_MASK) != 0) {
-			throw new IllegalStateException("encoded int is decimal");
+			throw new IllegalStateException("encoded int is decimal with scale " + (encoded & SCALE_MASK) + ": " + decodeToString(encoded));
 		}
 		
 		return encoded >> SCALE_BITS;

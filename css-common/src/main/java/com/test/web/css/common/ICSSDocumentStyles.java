@@ -6,9 +6,11 @@ import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
 import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSClear;
+import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSBackgroundAttachment;
 import com.test.web.css.common.enums.CSSBackgroundRepeat;
 import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.css.common.enums.CSSFilter;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
@@ -21,6 +23,7 @@ import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
+import com.test.web.types.DecimalSize;
 
 public interface ICSSDocumentStyles<TARGET> {
 	
@@ -171,4 +174,49 @@ public interface ICSSDocumentStyles<TARGET> {
 	CSSUnit getMaxHeightUnit(TARGET ref);
 
 	CSSMax getMaxHeightType(TARGET ref);
+
+	// Filters
+	CSSFilter getFilter(TARGET ref); // NONE, INITIAL, INHERIT
+	
+	// -1 if not set
+	int getBlur(TARGET ref);
+	// DecimalSize.NONE if not set for these
+	int getBrightness(TARGET ref);
+	int getContrast(TARGET ref);
+	int getGrayscale(TARGET ref);
+
+	boolean hasDropShadow(TARGET ref);
+
+	// DecimalSize.NONE if not set
+	int getDropShadowH(TARGET ref);
+	CSSUnit getDropShadowHUnit(TARGET ref);
+	// DecimalSize.NONE if not set
+
+	int getDropShadowV(TARGET ref);
+	CSSUnit getDropShadowVUnit(TARGET ref);
+
+	// -1 if not set
+	int getDropShadowBlur(TARGET ref);
+
+	// -1 if not set
+	int getDropShadowSpread(TARGET ref) ;
+	
+	// ColorRGB.NONE if not set
+	int getDropShadowR(TARGET ref);
+	int getDropShadowG(TARGET ref);
+	int getDropShadowB(TARGET ref);
+	// ColorAlpha.NONE if not set
+	int getDropShadowA(TARGET ref);
+	
+	// null if not set
+	CSSColor getDropShadowColor(TARGET ref);
+
+	// DecimalSize.NONE if not set for these
+	int getHueRotate(TARGET ref);
+	int getInvert(TARGET ref);
+	int getOpacity(TARGET ref);
+	int getSaturate(TARGET ref);
+	int getSepia(TARGET ref);
+	
+	String getFilterURL(TARGET ref);
 }

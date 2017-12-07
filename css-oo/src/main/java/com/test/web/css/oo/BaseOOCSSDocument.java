@@ -14,6 +14,7 @@ import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSClear;
 import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.css.common.enums.CSSFilter;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
@@ -366,6 +367,120 @@ public abstract class BaseOOCSSDocument
 	public CSSMax getMaxHeightType(OOCSSElement ref) {
 		return ref.getMaxHeightType();
 	}
+	
+	@Override
+	public CSSFilter getFilter(OOCSSElement ref) {
+		return ref.getFilter();
+	}
+
+	@Override
+	public int getBlur(OOCSSElement ref) {
+		return ref.getBlur();
+	}
+
+	@Override
+	public int getBrightness(OOCSSElement ref) {
+		return ref.getBrightness();
+	}
+
+	@Override
+	public int getContrast(OOCSSElement ref) {
+		return ref.getContrast();
+	}
+
+	@Override
+	public int getGrayscale(OOCSSElement ref) {
+		return ref.getGrayscale();
+	}
+	@Override
+	public boolean hasDropShadow(OOCSSElement ref) {
+		return ref.hasDropShadow();
+	}
+
+	@Override
+	public int getDropShadowH(OOCSSElement ref) {
+		return ref.getDropShadowH();
+	}
+
+	@Override
+	public CSSUnit getDropShadowHUnit(OOCSSElement ref) {
+		return ref.getDropShadowHUnit();
+	}
+
+	@Override
+	public int getDropShadowV(OOCSSElement ref) {
+		return ref.getDropShadowV();
+	}
+
+	@Override
+	public CSSUnit getDropShadowVUnit(OOCSSElement ref) {
+		return ref.getDropShadowVUnit();
+	}
+
+	@Override
+	public int getDropShadowBlur(OOCSSElement ref) {
+		return ref.getDropShadowBlur();
+	}
+
+	@Override
+	public int getDropShadowSpread(OOCSSElement ref) {
+		return ref.getDropShadowSpread();
+	}
+
+	@Override
+	public int getDropShadowR(OOCSSElement ref) {
+		return ref.getDropShadowR();
+	}
+
+	@Override
+	public int getDropShadowG(OOCSSElement ref) {
+		return ref.getDropShadowG();
+	}
+
+	@Override
+	public int getDropShadowB(OOCSSElement ref) {
+		return ref.getDropShadowB();
+	}
+
+	@Override
+	public int getDropShadowA(OOCSSElement ref) {
+		return ref().getDropShadowA();
+	}
+
+	@Override
+	public CSSColor getDropShadowColor(OOCSSElement ref) {
+		return ref.getDropShadowColor();
+	}
+
+	@Override
+	public int getHueRotate(OOCSSElement ref) {
+		return ref.getHueRotate();
+	}
+
+	@Override
+	public int getInvert(OOCSSElement ref) {
+		return ref.getInvert();
+	}
+
+	@Override
+	public int getOpacity(OOCSSElement ref) {
+		return ref.getOpacity();
+	}
+
+	@Override
+	public int getSaturate(OOCSSElement ref) {
+		return ref.getSaturate();
+	}
+
+	@Override
+	public int getSepia(OOCSSElement ref) {
+		return ref.getSepia();
+	}
+
+	@Override
+	public String getFilterURL(OOCSSElement ref) {
+		return ref().getUrl();
+	}
 
 	/***************************************************** Parse listener *****************************************************/ 
 	
@@ -550,7 +665,76 @@ public abstract class BaseOOCSSDocument
 		ref().setMinHeight(height, unit, type);
 	}
 	
-	
+	@Override
+	public void onFilter(Void context, CSSFilter filter) {
+		ref().setFilter(filter);
+	}
+
+	@Override
+	public void onBlur(Void context, int blur) {
+		ref().setBlur(blur);
+	}
+
+	@Override
+	public void onBrightness(Void context, int brightness) {
+		ref().setBrightness(brightness);
+	}
+
+	@Override
+	public void onContrast(Void context, int contrast) {
+		ref().setContrast(contrast);
+	}
+
+	@Override
+	public void onGrayscale(Void context, int grayscale) {
+		ref().setGrayscale(grayscale);
+	}
+
+	@Override
+	public void onDropShadow(Void context, int dropShadowH, CSSUnit dropShadowHUnit, int dropShadowV,
+			CSSUnit dropShadowVUnit, int dropShadowBlur, int dropShadowSpread, int dropShadowR, int dropShadowG,
+			int dropShadowB, int dropShadowA) {
+
+		ref().setDropShadow(dropShadowH, dropShadowHUnit, dropShadowV, dropShadowVUnit, dropShadowBlur, dropShadowSpread, dropShadowR, dropShadowG, dropShadowB, dropShadowA);
+	}
+
+	@Override
+	public void onDropShadow(Void context, int dropShadowH, CSSUnit dropShadowHUnit, int dropShadowV,
+			CSSUnit dropShadowVUnit, int dropShadowBlur, int dropShadowSpread, CSSColor dropShadowColor) {
+
+		ref().setDropShadow(dropShadowH, dropShadowHUnit, dropShadowV, dropShadowVUnit, dropShadowBlur, dropShadowSpread, dropShadowColor);
+	}
+
+	@Override
+	public void onHueRotate(Void context, int hueRotate) {
+		ref().setHueRotate(hueRotate);
+	}
+
+	@Override
+	public void onInvert(Void context, int invert) {
+		ref().setInvert(invert);
+	}
+
+	@Override
+	public void onOpacity(Void context, int opacity) {
+		ref().setOpacity(opacity);
+	}
+
+	@Override
+	public void onSaturate(Void context, int saturate) {
+		ref().setSaturate(saturate);
+	}
+
+	@Override
+	public void onSepia(Void context, int sepia) {
+		ref().setSepia(sepia);
+	}
+
+	@Override
+	public void onUrl(Void context, String url) {
+		ref().setUrl(url);
+	}
+
 	@Override
 	public void onFontSize(Void context, int fontSize, CSSUnit fontSizeUnit, CSSFontSize fontSizeEnum) {
 		ref().setFontSize(fontSize, fontSizeUnit, fontSizeEnum);

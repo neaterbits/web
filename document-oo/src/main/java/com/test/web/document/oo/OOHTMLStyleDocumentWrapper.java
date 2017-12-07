@@ -10,7 +10,9 @@ import com.test.web.css.common.enums.CSSBackgroundPosition;
 import com.test.web.css.common.enums.CSSBackgroundRepeat;
 import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSClear;
+import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.css.common.enums.CSSFilter;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
@@ -24,6 +26,7 @@ import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.css.oo.OOCSSElement;
+import com.test.web.types.ColorAlpha;
 import com.test.web.types.ColorRGB;
 import com.test.web.types.DecimalSize;
 
@@ -210,7 +213,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 		final OOCSSElement styleElement = ref.getStyleElement();
 		
 		return styleElement == null
-				? DecimalSize.NONE
+				? ColorAlpha.NONE
 				: delegate.getColorA(ref.getStyleElement());
 	}
 	
@@ -418,7 +421,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 		final OOCSSElement styleElement = ref.getStyleElement();
 		
 		return styleElement == null
-				? DecimalSize.NONE
+				? ColorAlpha.NONE
 				: delegate.getBgColorA(ref.getStyleElement(), bgLayer);
 	}
 	
@@ -464,7 +467,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 		final OOCSSElement styleElement = ref.getStyleElement();
 		
 		return styleElement == null
-				? DecimalSize.NONE
+				? ColorAlpha.NONE
 				: delegate.getBgColorA(ref.getStyleElement());
 	}
 
@@ -623,6 +626,213 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 		return styleElement == null
 				? null
 				: delegate.getMaxHeightType(ref.getStyleElement());
+	}
+	
+	@Override
+	public CSSFilter getFilter(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getFilter(ref.getStyleElement());
+	}
+
+	@Override
+	public int getBlur(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? -1
+				: delegate.getBlur(ref.getStyleElement());
+	}
+
+	@Override
+	public int getBrightness(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getBrightness(ref.getStyleElement());
+	}
+
+	@Override
+	public int getContrast(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getContrast(ref.getStyleElement());
+	}
+
+	@Override
+	public int getGrayscale(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getGrayscale(ref.getStyleElement());
+	}
+
+	@Override
+	public boolean hasDropShadow(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? false
+				: delegate.hasDropShadow(ref.getStyleElement());
+	}
+
+	@Override
+	public int getDropShadowH(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getDropShadowH(ref.getStyleElement());
+	}
+
+	@Override
+	public CSSUnit getDropShadowHUnit(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getDropShadowHUnit(ref.getStyleElement());
+	}
+
+	@Override
+	public int getDropShadowV(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getDropShadowV(ref.getStyleElement());
+	}
+
+	@Override
+	public CSSUnit getDropShadowVUnit(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getDropShadowVUnit(ref.getStyleElement());
+	}
+
+	@Override
+	public int getDropShadowBlur(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? -1
+				: delegate.getDropShadowBlur(ref.getStyleElement());
+	}
+
+	@Override
+	public int getDropShadowSpread(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? -1
+				: delegate.getDropShadowSpread(ref.getStyleElement());
+	}
+
+	@Override
+	public int getDropShadowR(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? ColorRGB.NONE
+				: delegate.getDropShadowR(ref.getStyleElement());
+	}
+
+	@Override
+	public int getDropShadowG(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? ColorRGB.NONE
+				: delegate.getDropShadowG(ref.getStyleElement());
+	}
+
+	@Override
+	public int getDropShadowB(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? ColorRGB.NONE
+				: delegate.getDropShadowB(ref.getStyleElement());
+	}
+
+	@Override
+	public int getDropShadowA(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? ColorAlpha.NONE
+				: delegate.getDropShadowA(ref.getStyleElement());
+	}
+
+	@Override
+	public CSSColor getDropShadowColor(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getDropShadowColor(ref.getStyleElement());
+	}
+
+	@Override
+	public int getHueRotate(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getHueRotate(ref.getStyleElement());
+	}
+
+	@Override
+	public int getInvert(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getInvert(ref.getStyleElement());
+	}
+
+	@Override
+	public int getOpacity(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getOpacity(ref.getStyleElement());
+	}
+
+	@Override
+	public int getSaturate(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getSaturate(ref.getStyleElement());
+	}
+
+	@Override
+	public int getSepia(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? DecimalSize.NONE
+				: delegate.getSepia(ref.getStyleElement());
+	}
+
+	@Override
+	public String getFilterURL(OOTagElement ref) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getFilterURL(ref.getStyleElement());
 	}
 
 	public String toString() {

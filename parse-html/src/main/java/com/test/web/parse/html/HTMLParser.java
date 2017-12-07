@@ -14,6 +14,7 @@ import com.test.web.parse.common.BaseParser;
 import com.test.web.parse.common.IParse;
 import com.test.web.parse.common.Lexer;
 import com.test.web.parse.common.ParserException;
+import com.test.web.parse.common.TokenMergeHelper;
 import com.test.web.parse.css.CSSParser;
 import com.test.web.parse.css.ICSSDocumentParserListener;
 import com.test.web.types.IIndent;
@@ -95,8 +96,8 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 			case TAG_LESS_THAN: // May be start of end-tag 
 				
 				final HTMLToken [] tokens = currentTag != null
-					? merge(tagTokens, HTMLToken.COMMENT_CONTENT, HTMLToken.TAG_SLASH) 
-					: merge(tagTokens, HTMLToken.COMMENT_CONTENT);
+					? TokenMergeHelper.merge(tagTokens, HTMLToken.COMMENT_CONTENT, HTMLToken.TAG_SLASH) 
+					: TokenMergeHelper.merge(tagTokens, HTMLToken.COMMENT_CONTENT);
 				
 				HTMLToken tagToken;
 					

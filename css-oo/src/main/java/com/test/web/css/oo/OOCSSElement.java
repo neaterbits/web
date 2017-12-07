@@ -6,6 +6,7 @@ import com.test.web.css.common.enums.CSSBackgroundColor;
 import com.test.web.css.common.enums.CSSClear;
 import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.css.common.enums.CSSFilter;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
@@ -19,6 +20,7 @@ import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
+import com.test.web.types.ColorAlpha;
 import com.test.web.types.ColorRGB;
 import com.test.web.types.DecimalSize;
 
@@ -87,6 +89,9 @@ public final class OOCSSElement extends OOStylesBase {
 	private CSSUnit maxHeightUnit;
 	private CSSMax maxHeightType;
 
+	// filters
+	private OOCSSFilter filter;
+	
 	public OOCSSElement() {
 		this.margins = new OOWrapping();
 		this.padding = new OOWrapping();
@@ -638,6 +643,182 @@ public final class OOCSSElement extends OOStylesBase {
 		this.maxHeight = maxHeight;
 		this.maxHeightUnit = unit;
 		this.maxHeightType = type;
+	}
+	
+	private OOCSSFilter assureFilter() {
+		if (this.filter == null) {
+			this.filter = new OOCSSFilter();
+		}
+		
+		return filter;
+	}
+	
+	CSSFilter getFilter() {
+		return filter == null ? null : filter.getFilter();
+	}
+	
+	void setFilter(CSSFilter filter) {
+		assureFilter().setFilter(filter);
+	}
+	
+	int getBlur() {
+		return filter == null ? -1 : filter.getBlur();
+	}
+
+	void setBlur(int blur) {
+		assureFilter().setBlur(blur);
+	}
+
+	int getBrightness() {
+		return filter == null ? DecimalSize.NONE : filter.getBrightness();
+	}
+
+	void setBrightness(int brightness) {
+		assureFilter().setBrightness(brightness);
+	}
+
+	int getContrast() {
+		return filter == null ? DecimalSize.NONE : filter.getContrast();
+	}
+
+	void setContrast(int contrast) {
+		assureFilter().setContrast(contrast);
+	}
+
+	int getGrayscale() {
+		return filter == null ? DecimalSize.NONE : filter.getGrayscale();
+	}
+
+	void setGrayscale(int grayscale) {
+		assureFilter().setGrayscale(grayscale);
+	}
+
+	boolean hasDropShadow() {
+		return filter == null ? false : filter.hasDropShadow();
+	}
+	
+	int getDropShadowH() {
+		return filter == null ? DecimalSize.NONE : filter.getDropShadowH();
+	}
+
+	CSSUnit getDropShadowHUnit() {
+		return filter == null ? null : filter.getDropShadowHUnit();
+	}
+
+	int getDropShadowV() {
+		return filter == null ? DecimalSize.NONE : filter.getDropShadowV();
+	}
+
+	CSSUnit getDropShadowVUnit() {
+		return filter == null ? null : filter.getDropShadowVUnit();
+	}
+
+	int getDropShadowBlur() {
+		return filter == null ? null : filter.getDropShadowBlur();
+	}
+
+	int getDropShadowSpread() {
+		return filter == null ? null : filter.getDropShadowSpread();
+	}
+
+	int getDropShadowR() {
+		return filter == null ? ColorRGB.NONE : filter.getDropShadowR();
+	}
+
+	int getDropShadowG() {
+		return filter == null ? ColorRGB.NONE : filter.getDropShadowG();
+	}
+
+	int getDropShadowB() {
+		return filter == null ? ColorRGB.NONE : filter.getDropShadowB();
+	}
+
+	int getDropShadowA() {
+		return filter == null ? ColorAlpha.NONE : filter.getDropShadowA();
+	}
+
+	CSSColor getDropShadowColor() {
+		return filter == null ? null : filter.getDropShadowColor();
+	}
+
+	void setDropShadow(
+			int dropShadowH,
+			CSSUnit dropShadowHUnit,
+			int dropShadowV,
+			CSSUnit dropShadowVUnit,
+			int dropShadowBlur,
+			int dropShadowSpread,
+
+			int dropShadowR,
+			int dropShadowG,
+			int dropShadowB,
+			int dropShadowA
+			) {
+		
+		assureFilter().setDropShadow(dropShadowH, dropShadowHUnit, dropShadowV, dropShadowVUnit, dropShadowBlur, dropShadowSpread, dropShadowR, dropShadowG, dropShadowB, dropShadowA);
+	}
+
+	void setDropShadow(
+			int dropShadowH,
+			CSSUnit dropShadowHUnit,
+			int dropShadowV,
+			CSSUnit dropShadowVUnit,
+			int dropShadowBlur,
+			int dropShadowSpread,
+
+			CSSColor dropShadowColor
+			) {
+
+		assureFilter().setDropShadow(dropShadowH, dropShadowHUnit, dropShadowV, dropShadowVUnit, dropShadowBlur, dropShadowSpread, dropShadowColor);
+	}
+
+	
+	int getHueRotate() {
+		return filter == null ? DecimalSize.NONE : filter.getHueRotate();
+	}
+
+	void setHueRotate(int hueRotate) {
+		assureFilter().setHueRotate(hueRotate);
+	}
+
+	int getInvert() {
+		return filter == null ? DecimalSize.NONE : filter.getInvert();
+	}
+
+	void setInvert(int invert) {
+		assureFilter().setInvert(invert);
+	}
+
+	int getOpacity() {
+		return filter == null ? DecimalSize.NONE : filter.getOpacity();
+	}
+
+	void setOpacity(int opacity) {
+		assureFilter().setOpacity(opacity);
+	}
+
+	int getSaturate() {
+		return filter == null ? DecimalSize.NONE : filter.getSaturate();
+	}
+
+	void setSaturate(int saturate) {
+		assureFilter().setSaturate(saturate);
+	}
+
+	int getSepia() {
+		return filter == null ? DecimalSize.NONE : filter.getSepia();
+	}
+
+	void setSepia(int sepia) {
+		assureFilter().setSepia(sepia);
+	}
+
+	String getUrl() {
+		return filter == null ? null : filter.getUrl();
+	}
+
+	void setUrl(String url) {
+		assureFilter().setUrl(url);
 	}
 }
 

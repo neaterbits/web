@@ -16,6 +16,7 @@ import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSClear;
 import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.css.common.enums.CSSFilter;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
@@ -542,6 +543,87 @@ public abstract class BaseLongCSSDocument
 	}
 
 	@Override
+	public void onFilter(Void context, CSSFilter filter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onBlur(Void context, int blur) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onBrightness(Void context, int brightness) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onContrast(Void context, int contrast) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onGrayscale(Void context, int grayscale) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onDropShadow(Void context, int dropShadowH, CSSUnit dropShadowHUnit, int dropShadowV,
+			CSSUnit dropShadowVUnit, int dropShadowBlur, int dropShadowSpread, int dropShadowR, int dropShadowG,
+			int dropShadowB, int dropShadowA) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onDropShadow(Void context, int dropShadowH, CSSUnit dropShadowHUnit, int dropShadowV,
+			CSSUnit dropShadowVUnit, int dropShadowBlur, int dropShadowSpread, CSSColor dropShadowColor) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onHueRotate(Void context, int hueRotate) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onInvert(Void context, int invert) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onOpacity(Void context, int opacity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSaturate(Void context, int saturate) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSepia(Void context, int sepia) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onUrl(Void context, String url) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public void onFontSize(Void context, int fontSize, CSSUnit fontSizeUnit, CSSFontSize fontSizeEnum) {
 		// TODO Auto-generated method stub
 		
@@ -670,6 +752,144 @@ public abstract class BaseLongCSSDocument
 
 	@Override
 	public CSSMax getMaxHeightType(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public CSSFilter getFilter(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getBlur(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getBrightness(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getContrast(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getGrayscale(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean hasDropShadow(Integer ref) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int getDropShadowH(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSUnit getDropShadowHUnit(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getDropShadowV(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSUnit getDropShadowVUnit(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getDropShadowBlur(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getDropShadowSpread(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getDropShadowR(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getDropShadowG(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getDropShadowB(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getDropShadowA(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSColor getDropShadowColor(Integer ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getHueRotate(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getInvert(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getOpacity(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getSaturate(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getSepia(Integer ref) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getFilterURL(Integer ref) {
 		// TODO Auto-generated method stub
 		return null;
 	}

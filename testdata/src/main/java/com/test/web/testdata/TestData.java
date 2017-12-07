@@ -242,6 +242,32 @@ public class TestData {
 			"}\n"
 			;
 
+	public static final String CSS_FILTER_NONE =
+			"#filter_none {\n" +
+			"  filter : none;\n" +
+			"}\n"
+			;
+
+	public static final String CSS_FILTER =
+			"#filter {\n" +
+			"  filter : blur(3px),\n" +
+			"            brightness(150%),\n" +
+			"            contrast(120%),\n" +
+			"            drop-shadow(5px 7px 6px red),\n" +
+			"            grayscale(100%),\n" +
+			"            hue-rotate(75deg),\n" +
+			"            invert(95%),\n" +
+			"            opacity(25%),\n" +
+			"            saturate(4%),\n" +
+			"            sepia(83%),\n" +
+			"            url(\"http://foo\");\n" +
+			"}\n"
+			;
+	public static final String CSS_FILTER2 =
+			"#filter2 {\n" +
+			"  filter : drop-shadow(5px 7px 6px 4px #AABBCC);\n" +
+			"}\n"
+			;
 
 	private static final String DOCTYPE = "<!DOCTYPE HTML PUBLIC \"-//W3C/DTD HTML 4.01 Frameset//EN\" \"http://w3.org/TR/html4/frameset.dtd\">";
 	
