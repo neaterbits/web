@@ -9,9 +9,9 @@ import com.test.web.io.common.CharInput;
 
 public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharInput> {
 
-	private static final boolean DEBUG = false;
+	private static final int DEBUG_LEVEL= 0;
 
-	private static final String PREFIX = "Lexer: ";
+	private static final String PREFIX = "Lexer";
 
 	private final INPUT input;
 	private final TOKEN tokNone;
@@ -60,7 +60,7 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		return (TOKEN[])Array.newInstance(tokenClass, tokenClass.getEnumConstants().length);
 	}
 	
-	// HElper class to return multiple values
+	// Helper class to return multiple values
 	private static class TokenMatch {
 		private boolean matchesExactly;
 		private boolean mightMatch;
@@ -72,9 +72,9 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	
 	public TOKEN lex(LexerMatch matchMethod, @SuppressWarnings("unchecked") TOKEN ... inputTokens) throws IOException {
 		
-		if (DEBUG) {
-			System.out.println("----");
-			System.out.println(PREFIX + " lex(" + Arrays.toString(inputTokens) + ")");
+		if (hasDebugLevel(1)) {
+			debug("----");
+			debug("lex(" + Arrays.toString(inputTokens) + ")");
 		}
 		
 		if (inputTokens.length > possiblyMatchingTokens.length) {
@@ -143,8 +143,8 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 			// Loop through all tokens to see if any match. We will return the longest-matching token so we have to keep track of that
 			TOKEN firstMatchThisIteration = null;
 
-			if (DEBUG) {
-				System.out.println(PREFIX + " matching tokens  to " + tokensToString(tokens, numTokens) + " to  buf = \"" + curForDebug());
+			if (DEBUG_LEVEL  > 1) {
+				debug("matching tokens  to " + tokensToString(tokens, numTokens) + " to  buf = \"" + curForDebug());
 			}
 			
 			for (int i = 0; i < numTokens; ++ i) {
@@ -172,8 +172,8 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 				
 				this.exactMatches[token.ordinal()] = match;
 
-				if (DEBUG) {
-					System.out.println(PREFIX + " match to " + token + "\", match=" + match +", numPossibleMatch=" + numPossibleMatch+ ", buf = \"" + curForDebug());
+				if (hasDebugLevel(3)) {
+					debug(PREFIX + " match to " + token + "\", match=" + match +", numPossibleMatch=" + numPossibleMatch+ ", buf = \"" + curForDebug());
 				}
 				
 				if (match) {
@@ -203,8 +203,8 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	
 					if (longestFoundSoFar == null) {
 					
-						if (DEBUG) {
-							System.out.println(PREFIX + " No possible matches, returning");
+						if (hasDebugLevel(2)) {
+							debug("No possible matches, returning");
 						}
 						
 						// No possible matches, return not-found token
@@ -223,8 +223,8 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 			}
 		} while (found == null);
 		
-		if (DEBUG) {
-			System.out.println(PREFIX + " returned token " + found + " at " + lineNo + ", buf=\"" + cur + "\", buffered char='"+ (char)buffered + "'");
+		if (hasDebugLevel(1)) {
+			debug("returned token " + found + " at " + lineNo + ", buf=\"" + cur + "\", buffered char='"+ (char)buffered + "'");
 		}
 		
 		this.lastToken = found;
@@ -253,9 +253,6 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	}
 
 	private void matchToken(TOKEN token, char c, TokenMatch tokenMatch) {
-		if (DEBUG && false) {
-			System.out.println(PREFIX + " Matching token " + token + " to \"" + curForDebug() + "\"");
-		}
 		
 		final boolean match;
 		final boolean possibleMatch;
@@ -365,9 +362,6 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 			final boolean matches = token.getCharType().matches(cur.toString());
 			if (matches) {
 				// Matches but we should read all characters from stream
-				if (DEBUG) {
-					System.out.println(PREFIX + " matched chartype");
-				}
 				match = true;
 				possibleMatch = true;
 			}
@@ -426,4 +420,12 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	public final int getEndSkip() {
 		return buffered >= 0 ? 1 : 0;
 	}
-}
+	
+	private void debug(String s) {
+		System.out.println(PREFIX + " " + lineNo + ": " + s);
+	}
+	
+	private static boolean hasDebugLevel(int level) {
+		return DEBUG_LEVEL>= level;
+	}
+ }
