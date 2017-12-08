@@ -14,6 +14,7 @@ import com.test.web.layout.FontSettings;
 import com.test.web.layout.IElementRenderLayout;
 import com.test.web.layout.LayoutAlgorithm;
 import com.test.web.layout.LayoutState;
+import com.test.web.layout.PrintlnLayoutDebugListener;
 import com.test.web.layout.ViewPort;
 import com.test.web.loadqueue.common.ILoadQueue;
 import com.test.web.loadqueue.common.LoadCompletionListener;
@@ -73,7 +74,7 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 		
 		this.fontSettings = fontSettings;
 	
-		this.layoutAlgorithm = new LayoutAlgorithm<>(textExtent, renderFactory, fontSettings, null);
+		this.layoutAlgorithm = new LayoutAlgorithm<>(textExtent, renderFactory, fontSettings, new PrintlnLayoutDebugListener(System.out));
 		
 		this.tempLayoutStyles = new CSSLayoutStyles();
 		
