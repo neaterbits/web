@@ -88,121 +88,18 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	// Compute all style information from defaults, css files, in-document style text and style attributes.
     	// Store the result in sub
     	computeStyles(state, document, element, elementType, sub);
-	
-		// Adjust sub available width/height if is set
-		final int width;
-		final int cssWidth;
 
-		// Cache values since may be updated further down
-		final int curRemainingWidth = cur.getRemainingWidth();
-		final int curRemainingHeight = cur.getRemainingHeight();
-		
-		if (sub.layoutStyles.hasWidth()) {
-			// has width, compute and update
-			width = cssWidth = LayoutHelperUnits.computeWidthPx(sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), cur.getRemainingWidth());
+    	tryComputeLayoutOfBlockBehavingElement(state, cur, sub);
 
-	    	if (width <= 0) {
-				throw new IllegalStateException("Computed width 0 from "  + sub.layoutStyles.getWidth() + " of unit " + sub.layoutStyles.getWidthUnit());
-			}
-	    	
-			// Got width from CSS above
-			sub.resultingLayout.setHasCSSWidth(true);
-			
-			// remaining - width may be negative below, eg if there is overflow
-			final int remaining = Math.max(0, cur.getRemainingWidth() - width);
-			
-			cur.setRemainingWidth(remaining);
-		}
-		else {
-			// No CSS width so must set width to what is available in container
-			if (cur.getRemainingWidth() < 0) {
-				throw new IllegalStateException("Should always know available width");
-			}
-			
-			// No CSS width so use all remaining width is allocated for this element, independent of content size
-			width = cur.getRemainingWidth();
-			cur.setRemainingWidth(0);
-			
-			cssWidth = -1;
-		}
+		// Set resulting font of element, this is common for all display styles
+		final FontSpec spec = sub.layoutStyles.getFont();
+		final IFont font = state.getOrOpenFont(spec, FontStyle.NONE); // TODO: font styles
+		sub.resultingLayout.setFont(font);
 
-		sub.setAvailableWidth(width);
-		sub.setRemainingWidth(width);
-		
-    	if (debugListener != null) {
-    		debugListener.onComputedWidth(getDebugDepth(state), cur.getAvailableWidth(), sub.getAvailableWidth(), cssWidth, sub.layoutStyles.hasWidth());
-    	}
-		
-    	final int cssHeight;
-		int height = -1;
-		
-		if (sub.layoutStyles.hasHeight()) {
-			// has width, compute and update
-			height = cssHeight = LayoutHelperUnits.computeHeightPx(sub.layoutStyles.getHeight(), sub.layoutStyles.getHeightUnit(), cur.getAvailableHeight());
-
-	    	// height is -1 if cur.getAvailableHeight() == -1 (scrolled webage with no specified height)
-	    	if (height != -1) {
-	    		sub.resultingLayout.setHasCSSHeight(true);
-	    	}
-		}
-		else {
-			cssHeight = -1;
-		}
-		
-    	if (debugListener != null) {
-    		debugListener.onComputedHeight(getDebugDepth(state), cur.getAvailableHeight(), sub.getAvailableHeight(), cssHeight, sub.layoutStyles.hasHeight());
-    	}
-		
-		if (height == -1) {
-			// No CSS height, height is computed from what is available in container, or from size of element, knowing width
-			
-			if (cur.getRemainingHeight() > 0) {
-				// Set to rest of available height
-				height = cur.getRemainingHeight();
-
-				// Not set remaining height to 0 here, that only happens when we switch to new block
-			}
-			else if (cur.getRemainingHeight() == 0) {
-				height = 0;
-			}
-			else {
-				// We must compute element height, but element is nested so we do not know yet, we must figure out
-				// after having recursed. TODO this has impact on how render background
-				sub.delayedLayout |= StackElement.UNKNOWN_HEIGHT;
-			}
-		}
-
-		
-		// height might be -1
-		sub.resultingLayout.getOuter().setHeight(height);
-		sub.setAvailableHeight(height);
-		
 		// Got layout, set renderer from appropriate layer so that rendering can find it, rendering may happen already during this pass
 		final short zIndex = sub.layoutStyles.getZIndex();
 		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, renderFactory);
 		sub.resultingLayout.setRenderer(layer.getRenderer());
-		
-		// Compute inner-dimensions
-		LayoutHelperWrappingBounds.computeDimensionsFromOuter(
-				sub.layoutStyles.getDisplay(),
-				curRemainingWidth,
-				width,
-				sub.layoutStyles.hasWidth(),
-				curRemainingHeight,
-				height,
-				sub.layoutStyles.hasHeight(),
-				sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
-
-		if (debugListener != null) {
-			debugListener.onResultingLayout(getDebugDepth(state), sub.resultingLayout);
-		}
-
-		// Set resulting font
-		final FontSpec spec = sub.layoutStyles.getFont();
-
-		final IFont font = state.getOrOpenFont(spec, FontStyle.NONE); // TODO: font styles
-		
-		sub.resultingLayout.setFont(font);
 
 		// listener, eg renderer
 		if (state.getListener() != null) {
@@ -393,6 +290,122 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 	private void computeInlineElementPosition(CSSLayoutStyles styles, Dimensions dimensions) {
 		
+	}
+
+	private int setBlockBehavingElementWidthIfPresentInCSS(LayoutState<ELEMENT> state, StackElement container, StackElement sub) {
+		
+		int cssWidth;
+
+		if (sub.layoutStyles.hasWidth()) {
+			// has width, compute and update
+			cssWidth = LayoutHelperUnits.computeWidthPx(sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), container.getRemainingWidth());
+
+	    	if (cssWidth <= 0) {
+				throw new IllegalStateException("Computed width 0 from "  + sub.layoutStyles.getWidth() + " of unit " + sub.layoutStyles.getWidthUnit());
+			}
+	    	
+			// Got width from CSS above
+			sub.resultingLayout.setHasCSSWidth(true);
+			
+			// remaining - width may be negative below, eg if there is overflow
+			final int remaining = Math.max(0, container.getRemainingWidth() - cssWidth);
+			
+			container.setRemainingWidth(remaining);
+
+			sub.setAvailableWidth(cssWidth);
+			sub.setRemainingWidth(cssWidth);
+
+			if (debugListener != null) {
+	    		debugListener.onComputedWidth(getDebugDepth(state), container.getAvailableWidth(), sub.getAvailableWidth(), cssWidth, sub.layoutStyles.hasWidth());
+	    	}
+		}
+		else {
+			cssWidth = -1;
+		}
+
+		return cssWidth;
+ 	}
+
+	private int setBlockBehavingElementHeightIfPresentInCSS(LayoutState<ELEMENT> state, StackElement container, StackElement sub) {
+		// Cache values since may be updated further down
+		int height = -1;
+    	final int cssHeight;
+		
+		if (sub.layoutStyles.hasHeight()) {
+			// has width, compute and update
+			cssHeight = LayoutHelperUnits.computeHeightPx(sub.layoutStyles.getHeight(), sub.layoutStyles.getHeightUnit(), container.getAvailableHeight());
+
+	    	// height is -1 if cur.getAvailableHeight() == -1 (scrolled webage with no specified height)
+	    	if (cssHeight != -1) {
+	    		sub.resultingLayout.setHasCSSHeight(true);
+	    	}
+		}
+		else {
+			cssHeight = -1;
+		}
+		
+    	if (debugListener != null) {
+    		debugListener.onComputedHeight(getDebugDepth(state), container.getAvailableHeight(), sub.getAvailableHeight(), cssHeight, sub.layoutStyles.hasHeight());
+    	}
+		
+		if (cssHeight == -1) {
+			// No CSS height, height is computed from what is available in container, or from size of element, knowing width
+			
+			if (container.getRemainingHeight() > 0) {
+				// Set to rest of available height
+				height = container.getRemainingHeight();
+
+				// Not set remaining height to 0 here, that only happens when we switch to new block
+			}
+			else if (container.getRemainingHeight() == 0) {
+				height = 0;
+			}
+			else {
+				// We must compute element height, but element is nested so we do not know yet, we must figure out
+				// after having recursed. TODO this has impact on how render background
+				sub.delayedLayout |= StackElement.UNKNOWN_HEIGHT;
+			}
+		}
+
+		
+		// height might be -1
+		sub.resultingLayout.getOuter().setHeight(height);
+		sub.setAvailableHeight(height);
+		
+		return height;
+	}
+
+	private boolean tryComputeLayoutOfBlockBehavingElement(LayoutState<ELEMENT> state, StackElement cur, StackElement sub) {
+		// Adjust sub available width/height if is set
+
+		final int width = setBlockBehavingElementWidthIfPresentInCSS(state, cur, sub);
+		final int height = setBlockBehavingElementHeightIfPresentInCSS(state, cur, sub);
+		
+		final boolean layoutComputed;
+		
+		if (width != -1 && height != -1) {
+			// Compute inner-dimensions
+			LayoutHelperWrappingBounds.computeDimensionsFromOuter(
+					sub.layoutStyles.getDisplay(),
+					cur.getRemainingWidth(),
+					width,
+					sub.layoutStyles.hasWidth(),
+					cur.getRemainingHeight(),
+					height,
+					sub.layoutStyles.hasHeight(),
+					sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
+	
+			if (debugListener != null) {
+				debugListener.onResultingLayout(getDebugDepth(state), sub.resultingLayout);
+			}
+			
+			layoutComputed = true;
+		}
+		else {
+			layoutComputed = false;
+		}
+
+		return layoutComputed;
 	}
 	
 	private void computeStyles(LayoutState<ELEMENT> state, Document<ELEMENT> document, ELEMENT element, HTMLElement elementType, StackElement sub) {
