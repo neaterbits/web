@@ -348,6 +348,10 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 		parseContainer(HTMLToken.SPAN, true);
 	}
 	
+	private void parseA() throws IOException, ParserException {
+		parseContainer(HTMLToken.A, true);
+	}
+
 	private void parseInput() throws IOException, ParserException {
 		throw new UnsupportedOperationException("TODO");
 	}
@@ -359,13 +363,22 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 		
 		do {
 		
-			switch (endTagOrSubOrText(curToken, false, text, HTMLToken.DIV, HTMLToken.SPAN, HTMLToken.INPUT)) {
+			switch (endTagOrSubOrText(curToken, false, text,
+					HTMLToken.DIV,
+					HTMLToken.SPAN,
+					HTMLToken.A,
+					HTMLToken.INPUT)) {
+			
 			case DIV:
 				parseDiv();
 				break;
 				
 			case SPAN:
 				parseSpan();
+				break;
+				
+			case A:
+				parseA();
 				break;
 				
 			case INPUT:

@@ -12,6 +12,7 @@ import com.test.web.document.common.DocumentState;
 import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
+import com.test.web.document.common.enums.LinkRelType;
 import com.test.web.io.common.LoadStream;
 import com.test.web.io.common.SimpleLoadStream;
 import com.test.web.io.oo.OOStringBuffer;
@@ -183,13 +184,13 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 	}
 
 	@Override
-	public String getLinkRel(OOTagElement element) {
+	public LinkRelType getLinkRel(OOTagElement element) {
 		return ((OOLink)element).getRel();
 	}
 
 	@Override
 	public String getLinkType(OOTagElement element) {
-		return ((OOLink)element).getLinkType();
+		return ((OOLink)element).getMediaType();
 	}
 
 	@Override
@@ -322,6 +323,10 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			ret = new OOSpanElement();
 			break;
 
+		case A:
+			ret = new OOAElement();
+			break;
+
 		default:
 			throw new UnsupportedOperationException("Unknown HTML element " + element);
 		}
@@ -415,11 +420,21 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			break;
 
 		case REL:
+			final LinkRelType linkRelType = tokenizer.asEnum(LinkRelType.class, false);
+			
 			switch (element) {
 			case LINK:
-				((OOLink)ref).setRel(tokenizer.asString(startOffset, endSkip));
+				((OOLink)ref).setRel(linkRelType);
 				break;
 				
+			case A:
+				((OOAElement)ref).setRel(linkRelType);
+				break;
+
+			case AREA:
+				((OOAElement)ref).setRel(linkRelType);
+				break;
+
 			default:
 				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
 			}
@@ -427,17 +442,27 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			
 		// script type as string
 		case TYPE:
+			final String mediaType = tokenizer.asString(startOffset, endSkip);
+			
 			switch (element) {
 			case SCRIPT:
-				((OOScript)ref).setScriptType(tokenizer.asString(startOffset, endSkip));
+				((OOScript)ref).setScriptType(mediaType);
 				break;
 
 			case LINK:
-				((OOLink)ref).setLinkType(tokenizer.asString(startOffset, endSkip));
+				((OOLink)ref).setMediaType(mediaType);
 				break;
 				
 			case STYLE:
-				((OOStyleElement)ref).setStyleType(tokenizer.asString(startOffset, endSkip));
+				((OOStyleElement)ref).setStyleType(mediaType);
+				break;
+
+			case A:
+				((OOAElement)ref).setMediaType(mediaType);
+				break;
+
+			case AREA:
+				((OOAreaElement)ref).setMediaType(mediaType);
 				break;
 
 			default:
@@ -446,37 +471,67 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			break;
 			
 		case HREF:
+			final String href = tokenizer.asString(startOffset, endSkip);
+			
 			switch (element) {
 			case LINK:
-				((OOLink)ref).setHRef(tokenizer.asString(startOffset, endSkip));
+				((OOLink)ref).setHRef(href);
 				break;
-				
+
+			case A:
+				((OOAElement)ref).setHRef(href);
+				break;
+
+			case AREA:
+				((OOAreaElement)ref).setHRef(href);
+				break;
+
 			default:
 				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
 			}
 			break;
 			
 		case HREFLANG:
+			final String hrefLang = tokenizer.asString(startOffset, endSkip);
+
 			switch (element) {
 			case LINK:
-				((OOLink)ref).setHRefLang(tokenizer.asString(startOffset, endSkip));
+				((OOLink)ref).setHRefLang(hrefLang);
 				break;
-				
+
+			case A:
+				((OOAElement)ref).setHRefLang(hrefLang);
+				break;
+
+			case AREA:
+				((OOAreaElement)ref).setHRefLang(hrefLang);
+				break;
+
 			default:
 				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
 			}
 			break;
 
 		case MEDIA:
+			final String media = tokenizer.asString(startOffset, endSkip);
+
 			switch (element) {
 			case LINK:
-				((OOLink)ref).setMedia(tokenizer.asString(startOffset, endSkip));
+				((OOLink)ref).setMedia(media);
 				break;
-				
+
 			case STYLE:
-				((OOStyleElement)ref).setMedia(tokenizer.asString(startOffset, endSkip));
+				((OOStyleElement)ref).setMedia(media);
 				break;
-			
+
+			case A:
+				((OOAElement)ref).setMedia(media);
+				break;
+
+			case AREA:
+				((OOAreaElement)ref).setMedia(media);
+				break;
+
 			default:
 				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
 			}

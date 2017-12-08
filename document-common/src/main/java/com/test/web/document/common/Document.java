@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.util.List;
 
 import com.test.web.css.common.ICSSDocumentStyles;
+import com.test.web.document.common.enums.LinkRelType;
 
 /*
  * Represents document object model for HTML
@@ -35,7 +36,7 @@ public interface Document<ELEMENT> {
 	// Access methods for various elements
 	String getScriptType(ELEMENT element);
 
-	String getLinkRel(ELEMENT element);
+	LinkRelType getLinkRel(ELEMENT element);
 	String getLinkType(ELEMENT element);
 	String getLinkHRef(ELEMENT element);
 	String getLinkHRefLang(ELEMENT element);

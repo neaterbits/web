@@ -54,6 +54,7 @@ public enum HTMLToken implements IToken {
 	FIELDSET(HTMLElement.FIELDSET),
 	UL(HTMLElement.UL),
 	LI(HTMLElement.LI),
+	A(HTMLElement.A),
 	
 	// Attributes
 	

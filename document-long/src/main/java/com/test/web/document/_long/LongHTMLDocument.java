@@ -16,6 +16,7 @@ import com.test.web.document.common.DocumentState;
 import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
+import com.test.web.document.common.enums.LinkRelType;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.io._long.StringBuffers;
 import com.test.web.io.common.SimpleLoadStream;
@@ -508,10 +509,11 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 
 	@Override
-	public String getLinkRel(Integer element) {
+	public LinkRelType getLinkRel(Integer element) {
 		final int ref = LongHTML.getLinkRel(buf(element), offset(element));
 		
-		return relBuffer.getString(ref);
+		// TODO store in binary
+		return LinkRelType.valueOf(relBuffer.getString(ref));
 	}
 
 	@Override

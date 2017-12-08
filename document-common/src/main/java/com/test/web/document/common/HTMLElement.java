@@ -26,6 +26,8 @@ public enum HTMLElement {
 	UL("ul", 				true,		null),
 	LI("li", 					true,		null),
 	
+	A("a",					true,		CSSDisplay.INLINE,	HTMLAttribute.REL, HTMLAttribute.TYPE, HTMLAttribute.HREF, HTMLAttribute.HREFLANG, HTMLAttribute.MEDIA, HTMLAttribute.REV),
+	AREA("area",		false,	null,							HTMLAttribute.REL, HTMLAttribute.TYPE, HTMLAttribute.HREF, HTMLAttribute.HREFLANG, HTMLAttribute.MEDIA, HTMLAttribute.REV),
 	IMG("img", 			false,	CSSDisplay.INLINE),
 	
 	PROGRESS("progress", false, CSSDisplay.INLINE, HTMLAttribute.MAX, HTMLAttribute.VALUE)
