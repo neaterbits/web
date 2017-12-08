@@ -16,7 +16,7 @@ public enum HTMLElement {
 	BODY(	"body", 		true,		null),
 	TITLE(	"title", 		false,	null),
 	META(  "meta",     false,    null,							HTMLAttribute.CHARSET, HTMLAttribute.CONTENT, HTMLAttribute.HTTP_EQUIV, HTMLAttribute.NAME, HTMLAttribute.SCHEME),
-	LINK(	"link", 		false,	null, 						HTMLAttribute.REL, HTMLAttribute.TYPE, HTMLAttribute.HREF, HTMLAttribute.MEDIA, HTMLAttribute.REV),
+	LINK(	"link", 		false,	null, 						HTMLAttribute.REL, HTMLAttribute.TYPE, HTMLAttribute.HREF, HTMLAttribute.HREFLANG, HTMLAttribute.MEDIA, HTMLAttribute.REV),
 	SCRIPT("script", 	false,	null, 						HTMLAttribute.TYPE),
 	STYLE("style",		false,   	null,							HTMLAttribute.TYPE, HTMLAttribute.MEDIA, HTMLAttribute.SCOPED),
 	DIV("div", 				true, 	CSSDisplay.BLOCK),

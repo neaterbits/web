@@ -79,6 +79,7 @@ public enum HTMLToken implements IToken {
 	REL(HTMLAttribute.REL),
 	TYPE(HTMLAttribute.TYPE),
 	HREF(HTMLAttribute.HREF),
+	HREFLANG(HTMLAttribute.HREFLANG),
 	MEDIA(HTMLAttribute.MEDIA),
 	REV(HTMLAttribute.REV),
 	

@@ -38,6 +38,7 @@ public interface Document<ELEMENT> {
 	String getLinkRel(ELEMENT element);
 	String getLinkType(ELEMENT element);
 	String getLinkHRef(ELEMENT element);
+	String getLinkHRefLang(ELEMENT element);
 
 	String getImgUrl(ELEMENT element);
 	

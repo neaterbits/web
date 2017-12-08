@@ -198,6 +198,11 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 	}
 
 	@Override
+	public String getLinkHRefLang(OOTagElement element) {
+		return ((OOLink)element).getHRefLang();
+	}
+
+	@Override
 	public String getImgUrl(OOTagElement element) {
 		return ((OOImg)element).getUrl();
 	}
@@ -442,6 +447,17 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			}
 			break;
 			
+		case HREFLANG:
+			switch (element) {
+			case LINK:
+				((OOLink)ref).setHRefLang(tokenizer.asString(startOffset, endSkip));
+				break;
+				
+			default:
+				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
+			}
+			break;
+
 		case MEDIA:
 			switch (element) {
 			case LINK:

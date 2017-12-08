@@ -529,6 +529,13 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 
 	@Override
+	public String getLinkHRefLang(Integer element) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
 	public String getImgUrl(Integer element) {
 		final int ref = LongHTML.getImgUrl(buf(element), offset(element));
 		
