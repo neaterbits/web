@@ -37,6 +37,11 @@ public class DecimalSize {
 		return ret;
 	}
 	
+	// TODO perhaps encode directly here and avoid allocation
+	public static int encodeFromString(String s) {
+		return of(s).encodeAsInt();
+	}
+	
 	public DecimalSize(int beforeComma, String afterComma) {
 		// Multiply up with the values after comma
 		int v = beforeComma;

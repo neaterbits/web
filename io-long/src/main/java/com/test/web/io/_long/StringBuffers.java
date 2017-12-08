@@ -8,6 +8,7 @@ import com.test.web.buffers.StringStorageBuffer;
 import com.test.web.io.common.CharInput;
 import com.test.web.io.common.LoadStream;
 import com.test.web.io.common.StreamStatus;
+import com.test.web.types.DecimalSize;
 import com.test.web.types.IEnum;
 
 public class StringBuffers extends BaseBuffers<char[][], char[]> implements CharInput, LongTokenizer {
@@ -399,5 +400,12 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 	@Override
 	public String asString(int startOffset, int endSkip) {
 		return getString(get(startOffset, endSkip));
+	}
+
+	@Override
+	public int asDecimalSize(int startOffset, int endSkip) {
+		final String s = asString(startOffset, endSkip);
+		
+		return DecimalSize.encodeFromString(s);
 	}
 }

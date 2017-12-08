@@ -26,7 +26,9 @@ public enum HTMLElement {
 	UL("ul", 				true,		null),
 	LI("li", 					true,		null),
 	
-	IMG("img", 			false,	CSSDisplay.INLINE)
+	IMG("img", 			false,	CSSDisplay.INLINE),
+	
+	PROGRESS("progress", false, CSSDisplay.INLINE, HTMLAttribute.MAX, HTMLAttribute.VALUE)
 
 	;
 	

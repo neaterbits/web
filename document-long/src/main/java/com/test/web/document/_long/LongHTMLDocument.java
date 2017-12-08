@@ -543,6 +543,18 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 
 	@Override
+	public int getProgressMax(Integer element) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getProgressValue(Integer element) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
 	public int getNumElements(Integer element) {
 		// Not constant-time for now
 		

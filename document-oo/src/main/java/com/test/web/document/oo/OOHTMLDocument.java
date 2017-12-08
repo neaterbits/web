@@ -208,6 +208,16 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 	}
 
 	@Override
+	public int getProgressMax(OOTagElement element) {
+		return ((OOProgressElement)element).getMax();
+	}
+
+	@Override
+	public int getProgressValue(OOTagElement element) {
+		return ((OOProgressElement)element).getValue();
+	}
+
+	@Override
 	public <PARAM> void iterate(HTMLElementListener<OOTagElement, PARAM> listener, PARAM param) {
 		iterate(null, rootElement, listener, param, rootElement,  true);
 	}
@@ -433,7 +443,6 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			default:
 				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
 			}
-				
 			break;
 			
 		case HREF:
@@ -569,7 +578,29 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			}
 			break;
 
-			
+
+		case MAX:
+			switch (element) {
+			case PROGRESS:
+				((OOProgressElement)ref).setMax(tokenizer.asDecimalSize(startOffset, endSkip));
+				break;
+				
+			default:
+				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
+			}
+			break;
+
+		case VALUE:
+			switch (element) {
+			case PROGRESS:
+				((OOProgressElement)ref).setValue(tokenizer.asDecimalSize(startOffset, endSkip));
+				break;
+				
+			default:
+				throw new IllegalStateException("Unknown element " + ref + " for attribute " + attribute);
+			}
+			break;
+
 		default:
 			throw new IllegalArgumentException("Unknown attribute " + attribute + " for element " + element);
 		}

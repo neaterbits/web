@@ -41,6 +41,9 @@ public interface Document<ELEMENT> {
 	String getLinkHRefLang(ELEMENT element);
 
 	String getImgUrl(ELEMENT element);
+
+	int getProgressMax(ELEMENT element);
+	int getProgressValue(ELEMENT element);
 	
 	<PARAM> void iterate(HTMLElementListener<ELEMENT, PARAM> listener, PARAM param);
 	

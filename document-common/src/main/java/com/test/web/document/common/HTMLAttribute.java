@@ -55,7 +55,13 @@ public enum HTMLAttribute implements IKeyValue {
 	SCHEME("scheme", false, ValueType.ONE),
 	
 	XMLNS("xmlns", false, ValueType.ONE),
-	XML_LANG("xml:lang", false, ValueType.ONE)
+	XML_LANG("xml:lang", false, ValueType.ONE),
+	
+	
+	// progress element
+	MAX("max", false, ValueType.ONE),
+	VALUE("value", false, ValueType.ONE)
+	
 	;
 	// 
 	private final String name;

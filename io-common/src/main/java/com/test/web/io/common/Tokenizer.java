@@ -18,4 +18,6 @@ public interface Tokenizer {
 	int addToBuffer(StringStorageBuffer buffer, int startOffset, int endSkip);
 	
 	String asString(int startOffset, int endSkip);
+
+	int asDecimalSize(int startOffset, int endSkip);
 }
