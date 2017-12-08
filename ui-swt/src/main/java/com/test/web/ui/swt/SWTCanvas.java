@@ -163,7 +163,7 @@ final class SWTCanvas extends Canvas implements IUICanvas {
 
 	@Override
 	public String toString() {
-		return "SwingCanvas []";
+		return "SWTCanvas []";
 	}
 }
 
