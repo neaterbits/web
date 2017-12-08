@@ -79,42 +79,16 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     				document.getClasses(element));
     	}
 
+    	// get layout information for the container of the element we're getting a callback on
     	final StackElement cur = state.getCur();
 
     	// Push new sub-element onto stack with remaining width and height from current element
     	final StackElement sub = state.push(cur.getRemainingWidth(), cur.getRemainingHeight());
     	
-    	final FontSpec defaultFont = fontSettings.getFontForElement(elementType);
-    	
-    	if (defaultFont == null) {
-    		throw new IllegalStateException("No default font for element " + elementType);
-    	}
-    	
-    	// Collect all layout styles from CSS
-    	state.getCSSContext().getCSSLayoutStyles(
-    			elementType.getDefaultDisplay(),
-    			defaultFont,
-				document.getId(element),
-				document.getTag(element),
-				document.getClasses(element),
-				sub.layoutStyles);
-    	
-    	if (debugListener != null) {
-    		debugListener.onElementCSS(getDebugDepth(state), sub.layoutStyles);
-    	}
-
-    	// Also apply style attribute if defined
-		final ICSSDocumentStyles<ELEMENT> styleAttribute = document.getStyles(element);
-
-		if (styleAttribute != null) {
-			// Get CSS document from style-tag of element
-			state.getCSSContext().applyLayoutStyles(styleAttribute, element, sub.layoutStyles);
-
-	    	if (debugListener != null) {
-	    		debugListener.onElementStyleAttribute(getDebugDepth(state), sub.layoutStyles);
-	    	}
-		}
-		
+    	// Compute all style information from defaults, css files, in-document style text and style attributes.
+    	// Store the result in sub
+    	computeStyles(state, document, element, elementType, sub);
+	
 		// Adjust sub available width/height if is set
 		final int width;
 		final int cssWidth;
@@ -419,6 +393,41 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 	private void computeInlineElementPosition(CSSLayoutStyles styles, Dimensions dimensions) {
 		
+	}
+	
+	private void computeStyles(LayoutState<ELEMENT> state, Document<ELEMENT> document, ELEMENT element, HTMLElement elementType, StackElement sub) {
+
+		final FontSpec defaultFont = fontSettings.getFontForElement(elementType);
+    	
+    	if (defaultFont == null) {
+    		throw new IllegalStateException("No default font for element " + elementType);
+    	}
+
+    	// Collect all layout styles from CSS
+    	state.getCSSContext().getCSSLayoutStyles(
+    			elementType.getDefaultDisplay(),
+    			defaultFont,
+				document.getId(element),
+				document.getTag(element),
+				document.getClasses(element),
+				sub.layoutStyles);
+    	
+    	if (debugListener != null) {
+    		debugListener.onElementCSS(getDebugDepth(state), sub.layoutStyles);
+    	}
+
+    	// Also apply style attribute if defined
+		final ICSSDocumentStyles<ELEMENT> styleAttribute = document.getStyles(element);
+
+		if (styleAttribute != null) {
+			// Get CSS document from style-tag of element
+			state.getCSSContext().applyLayoutStyles(styleAttribute, element, sub.layoutStyles);
+
+	    	if (debugListener != null) {
+	    		debugListener.onElementStyleAttribute(getDebugDepth(state), sub.layoutStyles);
+	    	}
+		}
+	
 	}
 
 }
