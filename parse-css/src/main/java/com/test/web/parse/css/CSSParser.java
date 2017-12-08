@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import com.test.web.css.common.CSSGradientColorStop;
 import com.test.web.css.common.enums.CSSBackgroundAttachment;
 import com.test.web.css.common.enums.CSSBackgroundColor;
 import com.test.web.css.common.enums.CSSBackgroundImage;
@@ -30,6 +31,7 @@ import com.test.web.parse.common.Lexer;
 import com.test.web.parse.common.LexerMatch;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.common.TokenMergeHelper;
+import com.test.web.parse.css.CSSParserHelperFunction.IParseParam;
 import com.test.web.types.DecimalSize;
 import com.test.web.types.Value;
 
@@ -49,7 +51,6 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		this.lexer = getLexer();
 		this.listener = listener;
 	}
-	
 	
 	@SafeVarargs
 	private final CSSToken lexSkipWSAndComment(CSSToken ... tokens) throws IOException {
@@ -556,6 +557,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 
 	private static final CSSToken [] BG_IMAGE_TOKENS = copyTokens(token -> token.getBgImage() != null,
 				CSSToken.FUNCTION_URL,
+				CSSToken.FUNCTION_LINEAR_GRADIENT,
 				CSSToken.BROWSER_SPECIFIC_FUNCTION); // eg -moz-linear-gradient
 	
 	private boolean parseBgImage(LISTENER_CONTEXT context) throws IOException, ParserException {
@@ -569,10 +571,16 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			switch (token) {
 			case FUNCTION_URL:
 				// parse function params
-				final String url = parseImageURL();;
+				final String url = parseImageURL();
 				
 				listener.onBgImageURL(context, bgLayer, url);
 				
+				semiColonRead = readCommaOrSemiColon();
+				break;
+
+			case FUNCTION_LINEAR_GRADIENT:
+				parseLinearGradient(context, bgLayer);
+
 				semiColonRead = readCommaOrSemiColon();
 				break;
 				
@@ -603,6 +611,186 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		final String url = (String)values[0];
 
 		return url;
+	}
+	
+	private static final CSSToken [] POSITION_COMPONENT_TOKENS = TokenMergeHelper.copyTokens(CSSToken.class, token -> token.getPositionComponent() != null);
+	
+	private static class ParsedPositionComponents {
+		private final CSSPositionComponent pos1;
+		private final CSSPositionComponent pos2;
+
+		ParsedPositionComponents(CSSPositionComponent pos1, CSSPositionComponent pos2) {
+			this.pos1 = pos1;
+			this.pos2 = pos2;
+		}
+	}
+	
+	private void parseLinearGradient(LISTENER_CONTEXT context, int bgLayer) throws IOException, ParserException {
+		// starts with an angle or diagonal description, then an 1 to unlimited number of color stops
+
+		final CachedSize cachedSize = new CachedSize();
+		final CachedRGBA cachedRGBA = new CachedRGBA();
+		final Value<CSSColor>cachedColor = new Value<>();
+		
+		final IParseParam parseParam = paramIdx -> {
+			final Object ret;
+			
+			final Object obj;
+			
+			if (paramIdx == 0) {
+				obj = parseGradientDirection();
+			}
+			else {
+				obj = null;
+			}
+			
+			if (obj != null) {
+				ret = obj;
+			}
+			else {
+				// color stop which is color followed by optional length or percent
+				// since percent is a unit, just use standard parsing
+				
+				CSSParserHelperColor.parseColor(
+						lexer,
+						(r, g, b, a) -> cachedRGBA.init(r, g, b, a),
+						cssColor -> cachedColor.set(cssColor),
+						COLOR_TOKENS);
+				
+				final CSSToken intToken = lexSkipWSAndComment(CSSToken.INTEGER);
+				
+				if (intToken == CSSToken.INTEGER) {
+				
+					CSSParserHelperSize.parseSizeValueAfterInt(lexer, null, Integer.parseInt(lexer.get()), (value, unit) -> cachedSize.init(value, unit));
+					
+					if (cachedSize.getUnit() == null) {
+						throw new ParserException("No unit was specified for color stop");
+					}
+				}
+				
+				if (cachedRGBA.isInitialized()) {
+					ret = new CSSGradientColorStop(cachedRGBA.getR(), cachedRGBA.getG(), cachedRGBA.getB(), cachedRGBA.getA(), cachedSize.getValue(), cachedSize.getUnit());
+
+					cachedRGBA.clear();
+				}
+				else {
+					ret =new CSSGradientColorStop(cachedColor.get(), cachedSize.getValue(), cachedSize.getUnit()); 
+				}
+				
+				cachedSize.clear();
+				cachedColor.clear();
+			}
+
+			return ret;
+		};
+		
+		final Object [] result = CSSParserHelperFunction.parseUnknownNumberOfFunctionParams(lexer, parseParam);
+		
+
+		final Object direction = result[0];
+		
+		int firstColorStop;
+
+		if (direction instanceof CSSGradientColorStop) {
+			if (result.length < 2) {
+				throw new ParserException("linear-gradient without angle or direction must have at least two colorstops");
+			}
+			firstColorStop = 0;
+		}
+		else {
+			if (result.length < 3) {
+				throw new ParserException("linear-gradient must have at least an angle or direction and two colorstops");
+			}
+			firstColorStop = 1;
+		}
+		
+		final CSSGradientColorStop [] colorStops = new CSSGradientColorStop[result.length - firstColorStop];
+		
+		for (int i = firstColorStop; i < result.length; ++ i) {
+			colorStops[i - firstColorStop] = (CSSGradientColorStop)result[i];
+		}
+		
+		if (colorStops[0].hasDistance() || colorStops[colorStops.length - 1].hasDistance()) {
+			throw new ParserException("First and last colorstop cannot have length");
+		}
+		
+		if (direction instanceof Integer) {
+			listener.onBgGradient(context, bgLayer, (Integer)direction, colorStops);
+		}
+		else if (direction instanceof CSSPositionComponent) {
+				listener.onBgGradient(context, bgLayer, (CSSPositionComponent)direction, null, colorStops);
+		}
+		else if (direction instanceof ParsedPositionComponents) {
+			final ParsedPositionComponents c = (ParsedPositionComponents)direction;
+			
+			listener.onBgGradient(context, bgLayer, c.pos1, c.pos2, colorStops);
+		}
+		else if (direction instanceof CSSGradientColorStop){
+			// colorstop
+			listener.onBgGradient(context, bgLayer, colorStops);
+		}
+		else {
+			throw new IllegalStateException("unknown direction type");
+		}
+	}
+	
+	private Object parseGradientDirection() throws IOException, ParserException {
+
+		final Object ret;
+		
+		// positions or angle
+		final CSSToken token = lexSkipWSAndComment(CSSToken.INTEGER, CSSToken.TO);
+		
+		switch (token) {
+		case INTEGER:
+			ret = Integer.parseInt(lexer.get());
+			assureTokenSkipWSAndComment(CSSToken.RADIX_DEG);
+			break;
+			
+		case TO:
+			// must parse one or two position components
+			final CSSToken pos1Token = lexSkipWSAndComment(POSITION_COMPONENT_TOKENS);
+			if (pos1Token == CSSToken.NONE) {
+				throw lexer.unexpectedToken();
+			}
+			
+			// Check for pos2 as well
+			final CSSToken pos2Token = lexSkipWSAndComment(POSITION_COMPONENT_TOKENS);
+			if (pos2Token == CSSToken.NONE) {
+				ret = pos1Token.getPositionComponent();
+			}
+			else {
+				final CSSPositionComponent pos1 = pos1Token.getPositionComponent();
+				final CSSPositionComponent pos2 = pos2Token.getPositionComponent();
+				
+				// verify so that fails in parsing and can skip to next CSS attribute
+				if (pos1 == CSSPositionComponent.CENTER) {
+					throw new ParserException("pos1 is center");
+				}
+
+				if (pos2 != null) {
+					if (pos2 == CSSPositionComponent.CENTER) {
+						throw new ParserException("pos2 is center");
+					}
+					
+					if (pos1 == pos2) {
+						throw new ParserException("pos1 == pos2");
+					}
+				}
+
+				final ParsedPositionComponents bgPosition = new ParsedPositionComponents(pos1, pos2);
+
+				// return as temporary instance
+				ret = bgPosition;
+			}
+			break;
+			
+		default:
+			ret = null; // tokens did not match so probably color
+			break;
+		}
+		
+		return ret;
 	}
 	
 	private String parseQuotedString() throws IOException, ParserException {
@@ -948,6 +1136,11 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 			
 			tokenMap.remove(CSStyle.BACKGROUND_IMAGE);
 		}
+		else if (token == CSSToken.FUNCTION_LINEAR_GRADIENT) {
+			parseLinearGradient(context, bgLayer);
+
+			tokenMap.remove(CSStyle.BACKGROUND_IMAGE);
+		}
 		else if (token == CSSToken.INTEGER) {
 			// position with possible size as well after '/'
 			
@@ -1146,14 +1339,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	
 	private void notifyPosition(LISTENER_CONTEXT context, int bgLayer, CSSPositionComponent pos1, CSSPositionComponent pos2) throws ParserException {
 		
-		CSSBackgroundPosition found = null;
-		
-		for (CSSBackgroundPosition pos : CSSBackgroundPosition.values()) {
-			if ( (pos.getFirst() == pos1 && pos.getSecond() == pos2) || pos.getFirst() == pos2 && pos.getSecond() == pos1) {
-				found = pos;
-				break;
-			}
-		}
+		CSSBackgroundPosition found = CSSBackgroundPosition.fromPositionComponents(pos1, pos2);
 		
 		if (found == null) {
 			throw new ParserException("Not a valid position combination of " + pos1 + "/" + pos2);

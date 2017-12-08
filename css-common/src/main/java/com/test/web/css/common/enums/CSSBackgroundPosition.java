@@ -34,4 +34,17 @@ public enum CSSBackgroundPosition {
 	public CSSPositionComponent getSecond() {
 		return second;
 	}
+	
+	public static CSSBackgroundPosition fromPositionComponents(CSSPositionComponent pos1, CSSPositionComponent pos2) {
+		CSSBackgroundPosition found = null;
+		
+		for (CSSBackgroundPosition pos : CSSBackgroundPosition.values()) {
+			if ( (pos.getFirst() == pos1 && pos.getSecond() == pos2) || pos.getFirst() == pos2 && pos.getSecond() == pos1) {
+				found = pos;
+				break;
+			}
+		}
+
+		return found;
+	}
 }

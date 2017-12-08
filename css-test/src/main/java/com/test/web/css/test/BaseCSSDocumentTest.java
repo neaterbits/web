@@ -20,8 +20,10 @@ import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSForeground;
+import com.test.web.css.common.enums.CSSGradientDirectionType;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSPosition;
+import com.test.web.css.common.enums.CSSPositionComponent;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
@@ -33,6 +35,9 @@ import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser;
 import com.test.web.parse.css.ICSSDocumentParserListener;
 import com.test.web.testdata.TestData;
+import com.test.web.types.Angle;
+import com.test.web.types.ColorAlpha;
+import com.test.web.types.ColorRGB;
 import com.test.web.types.DecimalSize;
 
 import junit.framework.TestCase;
@@ -571,6 +576,140 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		assertThat(doc.getBgAttachment(bgTwoImages, 1)).isEqualTo(CSSBackgroundAttachment.FIXED);
 		assertThat(doc.getBgOrigin(bgTwoImages, 1)).isEqualTo(CSSBackgroundOrigin.CONTENT_BOX);
 		assertThat(doc.getBgClip(bgTwoImages, 1)).isEqualTo(CSSBackgroundOrigin.PADDING_BOX);
+
+		final ELEMENT bgGradientAngle = doc.get(CSSTarget.ID, "bg_gradient_angle").get(0);
+		
+		assertThat(doc.getGradientDirectionType(bgGradientAngle, 0)).isEqualTo(CSSGradientDirectionType.ANGLE);
+		assertThat(doc.getGradientAngle(bgGradientAngle, 0)).isEqualTo(25);
+		assertThat(doc.getGradientPos1(bgGradientAngle, 0)).isNull();
+		assertThat(doc.getGradientPos2(bgGradientAngle, 0)).isNull();
+		
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[0].getR()).isEqualTo(0xAA);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[0].getG()).isEqualTo(0xBB);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[0].getB()).isEqualTo(0xCC);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[0].getA()).isEqualTo(ColorAlpha.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[0].getColor()).isNull();
+		checkHasNoDistance(doc, bgGradientAngle, 0, 0);
+		
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[1].getR()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[1].getG()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[1].getB()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[1].getA()).isEqualTo(ColorAlpha.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[1].getColor()).isEqualTo(CSSColor.RED);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[1].hasDistance()).isTrue();
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[1].distanceIsPercent()).isTrue();
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[1].distanceIsLength()).isFalse();
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[1].getDistanceLength()).isEqualTo(DecimalSize.NONE);
+		assertThat(DecimalSize.decodeToInt(doc.getGradientColorStops(bgGradientAngle, 0)[1].getDistancePercent())).isEqualTo(40);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[1].getUnit()).isEqualTo(CSSUnit.PCT);
+
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[2].getR()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[2].getG()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[2].getB()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[2].getA()).isEqualTo(ColorAlpha.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[2].getColor()).isEqualTo(CSSColor.BLUE);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[2].hasDistance()).isTrue();
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[2].distanceIsPercent()).isFalse();
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[2].distanceIsLength()).isTrue();
+		assertThat(DecimalSize.decodeToInt(doc.getGradientColorStops(bgGradientAngle, 0)[2].getDistanceLength())).isEqualTo(200);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[2].getDistancePercent()).isEqualTo(DecimalSize.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[2].getUnit()).isEqualTo(CSSUnit.PX);
+
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[3].getR()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[3].getG()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[3].getB()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[3].getA()).isEqualTo(ColorAlpha.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientAngle, 0)[3].getColor()).isEqualTo(CSSColor.GREEN);
+		checkHasNoDistance(doc, bgGradientAngle, 0, 3);
+
+		final ELEMENT bgGradientSide = doc.get(CSSTarget.ID, "bg_gradient_side").get(0);
+		
+		assertThat(doc.getGradientDirectionType(bgGradientSide, 0)).isEqualTo(CSSGradientDirectionType.SIDE);
+		assertThat(doc.getGradientAngle(bgGradientSide, 0)).isEqualTo(Angle.NONE);
+		assertThat(doc.getGradientPos1(bgGradientSide, 0)).isEqualTo(CSSPositionComponent.RIGHT);
+		assertThat(doc.getGradientPos2(bgGradientSide, 0)).isNull();
+			
+		assertThat(doc.getGradientColorStops(bgGradientSide, 0)[0].getR()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientSide, 0)[0].getG()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientSide, 0)[0].getB()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientSide, 0)[0].getA()).isEqualTo(ColorAlpha.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientSide, 0)[0].getColor()).isEqualTo(CSSColor.RED);
+		checkHasNoDistance(doc, bgGradientSide, 0, 0);
+
+		assertThat(doc.getGradientColorStops(bgGradientSide, 0)[1].getR()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientSide, 0)[1].getG()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientSide, 0)[1].getB()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientSide, 0)[1].getA()).isEqualTo(ColorAlpha.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientSide, 0)[1].getColor()).isEqualTo(CSSColor.BLUE);
+		checkHasNoDistance(doc, bgGradientSide, 0, 1);
+		
+		final ELEMENT bgGradientCorner = doc.get(CSSTarget.ID, "bg_gradient_corner").get(0);
+		
+		assertThat(doc.getGradientDirectionType(bgGradientCorner, 0)).isEqualTo(CSSGradientDirectionType.CORNER);
+		assertThat(doc.getGradientAngle(bgGradientCorner, 0)).isEqualTo(Angle.NONE);
+		assertThat(doc.getGradientPos1(bgGradientCorner, 0)).isEqualTo(CSSPositionComponent.TOP);
+		assertThat(doc.getGradientPos2(bgGradientCorner, 0)).isEqualTo(CSSPositionComponent.RIGHT);
+		
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[0].getR()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[0].getG()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[0].getB()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[0].getA()).isEqualTo(ColorAlpha.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[0].getColor()).isEqualTo(CSSColor.RED);
+		checkHasNoDistance(doc, bgGradientCorner, 0, 0);
+		
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[1].getR()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[1].getG()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[1].getB()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[1].getA()).isEqualTo(ColorAlpha.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[1].getColor()).isEqualTo(CSSColor.GREEN);
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[1].hasDistance()).isTrue();
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[1].distanceIsPercent()).isTrue();
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[1].distanceIsLength()).isFalse();
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[1].getDistanceLength()).isEqualTo(DecimalSize.NONE);
+		assertThat(DecimalSize.decodeToInt(doc.getGradientColorStops(bgGradientCorner, 0)[1].getDistancePercent())).isEqualTo(50);
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[1].getUnit()).isEqualTo(CSSUnit.PCT);
+
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[2].getR()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[2].getG()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[2].getB()).isEqualTo(ColorRGB.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[2].getA()).isEqualTo(ColorAlpha.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientCorner, 0)[2].getColor()).isEqualTo(CSSColor.BLUE);
+		checkHasNoDistance(doc, bgGradientCorner, 0, 2);
+		
+		final ELEMENT bgGradientNone = doc.get(CSSTarget.ID, "bg_gradient_none").get(0);
+		
+		assertThat(doc.getGradientDirectionType(bgGradientNone, 0)).isEqualTo(CSSGradientDirectionType.NONE);
+		assertThat(doc.getGradientAngle(bgGradientNone, 0)).isEqualTo(Angle.NONE);
+		assertThat(doc.getGradientPos1(bgGradientNone, 0)).isNull();
+		assertThat(doc.getGradientPos2(bgGradientNone, 0)).isNull();
+		
+		assertThat(doc.getGradientColorStops(bgGradientNone, 0)[0].getR()).isEqualTo(0xAA);
+		assertThat(doc.getGradientColorStops(bgGradientNone, 0)[0].getG()).isEqualTo(0xBB);
+		assertThat(doc.getGradientColorStops(bgGradientNone, 0)[0].getB()).isEqualTo(0xCC);
+		assertThat(doc.getGradientColorStops(bgGradientNone, 0)[0].getA()).isEqualTo(ColorAlpha.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientNone, 0)[0].getColor()).isNull();
+		checkHasNoDistance(doc, bgGradientNone, 0, 0);
+		
+		assertThat(doc.getGradientColorStops(bgGradientNone, 0)[1].getR()).isEqualTo(0xDD);
+		assertThat(doc.getGradientColorStops(bgGradientNone, 0)[1].getG()).isEqualTo(0xEE);
+		assertThat(doc.getGradientColorStops(bgGradientNone, 0)[1].getB()).isEqualTo(0xFF);
+		assertThat(doc.getGradientColorStops(bgGradientNone, 0)[1].getA()).isEqualTo(ColorAlpha.NONE);
+		assertThat(doc.getGradientColorStops(bgGradientNone, 0)[1].getColor()).isNull();
+		checkHasNoDistance(doc, bgGradientNone, 0, 2);
+	}
+	
+	private void checkHasNoDistance(
+			ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc,
+			ELEMENT ref,
+			int bgLayer,
+			int colorStop) {
+		
+		assertThat(doc.getGradientColorStops(ref, bgLayer)[bgLayer].hasDistance()).isFalse();
+		assertThat(doc.getGradientColorStops(ref, bgLayer)[bgLayer].distanceIsPercent()).isFalse();
+		assertThat(doc.getGradientColorStops(ref, bgLayer)[bgLayer].distanceIsLength()).isFalse();
+		assertThat(doc.getGradientColorStops(ref, bgLayer)[bgLayer].getDistanceLength()).isEqualTo(DecimalSize.NONE);
+		assertThat(doc.getGradientColorStops(ref, bgLayer)[bgLayer].getDistancePercent()).isEqualTo(DecimalSize.NONE);
+		assertThat(doc.getGradientColorStops(ref, bgLayer)[bgLayer].getUnit()).isNull();
 	}
 
 	public void testBgBrowserSpecific() throws IOException, ParserException {

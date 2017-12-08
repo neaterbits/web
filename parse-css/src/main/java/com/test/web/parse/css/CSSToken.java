@@ -83,6 +83,9 @@ public enum CSSToken implements IToken {
 	
 	FUNCTION_URL("url"),
 	
+	// Image functions
+	FUNCTION_LINEAR_GRADIENT("linear-gradient"),
+	
 	// filter functions
 	FUNCTION_BLUR("blur"),
 	FUNCTION_BRIGHTNESS("brightness"),
@@ -97,6 +100,9 @@ public enum CSSToken implements IToken {
 	//.. and url to svg, see URL
 	
 	AUTO("auto"),
+	
+	// for gradient
+	TO("to"),
 	
 	UNIT_PX("px", CSSUnit.PX),
 	UNIT_EM("em", CSSUnit.EM),

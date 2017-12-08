@@ -1,7 +1,6 @@
 package com.test.web.css.oo;
 
-import org.assertj.core.description.TextDescription;
-
+import com.test.web.css.common.CSSGradientColorStop;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSBackgroundColor;
@@ -19,11 +18,13 @@ import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSForeground;
+import com.test.web.css.common.enums.CSSGradientDirectionType;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
+import com.test.web.css.common.enums.CSSPositionComponent;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
@@ -184,6 +185,31 @@ public abstract class BaseOOCSSDocument
 	@Override
 	public CSSBackgroundImage getBgImage(OOCSSElement ref, int bgLayer) {
 		return ref.getBgLayer(bgLayer).getImage();
+	}
+
+	@Override
+	public CSSGradientDirectionType getGradientDirectionType(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getGradientDirectionType();
+	}
+
+	@Override
+	public int getGradientAngle(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getGradientAngle();
+	}
+
+	@Override
+	public CSSPositionComponent getGradientPos1(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getGradientPos1();
+	}
+
+	@Override
+	public CSSPositionComponent getGradientPos2(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getGradientPos2();
+	}
+
+	@Override
+	public CSSGradientColorStop[] getGradientColorStops(OOCSSElement ref, int bgLayer) {
+		return ref.getBgLayer(bgLayer).getGradientColorStops();
 	}
 
 	@Override
@@ -553,6 +579,21 @@ public abstract class BaseOOCSSDocument
 	@Override
 	public void onBgImage(Void context, int bgLayer, CSSBackgroundImage image) {
 		ref().getOrAddBgLayer(bgLayer).setImage(image);
+	}
+
+	@Override
+	public void onBgGradient(Void context, int bgLayer, int angle, CSSGradientColorStop[] colorStops) {
+		ref().getOrAddBgLayer(bgLayer).setGradient(angle, colorStops);
+	}
+
+	@Override
+	public void onBgGradient(Void context, int bgLayer, CSSPositionComponent pos1, CSSPositionComponent pos2, CSSGradientColorStop[] colorStops) {
+		ref().getOrAddBgLayer(bgLayer).setGradient(pos1, pos2, colorStops);
+	}
+
+	@Override
+	public void onBgGradient(Void context, int bgLayer, CSSGradientColorStop[] colorStops) {
+		ref().getOrAddBgLayer(bgLayer).setGradient(colorStops);
 	}
 
 	@Override

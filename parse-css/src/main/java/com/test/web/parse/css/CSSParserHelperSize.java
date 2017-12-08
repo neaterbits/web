@@ -184,9 +184,9 @@ public class CSSParserHelperSize {
 			CSSToken.INTEGER);
 
 	// parse size and unit including possibility for decimal or until hits semicolon (if unit not specified)
-	static boolean parseDecimalSizeValue(Lexer<CSSToken, CharInput> lexer, CSSUnit defaultUnit, BiConsumer<Integer, CSSUnit> toCall) throws IOException, ParserException {
+	static void parseDecimalSizeValue(Lexer<CSSToken, CharInput> lexer, CSSUnit defaultUnit, BiConsumer<Integer, CSSUnit> toCall) throws IOException, ParserException {
 		
-		final CSSToken endToken = CSSParserHelperSize.parsePossiblyDecimalSizeValue(
+		CSSParserHelperSize.parsePossiblyDecimalSizeValue(
 				lexer,
 				defaultUnit,
 				INTEGER_OR_UNIT_OR_DOT_OR_WS_OR_COMMENT_TOKENS,
@@ -194,12 +194,9 @@ public class CSSParserHelperSize {
 				UNIT_TOKENS,
 				toCall);
 
-		return endToken != null && endToken == CSSToken.SEMICOLON;
 	}
 	
-	static boolean parseSizeValueAfterInt(Lexer<CSSToken, CharInput> lexer, CSSUnit defaultUnit, int value, BiConsumer<Integer, CSSUnit> toCall) throws IOException, ParserException {
-		final CSSToken endToken = CSSParserHelperSize.parseSizeValueAfterInt(lexer, defaultUnit, value, UNIT_OR_DOT_OR_WS_OR_COMMENT_TOKENS, UNIT_TOKENS, toCall);
-
-		return endToken != null && endToken == CSSToken.SEMICOLON;
+	static void parseSizeValueAfterInt(Lexer<CSSToken, CharInput> lexer, CSSUnit defaultUnit, int value, BiConsumer<Integer, CSSUnit> toCall) throws IOException, ParserException {
+		CSSParserHelperSize.parseSizeValueAfterInt(lexer, defaultUnit, value, UNIT_OR_DOT_OR_WS_OR_COMMENT_TOKENS, UNIT_TOKENS, toCall);
 	}
 }

@@ -223,9 +223,25 @@ public class TestData {
 			"#bg_two_images {\n" +
 			"  background : url(\"http://www.test.com/image1.png\") 100px 120px / auto repeat scroll,\n" +
 			"  					   url(\"http://www.test.com/image2.jpg\") 150px 200px / 400px 300px no-repeat fixed content-box padding-box;\n" +
-			"}\n"
+			"}\n" +
 			
+			"#bg_gradient_angle {\n" +
+			"  background : linear-gradient(25deg,  #AABBCC, red 40%, blue 200px, green);\n" +
+			"}\n" +
+
+			"#bg_gradient_side {\n" +
+			"  background : linear-gradient(to right, red, blue);\n" +
+			"}\n" +
+	
+			"#bg_gradient_corner {\n" +
+			"  background : linear-gradient(to top right,  red, green 50%, blue);\n" +
+			"}\n" +
+
+			"#bg_gradient_none {\n" +
+			"  background : linear-gradient(#AABBCC, #DDEEFF);\n" +
+			"}\n"
 			;
+	
 	public static final String CSS_BG_BROWSER_SPECIFIC =
 			"#bg_browser_specific {\n" +
 			"  background : -moz-linear-gradient(#112233, #AABBCC);\n" +

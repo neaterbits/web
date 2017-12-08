@@ -5,11 +5,15 @@ import com.test.web.css.common.enums.CSSBackgroundImage;
 import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
 import com.test.web.css.common.enums.CSSBackgroundSize;
+import com.test.web.css.common.CSSGradientColorStop;
 import com.test.web.css.common.enums.CSSBackgroundAttachment;
 import com.test.web.css.common.enums.CSSBackgroundRepeat;
 import com.test.web.css.common.enums.CSSColor;
+import com.test.web.css.common.enums.CSSGradientDirectionType;
+import com.test.web.css.common.enums.CSSPositionComponent;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
+import com.test.web.types.Angle;
 import com.test.web.types.ColorRGB;
 import com.test.web.types.DecimalSize;
 
@@ -21,6 +25,9 @@ public class OOBackroundLayer extends OOStylesBase {
 	// Image
 	private String imageURL; // image
 	private CSSBackgroundImage image;
+	
+	// ... or gradient
+	private OOCSSGradient gradient;
 
 	// Position
 	private int left;
@@ -80,6 +87,45 @@ public class OOBackroundLayer extends OOStylesBase {
 		this.image = image;
 	}
 	
+	CSSGradientDirectionType getGradientDirectionType() {
+		return gradient == null ? null : gradient.getDirectionType();
+	}
+
+	int getGradientAngle() {
+		return gradient == null ? Angle.NONE : gradient.getAngle();
+	}
+	
+	CSSPositionComponent getGradientPos1() {
+		return gradient == null ? null : gradient.getPos1();
+	}
+	
+	CSSPositionComponent getGradientPos2() {
+		return gradient == null ? null : gradient.getPos2();
+	}
+
+	CSSGradientColorStop [] getGradientColorStops() {
+		return gradient == null ? null : gradient.getColorStops();
+	}
+	
+	void setGradient(int angle, CSSGradientColorStop [] colorStops) {
+		setGradient(new OOCSSGradient(angle, colorStops));
+	}
+	
+	void setGradient(CSSPositionComponent pos1, CSSPositionComponent pos2, CSSGradientColorStop [] colorStops) {
+		setGradient(new OOCSSGradient(pos1, pos2, colorStops));
+	}
+
+	void setGradient(CSSGradientColorStop [] colorStops) {
+		setGradient(new OOCSSGradient(colorStops));
+	}
+
+	private void setGradient(OOCSSGradient gradient) {
+		if (this.gradient != null) {
+			throw new IllegalStateException("gradient already set for this layer");
+		}
+		
+		this.gradient = gradient;
+	}
 	int getPositionLeft() {
 		return left;
 	}

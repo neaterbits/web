@@ -15,15 +15,16 @@ import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSForeground;
+import com.test.web.css.common.enums.CSSGradientDirectionType;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
+import com.test.web.css.common.enums.CSSPositionComponent;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
-import com.test.web.types.DecimalSize;
 
 public interface ICSSDocumentStyles<TARGET> {
 	
@@ -80,7 +81,13 @@ public interface ICSSDocumentStyles<TARGET> {
 	String getBgImageURL(TARGET ref, int bgLayer);
 	
 	CSSBackgroundImage getBgImage(TARGET ref, int bgLayer);
-	
+
+	CSSGradientDirectionType getGradientDirectionType(TARGET ref, int bgLayer);
+	int getGradientAngle(TARGET ref, int bgLayer);
+	CSSPositionComponent getGradientPos1(TARGET ref, int bgLayer);
+	CSSPositionComponent getGradientPos2(TARGET ref, int bgLayer);
+	CSSGradientColorStop [] getGradientColorStops(TARGET ref, int bgLayer);
+
 	// bg position
 	int getBgPositionLeft(TARGET ref, int bgLayer); // set if unit is non null
 	CSSUnit getBgPositionLeftUnit(TARGET ref, int bgLayer);

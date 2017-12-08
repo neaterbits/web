@@ -1,5 +1,6 @@
 package com.test.web.document.oo;
 
+import com.test.web.css.common.CSSGradientColorStop;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSBackgroundColor;
@@ -17,15 +18,18 @@ import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSForeground;
+import com.test.web.css.common.enums.CSSGradientDirectionType;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
+import com.test.web.css.common.enums.CSSPositionComponent;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.css.oo.OOCSSElement;
+import com.test.web.types.Angle;
 import com.test.web.types.ColorAlpha;
 import com.test.web.types.ColorRGB;
 import com.test.web.types.DecimalSize;
@@ -260,6 +264,52 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 		return styleElement == null
 				? null
 				: delegate.getBgImage(ref.getStyleElement(), bgLayer);
+	}
+
+	
+	@Override
+	public CSSGradientDirectionType getGradientDirectionType(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getGradientDirectionType(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public int getGradientAngle(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? Angle.NONE
+				: delegate.getGradientAngle(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public CSSPositionComponent getGradientPos1(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getGradientPos1(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public CSSPositionComponent getGradientPos2(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getGradientPos2(ref.getStyleElement(), bgLayer);
+	}
+
+	@Override
+	public CSSGradientColorStop[] getGradientColorStops(OOTagElement ref, int bgLayer) {
+		final OOCSSElement styleElement = ref.getStyleElement();
+		
+		return styleElement == null
+				? null
+				: delegate.getGradientColorStops(ref.getStyleElement(), bgLayer);
 	}
 
 	@Override

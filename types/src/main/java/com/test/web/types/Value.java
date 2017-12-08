@@ -19,4 +19,8 @@ public class Value<T> {
 	public void set(T v) {
 		this.v = v;
 	}
+	
+	public void clear() {
+		this.v = null;
+	}
 }

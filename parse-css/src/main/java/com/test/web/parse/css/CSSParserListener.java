@@ -2,6 +2,7 @@ package com.test.web.parse.css;
 
 import com.test.web.css.common.enums.CSSBackgroundColor;
 import com.test.web.css.common.enums.CSSBackgroundImage;
+import com.test.web.css.common.CSSGradientColorStop;
 import com.test.web.css.common.enums.CSSBackgroundAttachment;
 import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundPosition;
@@ -20,6 +21,7 @@ import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
+import com.test.web.css.common.enums.CSSPositionComponent;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
@@ -53,6 +55,12 @@ public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 	void onBgImageURL(CONTEXT context, int bgLayer, String url);
 
 	void onBgImage(CONTEXT context, int bgLayer, CSSBackgroundImage image);
+
+	void onBgGradient(CONTEXT context, int bgLayer, int angle, CSSGradientColorStop [] colorStops);
+	
+	void onBgGradient(CONTEXT context, int bgLayer, CSSPositionComponent pos1, CSSPositionComponent pos2, CSSGradientColorStop [] colorStops);
+	
+	void onBgGradient(CONTEXT context, int bgLayer, CSSGradientColorStop [] colorStops);
 
 	void onBgPosition(CONTEXT context, int bgLayer, int left, CSSUnit leftUnit, int top, CSSUnit topUnit);
 

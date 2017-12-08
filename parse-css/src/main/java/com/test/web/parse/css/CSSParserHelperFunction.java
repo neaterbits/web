@@ -1,6 +1,8 @@
 package com.test.web.parse.css;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.test.web.io.common.CharInput;
 import com.test.web.parse.common.Lexer;
@@ -53,4 +55,53 @@ class CSSParserHelperFunction {
 		return ret;
 	}
 
+	static Object [] parseUnknownNumberOfFunctionParams(Lexer<CSSToken, CharInput> lexer, IParseParam parseParam) throws IOException, ParserException {
+		// Parsed the function name already, parse the parameters
+		CSSToken token = CSSParserHelperWS.lexSkipWSAndComment(lexer, CSSToken.PARENTHESIS_START);
+	
+		if (token != CSSToken.PARENTHESIS_START) {
+			throw lexer.unexpectedToken();
+		}
+		
+		final List<Object> list = new ArrayList<>();
+		
+		final Object [] ret;
+
+		boolean done = false;
+		
+		int paramIdx = 0;
+		
+		do {
+				
+			CSSParserHelperWS.skipAnyWS(lexer);
+			
+			list.add(parseParam.parse(paramIdx));
+			
+			token = CSSParserHelperWS.lexSkipWSAndComment(lexer, CSSToken.COMMA, CSSToken.PARENTHESIS_END);
+
+			switch (token) {
+			case COMMA:
+				break;
+				
+			case PARENTHESIS_END:
+				done = true;
+				break;
+				
+			default:
+				throw lexer.unexpectedToken();
+			}
+			
+			++ paramIdx;
+		}
+		while (!done);
+		
+		if (list.isEmpty()) {
+			ret = EMPTY_ARRAY;
+		}
+		else {
+			ret = list.toArray(new Object[list.size()]);
+		}
+		
+		return ret;
+	}
 }
