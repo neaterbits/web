@@ -58,6 +58,9 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 		case SPAN:
 			// should render background, border etc here
 			break;
+			
+		case A:
+			break;
 
 		default:
 			throw new UnsupportedOperationException("Unknown element " + type);

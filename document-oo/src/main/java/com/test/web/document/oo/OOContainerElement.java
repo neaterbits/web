@@ -1,5 +1,6 @@
 package com.test.web.document.oo;
 
+// Container in the meaning of this element can have sub-elements
 abstract class OOContainerElement extends OOTagElement {
 
 	// Linked-list of elements

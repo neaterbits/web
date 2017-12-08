@@ -88,10 +88,16 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	// Push new sub-element onto stack with remaining width and height from current element
     	final StackElement sub = state.push(cur.getRemainingWidth(), cur.getRemainingHeight());
     	
+    	final FontSpec defaultFont = fontSettings.getFontForElement(elementType);
+    	
+    	if (defaultFont == null) {
+    		throw new IllegalStateException("No default font for element " + elementType);
+    	}
+    	
     	// Collect all layout styles from CSS
     	state.getCSSContext().getCSSLayoutStyles(
     			elementType.getDefaultDisplay(),
-    			fontSettings.getFontForElement(elementType),
+    			defaultFont,
 				document.getId(element),
 				document.getTag(element),
 				document.getClasses(element),

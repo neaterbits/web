@@ -27,6 +27,7 @@ public class FontSettings {
 		add(HTMLElement.FIELDSET, defaultTextFont);
 		add(HTMLElement.UL, defaultTextFont);
 		add(HTMLElement.LI, defaultTextFont);
+		add(HTMLElement.A, defaultTextFont);
 	}
 	
 	private void add(HTMLElement element, String name, int size) {
