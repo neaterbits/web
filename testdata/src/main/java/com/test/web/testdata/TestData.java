@@ -325,5 +325,20 @@ public class TestData {
 				"</html>";
 		
 	}
+	public static final String HTML_TEXT_ISSUE =
+			DOCTYPE  + "\n" +			
+					"<html>\n" +
+					"<!-- a single line comment -->\n" +
+					"<head>\n" +
+					"  <style type=\"text/css\">.a-non-tag-selector {\n" +
+					"    width : 100px;\n" +
+					"    }\n" +
+					"  </style>\n" +
+					"</head>\n" +
+					" <body>\n" +
+					"   <div id=\"main_div\">\n" +
+					"   </div>\n" +
+					" </body>\n" +
+					"</html>";
 	
 }

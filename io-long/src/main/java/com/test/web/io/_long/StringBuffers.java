@@ -200,6 +200,26 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 	}
 
 	@Override
+	public void rewindOneCharacter() {
+		int bufNo = bufNo(tokenizerPos);
+		int bufOffset = bufOffset(tokenizerPos);
+		
+		if (bufOffset == 0) {
+			if (bufNo == 0) {
+				throw new IllegalStateException("at start of first buf");
+			}
+			
+			-- bufNo;
+			bufOffset = BUFFER_SIZE - 1;
+		}
+		else {
+			-- bufOffset;
+		}
+		
+		this.tokenizerPos = stringRef(bufNo, bufOffset, 0);
+	}
+
+	@Override
 	protected char[] get(char[][] array, int bufNo) {
 		return array[bufNo];
 	}

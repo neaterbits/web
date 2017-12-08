@@ -189,7 +189,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 
 		indent(debugStackLevel, DEBUG_OUT);
 
-		DEBUG_OUT.append("Start ").append(context).println();;
+		DEBUG_OUT.append("Start ").append(context).println();
 
 		++ debugStackLevel;
 	}
@@ -197,7 +197,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 	private void debugExit(String context) {
 		-- debugStackLevel;
 		indent(debugStackLevel, DEBUG_OUT);
-		DEBUG_OUT.append("End ").append(context).println();;
+		DEBUG_OUT.append("End ").append(context).println();
 	}
 
 	private void debugText() {

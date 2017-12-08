@@ -37,4 +37,9 @@ public class StringCharInput implements CharInput {
 	public void mark() {
 		throw new UnsupportedOperationException();
 	}
+
+	@Override
+	public void rewindOneCharacter() {
+		throw new UnsupportedOperationException();
+	}
 }

@@ -85,7 +85,17 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		
 		if (input.markSupported()) {
 			// Mark so that tokenizer may know starting point of string
+
 			input.mark();
+
+			// if character was buffered, that means mark() set buffer to a curReadPos that is one more than should be
+			// since the character is read from buffer but must be part of tokenizer returned characters
+			// so rewind buffer tokenizerPos by one character here
+			if (buffered > 0) {
+				// put back character, so rewind tokenizer pos since we read one too much
+				// TODO fix this hack in better way
+				input.rewindOneCharacter();
+			}
 		}
 		
 		// Scan all tokens for input from reader and check whether any tokens match 

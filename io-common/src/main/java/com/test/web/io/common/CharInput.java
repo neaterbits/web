@@ -10,4 +10,11 @@ public interface CharInput {
 	boolean markSupported();
 	
 	void mark();
+	
+	// when reading one char extra in lexer so that tokenizer position in buffer reflects
+	// where the lexer is at, so that the next mark() is correct
+	// TODO fix this in better way? lexer keeps token in StringBuilder anyway, might as well get string from there?
+	// TODO or perhaps lexer should use tokenizer to avoid copying, and remove its own StringBuilder?
+	// TODO though for debugging, there should be a mode for the lexer to cache even more characters so can easily see context
+	void rewindOneCharacter();
 }

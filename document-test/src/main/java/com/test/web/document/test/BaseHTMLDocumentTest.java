@@ -51,6 +51,15 @@ public abstract class BaseHTMLDocumentTest<ELEMENT, DOCUMENT extends Document<EL
 		assertThat(doc.getLinkHRef(link)).isEqualTo("test_stylesheet.css");
 	}
 
+	public void testFirstCharMissingFromTextIssue() throws IOException, ParserException {
+		
+		final String html = TestData.HTML_TEXT_ISSUE;
+		
+		System.out.print("Char at 168 is '" + html.charAt(168) + "'");
+		
+		parseHTMLDocument(html);
+	}
+	
 	public void testIsLFWhiteSpace() {
 		assertThat(Character.isWhitespace('\n')).isEqualTo(true);
 	}
