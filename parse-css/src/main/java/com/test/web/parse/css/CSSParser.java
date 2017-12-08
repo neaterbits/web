@@ -97,7 +97,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		boolean done = false;
 		
 		do {
-			CSSToken token = lexer.lex(CSSToken.WS, CSSToken.ID_MARKER, CSSToken.CLASS_MARKER, CSSToken.TAG, CSSToken.COMMENT, CSSToken.BRACKET_START);
+			CSSToken token = lexer.lex(CSSToken.WS, CSSToken.ID_MARKER, CSSToken.CLASS_MARKER, CSSToken.TAG, CSSToken.COMMA, CSSToken.COMMENT, CSSToken.BRACKET_START);
 			
 			if (token == CSSToken.WS) {
 				// Just continue in case of WS
@@ -112,6 +112,10 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 				break;
 				
 			case COMMENT:
+				break;
+				
+			case COMMA:
+				// multiple selectors
 				break;
 				
 			case BRACKET_START:
