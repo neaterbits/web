@@ -62,7 +62,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		// state depth includes outer viewport so has to subtract one
 		return state.getDepth() - 1;
 	}
-	
+
     @Override
 	public void onElementStart(Document<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
     	
@@ -90,54 +90,12 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	// Compute all style information from defaults, css files, in-document style text and style attributes.
     	// Store the result in sub
     	computeStyles(state, document, element, elementType, sub);
+    
+    	final BaseLayoutCase layoutCase = LayoutCases.determineLayoutCase(container, sub.layoutStyles);
+
+    	sub.setLayoutCase(layoutCase);
     	
-    	// main branch in layout logic is what kind of layout display is this
-    	switch (sub.layoutStyles.getDisplay()) {
-    	case INLINE:
-    		// inline elements will follow the current text-line and wrap if necessary
-    		
-    		// If this element has a width and height specified, we can add it to the current textline right away
-    		// we need height as well to determine if this is the tallest element on the textline
-    		
-    		if (sub.layoutStyles.hasWidth() && sub.layoutStyles.hasHeight()) {
-    			// add to current textline
-    			final int width = LayoutHelperUnits.computeWidthPx(sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), container.resultingLayout);
-      			final int height = LayoutHelperUnits.computeHeightPx(sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), container.resultingLayout);
-      
-      			if (container.getDisplay() != CSSDisplay.BLOCK || container.getDisplay() != CSSDisplay.INLINE_BLOCK) {
-      				throw new UnsupportedOperationException("Support inline within other than block and inline-block: " + container.getDisplay());
-      			}
-
-      			LayoutHelperWrappingBounds.computeDimensionsFromOuter(
-    					sub.layoutStyles.getDisplay(),
-    					container.getRemainingWidth(),  width,  sub.layoutStyles.hasWidth(),
-    					container.getRemainingHeight(), height, sub.layoutStyles.hasHeight(),
-    					sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
- 
-      			// Add to textline and wrap and render if necessary
-      			if (width > container.getRemainingWidth()) {
-      				// No room on current textline so just render what we got and then add
-      				renderCurrentTextLine();
-      			}
-
-      			container.addInlineElement(sub.resultingLayout);
-    		}
-    		break;
-
-    	case INLINE_BLOCK:
-    		// will follow text line but internally behave like a block element
-        	tryComputeLayoutOfBlockBehavingElement(state, container, sub);
-    		break;
-    		
-    	case BLOCK:
-    		// cancels current textline and starts a new block
-        	tryComputeLayoutOfBlockBehavingElement(state, container, sub);
-    		break;
-    		
-    	default:
-    		throw new IllegalStateException("Unknown display style " + sub.layoutStyles.getDisplay());
-    	}
-
+    	layoutCase.onElementStart(container, sub);
 
 		// Set resulting font of element, this is common for all display styles and is known at this point in time
     	setResultingFont(state, sub);
@@ -173,7 +131,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	}
     	
     	// End of element where wer're at
-		final StackElement cur = state.getCur();
+		final StackElement sub = state.getCur();
 		
 		state.pop();
     	
@@ -183,70 +141,22 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 		final StackElement container = state.getCur();
 
-		switch (container.getDisplay()) {
-		case INLINE:
-			if (cur.getDisplay() != CSSDisplay.INLINE) {
-				throw new IllegalStateException("non-inline element within inline element");
-			}
-
-			// This element's height is the same as cur if cur's height > this height
-			break;
-
-		case INLINE_BLOCK:
-		case BLOCK:
-			// Block behaving element
-			switch (cur.getDisplay()) {
-			case INLINE:
-				// Inline in block-element, add to text line if not done already?
-				break;
-			
-			default:
-				throw new IllegalArgumentException("Unknown display type: " + container.getDisplay());
-			}
-			
-			break;
-			
-		default:
-			throw new IllegalArgumentException("Unknown container display type: " + container.getDisplay());
-		}
-	
 		// Now should have collected relevant information to do layout and find the dimensions
 		// of the element and also the margins and padding?
 		// does not know size of content yet so cannot for sure know height of element
-		computeLayout(elementType, cur.layoutStyles, container, cur, document, element);
-		
+		sub.getLayoutCase().onElementEnd(container, sub);
+
 		// Got layout, add to layer
-		final short zIndex = cur.layoutStyles.getZIndex();
+		final short zIndex = sub.layoutStyles.getZIndex();
 		
 		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, renderFactory);
-		
+
 		// make copy since resulting layout is reused
-		layer.add(element, cur.resultingLayout.makeCopy());
+		// TODO long-buffer version
+		layer.add(element, sub.resultingLayout.makeCopy());
 
-		// Has computed sub element size by now so can add
-		if (!container.resultingLayout.hasCSSWidth()) {
-			// no width from CSS so must add this element to size of current element
-			//parent.resultingLayout.getOuter().addToWidth(cur.resultingLayout.getOuter().getWidth());
-		}
-		
-		// Add to height of current element if is taller than max for current element
-		final int height = cur.resultingLayout.getOuter().getHeight();
-
-		/*
-		if (height > parent.getMaxBlockElementHeight()) {
-			parent.setMaxBlockElementHeight(height);
-		}
-		*/
-	
-		/*
-		if (!parent.resultingLayout.hasCSSHeight()) {
-			// no width from CSS so must add this element to size of current element
-			parent.resultingLayout.getDimensions().addToHeight(cur.resultingLayout.getDimensions().getHeight());
-		}
-		*/
-		
 		if (state.getListener() != null) {
-			state.getListener().onElementEnd(document, element, cur.resultingLayout);
+			state.getListener().onElementEnd(document, element, sub.resultingLayout);
 		}
 	}
 
@@ -345,67 +255,9 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			
 			state.getListener().onText(document, element, text, cur.getResultingLayout());
 		}
-
-		// addWidthToCur(cur, width);
     }
     
-    /*
-    private void addWidthToCur(StackElement cur, int width) {
-		switch (cur.layoutStyles.getDisplay()) {
-		case BLOCK:
-			// adds to width if is larger than current width
-			// TODO margin and padding?
-			break;
-
-		case INLINE:
-			// text adds to width of element
-			cur.resultingLayout.getOuter().addToWidth(width);
-			break;
-
-		default:
-			throw new UnsupportedOperationException("Unknown display " + cur.layoutStyles.getDisplay());
-		}
-    }
-    */
 	
-	private void computeLayout(HTMLElement elementType, CSSLayoutStyles styles, StackElement cur, StackElement sub, Document<ELEMENT> document, ELEMENT element) {
-
-		// Can we compute the dimensions of the element regardless of the position? Depends on overflow property etc, whether can scroll? Has to takes current layout into account
-	
-		if (styles.getFloat() != null) {
-			throw new UnsupportedOperationException("TODO: support floats");
-		}
-		
-		if (styles.getDisplay() == null) {
-			throw new IllegalStateException("No CSS display computed for element of type " + elementType);
-		}
-
-		switch (styles.getDisplay()) {
-		case BLOCK:
-			
-			// continue after next element on this index
-			// computeBlockElementPosition(styles, dimensions);
-			// Since this a block
-			break;
-			
-		case INLINE:
-			// computeInlineElementPosition(styles, dimensions);
-			break;
-		
-		default:
-			throw new UnsupportedOperationException("Unknown display style " + styles.getDisplay());
-		}
-		
-	}
-	
-	private void computeBlockElementPosition(CSSLayoutStyles styles, Dimensions dimensions) {
-		
-	}
-
-	private void computeInlineElementPosition(CSSLayoutStyles styles, Dimensions dimensions) {
-		
-	}
-
 	private int setBlockBehavingElementWidthIfPresentInCSS(LayoutState<ELEMENT> state, StackElement container, StackElement sub) {
 		
 		int cssWidthPx;

@@ -32,6 +32,8 @@ final class StackElement {
 	// The resulting layout after computation of width and height, this is what rendering sees
 	final ElementLayout resultingLayout;
 
+	private BaseLayoutCase layoutCase;
+	
 	// In order to reuse elements in the stack and avoid memory allocation for each push/pop
 	// we keep information specific to inline, text and block etc in the same element
 	
@@ -180,6 +182,14 @@ final class StackElement {
 	
 	CSSDisplay getDisplay() {
 		return layoutStyles.getDisplay();
+	}
+
+	BaseLayoutCase getLayoutCase() {
+		return layoutCase;
+	}
+
+	void setLayoutCase(BaseLayoutCase layoutCase) {
+		this.layoutCase = layoutCase;
 	}
 }
 
