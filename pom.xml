@@ -31,6 +31,11 @@
 	    <module>io-common</module>
 	    <module>io-long</module>
 	    <module>io-oo</module>
+	    <module>jsapi-common</module>
+	    <module>jsapi-dom</module>
+	    <module>jsengine-common</module>
+	    <module>jsengine-test</module>
+	    <module>jsengine-nashorn</module>
 	    <module>layout</module>
 	    <module>parse-common</module>
 	    <module>parse-css</module>
