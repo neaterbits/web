@@ -3,6 +3,7 @@ package com.test.web.layout;
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.common.CSSLayoutStyles;
 import com.test.web.css.common.ICSSDocumentStyles;
+import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.document.common.Document;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
@@ -12,6 +13,7 @@ import com.test.web.render.common.IFont;
 import com.test.web.render.common.IRenderer;
 import com.test.web.render.common.ITextExtent;
 import com.test.web.types.FontSpec;
+import com.test.web.types.Pixels;
 
 
 /*
@@ -80,26 +82,68 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	}
 
     	// get layout information for the container of the element we're getting a callback on
-    	final StackElement cur = state.getCur();
+    	final StackElement container = state.getCur();
 
     	// Push new sub-element onto stack with remaining width and height from current element
-    	final StackElement sub = state.push(cur.getRemainingWidth(), cur.getRemainingHeight());
+    	final StackElement sub = state.push(container.getRemainingWidth(), container.getRemainingHeight());
     	
     	// Compute all style information from defaults, css files, in-document style text and style attributes.
     	// Store the result in sub
     	computeStyles(state, document, element, elementType, sub);
+    	
+    	// main branch in layout logic is what kind of layout display is this
+    	switch (sub.layoutStyles.getDisplay()) {
+    	case INLINE:
+    		// inline elements will follow the current text-line and wrap if necessary
+    		
+    		// If this element has a width and height specified, we can add it to the current textline right away
+    		// we need height as well to determine if this is the tallest element on the textline
+    		
+    		if (sub.layoutStyles.hasWidth() && sub.layoutStyles.hasHeight()) {
+    			// add to current textline
+    			final int width = LayoutHelperUnits.computeWidthPx(sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), container.resultingLayout);
+      			final int height = LayoutHelperUnits.computeHeightPx(sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), container.resultingLayout);
+      
+      			if (container.getDisplay() != CSSDisplay.BLOCK || container.getDisplay() != CSSDisplay.INLINE_BLOCK) {
+      				throw new UnsupportedOperationException("Support inline within other than block and inline-block: " + container.getDisplay());
+      			}
 
-    	tryComputeLayoutOfBlockBehavingElement(state, cur, sub);
+      			LayoutHelperWrappingBounds.computeDimensionsFromOuter(
+    					sub.layoutStyles.getDisplay(),
+    					container.getRemainingWidth(),  width,  sub.layoutStyles.hasWidth(),
+    					container.getRemainingHeight(), height, sub.layoutStyles.hasHeight(),
+    					sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
+ 
+      			// Add to textline and wrap and render if necessary
+      			if (width > container.getRemainingWidth()) {
+      				// No room on current textline so just render what we got and then add
+      				renderCurrentTextLine();
+      			}
 
-		// Set resulting font of element, this is common for all display styles
-		final FontSpec spec = sub.layoutStyles.getFont();
-		final IFont font = state.getOrOpenFont(spec, FontStyle.NONE); // TODO: font styles
-		sub.resultingLayout.setFont(font);
+      			container.addInlineElement(sub.resultingLayout);
+    		}
+    		break;
+
+    	case INLINE_BLOCK:
+    		// will follow text line but internally behave like a block element
+        	tryComputeLayoutOfBlockBehavingElement(state, container, sub);
+    		break;
+    		
+    	case BLOCK:
+    		// cancels current textline and starts a new block
+        	tryComputeLayoutOfBlockBehavingElement(state, container, sub);
+    		break;
+    		
+    	default:
+    		throw new IllegalStateException("Unknown display style " + sub.layoutStyles.getDisplay());
+    	}
+
+
+		// Set resulting font of element, this is common for all display styles and is known at this point in time
+    	setResultingFont(state, sub);
 
 		// Got layout, set renderer from appropriate layer so that rendering can find it, rendering may happen already during this pass
-		final short zIndex = sub.layoutStyles.getZIndex();
-		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, renderFactory);
-		sub.resultingLayout.setRenderer(layer.getRenderer());
+    	setResultingRenderer(state, sub);
 
 		// listener, eg renderer
 		if (state.getListener() != null) {
@@ -107,6 +151,17 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		}
 	}
     
+    private void setResultingFont(LayoutState<ELEMENT> state, StackElement sub) {
+		final FontSpec spec = sub.layoutStyles.getFont();
+		final IFont font = state.getOrOpenFont(spec, FontStyle.NONE); // TODO: font styles
+		sub.resultingLayout.setFont(font);
+    }
+    
+    private void setResultingRenderer(LayoutState<ELEMENT> state, StackElement sub) {
+		final short zIndex = sub.layoutStyles.getZIndex();
+		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, renderFactory);
+		sub.resultingLayout.setRenderer(layer.getRenderer());
+    }
   
     @Override
 	public void onElementEnd(Document<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
@@ -126,12 +181,39 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     		debugListener.onElementEnd(getDebugDepth(state) , elementType);
     	}
 
-		final StackElement parent = state.getCur();
-		
+		final StackElement container = state.getCur();
+
+		switch (container.getDisplay()) {
+		case INLINE:
+			if (cur.getDisplay() != CSSDisplay.INLINE) {
+				throw new IllegalStateException("non-inline element within inline element");
+			}
+
+			// This element's height is the same as cur if cur's height > this height
+			break;
+
+		case INLINE_BLOCK:
+		case BLOCK:
+			// Block behaving element
+			switch (cur.getDisplay()) {
+			case INLINE:
+				// Inline in block-element, add to text line if not done already?
+				break;
+			
+			default:
+				throw new IllegalArgumentException("Unknown display type: " + container.getDisplay());
+			}
+			
+			break;
+			
+		default:
+			throw new IllegalArgumentException("Unknown container display type: " + container.getDisplay());
+		}
+	
 		// Now should have collected relevant information to do layout and find the dimensions
 		// of the element and also the margins and padding?
 		// does not know size of content yet so cannot for sure know height of element
-		computeLayout(elementType, cur.layoutStyles, parent, cur, document, element);
+		computeLayout(elementType, cur.layoutStyles, container, cur, document, element);
 		
 		// Got layout, add to layer
 		final short zIndex = cur.layoutStyles.getZIndex();
@@ -142,7 +224,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		layer.add(element, cur.resultingLayout.makeCopy());
 
 		// Has computed sub element size by now so can add
-		if (!parent.resultingLayout.hasCSSWidth()) {
+		if (!container.resultingLayout.hasCSSWidth()) {
 			// no width from CSS so must add this element to size of current element
 			//parent.resultingLayout.getOuter().addToWidth(cur.resultingLayout.getOuter().getWidth());
 		}
@@ -150,9 +232,11 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		// Add to height of current element if is taller than max for current element
 		final int height = cur.resultingLayout.getOuter().getHeight();
 
+		/*
 		if (height > parent.getMaxBlockElementHeight()) {
 			parent.setMaxBlockElementHeight(height);
 		}
+		*/
 	
 		/*
 		if (!parent.resultingLayout.hasCSSHeight()) {
@@ -179,48 +263,78 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	}
 
 		final StackElement cur = state.getCur();
+		
+		// just add to current text line as many characters as there are room for, or all the text if needed
+		computeAndAddInlineText_WrapAndRenderAsNecessary(cur, text);
+		
+		
+		// onTextComputeAndRender(document, element, text, cur, state);
+	}
+    
+    private void computeAndAddInlineText_WrapAndRenderAsNecessary(StackElement cur, String text) {
+		final IFont font = cur.resultingLayout.getFont();
 
+		String remainingText = text;
+
+		while (!remainingText.isEmpty()) {
+		
+	    	// find number of chars width regards to this line
+			final int numCharsOnLine = textUtil.findNumberOfChars(remainingText, cur.getRemainingWidth(), font);
+	
+			final boolean lineWrapped;
+			final String lineText;
+			
+			if (numCharsOnLine < text.length()) {
+				
+				// Not enough room for all of text, which means that line wraps.
+				// figure max height, baseline and render line
+				lineWrapped = true;
+				lineText = remainingText.substring(0, numCharsOnLine);
+
+				remainingText = remainingText.substring(numCharsOnLine);
+			}
+			else {
+				// space for all characters
+				lineWrapped = false;
+				lineText = remainingText;
+			}
+
+			cur.addInlineText(lineText);
+ 
+			if (lineWrapped) {
+				renderCurrentTextLine();
+			}
+		}
+    }
+ 
+    private void renderCurrentTextLine() {
+    	throw new UnsupportedOperationException("TODO");
+    }
+    
+    @Deprecated // does not take varying inline element height into account
+    private void onTextComputeAndRender(Document<ELEMENT> document, ELEMENT element, String text, StackElement cur, LayoutState<ELEMENT> state) {
 		final IFont font = cur.resultingLayout.getFont();
 		
 		final int width = textUtil.getTextLengthOrAvailableWidth(text, cur.getAvailableWidth(), font);
 		
-		int height = 0;
+		int height;
 		
-		if (cur.getAvailableWidth() != -1) {
+		if (cur.getAvailableWidth() != Pixels.NONE) {
 			// We have to compute number of lines for this text
 			// TODO: floats
-			
-			String s = text;
-			
-			for (;;) {
-			
-				// For each line, find with of text
-				int numChars = textUtil.findNumberOfChars(s, cur.getAvailableWidth(), font);
-				
-				if (numChars == 0 && !s.isEmpty()) {
-					throw new IllegalStateException("No room for characters in element of width " + cur.getAvailableWidth());
-				}
-				
-				// System.out.println("## numChars "+ numChars + " of \"" + s + "\"");
-				
-				height += textUtil.getTextLineHeight(cur, font);
-				
-				if (numChars == s.length()) {
-					// was room for rest of string, exit
-					break;
-				}
-				
-				s = s.substring(numChars);
-			}
+	
+			height = textUtil.computeTextLinesHeight(text, cur, font);
 		}
 		else {
 			// height is size of text line
 			height = textUtil.getTextLineHeight(cur, font);
 		}
 
+		/*
 		if (height > cur.getMaxBlockElementHeight()) {
 			cur.setMaxBlockElementHeight(height);
 		}
+		*/
 		
 		if (state.getListener() != null) {
 			
@@ -233,7 +347,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		}
 
 		// addWidthToCur(cur, width);
-	}
+    }
     
     /*
     private void addWidthToCur(StackElement cur, int width) {
@@ -294,13 +408,13 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 	private int setBlockBehavingElementWidthIfPresentInCSS(LayoutState<ELEMENT> state, StackElement container, StackElement sub) {
 		
-		int cssWidth;
+		int cssWidthPx;
 
 		if (sub.layoutStyles.hasWidth()) {
 			// has width, compute and update
-			cssWidth = LayoutHelperUnits.computeWidthPx(sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), container.getRemainingWidth());
+			cssWidthPx = LayoutHelperUnits.computeWidthPx(sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), container.getRemainingWidth());
 
-	    	if (cssWidth <= 0) {
+	    	if (cssWidthPx <= 0) {
 				throw new IllegalStateException("Computed width 0 from "  + sub.layoutStyles.getWidth() + " of unit " + sub.layoutStyles.getWidthUnit());
 			}
 	    	
@@ -308,57 +422,57 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			sub.resultingLayout.setHasCSSWidth(true);
 			
 			// remaining - width may be negative below, eg if there is overflow
-			final int remaining = Math.max(0, container.getRemainingWidth() - cssWidth);
+			final int remaining = Math.max(0, container.getRemainingWidth() - cssWidthPx);
 			
 			container.setRemainingWidth(remaining);
 
-			sub.setAvailableWidth(cssWidth);
-			sub.setRemainingWidth(cssWidth);
+			sub.setAvailableWidth(cssWidthPx);
+			sub.setRemainingWidth(cssWidthPx);
 
 			if (debugListener != null) {
-	    		debugListener.onComputedWidth(getDebugDepth(state), container.getAvailableWidth(), sub.getAvailableWidth(), cssWidth, sub.layoutStyles.hasWidth());
+	    		debugListener.onComputedWidth(getDebugDepth(state), container.getAvailableWidth(), sub.getAvailableWidth(), cssWidthPx, sub.layoutStyles.hasWidth());
 	    	}
 		}
 		else {
-			cssWidth = -1;
+			cssWidthPx = Pixels.NONE;
 		}
 
-		return cssWidth;
+		return cssWidthPx;
  	}
 
 	private int setBlockBehavingElementHeightIfPresentInCSS(LayoutState<ELEMENT> state, StackElement container, StackElement sub) {
 		// Cache values since may be updated further down
-		int height = -1;
-    	final int cssHeight;
+		int heightPx = Pixels.NONE;
+    	final int cssHeighPxt;
 		
 		if (sub.layoutStyles.hasHeight()) {
 			// has width, compute and update
-			cssHeight = LayoutHelperUnits.computeHeightPx(sub.layoutStyles.getHeight(), sub.layoutStyles.getHeightUnit(), container.getAvailableHeight());
+			cssHeighPxt = LayoutHelperUnits.computeHeightPx(sub.layoutStyles.getHeight(), sub.layoutStyles.getHeightUnit(), container.getAvailableHeight());
 
-	    	// height is -1 if cur.getAvailableHeight() == -1 (scrolled webage with no specified height)
-	    	if (cssHeight != -1) {
+	    	// height is Pixels.NONE if cur.getAvailableHeight() == Pixels.NONE (scrolled webage with no specified height)
+	    	if (cssHeighPxt != Pixels.NONE) {
 	    		sub.resultingLayout.setHasCSSHeight(true);
 	    	}
 		}
 		else {
-			cssHeight = -1;
+			cssHeighPxt = Pixels.NONE;
 		}
 		
     	if (debugListener != null) {
-    		debugListener.onComputedHeight(getDebugDepth(state), container.getAvailableHeight(), sub.getAvailableHeight(), cssHeight, sub.layoutStyles.hasHeight());
+    		debugListener.onComputedHeight(getDebugDepth(state), container.getAvailableHeight(), sub.getAvailableHeight(), cssHeighPxt, sub.layoutStyles.hasHeight());
     	}
 		
-		if (cssHeight == -1) {
+		if (cssHeighPxt == Pixels.NONE) {
 			// No CSS height, height is computed from what is available in container, or from size of element, knowing width
 			
 			if (container.getRemainingHeight() > 0) {
 				// Set to rest of available height
-				height = container.getRemainingHeight();
+				heightPx = container.getRemainingHeight();
 
 				// Not set remaining height to 0 here, that only happens when we switch to new block
 			}
 			else if (container.getRemainingHeight() == 0) {
-				height = 0;
+				heightPx = 0;
 			}
 			else {
 				// We must compute element height, but element is nested so we do not know yet, we must figure out
@@ -368,11 +482,11 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		}
 
 		
-		// height might be -1
-		sub.resultingLayout.getOuter().setHeight(height);
-		sub.setAvailableHeight(height);
+		// height might be Pixels.NONE
+		sub.resultingLayout.getOuter().setHeight(heightPx);
+		sub.setAvailableHeight(heightPx);
 		
-		return height;
+		return heightPx;
 	}
 
 	private boolean tryComputeLayoutOfBlockBehavingElement(LayoutState<ELEMENT> state, StackElement cur, StackElement sub) {
@@ -383,16 +497,12 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		
 		final boolean layoutComputed;
 		
-		if (width != -1 && height != -1) {
+		if (width != Pixels.NONE && height != Pixels.NONE) {
 			// Compute inner-dimensions
 			LayoutHelperWrappingBounds.computeDimensionsFromOuter(
 					sub.layoutStyles.getDisplay(),
-					cur.getRemainingWidth(),
-					width,
-					sub.layoutStyles.hasWidth(),
-					cur.getRemainingHeight(),
-					height,
-					sub.layoutStyles.hasHeight(),
+					cur.getRemainingWidth(),  width,  sub.layoutStyles.hasWidth(),
+					cur.getRemainingHeight(), height, sub.layoutStyles.hasHeight(),
 					sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
 	
 			if (debugListener != null) {
