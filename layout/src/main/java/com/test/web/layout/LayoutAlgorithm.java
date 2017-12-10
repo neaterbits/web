@@ -1,16 +1,13 @@
 package com.test.web.layout;
 
 import com.test.web.css.common.CSSContext;
-import com.test.web.css.common.CSSLayoutStyles;
 import com.test.web.css.common.ICSSDocumentStyles;
-import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.document.common.Document;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io.common.Tokenizer;
-import com.test.web.render.common.IBufferRenderFactory;
+import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.IFont;
-import com.test.web.render.common.IRenderer;
 import com.test.web.render.common.ITextExtent;
 import com.test.web.types.FontSpec;
 import com.test.web.types.Pixels;
@@ -30,7 +27,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	private final ITextExtent textExtent;
 	
 	// For creating renderers, rendering occurs in the same pass (but renderer implenentation might just queue operations for later)
-	private final IBufferRenderFactory renderFactory;
+	private final IDelayedRendererFactory rendererFactory;
 	private final ILayoutDebugListener debugListener;
 	
 	private final FontSettings fontSettings;
@@ -39,23 +36,21 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	
 	public LayoutAlgorithm(
 			ITextExtent textExtent,
-			IBufferRenderFactory renderFactory,
+			IDelayedRendererFactory rendererFactory,
 			FontSettings fontSettings,
 			ILayoutDebugListener debugListener) {
 		this.textExtent = textExtent;
 		this.textUtil = new TextUtil(textExtent);
 		this.fontSettings = fontSettings;
-		this.renderFactory = renderFactory;
+		this.rendererFactory = rendererFactory;
 		this.debugListener = debugListener;
 	}
 
-	public PageLayout<ELEMENT> layout(Document<ELEMENT> document, ViewPort viewPort, CSSContext<ELEMENT> cssContext, HTMLElementListener<ELEMENT, IElementRenderLayout> listener, IRenderer displayRenderer) {
+	public void layout(Document<ELEMENT> document, ViewPort viewPort, CSSContext<ELEMENT> cssContext, PageLayout<ELEMENT> pageLayout, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
 		
-		final LayoutState<ELEMENT> state = new LayoutState<>(textExtent, viewPort, displayRenderer, cssContext, listener);
+		final LayoutState<ELEMENT> state = new LayoutState<>(textExtent, viewPort, cssContext, pageLayout, listener);
 		
 		document.iterate(this, state);
-		
-		return state.getPageLayout();
 	}
 	
 	private int getDebugDepth(LayoutState<ELEMENT> state) {
@@ -70,7 +65,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
     	if (!elementType.isLayoutElement()) {
     		return;
-    	}
+    	}	
     	
     	if (debugListener != null) {
     		debugListener.onElementStart(
@@ -91,11 +86,11 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	// Store the result in sub
     	computeStyles(state, document, element, elementType, sub);
     
-    	final BaseLayoutCase layoutCase = LayoutCases.determineLayoutCase(container, sub.layoutStyles);
+    	final BaseLayoutCase layoutCase = LayoutCases.determineLayoutCase(container, sub.layoutStyles, elementType);
 
     	sub.setLayoutCase(layoutCase);
     	
-    	layoutCase.onElementStart(container, sub);
+    	layoutCase.onElementStart(container, element, sub, state);
 
 		// Set resulting font of element, this is common for all display styles and is known at this point in time
     	setResultingFont(state, sub);
@@ -117,8 +112,8 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     
     private void setResultingRenderer(LayoutState<ELEMENT> state, StackElement sub) {
 		final short zIndex = sub.layoutStyles.getZIndex();
-		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, renderFactory);
-		sub.resultingLayout.setRenderer(layer.getRenderer());
+		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, rendererFactory);
+		sub.resultingLayout.setRenderer(zIndex, layer.getRenderer());
     }
   
     @Override
@@ -144,12 +139,12 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		// Now should have collected relevant information to do layout and find the dimensions
 		// of the element and also the margins and padding?
 		// does not know size of content yet so cannot for sure know height of element
-		sub.getLayoutCase().onElementEnd(container, sub);
+		sub.getLayoutCase().onElementEnd(container, element, sub, state);
 
 		// Got layout, add to layer
 		final short zIndex = sub.layoutStyles.getZIndex();
 		
-		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, renderFactory);
+		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, rendererFactory);
 
 		// make copy since resulting layout is reused
 		// TODO long-buffer version
@@ -175,19 +170,20 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		final StackElement cur = state.getCur();
 		
 		// just add to current text line as many characters as there are room for, or all the text if needed
-		computeAndAddInlineText_WrapAndRenderAsNecessary(cur, text);
+		computeAndAddInlineText_wrapAndRenderAsNecessary(document, element, cur, text, state);
 		
 		
 		// onTextComputeAndRender(document, element, text, cur, state);
 	}
     
-    private void computeAndAddInlineText_WrapAndRenderAsNecessary(StackElement cur, String text) {
+    private void computeAndAddInlineText_wrapAndRenderAsNecessary(Document<ELEMENT> document, ELEMENT element, StackElement cur, String text, LayoutState<ELEMENT> state) {
 		final IFont font = cur.resultingLayout.getFont();
 
 		String remainingText = text;
 
-		while (!remainingText.isEmpty()) {
+		while ( ! remainingText.isEmpty()) {
 		
+			System.out.println("## render remaining text: \"" + remainingText + "\"");
 	    	// find number of chars width regards to this line
 			final int numCharsOnLine = textUtil.findNumberOfChars(remainingText, cur.getRemainingWidth(), font);
 	
@@ -207,12 +203,15 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 				// space for all characters
 				lineWrapped = false;
 				lineText = remainingText;
+				
+				remainingText = ""; // to exit loop
 			}
 
 			cur.addInlineText(lineText);
- 
-			if (lineWrapped) {
-				renderCurrentTextLine();
+			
+			// render each item of text
+			if (state.getListener() != null) {
+				state.getListener().onText(document, element, lineText, cur.resultingLayout);
 			}
 		}
     }
@@ -292,6 +291,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		return cssWidthPx;
  	}
 
+	@Deprecated
 	private int setBlockBehavingElementHeightIfPresentInCSS(LayoutState<ELEMENT> state, StackElement container, StackElement sub) {
 		// Cache values since may be updated further down
 		int heightPx = Pixels.NONE;
@@ -341,6 +341,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		return heightPx;
 	}
 
+	@Deprecated
 	private boolean tryComputeLayoutOfBlockBehavingElement(LayoutState<ELEMENT> state, StackElement cur, StackElement sub) {
 		// Adjust sub available width/height if is set
 
@@ -402,7 +403,5 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	    		debugListener.onElementStyleAttribute(getDebugDepth(state), sub.layoutStyles);
 	    	}
 		}
-	
 	}
-
 }

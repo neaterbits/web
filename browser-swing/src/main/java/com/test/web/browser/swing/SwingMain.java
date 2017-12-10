@@ -7,8 +7,9 @@ import com.test.web.css.oo.OOCSSElement;
 import com.test.web.document.oo.OOTagElement;
 import com.test.web.render.awt.AWTBufferRenderFactory;
 import com.test.web.render.awt.AWTTextExtent;
-import com.test.web.render.common.IBufferRenderFactory;
+import com.test.web.render.common.IBufferRendererFactory;
 import com.test.web.render.common.ITextExtent;
+import com.test.web.render.queue.QueueRendererFactory;
 import com.test.web.ui.common.IUIFactory;
 import com.test.web.ui.swing.SwingUIFactory;
 
@@ -17,11 +18,11 @@ public class SwingMain {
 	public static void main(String [] args) {
 		final IUIFactory uiFactory = new SwingUIFactory();
 		
-		final IBufferRenderFactory renderFactory = new AWTBufferRenderFactory();
+		final IBufferRendererFactory renderFactory = new AWTBufferRenderFactory();
 		final ITextExtent textExtent = new AWTTextExtent();
 		
 		final IBrowserDocumentLoader<OOTagElement, OOCSSElement> documentLoader
-				= new OOBrowserDocumentLoader(renderFactory, textExtent);
+				= new OOBrowserDocumentLoader(new QueueRendererFactory(), renderFactory, textExtent);
 		
 		final BrowserMain<OOTagElement, OOCSSElement> main = new BrowserMain<>(uiFactory, documentLoader);
 		

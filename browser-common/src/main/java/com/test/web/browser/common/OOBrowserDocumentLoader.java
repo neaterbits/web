@@ -15,15 +15,16 @@ import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser;
 import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.IHTMLParserListener;
-import com.test.web.render.common.IBufferRenderFactory;
+import com.test.web.render.common.IBufferRendererFactory;
+import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 
 public class OOBrowserDocumentLoader
 		extends BaseBrowserDocumentLoader<OOTagElement, OOTokenizer, OOHTMLDocument, OOCSSElement, OOCSSDocument>
 		implements IBrowserDocumentLoader<OOTagElement, OOCSSElement> {
 	
-	public OOBrowserDocumentLoader(IBufferRenderFactory renderFactory, ITextExtent textExtent) {
-		super(renderFactory, textExtent);
+	public OOBrowserDocumentLoader(IDelayedRendererFactory rendererFactory, IBufferRendererFactory bufferedRendererFactory, ITextExtent textExtent) {
+		super(rendererFactory, bufferedRendererFactory, textExtent);
 	}
 	
 	private OOCSSDocument parseCSS(CharInput charInput, CSSContext<OOCSSElement> cssContext) throws IOException, ParserException {

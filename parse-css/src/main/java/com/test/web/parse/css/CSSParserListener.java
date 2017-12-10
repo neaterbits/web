@@ -27,8 +27,6 @@ import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.io.common.Tokenizer;
-import com.test.web.types.ColorRGB;
-import com.test.web.types.DecimalSize;
 
 public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
 

@@ -20,9 +20,9 @@ public class AWTTextExtent implements ITextExtent {
 			awtStyleFlags |= Font.ITALIC;
 		}
 
-		final Font font = new Font(fontName, awtStyleFlags, fontSize);
+		final Font font = new Font(fontFamily, awtStyleFlags, fontSize);
 		
-		return new AWTFont(font);
+		return new AWTFont(fontFamily, fontSize, styleFlags, font);
 	}
 
 	@Override

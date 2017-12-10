@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.test.web.buffers.LongBuffersIntegerIndex;
-import com.test.web.buffers.StringStorageBuffer;
+import com.test.web.buffers.DuplicateDetectingStringStorageBuffer;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.document.common.DocumentState;
 import com.test.web.document.common.HTMLAttribute;
@@ -58,15 +58,15 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	private final int [] stack;
 	private int depth;
 
-	private final StringStorageBuffer idBuffer;
-	private final StringStorageBuffer classBuffer;
-	private final StringStorageBuffer accessKeyBuffer;
-	private final StringStorageBuffer contextMenuBuffer;
-	private final StringStorageBuffer langBuffer;
-	private final StringStorageBuffer titleBuffer;
-	private final StringStorageBuffer relBuffer;
-	private final StringStorageBuffer typeBuffer;
-	private final StringStorageBuffer hrefBuffer;
+	private final DuplicateDetectingStringStorageBuffer idBuffer;
+	private final DuplicateDetectingStringStorageBuffer classBuffer;
+	private final DuplicateDetectingStringStorageBuffer accessKeyBuffer;
+	private final DuplicateDetectingStringStorageBuffer contextMenuBuffer;
+	private final DuplicateDetectingStringStorageBuffer langBuffer;
+	private final DuplicateDetectingStringStorageBuffer titleBuffer;
+	private final DuplicateDetectingStringStorageBuffer relBuffer;
+	private final DuplicateDetectingStringStorageBuffer typeBuffer;
+	private final DuplicateDetectingStringStorageBuffer hrefBuffer;
 
 	private final LongStyleDocument styleDocument;
 
@@ -88,14 +88,14 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 		this.state = new DocumentState<>();
 		
-		this.idBuffer = new StringStorageBuffer();
-		this.classBuffer = new StringStorageBuffer();
+		this.idBuffer = new DuplicateDetectingStringStorageBuffer();
+		this.classBuffer = new DuplicateDetectingStringStorageBuffer();
 		
 		this.elementClasses = new int[100];
 		this.numElementClasses = 1; // Skip initial so that default encoded class value (0) never points to an index 
 		
 		// Just reuse same buffer
-		this.accessKeyBuffer = this.contextMenuBuffer = this.langBuffer = this.titleBuffer = this.relBuffer = this.typeBuffer = this.hrefBuffer = new StringStorageBuffer();
+		this.accessKeyBuffer = this.contextMenuBuffer = this.langBuffer = this.titleBuffer = this.relBuffer = this.typeBuffer = this.hrefBuffer = new DuplicateDetectingStringStorageBuffer();
 		
 		this.rootElement = LongHTML.END_OF_LIST_MARKER;
 	
@@ -457,7 +457,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 		final int id = LongHTML.getId(elementBuf, elementOffset);
 				
-		return id == StringStorageBuffer.NONE ? null : idBuffer.getString(id);
+		return id == DuplicateDetectingStringStorageBuffer.NONE ? null : idBuffer.getString(id);
 	}
 	
 	@Override

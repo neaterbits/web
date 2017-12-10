@@ -1,11 +1,11 @@
 package com.test.web.layout;
 
-public abstract class CaseInlineWithinBlockBehaving_CSSSizeKnown_Base
-	extends CaseInlineWithinBlockBehaving_Base {
+class CaseBlockWithinBlockBehaving_CSSSizeKnown extends CaseBlockWithinBlockBehaving_Base {
 
 	@Override
 	<ELEMENT>void onElementStart(StackElement container, ELEMENT element, StackElement sub, ILayoutState state) {
-		// add to current textline
+
+		// Knows sub elements size already, can make some computations
 		final int width  = LayoutHelperUnits.computeWidthPx (sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), container.resultingLayout);
 		final int height = LayoutHelperUnits.computeHeightPx(sub.layoutStyles.getHeight(), sub.layoutStyles.getHeightUnit(), container.resultingLayout);
 
@@ -15,12 +15,16 @@ public abstract class CaseInlineWithinBlockBehaving_CSSSizeKnown_Base
 			container.getRemainingHeight(), height, sub.layoutStyles.hasHeight(),
 			sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
 
-		// Add to textline and wrap and render if necessary
-		if (width > container.getRemainingWidth()) {
-			// No room on current textline so just render what we got and then add
-			renderCurrentTextLine();
-		}
+		// set initially available and remaining
+		sub.setAvailableWidth(width);
+		sub.setRemainingWidth(width);
+		sub.setAvailableHeight(height);
+		sub.setRemainingHeight(height);
 
-		container.addInlineElement(sub.resultingLayout);
+		// block within block so will increase container size
+		container.addToBlockElementHeight(height);
+
+		// render block element right away since we have all necessary knowledge
+		renderBlockElement(element, sub, state);
 	}
 }

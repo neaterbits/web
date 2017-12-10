@@ -8,6 +8,22 @@ public class MockTextExtent implements ITextExtent {
 	@Override
 	public IFont getFont(String fontFamily, String fontName, int fontSize, int styleFlags) {
 		return new IFont() {
+			
+			@Override
+			public String getFontFamily() {
+				return fontFamily;
+			}
+
+			@Override
+			public int getFontSize() {
+				return fontSize;
+			}
+
+			@Override
+			public int getStyleFlags() {
+				return styleFlags;
+			}
+
 			@Override
 			public int getHeight() {
 				return 12;

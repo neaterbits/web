@@ -65,6 +65,13 @@
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
+		<artifactId>render-queue</artifactId>
+		<version>${project.version}</version>
+		<scope>test</scope>
+	</dependency>
+
+	<dependency>
+		<groupId>${project.groupId}</groupId>
 		<artifactId>testdata</artifactId>
 		<version>${project.version}</version>
 		<scope>test</scope>

@@ -24,17 +24,21 @@ import com.test.web.parse.common.ParserException;
 import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.IDocumentParserListener;
 import com.test.web.parse.html.IHTMLParserListener;
-import com.test.web.render.common.IBufferRenderFactory;
+import com.test.web.render.common.IBufferRendererFactory;
+import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.IRenderer;
 import com.test.web.render.common.ITextExtent;
+import com.test.web.render.html.DisplayRenderer;
 import com.test.web.render.html.HTMLRenderer;
+import com.test.web.render.html.IDToOffsetList;
 import com.test.web.render.html.IRenderDebugListener;
 import com.test.web.render.html.PrintlnRenderDebugListener;
 
 public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends Tokenizer, DOCUMENT extends IDocumentParserListener<HTML_ELEMENT, TOKENIZER>, CSS_ELEMENT, STYLE_DOCUMENT>
 		implements IBrowserDocumentLoader<HTML_ELEMENT, CSS_ELEMENT> {
 
-	private final IBufferRenderFactory renderFactory;
+	private final IDelayedRendererFactory renderFactory;
+	private final IBufferRendererFactory bufferRenderFactory;
 	private final ITextExtent textExtent;
 	
 	protected abstract DOCUMENT createDocument();
@@ -45,17 +49,18 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 			LoadStream stream,
 			CSSContext<CSS_ELEMENT>cssContext);
 	
-	public BaseBrowserDocumentLoader(IBufferRenderFactory renderFactory, ITextExtent textExtent) {
+	public BaseBrowserDocumentLoader(IDelayedRendererFactory rendererFactory, IBufferRendererFactory bufferRendererFactory, ITextExtent textExtent) {
 
-		if (renderFactory == null) {
-			throw new IllegalArgumentException("renderFactory == null");
+		if (rendererFactory == null) {
+			throw new IllegalArgumentException("rendererFactory == null");
 		}
 		
 		if (textExtent == null) {
 			throw new IllegalArgumentException("textExtent == null");
 		}
 	
-		this.renderFactory = renderFactory;
+		this.renderFactory = rendererFactory;
+		this.bufferRenderFactory = bufferRendererFactory;
 		this.textExtent = textExtent;
 	}
 
@@ -81,11 +86,20 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 		// what renderer is set for the element layout during layout algorithm
 		
 		final IRenderDebugListener renderDebugListener = new PrintlnRenderDebugListener(System.out);
+
+		final PageLayout<HTML_ELEMENT> pageLayout = new PageLayout<>();
 		
-		final HTMLRenderer<HTML_ELEMENT> htmlRenderer = new HTMLRenderer<>(renderDebugListener);
+		final DisplayRenderer<HTML_ELEMENT> renderer = new DisplayRenderer<>(
+				viewPort,
+				pageLayout,
+				displayRenderer,
+				textExtent,
+				new IDToOffsetList()); // TODO cache between invocations?
 		
-		final PageLayout<HTML_ELEMENT> pageLayout = layoutAgorithm.layout(document, viewPort, cssContext, htmlRenderer, displayRenderer);
+		final HTMLRenderer<HTML_ELEMENT> htmlRenderer = new HTMLRenderer<>(renderDebugListener, renderer);
 		
+		layoutAgorithm.layout(document, viewPort, cssContext, pageLayout, htmlRenderer);
+
 		// We should have loaded document now so sync to display. TODO should probably be done elsewhere, ie in loadqueue so that we sync as document loads
 		displayRenderer.sync();
 		
@@ -109,8 +123,17 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 			// Delegate i the document, ie the DOM
 			final DOCUMENT document = createDocument();
 			
+			final PageLayout<HTML_ELEMENT> pageLayout = new PageLayout<>();
+			
+			final DisplayRenderer<HTML_ELEMENT> renderer = new DisplayRenderer<>(
+					viewPort,
+					pageLayout,
+					displayRenderer,
+					textExtent,
+					new IDToOffsetList()); // TODO cache
+			
 			// HTML renderer that will render to display
-			final HTMLElementListener<HTML_ELEMENT, IElementRenderLayout> renderListener = new HTMLRenderer<>(new PrintlnRenderDebugListener(System.out));
+			final HTMLElementListener<HTML_ELEMENT, IElementRenderLayout> renderListener = new HTMLRenderer<>(new PrintlnRenderDebugListener(System.out), renderer);
 			
 			// This parser listener will look for external dependencies and add those to the loadqueue,
 			// it will also forward parser events to the DOM and to the layout algorithm
@@ -121,9 +144,9 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 						loadQueueAndStream.getQueue(),
 						viewPort,
 						textExtent,
-						displayRenderer,
 						renderFactory,
 						fontSettings,
+						pageLayout,
 						renderListener);
 			
 			// All CSS definitions collected here

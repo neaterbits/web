@@ -2,8 +2,8 @@ package com.test.web.layout;
 
 import java.util.LinkedHashMap;
 
+import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IFont;
-import com.test.web.render.common.IRenderer;
 
 /*
  * A layer within a layout, eg. defined by z-index
@@ -14,9 +14,9 @@ public class PageLayer<ELEMENT> implements Comparable<PageLayer<ELEMENT>> {
 	private final LinkedHashMap<ELEMENT, ElementLayout> layouts;
 	
 	// The renderer used to render this layer
-	private final IRenderer renderer;
+	private final IDelayedRenderer renderer;
 
-	PageLayer(int index, IRenderer renderer) {
+	PageLayer(int index, IDelayedRenderer renderer) {
 		this.index = index;
 		this.layouts = new LinkedHashMap<>();
 		this.renderer = renderer;
@@ -40,7 +40,7 @@ public class PageLayer<ELEMENT> implements Comparable<PageLayer<ELEMENT>> {
 		return index;
 	}
 	
-	IRenderer getRenderer() {
+	IDelayedRenderer getRenderer() {
 		return renderer;
 	}
 	

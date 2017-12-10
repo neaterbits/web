@@ -13,6 +13,8 @@ final class StackElement {
 	static final int UNKNOWN_WIDTH = 0x01;
 	static final int UNKNOWN_HEIGHT = 0x02;
 	
+	private final int stackIdx;
+	
 	// flags for layout dimensions that cannot be computed until we have computed dimensions of all inner-elements
 	int delayedLayout;
 	
@@ -48,6 +50,10 @@ final class StackElement {
 	// Thus rendering of a line cannot happen until the whole line is processed and baseline is known
 	private int maxTextLineElementHeight;
 
+
+	// Sum of elements in block
+	// Usually same as available but might be less
+	private int curBlockElementWidth;
 	
 	// Current height of block element (if this is one). This is the sum of all textline heights.
 	// Unrelated to height specified by CSS, that would have to be handled by overflow attribute.
@@ -57,20 +63,25 @@ final class StackElement {
 	private TextLineElement [] elementsOnThisTextLine;
 	private int numElementsOnThisTextLine;
 
-	StackElement(int availableWidth, int availableHeight) {
-		this();
+	StackElement(int stackIdx, int availableWidth, int availableHeight) {
+		this(stackIdx);
 		
 		init(availableWidth, availableHeight);
 	}
 	
-	StackElement() {
+	StackElement(int stackIdx) {
+		this.stackIdx = stackIdx;
 		this.layoutStyles = new CSSLayoutStyles();
 		this.resultingLayout = new ElementLayout();
 	}
-	
+
+	boolean isViewPort() {
+		return this.stackIdx == 0;
+	}
+
 	void clear() {
 		layoutStyles.clear();
-		
+
 		// reset array counter but keep array though to save on memory allocations
 		this.numElementsOnThisTextLine = 0;
 	}
@@ -91,6 +102,7 @@ final class StackElement {
 		this.remainingWidth = availableWidth;
 		this.remainingHeight = availableHeight;
 
+		this.curBlockElementWidth = 0;
 		this.curBlockElementHeight = 0;
 	}
 
@@ -134,8 +146,23 @@ final class StackElement {
 		
 		return ret;
 	}
-	
 
+	void addToBlockElementWidth(int height) {
+		this.curBlockElementWidth += height;
+	}
+
+	int getCollectedBlockWidth() {
+		return curBlockElementWidth;
+	}
+
+	void addToBlockElementHeight(int height) {
+		this.curBlockElementHeight += height;
+	}
+
+	int getCollectedBlockHeight() {
+		return curBlockElementHeight;
+	}
+	
 	int getAvailableWidth() {
 		return availableWidth;
 	}
@@ -182,6 +209,14 @@ final class StackElement {
 	
 	CSSDisplay getDisplay() {
 		return layoutStyles.getDisplay();
+	}
+
+	boolean hasUserSpecifiedWidth() {
+		return layoutStyles.hasWidth();
+	}
+
+	boolean hasUserSpecifiedHeight() {
+		return layoutStyles.hasHeight();
 	}
 
 	BaseLayoutCase getLayoutCase() {

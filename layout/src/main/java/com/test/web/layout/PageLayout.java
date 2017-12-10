@@ -3,9 +3,10 @@ package com.test.web.layout;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
 
-import com.test.web.render.common.IRenderFactory;
-import com.test.web.render.common.IRenderer;
+import com.test.web.render.common.IDelayedRenderer;
+import com.test.web.render.common.IDelayedRendererFactory;
 
 /*
  * Page layout consists of a number of page layers, each page
@@ -13,7 +14,7 @@ import com.test.web.render.common.IRenderer;
  * 
  */
 
-public final class PageLayout<ELEMENT> {
+public final class PageLayout<ELEMENT> implements IPageLayout {
 
 	private final List<PageLayer<ELEMENT>> layers;
 	
@@ -21,7 +22,7 @@ public final class PageLayout<ELEMENT> {
 		this.layers = new ArrayList<>();
 	}
 	
-	public  PageLayer<ELEMENT> addOrGetLayer(int index, IRenderer displayRenderer, IRenderFactory renderFactory) {
+	public  PageLayer<ELEMENT> addOrGetLayer(int index,  IDelayedRendererFactory renderFactory) {
 		PageLayer<ELEMENT> found = null;
 		
 		for (PageLayer<ELEMENT> l : layers) {
@@ -32,11 +33,7 @@ public final class PageLayout<ELEMENT> {
 		}
 		
 		if (found == null) {
-			// if z-index 0, we can render directly onto display (which might be an offscreen buffer for doublebuffering as well)
-			
-			final IRenderer renderer = index == 0
-					? displayRenderer
-					: renderFactory.createRenderer();
+			final IDelayedRenderer renderer = renderFactory.createRenderer();
 			
 			found = new PageLayer<>(index, renderer);
 
@@ -48,5 +45,18 @@ public final class PageLayout<ELEMENT> {
 	
 	public List<PageLayer<ELEMENT>> getLayers() {
 		return Collections.unmodifiableList(layers);
+	}
+
+	@Override
+	public void forEachLayerSortedOnZIndex(BiConsumer<Integer, IDelayedRenderer> consumer) {
+		
+		// not many layers so just make a copy and sort now
+		final List<PageLayer<ELEMENT>> layersCopy = new ArrayList<>(layers);
+		
+		Collections.sort(layersCopy, (l1, l2) -> Integer.compare(l1.getIndex(), l2.getIndex()));
+		
+		for (PageLayer<ELEMENT> l : layersCopy) {
+			consumer.accept(l.getIndex(), l.getRenderer());
+		}
 	}
 }

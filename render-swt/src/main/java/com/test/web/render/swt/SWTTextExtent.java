@@ -36,7 +36,7 @@ public class SWTTextExtent implements ITextExtent {
 
 		final Font font = new Font(device, new FontData(fontName, fontSize, swtStyleFlags));
 		
-		return new SWTFont(font, fontSize);
+		return new SWTFont(fontFamily, fontSize, styleFlags, font, fontSize);
 	}
 
 	@Override

@@ -1,6 +1,10 @@
 package com.test.web.render.queue;
 
+import com.test.web.buffers.DuplicateDetectingStringStorageBuffer;
+import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IFont;
+import com.test.web.render.common.IFontLookup;
+import com.test.web.render.common.IMarkRenderOperations;
 import com.test.web.render.common.IRenderOperations;
 
 // Collectes everything in a buffer of rendering operations that can be replayed
@@ -8,41 +12,69 @@ import com.test.web.render.common.IRenderOperations;
 // operations across multiple threads
 //
 // So the queue also works a binary protocol for rendering operations
-public class RenderQueue implements IRenderOperations {
+// Consists of a list of buffers
+// each rendering operation is a long where 8 MSBs is opcode
+
+class RenderQueue implements IDelayedRenderer {
+
+	private final 	LongBuf primary;
+
+	RenderQueue() {
+		
+		final DuplicateDetectingStringStorageBuffer stringStorageBuffer = new DuplicateDetectingStringStorageBuffer();
+		
+		final LongBuf secondary = new LongBuf(stringStorageBuffer, null);
+		
+		this.primary = new LongBuf(stringStorageBuffer, secondary);
+	}
 
 	@Override
 	public void setFgColor(int r, int g, int b) {
-		// TODO Auto-generated method stub
-		
+		primary.setFgColor(r, g, b);
 	}
 
 	@Override
 	public void setBgColor(int r, int g, int b) {
-		// TODO Auto-generated method stub
-		
+		primary.setBgColor(r, g, b);
 	}
 
 	@Override
 	public void drawLine(int x1, int y1, int x2, int y2) {
-		// TODO Auto-generated method stub
-		
+		primary.drawLine(x1, y1, x2, y2);
 	}
 
 	@Override
 	public void setFont(IFont font) {
-		// TODO Auto-generated method stub
-		
+		primary.setFont(font);
 	}
 
 	@Override
 	public void drawText(int x, int y, String text) {
-		// TODO Auto-generated method stub
-		
+		primary.drawText(x, y, text);
+	}
+
+	@Override
+	public int mark() {
+		return primary.mark();
+	}
+
+	@Override
+	public IMarkRenderOperations getOperationsForMark(int markOffset) {
+		return primary.getOperationsForMark(markOffset);
 	}
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public int getOffset() {
+		return primary.getOffset();
+	}
+
+	@Override
+	public void replay(IRenderOperations ops, int startOffset, int endOffset, IFontLookup fontLookup) {
+		primary.replay(ops, startOffset, endOffset, fontLookup);
 	}
 }
