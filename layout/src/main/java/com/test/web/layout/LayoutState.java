@@ -108,7 +108,7 @@ public final class LayoutState<ELEMENT> implements ILayoutState {
 		IFont font = fonts.get(fontKey);
 		
 		if (font == null) {
-			font = textExtent.getFont(spec.getFamily(), spec.getName(), spec.getSize(), style);
+			font = textExtent.getFont(spec.getFamily(), spec.getSize(), style);
 
 			if (font == null) {
 				throw new IllegalStateException("Failed to open font " + spec + " with style " + style);

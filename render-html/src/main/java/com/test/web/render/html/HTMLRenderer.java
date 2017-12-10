@@ -41,7 +41,7 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 		
 		final IRenderOperations renderer;
 		
-		if ( ! layout.areBoundsComputed()) {
+		if ( ! layout.areBoundsComputed() ) {
 			// We do not have dimensions yet so we must render later
 			// Thus we just mark here and do the rendering at that point
 			renderMark = layout.getRenderer().mark();

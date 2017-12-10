@@ -13,7 +13,7 @@ public class TextUtilTest extends TestCase {
 		final ITextExtent textExtent = new MockTextExtent();
 		
 		final TextUtil textUtil = new TextUtil(textExtent);
-		final IFont font = textExtent.getFont(null, null, 0, 0);
+		final IFont font = textExtent.getFont(null, 0, 0);
 	
 		try {
 			final int numChars = textUtil.findNumberOfChars("\n", 100, font);
@@ -30,7 +30,7 @@ public class TextUtilTest extends TestCase {
 		final ITextExtent textExtent = new MockTextExtent();
 		
 		final TextUtil textUtil = new TextUtil(textExtent);
-		final IFont font = textExtent.getFont(null, null, 0, 0);
+		final IFont font = textExtent.getFont(null, 0, 0);
 
 		final int numChars = textUtil.findNumberOfChars("Ths is a text that will wrap", 50, font);
 

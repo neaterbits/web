@@ -195,7 +195,7 @@ final class LongBuf implements IDelayedRenderer, IMarkRenderOperations {
 					final int styleFlags = (int)((l >> 32) & 0xFF);
 					final String fontFamily = this.repeatableBuffer.getString((int)(l & 0xFFFFFFFF));
 				
-					ops.setFont(fontLookup.getFont(fontFamily, null, fontSize, styleFlags));
+					ops.setFont(fontLookup.getFont(fontFamily, fontSize, styleFlags));
 					break;
 					
 				case DRAW_TEXT:

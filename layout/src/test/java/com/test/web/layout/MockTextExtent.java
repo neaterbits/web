@@ -6,7 +6,7 @@ import com.test.web.render.common.ITextExtent;
 public class MockTextExtent implements ITextExtent {
 
 	@Override
-	public IFont getFont(String fontFamily, String fontName, int fontSize, int styleFlags) {
+	public IFont getFont(String fontFamily, int fontSize, int styleFlags) {
 		return new IFont() {
 			
 			@Override

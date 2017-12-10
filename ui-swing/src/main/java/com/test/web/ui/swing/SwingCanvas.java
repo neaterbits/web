@@ -79,8 +79,8 @@ final class SwingCanvas extends JComponent implements IUICanvas {
 	}
 
 	@Override
-	public IFont getFont(String fontFamily, String fontName, int fontSize, int styleFlags) {
-		return textExtent.getFont(fontFamily, fontName, fontSize, styleFlags);
+	public IFont getFont(String fontFamily, int fontSize, int styleFlags) {
+		return textExtent.getFont(fontFamily, fontSize, styleFlags);
 	}
 
 	@Override
