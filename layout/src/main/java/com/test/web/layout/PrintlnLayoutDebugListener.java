@@ -47,7 +47,7 @@ public class PrintlnLayoutDebugListener implements ILayoutDebugListener, IIndent
 	
 	@Override
 	public void onResultingLayout(int depth, IElementLayout layout) {
-		indent(depth, out).println("LAYOUT result: " + layout);
+		indent(depth, out).println("LAYOUT result: outer=" + layout.getOuterBounds() + ", inner=" + layout.getInnerBounds());
 	}
 
 	@Override

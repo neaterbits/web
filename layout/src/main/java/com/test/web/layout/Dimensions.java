@@ -71,6 +71,6 @@ final class Dimensions implements IBounds {
 
 	@Override
 	public String toString() {
-		return "Dimensions [left=" + left + ", top=" + top + ", width=" + width + ", height=" + height + "]";
+		return "[" + left + ", " + top + ", " + width + ", " + height + "]";
 	}
 }

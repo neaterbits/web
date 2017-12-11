@@ -102,6 +102,10 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		if (state.getListener() != null) {
 			state.getListener().onElementStart(document, element, sub.resultingLayout);
 		}
+		
+		if (debugListener!= null && sub.resultingLayout.areBoundsComputed()) {
+			debugListener.onResultingLayout(getDebugDepth(state), sub.resultingLayout);
+		}
 	}
     
     private void setResultingFont(LayoutState<ELEMENT> state, StackElement sub) {
@@ -127,7 +131,9 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	
     	// End of element where wer're at
 		final StackElement sub = state.getCur();
-		
+	
+		final boolean boundsAlreadyComputed = sub.resultingLayout.areBoundsComputed();
+			    
 		state.pop();
     	
     	if (debugListener != null) {
@@ -152,6 +158,11 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 		if (state.getListener() != null) {
 			state.getListener().onElementEnd(document, element, sub.resultingLayout);
+		}
+		
+		// log layout computation if was done in onElementEnd()
+		if (debugListener != null && ! boundsAlreadyComputed && sub.resultingLayout.areBoundsComputed()) {
+			debugListener.onResultingLayout(getDebugDepth(state), sub.resultingLayout);
 		}
 	}
 

@@ -195,11 +195,11 @@ public final class CSSLayoutStyles {
 
 	@Override
 	public String toString() {
-		return "CSSLayoutStyles [display=" + display + ", position=" + position + ", cssFloat=" + cssFloat + ", width="
-				+ width + ", widthUnit=" + widthUnit + ", height=" + height + ", heightUnit=" + heightUnit
-				+ ", margins=" + margins + ", padding=" + padding + ", zIndex=" + zIndex + ", positionLeft="
-				+ positionLeft + ", positionLeftUnit=" + positionLeftUnit + ", positionTop=" + positionTop
-				+ ", positionTopUnit=" + positionTopUnit + ", font=" + font + "]";
+		return "[d=" + display + ", p=" + position + ", f=" + cssFloat + ", w="
+				+ width + ", wu=" + widthUnit + ", h=" + height + ", hu=" + heightUnit
+				+ ", m=" + margins + ", p=" + padding + ", z=" + zIndex + ", posL="
+				+ positionLeft + ", poSLU=" + positionLeftUnit + ", posT=" + positionTop
+				+ ", posTU=" + positionTopUnit + ", font=" + font + "]";
 	}
 
 }
