@@ -14,8 +14,6 @@ import com.test.web.jsengine.common.JSVariableMap;
 import com.test.web.jsengine.common.JavaAsJSObjectAdapter;
 import com.test.web.jsengine.common.JavaMethodAsFunction;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
-
 import junit.framework.TestCase;
 
 public abstract class BaseJSEngineTest extends TestCase {

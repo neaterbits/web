@@ -1,7 +1,10 @@
 package com.test.web.document.oo;
 
+import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.ICommonDisplayableLinkAttributes;
-import com.test.web.document.common.enums.Target;
+import com.test.web.document.common.enums.HTMLTarget;
+import com.test.web.types.IEnum;
+import com.test.web.types.StringUtils;
 
 // <a> and <area> are displayable links that can delegate to this class
 // cannot inherit since <a> is container while <area> is leaf element
@@ -10,7 +13,7 @@ final class OODisplayableLinkAttributes extends OOCommonLinkAttributes
 
 	private String download; // download filename
 	
-	private Target target; // either this
+	private HTMLTarget target; // either this
 	private String targetFrame; // ... or a target frame
 	
 	@Override
@@ -24,22 +27,89 @@ final class OODisplayableLinkAttributes extends OOCommonLinkAttributes
 	}
 
 	@Override
-	public final Target getTarget() {
+	public final HTMLTarget getTarget() {
 		return target;
 	}
 
 	@Override
-	public final void setTarget(Target target) {
+	public final void setTarget(HTMLTarget target, String targetFrame) {
+		if (target != null && targetFrame != null) {
+			throw new IllegalArgumentException("Cannot set both target and target frame");
+		}
+
 		this.target = target;
+		this.targetFrame = targetFrame;
 	}
 
 	@Override
 	public final String getTargetFrame() {
 		return targetFrame;
 	}
+	
+	String getAttributeValue(HTMLAttribute attribute) {
+		
+		final String value;
+		
+		switch (attribute) {
+		case DOWNLOAD:
+			value = download;
+			break;
+			
+		case TARGET:
+			if (target != null) {
+				value = target.getName();
+			}
+			else if (targetFrame != null) {
+				value = targetFrame;
+			}
+			else {
+				value = null;
+			}
+			break;
+			
+		default:
+			value = super.getAttributeValue(attribute);
+			break;
+		}
 
-	@Override
-	public final void setTargetFrame(String targetFrame) {
-		this.targetFrame = targetFrame;
+		return value;
+	}
+	
+	boolean setAttributeValue(HTMLAttribute attribute, String value) {
+
+		final String trimmed = StringUtils.trimToNull(value);
+		
+		boolean wasSet = value != null;
+		
+		switch (attribute) {
+		case DOWNLOAD:
+			this.download = value;
+			break;
+			
+		case TARGET:
+			if (trimmed == null) {
+				target = null;
+				targetFrame = null;
+			}
+			else {
+				final HTMLTarget t = IEnum.asEnum(HTMLTarget.class, trimmed, true);
+				
+				if (t != null) {
+					target = t;
+					targetFrame = null;
+				}
+				else {
+					target = null;
+					targetFrame = trimmed;
+				}
+			}
+			break;
+			
+		default:
+			wasSet = super.setAttributeValue(attribute, value);
+			break;
+		}
+		
+		return wasSet;
 	}
 }

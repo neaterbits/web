@@ -1,6 +1,6 @@
 package com.test.web.types;
 
-public enum ValueType {
+public enum ValueArity {
 
 	NONE,
 	ONE,

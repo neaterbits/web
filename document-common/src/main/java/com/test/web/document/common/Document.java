@@ -1,6 +1,7 @@
 package com.test.web.document.common;
 
 import java.io.PrintStream;
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.test.web.css.common.ICSSDocumentStyles;
@@ -11,8 +12,14 @@ import com.test.web.document.common.enums.LinkRelType;
  * 
  */
 
-public interface Document<ELEMENT> {
+public interface Document<ELEMENT>
+		extends IDocumentNavigation<ELEMENT>,
+					 IDocumentAttributeGetters<ELEMENT>,
+					 IDocumentAttributeSetters<ELEMENT>{
 
+	
+	public static final String DEFAULT_NAMESPACE = "http://www.w3.org/1999/xhtml";
+	
 	HTMLElement getType(ELEMENT element);
 	
 	ELEMENT getElementById(String id);
@@ -43,8 +50,8 @@ public interface Document<ELEMENT> {
 
 	String getImgUrl(ELEMENT element);
 
-	int getProgressMax(ELEMENT element);
-	int getProgressValue(ELEMENT element);
+	BigDecimal getProgressMax(ELEMENT element);
+	BigDecimal getProgressValue(ELEMENT element);
 	
 	<PARAM> void iterate(HTMLElementListener<ELEMENT, PARAM> listener, PARAM param);
 	

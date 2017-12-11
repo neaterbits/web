@@ -1,5 +1,6 @@
 package com.test.web.document.oo;
 
+import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.ICommonLinkAttributes;
 import com.test.web.document.common.enums.LinkRelType;
@@ -24,7 +25,7 @@ final class OOLink extends OOReferenceElement implements ICommonLinkAttributes {
 
 	@Override
 	public void setHRef(String href) {
-		commonLinkAttributes.setHRef(href);
+		commonLinkAttributes.setHRef(setOrClearAttribute(HTMLAttribute.HREF, href));
 	}
 
 	@Override
@@ -34,7 +35,7 @@ final class OOLink extends OOReferenceElement implements ICommonLinkAttributes {
 
 	@Override
 	public void setHRefLang(String hrefLang) {
-		commonLinkAttributes.setHRefLang(hrefLang);
+		commonLinkAttributes.setHRefLang(setOrClearAttribute(HTMLAttribute.HREFLANG, hrefLang));
 	}
 
 	@Override
@@ -44,7 +45,7 @@ final class OOLink extends OOReferenceElement implements ICommonLinkAttributes {
 
 	@Override
 	public void setMedia(String media) {
-		commonLinkAttributes.setMedia(media);
+		commonLinkAttributes.setMedia(setOrClearAttribute(HTMLAttribute.MEDIA, media));
 	}
 
 	@Override
@@ -54,7 +55,7 @@ final class OOLink extends OOReferenceElement implements ICommonLinkAttributes {
 
 	@Override
 	public void setMediaType(String type) {
-		commonLinkAttributes.setMediaType(type);
+		commonLinkAttributes.setMediaType(setOrClearAttribute(HTMLAttribute.TYPE, type));
 	}
 
 	@Override
@@ -64,6 +65,6 @@ final class OOLink extends OOReferenceElement implements ICommonLinkAttributes {
 
 	@Override
 	public void setRel(LinkRelType rel) {
-		commonLinkAttributes.setRel(rel);
+		commonLinkAttributes.setRel(setOrClearAttribute(HTMLAttribute.REL, rel));
 	}
 }

@@ -1,7 +1,10 @@
 package com.test.web.document.oo;
 
+import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.ICommonLinkAttributes;
 import com.test.web.document.common.enums.LinkRelType;
+import com.test.web.types.IEnum;
+import com.test.web.types.StringUtils;
 
 class OOCommonLinkAttributes implements ICommonLinkAttributes {
 	private String href;
@@ -58,5 +61,70 @@ class OOCommonLinkAttributes implements ICommonLinkAttributes {
 	@Override
 	public final void setRel(LinkRelType rel) {
 		this.rel = rel;
+	}
+
+	String getAttributeValue(HTMLAttribute attribute) {
+		
+		final String value;
+		
+		switch (attribute) {
+		case HREF:
+			value = href;
+			break;
+			
+		case HREFLANG:
+			value = hrefLang;
+			break;
+			
+		case MEDIA:
+			value = media;
+			break;
+			
+		case TYPE:
+			value = mediaType;
+			break;
+			
+		case REL:
+			value = rel.getName();
+			break;
+			
+		default:
+			throw new IllegalStateException("Unknown attribute " + attribute);
+		}
+
+		return value;
+	}
+
+	boolean setAttributeValue(HTMLAttribute attribute, String value) {
+		final String trimmed = StringUtils.trimToNull(value);
+		
+		boolean wasSet = trimmed != null;
+
+		switch (attribute) {
+		case HREF:
+			this.href = trimmed;
+			break;
+			
+		case HREFLANG:
+			this.hrefLang = trimmed;
+			break;
+			
+		case MEDIA:
+			this.media = trimmed;
+			break;
+			
+		case TYPE:
+			this.mediaType = trimmed;
+			break;
+			
+		case REL:
+			this.rel = IEnum.asEnum(LinkRelType.class, trimmed, true);
+			break;
+			
+		default:
+			throw new IllegalStateException("Unknown attribute " + attribute);
+		}
+		
+		return wasSet;
 	}
 }

@@ -39,6 +39,8 @@ abstract class OOContainerElement extends OOTagElement {
 			tail = element;
 		}
 		
+		element.parent = this;
+		
 		++ numElements;
 	}
 	

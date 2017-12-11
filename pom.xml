@@ -33,6 +33,7 @@
 	    <module>io-oo</module>
 	    <module>jsapi-common</module>
 	    <module>jsapi-dom</module>
+	    <module>jsapi-file</module>
 	    <module>jsengine-common</module>
 	    <module>jsengine-test</module>
 	    <module>jsengine-nashorn</module>

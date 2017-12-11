@@ -2,6 +2,7 @@ package com.test.web.document.oo;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -209,12 +210,12 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 	}
 
 	@Override
-	public int getProgressMax(OOTagElement element) {
+	public BigDecimal getProgressMax(OOTagElement element) {
 		return ((OOProgressElement)element).getMax();
 	}
 
 	@Override
-	public int getProgressValue(OOTagElement element) {
+	public BigDecimal getProgressValue(OOTagElement element) {
 		return ((OOProgressElement)element).getValue();
 	}
 
@@ -394,9 +395,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 		case ID:
 			final String idString = tokenizer.asString(startOffset, endSkip);
 			
-			state.addElement(idString, getCurElement());
-		
-			ref.setId(idString);
+			ref.setId(idString, state);
 			break;
 		
 		case ACCESSKEY:
@@ -637,7 +636,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 		case MAX:
 			switch (element) {
 			case PROGRESS:
-				((OOProgressElement)ref).setMax(tokenizer.asDecimalSize(startOffset, endSkip));
+				((OOProgressElement)ref).setMax(tokenizer.asBigDecimal(startOffset, endSkip));
 				break;
 				
 			default:
@@ -648,7 +647,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 		case VALUE:
 			switch (element) {
 			case PROGRESS:
-				((OOProgressElement)ref).setValue(tokenizer.asDecimalSize(startOffset, endSkip));
+				((OOProgressElement)ref).setValue(tokenizer.asBigDecimal(startOffset, endSkip));
 				break;
 				
 			default:
@@ -668,19 +667,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 		
 		final OOTagElement element = getCurElement();
 		
-		state.addElementClass(classString, element);
-		
-		final String [] classes = element.getClasses();
-		if (classes == null) {
-			element.setClasses(new String [] { classString });
-		}
-		else {
-			final String [] newClasses = Arrays.copyOf(classes, classes.length + 1);
-			
-			newClasses[classes.length] = classString;
-			
-			element.setClasses(newClasses);
-		}
+		element.addClass(classString, state);
 	}
 
 	@Override
@@ -699,5 +686,69 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 	@Override
 	public IHTMLStyleParserListener<OOTagElement, OOTokenizer> getStyleParserListener() {
 		return styleParserListener;
+	}
+
+	// Document navigation
+	@Override
+	public OOTagElement getParentElement(OOTagElement element) {
+		return (OOTagElement)element.parent;
+	}
+
+	
+	// Attributes
+
+	@Override
+	public int getNumAttributes(OOTagElement element) {
+		return element.getNumAttributes();
+	}
+
+	@Override
+	public int getIdxOfAttributeWithName(OOTagElement element, String namespaceURI, String name) {
+		return element.getIdxOfAttributeWithName(namespaceURI, name);
+	}
+
+	@Override
+	public String getAttributeName(OOTagElement element, int idx) {
+		return element.getAttributeName(idx);
+	}
+
+	@Override
+	public String getAttributeNamespaceURI(OOTagElement element, int idx) {
+		return element.getAttributeNamespaceURI(idx);
+	}
+
+	@Override
+	public String getAttributeLocalName(OOTagElement element, int idx) {
+		return element.getAttributeLocalName(idx);
+	}
+
+	@Override
+	public String getAttributePrefix(OOTagElement element, int idx) {
+		return element.getAttributePrefix(idx);
+	}
+
+	@Override
+	public String getAttributeValue(OOTagElement element, int idx) {
+		return element.getAttributeValue(idx);
+	}
+
+	@Override
+	public void setAttributeValue(OOTagElement element, int idx, String value) {
+		triggerUIUpdates(element, element.setAttributeValue(idx, value, state));
+	}
+
+	@Override
+	public void setAttributeValue(OOTagElement element, String namespaceURI, String name, String value) {
+		triggerUIUpdates(element, element.setAttributeValue(namespaceURI, name, value, state));
+	}
+
+	@Override
+	public void removeAttribute(OOTagElement element, String namespaceURI, String name) {
+		triggerUIUpdates(element, element.removeAttribute(namespaceURI, name, state));
+	}
+
+	private void triggerUIUpdates(OOTagElement lement, HTMLAttribute attribute) {
+		// TODO update UI for some attributes, eg class
+		throw new UnsupportedOperationException();
 	}
 }

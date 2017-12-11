@@ -1,10 +1,12 @@
 package com.test.web.document.oo;
 
+import com.test.web.document.common.DocumentState;
+import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.ICommonDisplayableLinkAttributes;
 import com.test.web.document.common.ICommonLinkAttributes;
 import com.test.web.document.common.enums.LinkRelType;
-import com.test.web.document.common.enums.Target;
+import com.test.web.document.common.enums.HTMLTarget;
 
 final class OOAreaElement extends OOLeafElement
 		implements ICommonLinkAttributes, ICommonDisplayableLinkAttributes {
@@ -28,7 +30,7 @@ final class OOAreaElement extends OOLeafElement
 
 	@Override
 	public void setHRef(String href) {
-		commonLinkAttributes.setHRef(href);
+		commonLinkAttributes.setHRef(setOrClearAttribute(HTMLAttribute.HREF, href));
 	}
 
 	@Override
@@ -38,7 +40,7 @@ final class OOAreaElement extends OOLeafElement
 
 	@Override
 	public void setHRefLang(String hrefLang) {
-		commonLinkAttributes.setHRefLang(hrefLang);
+		commonLinkAttributes.setHRefLang(setOrClearAttribute(HTMLAttribute.HREFLANG, hrefLang));
 	}
 
 	@Override
@@ -48,7 +50,7 @@ final class OOAreaElement extends OOLeafElement
 
 	@Override
 	public void setMedia(String media) {
-		commonLinkAttributes.setMedia(media);
+		commonLinkAttributes.setMedia(setOrClearAttribute(HTMLAttribute.MEDIA, media));
 	}
 
 	@Override
@@ -58,7 +60,7 @@ final class OOAreaElement extends OOLeafElement
 
 	@Override
 	public void setMediaType(String type) {
-		commonLinkAttributes.setMediaType(type);
+		commonLinkAttributes.setMediaType(setOrClearAttribute(HTMLAttribute.TYPE, type));
 	}
 
 	@Override
@@ -68,7 +70,7 @@ final class OOAreaElement extends OOLeafElement
 
 	@Override
 	public void setRel(LinkRelType rel) {
-		commonLinkAttributes.setRel(rel);
+		commonLinkAttributes.setRel(setOrClearAttribute(HTMLAttribute.REL, rel));
 	}
 
 	@Override
@@ -78,17 +80,19 @@ final class OOAreaElement extends OOLeafElement
 
 	@Override
 	public void setDownload(String download) {
-		commonLinkAttributes.setDownload(download);
+		commonLinkAttributes.setDownload(setOrClearAttribute(HTMLAttribute.DOWNLOAD, download));
 	}
 
 	@Override
-	public Target getTarget() {
+	public HTMLTarget getTarget() {
 		return commonLinkAttributes.getTarget();
 	}
 
 	@Override
-	public void setTarget(Target target) {
-		commonLinkAttributes.setTarget(target);
+	public void setTarget(HTMLTarget target, String targetFrame) {
+		setOrClearAttributeFlag(HTMLAttribute.TARGET, target != null || targetFrame != null);
+
+		commonLinkAttributes.setTarget(target, targetFrame);
 	}
 
 	@Override
@@ -97,7 +101,46 @@ final class OOAreaElement extends OOLeafElement
 	}
 
 	@Override
-	public void setTargetFrame(String targetFrame) {
-		commonLinkAttributes.setTargetFrame(targetFrame);
+	String getStandardAttributeValue(HTMLAttribute attribute) {
+		
+		final String value;
+		
+		switch (attribute) {
+		case HREF:
+		case HREFLANG:
+		case MEDIA:
+		case TYPE:
+		case REL:
+		case DOWNLOAD:
+		case TARGET:
+			value = commonLinkAttributes.getAttributeValue(attribute);
+			break;
+			
+		default:
+			value = super.getStandardAttributeValue(attribute);
+			break;
+		}
+
+		return value;
+	}
+
+	@Override
+	void setStandardAttributeValue(HTMLAttribute attribute, String value, DocumentState<OOTagElement> state) {
+		switch (attribute) {
+		case HREF:
+		case HREFLANG:
+		case MEDIA:
+		case TYPE:
+		case REL:
+		case DOWNLOAD:
+		case TARGET:
+			final boolean wasSet = commonLinkAttributes.setAttributeValue(attribute, value);
+			setOrClearAttributeFlag(attribute, wasSet);
+			break;
+			
+		default:
+			super.setStandardAttributeValue(attribute, value, state);
+			break;
+		}
 	}
 }

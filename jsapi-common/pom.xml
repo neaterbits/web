@@ -10,6 +10,19 @@
   <packaging>jar</packaging>
   <dependencies>
 
+ 	<dependency>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>types</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+  
+  	<dependency>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>jsengine-common</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+  
+
 	<!-- test dependencies --> 
 
     <dependency>
