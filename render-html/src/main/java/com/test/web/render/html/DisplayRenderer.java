@@ -78,8 +78,8 @@ public class DisplayRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IE
 		// If overlaps with viewport, we will buffer offsets
 		final IBounds bounds = layout.getAbsoluteBounds();
 	
-		if (       bounds.getLeft() >= viewPortX && bounds.getLeft() < viewPortX + viewPort.getViewPortWidth()
-		      && bounds.getTop() >= viewPortY && bounds.getTop()  < viewPortY + viewPort.getViewPortHeight()) {
+		if (       bounds.getLeft() >= viewPortX && bounds.getLeft() < viewPortX + viewPort.getWidth()
+		      && bounds.getTop() >= viewPortY && bounds.getTop()  < viewPortY + viewPort.getHeight()) {
 			
 			// overlaps with viewport, add rendering queue offsets to list
 			this.idToOffsetList.add(layout.getZIndex(), layout.getRenderQueueStartOffset(), layout.getRenderQueueEndOffset());

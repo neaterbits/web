@@ -13,7 +13,7 @@ abstract class CaseBlockWithinBlockBehaving_Base extends BaseLayoutCase {
 			initAvailableAndRemainingWidthFromCSS(container.resultingLayout, sub);
 		}
 		else {
-			// constrained by container, for which avaiable is always known
+			// constrained by container, for which available is always known
 			initAvailableAndRemainingWidthFromContainerRemaining(container, sub);
 		}
 

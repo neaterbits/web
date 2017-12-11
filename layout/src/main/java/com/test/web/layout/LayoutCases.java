@@ -6,8 +6,10 @@ import com.test.web.document.common.HTMLElement;
 
 class LayoutCases {
 
-	private static final CaseBlockRoot BLOCK_ROOT = new CaseBlockRoot();
-	
+	private static final CaseBlockRoot_CSSSizeKnown BLOCK_ROOT_CSS_SIZE_KNOWN = new CaseBlockRoot_CSSSizeKnown();
+
+	private static final CaseBlockRoot_CSSSizeUnknown BLOCK_ROOT_CSS_SIZE_UNKNOWN = new CaseBlockRoot_CSSSizeUnknown();
+
 	private static final CaseInlineWithinBlockBehaving_CSSSizeKnown_DisplayInline INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN_DISPLAY_INLINE
 				= new CaseInlineWithinBlockBehaving_CSSSizeKnown_DisplayInline();
 
@@ -35,7 +37,12 @@ class LayoutCases {
 				throw new UnsupportedOperationException("TODO - support other than block root element");
 			}
 			
-			ret = BLOCK_ROOT;
+			if (subLayoutStyles.hasWidth() && subLayoutStyles.hasHeight()) {
+				ret = BLOCK_ROOT_CSS_SIZE_KNOWN;
+			}
+			else {
+				ret = BLOCK_ROOT_CSS_SIZE_UNKNOWN;
+			}
 		}
 		else {
 			

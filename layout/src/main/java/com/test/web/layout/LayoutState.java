@@ -16,6 +16,7 @@ import com.test.web.types.FontSpec;
 public final class LayoutState<ELEMENT> implements ILayoutState {
 	
 	private final ITextExtent textExtent;
+	private final ViewPort viewPort;
 	
 	// For finding size of text strings when using a particular font for rendering
 	private final CSSContext<ELEMENT> cssContext;
@@ -38,6 +39,7 @@ public final class LayoutState<ELEMENT> implements ILayoutState {
 	
 	public LayoutState(ITextExtent textExtent, ViewPort viewPort, CSSContext<ELEMENT> cssContext, PageLayout<ELEMENT> pageLayout, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
 		this.textExtent = textExtent;
+		this.viewPort = viewPort;
 		this.cssContext = cssContext;
 		this.listener = listener;
 
@@ -52,9 +54,14 @@ public final class LayoutState<ELEMENT> implements ILayoutState {
 		this.curBlockYPos = 0;
 		
 		// Push intial element on stack, which is not a real element
-		push(viewPort.getViewPortWidth(), viewPort.getViewPortHeight());
+		push(viewPort.getWidth(), viewPort.getHeight());
 	}
 	
+	@Override
+	public ViewPort getViewPort() {
+		return viewPort;
+	}
+
 	CSSContext<ELEMENT> getCSSContext() {
 		return cssContext;
 	}

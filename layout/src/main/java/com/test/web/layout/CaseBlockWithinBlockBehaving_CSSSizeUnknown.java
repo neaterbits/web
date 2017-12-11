@@ -2,7 +2,6 @@ package com.test.web.layout;
 
 class CaseBlockWithinBlockBehaving_CSSSizeUnknown extends CaseBlockWithinBlockBehaving_Base {
 
-	
 	@Override
 	<ELEMENT> void onElementEnd(StackElement container, ELEMENT element, StackElement sub, ILayoutState state) {
 
