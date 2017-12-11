@@ -58,8 +58,26 @@ final class TextUtil {
   
     	return ret;
     }
+    
+    static class NumberOfChars {
+    	private final int numberOfChars;
+    	private final int width;
 
-	int findNumberOfChars(String inputString, int availableWidth, IFont font) {
+    	NumberOfChars(int numberOfChars, int width) {
+			this.numberOfChars = numberOfChars;
+			this.width = width;
+		}
+
+		int getNumberOfChars() {
+			return numberOfChars;
+		}
+
+		int getWidth() {
+			return width;
+		}
+    }
+    
+	NumberOfChars findNumberOfChars(String inputString, int availableWidth, IFont font) {
     	
 		// Only until first newline
 		final int newLineIdx = indexOfNewLine(inputString);
@@ -85,18 +103,23 @@ final class TextUtil {
     	
     	final int ret;
     	
+    	int retWidth;
+    	
     	if (width > availableWidth) {
     		// try with fewer characters
     		if (tryCharacters == 0) {
     			ret = 0;
+    			retWidth = 0;
     		}
     		else {
 	    		int numChars = tryCharacters - 1;
+	    		retWidth = -1;
 	    		
 	    		for (;;) {
 	    			final int w = textExtent.getTextExtent(font, string.substring(0, numChars));
 	    			
 	    			if (w <= availableWidth) {
+	    				retWidth = w;
 	    				break;
 	    			}
 	    			
@@ -108,31 +131,36 @@ final class TextUtil {
     	}
     	else  if (width == availableWidth) {
     		ret = tryCharacters;
+    		retWidth = width;
     	}
     	else if (tryCharacters == string.length()) {
     		ret = tryCharacters;
+    		retWidth = width;
     	}
     	else {
     		int numChars = tryCharacters + 1;
+    		retWidth = -1;
     		
     		for (;;) {
     			final int w = textExtent.getTextExtent(font, string.substring(0, numChars));
-    			
+    	
     			if (w > availableWidth) {
     				-- numChars;
     				break;
     			}
     			else if (w == availableWidth) {
-    				break;
+   			    	break;
     			}
-    			
+ 
+  				retWidth = w;
+  				 
     			++ numChars;
     		}
     		
     		ret = numChars;
     	}
     	
-    	return ret;
+    	return new NumberOfChars(ret, retWidth);
     }
     
     
@@ -150,7 +178,7 @@ final class TextUtil {
 		for (;;) {
 		
 			// For each line, find with of text
-			int numChars = findNumberOfChars(s, cur.getAvailableWidth(), font);
+			int numChars = findNumberOfChars(s, cur.getAvailableWidth(), font).getNumberOfChars();
 			
 			if (numChars == 0 && !s.isEmpty()) {
 				throw new IllegalStateException("No room for characters in element of width " + cur.getAvailableWidth());

@@ -6,6 +6,7 @@ import com.test.web.document.common.HTMLElementListener;
 import com.test.web.layout.IBounds;
 import com.test.web.layout.IElementLayout;
 import com.test.web.layout.IElementRenderLayout;
+import com.test.web.layout.Point;
 import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IMarkRenderOperations;
 import com.test.web.render.common.IRenderOperations;
@@ -41,7 +42,7 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 		
 		final IRenderOperations renderer;
 		
-		if ( ! layout.areBoundsComputed()) {
+		if ( ! layout.areBoundsComputed() ) {
 			// We do not have dimensions yet so we must render later
 			// Thus we just mark here and do the rendering at that point
 			renderMark = layout.getRenderer().mark();
@@ -101,7 +102,7 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 		}
 
 		renderText(text, layout);
-		
+
 		if (listener != null) {
 			listener.onText(document, element, text, layout);
 		}
@@ -144,9 +145,18 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 	// render text at specified position within renderer
 	private void renderText(String text, IElementRenderLayout layout) {
 	
-		final IBounds innerBounds = layout.getInnerBounds();
+		// TODO is mark() mechanism really necessary when we sort render offsets anyway?
+		// offsets will link to right place in queue anyway
+		
+		final int startOffset = layout.getRenderer().getOffset();
+		
+		final IBounds textBounds = layout.getAbsoluteBounds();
 
 		// For now just render the text with default font
-		layout.getRenderer().drawText(innerBounds.getLeft(), innerBounds.getTop(), text);
+		layout.getRenderer().drawText(textBounds.getLeft(), textBounds.getTop(), text);
+
+		final int endOffset = layout.getRenderer().getOffset();
+
+		layout.setRenderQueueOffsets(startOffset, endOffset);
 	}
 }

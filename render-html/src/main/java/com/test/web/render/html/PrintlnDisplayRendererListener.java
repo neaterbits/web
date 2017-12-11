@@ -19,6 +19,11 @@ public class PrintlnDisplayRendererListener implements IDisplayRendererDebugList
 	}
 
 	@Override
+	public void onVisibleText(int depth, HTMLElement element, String text, int startOffset, int endOffset) {
+		indent(depth, out).println("DISPLAY VISIBLE TEXT for " + element + " at " + startOffset + ", " + endOffset + ":\"" + text + "\"") ;
+	}
+
+	@Override
 	public void onAllVisibleProcessed_StartReplay(int depth) {
 		indent(depth, out).println("DISPLAY START REPLAY" ) ;
 	}

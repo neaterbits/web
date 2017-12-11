@@ -2,6 +2,7 @@ package com.test.web.render.queue;
 
 enum RenderOp {
 
+	JADDA(1),
 	MARK(1),
 	MARK_END(1), // in secondary buffer to mark that these are all the appended ops
 	

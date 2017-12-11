@@ -131,7 +131,19 @@ public class DisplayRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IE
 	}
 
 	@Override
-	public void onText(Document<ELEMENT> document, ELEMENT element, String text, IElementLayout param) {
+	public void onText(Document<ELEMENT> document, ELEMENT element, String text, IElementLayout layout) {
 		
-	}
+		final IBounds bounds = layout.getAbsoluteBounds();
+		
+		if (   bounds.getLeft() >= viewPortX && bounds.getLeft() < viewPortX + viewPort.getWidth()
+	      && bounds.getTop() >= viewPortY && bounds.getTop()  < viewPortY + viewPort.getHeight()) {
+		
+				if (debugListener != null) {
+					debugListener.onVisibleText(depth, document.getType(element), text, layout.getRenderQueueStartOffset(), layout.getRenderQueueEndOffset());
+				}
+				
+				// overlaps with viewport, add rendering queue offsets to list
+				this.idToOffsetList.add(layout.getZIndex(), layout.getRenderQueueStartOffset(), layout.getRenderQueueEndOffset());
+			}	
+		}
 }

@@ -36,8 +36,12 @@ final class LongBuf extends BitOperations implements IDelayedRenderer, IMarkRend
 			// expand buffer, we do not bother about linked list buffers
 			this.buf = Arrays.copyOf(buf, buf.length * 2);
 		}
+		
+		final int o = offset;
 
 		buf[offset ++] = value;
+		
+		System.out.format("put long %016x at %d in \n", value , o);
 	}
 
 	@Override
@@ -142,8 +146,10 @@ final class LongBuf extends BitOperations implements IDelayedRenderer, IMarkRend
 
 		final long markCode = buf[markOffset];
 
-		if (markCode >> OPCODE_SHIFT != RenderOp.MARK.ordinal()) {
-			throw new IllegalStateException("Not a mark op");
+		final long opcodeOrdinal = markCode >> OPCODE_SHIFT;
+		
+		if (opcodeOrdinal != RenderOp.MARK.ordinal()) {
+			throw new IllegalStateException("Not a mark op: " + opcodeOrdinal);
 		}
 
 		if ((markCode & 0xFFFFFFFF) != 0xFFFFFFFFL) {
@@ -271,7 +277,7 @@ final class LongBuf extends BitOperations implements IDelayedRenderer, IMarkRend
 					break;
 					
 				case MARK_END:
-					if ( ! isSecondary()) {
+					if ( ! isSecondary() ) {
 						throw new IllegalStateException("mark end in primary buf");
 					}
 					done = true;

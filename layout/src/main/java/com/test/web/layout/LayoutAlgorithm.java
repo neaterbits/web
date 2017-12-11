@@ -6,6 +6,7 @@ import com.test.web.document.common.Document;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io.common.Tokenizer;
+import com.test.web.layout.TextUtil.NumberOfChars;
 import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.ITextExtent;
@@ -116,6 +117,11 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     
     private void setResultingRenderer(LayoutState<ELEMENT> state, StackElement sub) {
 		final short zIndex = sub.layoutStyles.getZIndex();
+		
+		setResultingRenderer(state, sub, zIndex);
+    }
+    
+    private void setResultingRenderer(LayoutState<ELEMENT> state, StackElement sub, int zIndex) {
 		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, rendererFactory);
 		sub.resultingLayout.setRenderer(zIndex, layer.getRenderer());
     }
@@ -191,14 +197,25 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		final IFont font = cur.resultingLayout.getFont();
 
 		String remainingText = text;
+		
+		// Must push a separate layout for text for passing text bounds
+		final StackElement textElem = state.push(cur.getRemainingWidth(), cur.getRemainingHeight());
+		
+		setResultingRenderer(state, textElem, cur.layoutStyles.getZIndex());
 
+		// TODO must reflect any inline elements
+		int xPos = cur.getCollectedBlockWidth();
+		int yPos = cur.getCollectedBlockHeight();
+		
 		while ( ! remainingText.isEmpty() ) {
 		
 	    	// find number of chars width regards to this line
-			final int numCharsOnLine = textUtil.findNumberOfChars(remainingText, cur.getRemainingWidth(), font);
+			final NumberOfChars numChars = textUtil.findNumberOfChars(remainingText, cur.getRemainingWidth(), font);
 	
 			final boolean lineWrapped;
 			final String lineText;
+			
+			final int numCharsOnLine = numChars.getNumberOfChars();
 			
 			if (numCharsOnLine < text.length()) {
 				
@@ -216,14 +233,36 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 				
 				remainingText = ""; // to exit loop
 			}
+			
 
 			cur.addInlineText(lineText);
 			
+			final int lineHeight = font.getHeight();
+			
+			final ElementLayout containerLayout = cur.resultingLayout;
+			
+			// Compute bounds of text
+			textElem.resultingLayout.getOuter().init(xPos, yPos, numChars.getWidth(), lineHeight);
+			textElem.resultingLayout.getInner().init(xPos, yPos, numChars.getWidth(), lineHeight);
+			
+			textElem.resultingLayout.getAbsolute().init(
+					containerLayout.getAbsolute().getLeft() + xPos,
+					containerLayout.getAbsolute().getTop() + yPos,
+					numChars.getWidth(),
+					lineHeight);
+
+			textElem.resultingLayout.setBoundsComputed();
+			
 			// render each item of text in a separate callback
 			if (state.getListener() != null) {
-				state.getListener().onText(document, element, lineText, cur.resultingLayout);
+				state.getListener().onText(document, element, lineText, textElem.resultingLayout);
 			}
+
+			xPos = 0;
+			yPos += lineHeight;
 		}
+		
+		state.pop();
     }
  
     private void renderCurrentTextLine() {
