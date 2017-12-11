@@ -75,6 +75,7 @@ class LayoutHelperWrappingBounds {
 	    	
 	    	if (innerHeight != -1) {
 	    		resultingLayout.getOuter().setHeight(innerHeight + topPadding + bottomPadding + topMargin + bottomMargin);
+	    		resultingLayout.setBoundsComputed();
 	    	}
 	    }
 	    

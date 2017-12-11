@@ -100,7 +100,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 		// listener, eg renderer
 		if (state.getListener() != null) {
-			state.getListener().onElementStart(document, element, null);
+			state.getListener().onElementStart(document, element, sub.resultingLayout);
 		}
 	}
     

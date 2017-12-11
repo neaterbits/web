@@ -22,9 +22,5 @@ class CaseBlockWithinBlockBehaving_CSSSizeUnknown extends CaseBlockWithinBlockBe
 
 		// block within block so will increase container size
 		container.addToBlockElementHeight(height);
-		
-		// no need to add to width since this is a block
-
-		renderBlockElement(element, sub, state);
 	}
 }

@@ -17,8 +17,7 @@ public abstract class CaseInlineWithinBlockBehaving_CSSSizeKnown_Base
 
 		// Add to textline and wrap and render if necessary
 		if (width > container.getRemainingWidth()) {
-			// No room on current textline so just render what we got and then add
-			renderCurrentTextLine();
+			// No room on current textline so continue on next
 		}
 
 		container.addInlineElement(sub.resultingLayout);

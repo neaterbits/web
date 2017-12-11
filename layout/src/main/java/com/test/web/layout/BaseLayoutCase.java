@@ -48,14 +48,4 @@ abstract class BaseLayoutCase {
 		cur.setAvailableHeight(cur.getRemainingHeight());
 		cur.setRemainingHeight(cur.getRemainingHeight());
 	}
-
-	final void renderCurrentTextLine() {
-		throw new UnsupportedOperationException("TODO");
-	}
-
-	final <ELEMENT> void renderBlockElement(ELEMENT element, StackElement blockElement, ILayoutState state) {
-		
-		
-		throw new UnsupportedOperationException("TODO");
-	}
 }

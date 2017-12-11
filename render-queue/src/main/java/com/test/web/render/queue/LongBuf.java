@@ -2,6 +2,7 @@ package com.test.web.render.queue;
 
 import java.util.Arrays;
 
+import com.test.web.buffers.BitOperations;
 import com.test.web.buffers.DuplicateDetectingStringStorageBuffer;
 import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IFont;
@@ -9,7 +10,7 @@ import com.test.web.render.common.IFontLookup;
 import com.test.web.render.common.IMarkRenderOperations;
 import com.test.web.render.common.IRenderOperations;
 
-final class LongBuf implements IDelayedRenderer, IMarkRenderOperations {
+final class LongBuf extends BitOperations implements IDelayedRenderer, IMarkRenderOperations {
 
 	private static final int OPCODE_SHIFT = 56;
 	
@@ -25,6 +26,7 @@ final class LongBuf implements IDelayedRenderer, IMarkRenderOperations {
 	LongBuf(DuplicateDetectingStringStorageBuffer repeatableBuffer, LongBuf secondary) {
 		this.repeatableBuffer = repeatableBuffer;
 		this.secondary = secondary;
+		this.buf = new long[10000];
 	}
 
 	private void putLong(long value) {
@@ -92,7 +94,7 @@ final class LongBuf implements IDelayedRenderer, IMarkRenderOperations {
 		final int markOffset = offset;
 		
 		// put one long, we will add index into secondary buffer later on
-		putLong(RenderOp.MARK.getOpCode() << OPCODE_SHIFT | 0xFFFFFFFF);
+		putLong(RenderOp.MARK.getOpCode() << OPCODE_SHIFT | unsignedIntToLong(0xFFFFFFFF));
 
 		return markOffset;
 	}
@@ -110,8 +112,8 @@ final class LongBuf implements IDelayedRenderer, IMarkRenderOperations {
 			throw new IllegalStateException("Not a mark op");
 		}
 
-		if ((markCode & 0xFFFFFFFF) != 0xFFFFFFFF) {
-			throw new IllegalStateException("already rendered at mark");
+		if ((markCode & 0xFFFFFFFF) != 0xFFFFFFFFL) {
+			throw new IllegalStateException(String.format("already rendered at mark: %08x", markCode));
 		}
 		
 		// store index to where we start rendering in secondary buffer

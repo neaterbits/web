@@ -41,7 +41,7 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 		
 		final IRenderOperations renderer;
 		
-		if ( ! layout.areBoundsComputed() ) {
+		if ( ! layout.areBoundsComputed()) {
 			// We do not have dimensions yet so we must render later
 			// Thus we just mark here and do the rendering at that point
 			renderMark = layout.getRenderer().mark();
@@ -66,11 +66,14 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 	@Override
 	public void onElementEnd(Document<ELEMENT> document, ELEMENT element, IElementRenderLayout layout) {
 
+		-- depth;
+
 		final int renderMark = delayedRenderMarks[depth];
+
 		if (renderMark != IDelayedRenderer.MARK_NONE) {
 			// We did not have bounds in onElementStart() so must render now
 			if ( ! layout.areBoundsComputed() ) {
-				throw new IllegalStateException("bounds not computed in onElementEnd()");
+				throw new IllegalStateException("bounds not computed in onElementEnd() " + " at depth " + depth + " for " + element);
 			}
 			
 			final IMarkRenderOperations renderer = layout.getRenderer().getOperationsForMark(renderMark);
@@ -84,8 +87,6 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 		if (debugListener != null) {
 			debugListener.onElementEnd(depth, document.getType(element), layout);
 		}
-
-		-- depth;
 		
 		if (listener != null) {
 			listener.onElementEnd(document, element, layout);
