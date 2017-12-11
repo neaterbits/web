@@ -17,7 +17,6 @@ import com.test.web.render.swt.SWTRenderOperations;
 import com.test.web.render.swt.SWTTextExtent;
 import com.test.web.ui.common.IUICanvas;
 
-
 final class SWTCanvas extends Canvas implements IUICanvas {
 	
 	private Image image;
@@ -27,7 +26,6 @@ final class SWTCanvas extends Canvas implements IUICanvas {
 	public SWTCanvas(Composite parent, int style) {
 		super(parent, style);
 		
-		
 		final Device device = parent.getDisplay();
 		
 		this.textExtent = new SWTTextExtent(device);
@@ -36,7 +34,9 @@ final class SWTCanvas extends Canvas implements IUICanvas {
 			
 			@Override
 			public void paintControl(PaintEvent e) {
-				e.gc.drawImage(image, 0, 0);
+				if (image != null) {
+					e.gc.drawImage(image, 0, 0);
+				}
 			}
 		});
 		
@@ -76,10 +76,10 @@ final class SWTCanvas extends Canvas implements IUICanvas {
 		finally {
 			white.dispose();
 		}
-		
-		// We have to paint into a backround buffer since we can only paint in paint() method
+
+		// We have to paint into a background buffer since we can only paint in paint() method
 		this.renderOperations = new SWTRenderOperations(device, gfx);
-		
+
 		return image;
 	}
 
