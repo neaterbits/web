@@ -11,9 +11,10 @@ import com.test.web.render.common.IMarkRenderOperations;
 import com.test.web.render.common.IRenderOperations;
 
 final class LongBuf extends BitOperations implements IDelayedRenderer, IMarkRenderOperations {
-
+	
 	private static final int OPCODE_SHIFT = 56;
 	
+	private final IRenderQueueDebugListener debugListener;
 	private long [] buf;
 	private int offset;
 
@@ -23,15 +24,16 @@ final class LongBuf extends BitOperations implements IDelayedRenderer, IMarkRend
 	// set to non-null if this is primary buffer
 	private final LongBuf secondary;
 	
-	LongBuf(DuplicateDetectingStringStorageBuffer repeatableBuffer, LongBuf secondary) {
+	LongBuf(DuplicateDetectingStringStorageBuffer repeatableBuffer, LongBuf secondary, IRenderQueueDebugListener debugListener) {
 		this.repeatableBuffer = repeatableBuffer;
 		this.secondary = secondary;
+		this.debugListener = debugListener;
 		this.buf = new long[10000];
 	}
 
 	private void putLong(long value) {
 		if (offset == buf.length) {
-			// exand buffer, we do not bother about linked list buffers
+			// expand buffer, we do not bother about linked list buffers
 			this.buf = Arrays.copyOf(buf, buf.length * 2);
 		}
 
@@ -40,6 +42,11 @@ final class LongBuf extends BitOperations implements IDelayedRenderer, IMarkRend
 
 	@Override
 	public void setFgColor(int r, int g, int b) {
+		
+		if (debugListener != null) {
+			debugListener.onSetFgColor(offset, isPrimary(), r, g, b);
+		}
+		
 		putLong(
 				  RenderOp.SET_FG_COLOR.getOpCode() << OPCODE_SHIFT
 				| r << 16
@@ -49,6 +56,11 @@ final class LongBuf extends BitOperations implements IDelayedRenderer, IMarkRend
 
 	@Override
 	public void setBgColor(int r, int g, int b) {
+
+		if (debugListener != null) {
+			debugListener.onSetBgColor(offset, isPrimary(), r, g, b);
+		}
+
 		putLong(
 				  RenderOp.SET_BG_COLOR.getOpCode() << OPCODE_SHIFT
 				| r << 16
@@ -58,6 +70,11 @@ final class LongBuf extends BitOperations implements IDelayedRenderer, IMarkRend
 
 	@Override
 	public void drawLine(int x1, int y1, int x2, int y2) {
+		
+		if (debugListener != null) {
+			debugListener.onDrawLine(offset, isPrimary(), x1, y1, x2, y2);
+		}
+		
 		putLong(RenderOp.SET_FG_COLOR.getOpCode() << OPCODE_SHIFT);
 		putLong(x1 << 32 | y1);
 		putLong(x2 << 32 | y2);
@@ -65,6 +82,10 @@ final class LongBuf extends BitOperations implements IDelayedRenderer, IMarkRend
 
 	@Override
 	public void setFont(IFont font) {
+
+		if (debugListener != null) {
+			debugListener.onSetFont(offset, isPrimary(), font);
+		}
 
 		final int fontStringIdx = putRepeatableString(font.getFontFamily());
 
@@ -78,6 +99,11 @@ final class LongBuf extends BitOperations implements IDelayedRenderer, IMarkRend
 
 	@Override
 	public void drawText(int x, int y, String text) {
+		
+		if (debugListener != null) {
+			debugListener.onDrawText(offset, isPrimary(), x, y, text);
+		}
+		
 		final int textIdx = putString(text);
 		
 		putLong(RenderOp.DRAW_TEXT.getOpCode() << OPCODE_SHIFT | textIdx);
@@ -89,6 +115,10 @@ final class LongBuf extends BitOperations implements IDelayedRenderer, IMarkRend
 	public int mark() {
 		if (isSecondary()) {
 			throw new IllegalStateException("no secondary buffer");
+		}
+		
+		if (debugListener != null) {
+			debugListener.onMark(offset);
 		}
 
 		final int markOffset = offset;
@@ -104,6 +134,10 @@ final class LongBuf extends BitOperations implements IDelayedRenderer, IMarkRend
 
 		if (isSecondary()) {
 			throw new IllegalStateException("no secondary buffer");
+		}
+		
+		if (debugListener != null) {
+			debugListener.onGetOperationsForMark(markOffset);
 		}
 
 		final long markCode = buf[markOffset];
@@ -126,6 +160,10 @@ final class LongBuf extends BitOperations implements IDelayedRenderer, IMarkRend
 	public void endOperationsForMark() {
 		if (isPrimary()) {
 			throw new IllegalStateException("should only be called on secondary buffer");
+		}
+		
+		if (debugListener != null) {
+			debugListener.onEndOperationsForMark(offset);
 		}
 		
 		putLong(RenderOp.MARK_END.ordinal() << OPCODE_SHIFT);
@@ -155,17 +193,25 @@ final class LongBuf extends BitOperations implements IDelayedRenderer, IMarkRend
 	@Override
 	public void replay(IRenderOperations ops, int offset, int endOffset, IFontLookup fontLookup) {
 
+		if (debugListener != null) {
+			debugListener.onReplay(ops, isPrimary(), offset, endOffset, fontLookup);
+		}
+		
 		boolean done = false;
 
 		do {
 
-			if (isPrimary() && (offset > buf.length || (endOffset != IDelayedRenderer.OFFSET_NONE && offset >= endOffset))) {
+			if (isPrimary() && (offset >= this.offset || (endOffset != IDelayedRenderer.OFFSET_NONE && offset >= endOffset))) {
 				done = true;
 			}
 			else {
 				final long l = buf[offset];
 		
 				final RenderOp renderOp = RenderOp.values()[(int)(l >> OPCODE_SHIFT)];
+				
+				if (debugListener != null) {
+					debugListener.onReplayOp(offset, isPrimary(), renderOp);
+				}
 				
 				switch (renderOp) {
 				case SET_FG_COLOR: {

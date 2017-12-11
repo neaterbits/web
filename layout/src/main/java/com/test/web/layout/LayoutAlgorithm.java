@@ -192,9 +192,8 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 		String remainingText = text;
 
-		while ( ! remainingText.isEmpty()) {
+		while ( ! remainingText.isEmpty() ) {
 		
-			System.out.println("## render remaining text: \"" + remainingText + "\"");
 	    	// find number of chars width regards to this line
 			final int numCharsOnLine = textUtil.findNumberOfChars(remainingText, cur.getRemainingWidth(), font);
 	
@@ -220,7 +219,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 			cur.addInlineText(lineText);
 			
-			// render each item of text
+			// render each item of text in a separate callback
 			if (state.getListener() != null) {
 				state.getListener().onText(document, element, lineText, cur.resultingLayout);
 			}

@@ -21,6 +21,8 @@ public class DisplayRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IE
 	private final IFontLookup fontLookup;
 	private final IDToOffsetList idToOffsetList;
 	
+	private final IDisplayRendererDebugListener debugListener;
+	
 	// Vertical position of document displayed in viewport
 	private int viewPortX;
 
@@ -29,7 +31,7 @@ public class DisplayRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IE
 
 	private int depth;
 
-	public DisplayRenderer(ViewPort viewPort, IPageLayout pageLayout, IRenderer displayRenderer, IFontLookup fontLookup, IDToOffsetList idToOffsetList) {
+	public DisplayRenderer(ViewPort viewPort, IPageLayout pageLayout, IRenderer displayRenderer, IFontLookup fontLookup, IDToOffsetList idToOffsetList, IDisplayRendererDebugListener debugListener) {
 
 		if (viewPort == null) {
 			throw new IllegalArgumentException("viewPort == null");
@@ -56,10 +58,11 @@ public class DisplayRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IE
 		this.displayRenderer = displayRenderer;
 		this.fontLookup = fontLookup;
 		this.idToOffsetList = idToOffsetList;
+		this.debugListener = debugListener;
 
 		this.viewPortX = 0;
 		this.viewPortY = 0;
-		
+
 		this.depth = 0;
 	}
 	
@@ -81,6 +84,10 @@ public class DisplayRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IE
 		if (       bounds.getLeft() >= viewPortX && bounds.getLeft() < viewPortX + viewPort.getWidth()
 		      && bounds.getTop() >= viewPortY && bounds.getTop()  < viewPortY + viewPort.getHeight()) {
 			
+			if (debugListener != null) {
+				debugListener.onVisibleElement(depth, document.getType(element), layout.getRenderQueueStartOffset(), layout.getRenderQueueEndOffset());
+			}
+			
 			// overlaps with viewport, add rendering queue offsets to list
 			this.idToOffsetList.add(layout.getZIndex(), layout.getRenderQueueStartOffset(), layout.getRenderQueueEndOffset());
 		}
@@ -96,13 +103,30 @@ public class DisplayRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IE
 		
 		if (depth == 0) {
 			
+			if (debugListener != null) {
+				debugListener.onAllVisibleProcessed_StartReplay(depth);
+			}
+			
 			// write all layers to display renderer
 			pageLayout.forEachLayerSortedOnZIndex((zIndex, renderQueue) -> {
+				
+				if (debugListener != null) {
+					debugListener.onAllVisibleProcessed_ReplayLayer(depth, zIndex);
+				}
+
 				idToOffsetList.replaySorted(renderQueue, displayRenderer, fontLookup);
 			});
-			
+
+			if (debugListener != null) {
+				debugListener.onAllVisibleProcessed_ReplayDone(depth);
+			}
+
 			// sync in case rendered via double buffering
 			displayRenderer.sync();
+
+			if (debugListener != null) {
+				debugListener.onAllVisibleProcessed_DisplaySynced(depth);
+			}
 		}
 	}
 

@@ -12,6 +12,7 @@ import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.FontSettings;
 import com.test.web.layout.IElementRenderLayout;
+import com.test.web.layout.ILayoutDebugListener;
 import com.test.web.layout.LayoutAlgorithm;
 import com.test.web.layout.LayoutState;
 import com.test.web.layout.PageLayout;
@@ -66,7 +67,8 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 			IDelayedRendererFactory renderFactory,
 			FontSettings fontSettings,
 			PageLayout<ELEMENT> pageLayout,
-			HTMLElementListener<ELEMENT, IElementRenderLayout> renderListener) {
+			HTMLElementListener<ELEMENT, IElementRenderLayout> renderListener,
+			ILayoutDebugListener layoutDebugListener) {
 
 		this.documentURL = documentURL;
 		this.delegate = delegate;
@@ -74,7 +76,7 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 		
 		this.fontSettings = fontSettings;
 	
-		this.layoutAlgorithm = new LayoutAlgorithm<>(textExtent, renderFactory, fontSettings, new PrintlnLayoutDebugListener(System.out));
+		this.layoutAlgorithm = new LayoutAlgorithm<>(textExtent, renderFactory, fontSettings, layoutDebugListener);
 		
 		this.tempLayoutStyles = new CSSLayoutStyles();
 		

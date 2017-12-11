@@ -133,6 +133,11 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 		final int endOffset = renderer.getOffset();
 
 		// cache offsets for queued rendering ops so we can replay only this element onto a buffer or display
+
+		if (debugListener != null) {
+			debugListener.onSetRenderQueueOffsets(depth, type, startOffset, endOffset);
+		}
+
 		layout.setRenderQueueOffsets(startOffset, endOffset);
 	}
 

@@ -12,7 +12,6 @@ import com.test.web.layout.FontSettings;
 import com.test.web.layout.IElementRenderLayout;
 import com.test.web.layout.LayoutAlgorithm;
 import com.test.web.layout.PageLayout;
-import com.test.web.layout.PrintlnLayoutDebugListener;
 import com.test.web.layout.ViewPort;
 import com.test.web.loadqueue.common.LoadQueue;
 import com.test.web.loadqueue.common.LoadQueueAndStream;
@@ -40,7 +39,9 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 	private final IDelayedRendererFactory renderFactory;
 	private final IBufferRendererFactory bufferRenderFactory;
 	private final ITextExtent textExtent;
-	
+
+	private final DebugListeners debugListeners;
+
 	protected abstract DOCUMENT createDocument();
 	
 	protected abstract HTMLParser<HTML_ELEMENT, TOKENIZER, STYLE_DOCUMENT> createParser(
@@ -49,7 +50,7 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 			LoadStream stream,
 			CSSContext<CSS_ELEMENT>cssContext);
 	
-	public BaseBrowserDocumentLoader(IDelayedRendererFactory rendererFactory, IBufferRendererFactory bufferRendererFactory, ITextExtent textExtent) {
+	public BaseBrowserDocumentLoader(IDelayedRendererFactory rendererFactory, IBufferRendererFactory bufferRendererFactory, ITextExtent textExtent, DebugListeners debugListeners) {
 
 		if (rendererFactory == null) {
 			throw new IllegalArgumentException("rendererFactory == null");
@@ -62,6 +63,8 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 		this.renderFactory = rendererFactory;
 		this.bufferRenderFactory = bufferRendererFactory;
 		this.textExtent = textExtent;
+
+		this.debugListeners = debugListeners;
 	}
 
 	@Override
@@ -73,7 +76,7 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 				textExtent,
 				renderFactory,
 				new FontSettings(),
-				new PrintlnLayoutDebugListener(System.out));
+				debugListeners.getLayoutListener());
 
 		final CSSContext<HTML_ELEMENT> cssContext = new CSSContext<>();
 		
@@ -94,7 +97,8 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 				pageLayout,
 				displayRenderer,
 				textExtent,
-				new IDToOffsetList()); // TODO cache between invocations?
+				new IDToOffsetList(), // TODO cache between invocations?
+				debugListeners.getDisplayRendererListener());
 		
 		final HTMLRenderer<HTML_ELEMENT> htmlRenderer = new HTMLRenderer<>(renderDebugListener, renderer);
 		
@@ -130,7 +134,8 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 					pageLayout,
 					displayRenderer,
 					textExtent,
-					new IDToOffsetList()); // TODO cache
+					new IDToOffsetList(), // TODO cache
+					debugListeners.getDisplayRendererListener());
 			
 			// HTML renderer that will render to display
 			final HTMLElementListener<HTML_ELEMENT, IElementRenderLayout> renderListener = new HTMLRenderer<>(new PrintlnRenderDebugListener(System.out), renderer);
@@ -147,7 +152,8 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 						renderFactory,
 						fontSettings,
 						pageLayout,
-						renderListener);
+						renderListener,
+						debugListeners.getLayoutListener());
 			
 			// All CSS definitions collected here
 			final CSSContext<CSS_ELEMENT> cssContext = new CSSContext<>();

@@ -23,8 +23,8 @@ public class OOBrowserDocumentLoader
 		extends BaseBrowserDocumentLoader<OOTagElement, OOTokenizer, OOHTMLDocument, OOCSSElement, OOCSSDocument>
 		implements IBrowserDocumentLoader<OOTagElement, OOCSSElement> {
 	
-	public OOBrowserDocumentLoader(IDelayedRendererFactory rendererFactory, IBufferRendererFactory bufferedRendererFactory, ITextExtent textExtent) {
-		super(rendererFactory, bufferedRendererFactory, textExtent);
+	public OOBrowserDocumentLoader(IDelayedRendererFactory rendererFactory, IBufferRendererFactory bufferedRendererFactory, ITextExtent textExtent, DebugListeners debugListeners) {
+		super(rendererFactory, bufferedRendererFactory, textExtent, debugListeners);
 	}
 	
 	private OOCSSDocument parseCSS(CharInput charInput, CSSContext<OOCSSElement> cssContext) throws IOException, ParserException {

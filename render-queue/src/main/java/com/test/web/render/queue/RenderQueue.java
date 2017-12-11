@@ -19,13 +19,13 @@ class RenderQueue implements IDelayedRenderer {
 
 	private final 	LongBuf primary;
 
-	RenderQueue() {
+	RenderQueue(IRenderQueueDebugListener debugListener) {
 		
 		final DuplicateDetectingStringStorageBuffer stringStorageBuffer = new DuplicateDetectingStringStorageBuffer();
 		
-		final LongBuf secondary = new LongBuf(stringStorageBuffer, null);
+		final LongBuf secondary = new LongBuf(stringStorageBuffer, null, debugListener);
 		
-		this.primary = new LongBuf(stringStorageBuffer, secondary);
+		this.primary = new LongBuf(stringStorageBuffer, secondary, debugListener);
 	}
 
 	@Override

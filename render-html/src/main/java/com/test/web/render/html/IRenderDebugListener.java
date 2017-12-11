@@ -10,4 +10,6 @@ public interface IRenderDebugListener {
 	void onElementEnd(int depth, HTMLElement element, IElementLayout layout);
 	
 	void onText(int depth, IElementLayout layout, String text);
+	
+	void onSetRenderQueueOffsets(int depth, HTMLElement element, int startOffset, int endOffset);
 }

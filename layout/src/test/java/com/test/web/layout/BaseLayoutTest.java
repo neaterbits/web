@@ -215,7 +215,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 
 	private PageLayer<HTML_ELEMENT> layout(Document<HTML_ELEMENT> doc, int viewPortWidth, int viewPortHeight) {
 		
-		final IDelayedRendererFactory renderFactory = new QueueRendererFactory();
+		final IDelayedRendererFactory renderFactory = new QueueRendererFactory(null);
 		
 		final ViewPort viewPort = new ViewPort(viewPortWidth, viewPortHeight);
 		

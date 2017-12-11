@@ -28,4 +28,9 @@ public class PrintlnRenderDebugListener implements IRenderDebugListener, IIndent
 	public void onText(int depth, IElementLayout layout, String text) {
 		indent(depth, out).println("RENDER TEXT \"" + text + "\" at " + layout);
 	}
+
+	@Override
+	public void onSetRenderQueueOffsets(int depth, HTMLElement element, int startOffset, int endOffset) {
+		indent(depth, out).println("RENDER OFFSETS for " + element + ": " + startOffset + ", " + endOffset);
+	}
 }

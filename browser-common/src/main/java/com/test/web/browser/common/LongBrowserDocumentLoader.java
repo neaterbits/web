@@ -21,8 +21,8 @@ public class LongBrowserDocumentLoader
 		extends BaseBrowserDocumentLoader<Integer, LongTokenizer, LongHTMLDocument, Integer, LongCSSDocument>
 		implements IBrowserDocumentLoader<Integer, Integer> {
 
-	public LongBrowserDocumentLoader(IDelayedRendererFactory rendererFactory,  IBufferRendererFactory bufferRendererFactory, ITextExtent textExtent) {
-		super(rendererFactory, bufferRendererFactory, textExtent);
+	public LongBrowserDocumentLoader(IDelayedRendererFactory rendererFactory,  IBufferRendererFactory bufferRendererFactory, ITextExtent textExtent, DebugListeners debugListeners) {
+		super(rendererFactory, bufferRendererFactory, textExtent, debugListeners);
 	}
 
 	private LongCSSDocument parseCSS(CharInput charInput, CSSContext<Integer> cssContext) throws IOException, ParserException {

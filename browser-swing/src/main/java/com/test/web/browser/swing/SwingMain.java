@@ -22,7 +22,7 @@ public class SwingMain {
 		final ITextExtent textExtent = new AWTTextExtent();
 		
 		final IBrowserDocumentLoader<OOTagElement, OOCSSElement> documentLoader
-				= new OOBrowserDocumentLoader(new QueueRendererFactory(), renderFactory, textExtent);
+				= new OOBrowserDocumentLoader(new QueueRendererFactory(null), renderFactory, textExtent, null);
 		
 		final BrowserMain<OOTagElement, OOCSSElement> main = new BrowserMain<>(uiFactory, documentLoader);
 		
