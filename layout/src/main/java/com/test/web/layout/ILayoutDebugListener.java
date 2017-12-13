@@ -22,7 +22,7 @@ public interface ILayoutDebugListener {
 	void onComputedWidth(int depth, int curAvailableWidth, int subAvailableWidth, int subCSSWidth, boolean hasCSSWidth);
 
 	void onComputedHeight(int depth, int curAvailableHeight, int subAvailableHeight, int subCSSHeight, boolean hasCSSHeight);
-
+	
 	void onResultingLayout(int depth, IElementLayout layout);
 	
 	// after element

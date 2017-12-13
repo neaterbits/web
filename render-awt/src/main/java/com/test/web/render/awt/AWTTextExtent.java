@@ -8,7 +8,7 @@ import com.test.web.render.common.ITextExtent;
 public class AWTTextExtent implements ITextExtent {
 
 	@Override
-	public IFont getFont(String fontFamily, String fontName, int fontSize, int styleFlags) {
+	public IFont getFont(String fontFamily, int fontSize, int styleFlags) {
 
 		int awtStyleFlags = 0;
 		
@@ -20,9 +20,9 @@ public class AWTTextExtent implements ITextExtent {
 			awtStyleFlags |= Font.ITALIC;
 		}
 
-		final Font font = new Font(fontName, awtStyleFlags, fontSize);
+		final Font font = new Font(fontFamily, awtStyleFlags, fontSize);
 		
-		return new AWTFont(font);
+		return new AWTFont(fontFamily, fontSize, styleFlags, font);
 	}
 
 	@Override

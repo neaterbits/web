@@ -1,8 +1,8 @@
 package com.test.web.layout;
 
 import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IFont;
-import com.test.web.render.common.IRenderer;
 
 final class ElementLayout implements IElementRenderLayout {
 	
@@ -23,7 +23,10 @@ final class ElementLayout implements IElementRenderLayout {
 	// dimensions/position of the resulting html element, always including margins and padding
 	// so might not be same as width/height from CSS since by default padding and margin comes in addition to these
 	private final Dimensions outer;
-	
+
+	// same as outer but positioned relative to start of document
+	private final Dimensions absolute;
+
 	// margin in pixels
 	private final Wrapping margin;
 	
@@ -32,10 +35,20 @@ final class ElementLayout implements IElementRenderLayout {
 	
 	private final Dimensions inner;
 
-	private IRenderer renderer;
+	private int zIndex;
+	private IDelayedRenderer renderer;
+	
+	// Set to true whenever initialized outer, margin, padding and inner
+	private boolean boundsComputed;
+
+	// Offset into renderqueue for render operations for this element
+	// TODO move elsewhere? Not directly related to layout
+	private int renderQueueStartOffset;
+	private int renderQueueEndOffset;
 	
 	ElementLayout() {
 		this.outer = new Dimensions();
+		this.absolute = new Dimensions();
 		this.inner = new Dimensions();
 		this.margin = new Wrapping();
 		this.padding = new Wrapping();
@@ -52,6 +65,7 @@ final class ElementLayout implements IElementRenderLayout {
 		this.hasCSSHeight = toCopy.hasCSSHeight;
 		
 		this.outer = toCopy.outer.makeCopy();
+		this.absolute = toCopy.outer.makeCopy();
 		this.inner = toCopy.inner.makeCopy();
 		this.margin = toCopy.margin.makeCopy();
 		this.padding = toCopy.padding.makeCopy();
@@ -74,12 +88,20 @@ final class ElementLayout implements IElementRenderLayout {
 		this.display = display;
 	}
 	
-	void setRenderer(IRenderer renderer) {
+	void clear() {
+		this.display = null;
+		this.renderer = null;
+		this.sumWidth = sumHeight = 0;
+		this.boundsComputed = false;
+	}
+	
+	void setRenderer(int zIndex, IDelayedRenderer renderer) {
 		
 		if (renderer == null) {
 			throw new IllegalArgumentException("renderer == null");
 		}
 		
+		this.zIndex = zIndex;
 		this.renderer = renderer;
 	}
 
@@ -90,6 +112,11 @@ final class ElementLayout implements IElementRenderLayout {
 
 	void setFont(IFont font) {
 		this.font = font;
+	}
+	
+	@Override
+	public int getZIndex() {
+		return zIndex;
 	}
 
 	void setHasCSSWidth(boolean hasCSSWidth) {
@@ -112,6 +139,10 @@ final class ElementLayout implements IElementRenderLayout {
 		return outer;
 	}
 
+	Dimensions getAbsolute() {
+		return absolute;
+	}
+
 	Dimensions getInner() {
 		return inner;
 	}
@@ -124,9 +155,27 @@ final class ElementLayout implements IElementRenderLayout {
 		return padding;
 	}
 
+	void setBoundsComputed() {
+		if (boundsComputed) {
+			throw new IllegalStateException("bounds computed twice");
+		}
+
+		this.boundsComputed = true;
+	}
+
+	@Override
+	public boolean areBoundsComputed() {
+		return boundsComputed;
+	}
+
 	@Override
 	public IBounds getOuterBounds() {
 		return outer;
+	}
+
+	@Override
+	public IBounds getAbsoluteBounds() {
+		return absolute;
 	}
 
 	@Override
@@ -145,8 +194,24 @@ final class ElementLayout implements IElementRenderLayout {
 	}
 
 	@Override
-	public IRenderer getRenderer() {
+	public IDelayedRenderer getRenderer() {
 		return renderer;
+	}
+
+	@Override
+	public int getRenderQueueStartOffset() {
+		return renderQueueStartOffset;
+	}
+
+	@Override
+	public int getRenderQueueEndOffset() {
+		return renderQueueEndOffset;
+	}
+	
+	@Override
+	public void setRenderQueueOffsets(int startOffset, int endOffset) {
+		this.renderQueueStartOffset = startOffset;
+		this.renderQueueEndOffset   = endOffset;
 	}
 
 	@Override

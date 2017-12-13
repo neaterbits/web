@@ -11,7 +11,8 @@ public class AWTFont extends BaseFont implements IFont {
 
 	private final Font font;
 
-	AWTFont(Font font) {
+	AWTFont(String fontFamily, int fontSize, int styleFlags, Font font) {
+		super(fontFamily, fontSize, styleFlags);
 		
 		if (font == null) {
 			throw new IllegalArgumentException("font == null");

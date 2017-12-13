@@ -13,8 +13,9 @@ public class SWTFont extends BaseFont implements IFont {
 	
 	private final GC gc;
 	
-	SWTFont(Font font, int height) {
-
+	SWTFont(String fontFamily, int fontSize, int styleFlags, Font font, int height) {
+		super(fontFamily, fontSize, styleFlags);
+		
 		if (font == null) {
 			throw new IllegalArgumentException("font == null");
 		}

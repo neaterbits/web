@@ -4,8 +4,16 @@ import com.test.web.css.common.enums.CSSUnit;
 
 class LayoutHelperUnits {
 
+	static int computeWidthPx(int width, CSSUnit widthUnit, IElementLayout containerLayout) {
+		return computeWidthPx(width, widthUnit, containerLayout.getOuterBounds().getWidth());
+	}
+
 	static int computeWidthPx(int width, CSSUnit widthUnit, int curWidth) {
 		return computeSizePx(width, widthUnit, curWidth);
+	}
+
+	static int computeHeightPx(int width, CSSUnit widthUnit, IElementLayout containerLayout) {
+		return computeHeightPx(width, widthUnit, containerLayout.getOuterBounds().getHeight());
 	}
 
 	static int computeHeightPx(int height, CSSUnit heightUnit, int curHeight) {

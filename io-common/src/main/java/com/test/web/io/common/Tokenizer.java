@@ -1,8 +1,7 @@
 package com.test.web.io.common;
 
+import com.test.web.buffers.DuplicateDetectingStringStorageBuffer;
 import java.math.BigDecimal;
-
-import com.test.web.buffers.StringStorageBuffer;
 import com.test.web.types.IEnum;
 
 /**
@@ -17,7 +16,7 @@ public interface Tokenizer {
 	
 	boolean equalsIgnoreCase(String s);
 	
-	int addToBuffer(StringStorageBuffer buffer, int startOffset, int endSkip);
+	int addToBuffer(DuplicateDetectingStringStorageBuffer buffer, int startOffset, int endSkip);
 	
 	String asString(int startOffset, int endSkip);
 

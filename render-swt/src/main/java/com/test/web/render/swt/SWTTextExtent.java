@@ -22,7 +22,7 @@ public class SWTTextExtent implements ITextExtent {
 	}
 
 	@Override
-	public IFont getFont(String fontFamily, String fontName, int fontSize, int styleFlags) {
+	public IFont getFont(String fontFamily, int fontSize, int styleFlags) {
 		
 		int swtStyleFlags = 0;
 		
@@ -34,9 +34,9 @@ public class SWTTextExtent implements ITextExtent {
 			swtStyleFlags |= SWT.ITALIC;
 		}
 
-		final Font font = new Font(device, new FontData(fontName, fontSize, swtStyleFlags));
+		final Font font = new Font(device, new FontData(fontFamily, fontSize, swtStyleFlags));
 		
-		return new SWTFont(font, fontSize);
+		return new SWTFont(fontFamily, fontSize, styleFlags, font, fontSize);
 	}
 
 	@Override

@@ -4,11 +4,11 @@ import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 
-import com.test.web.render.common.IBufferRenderFactory;
+import com.test.web.render.common.IBufferRendererFactory;
 import com.test.web.render.common.IRenderer;
 
 
-public class SWTBufferRenderFactory implements IBufferRenderFactory {
+public class SWTBufferRenderFactory implements IBufferRendererFactory {
 
 	private final Device device;
 	

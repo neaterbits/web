@@ -17,7 +17,7 @@ public class FontSettings {
 	public FontSettings() {
 		this.defaultFonts = new HashMap<>();
 
-		final FontSpec defaultTextFont = new FontSpec(null, TIMES, (short)16);
+		final FontSpec defaultTextFont = new FontSpec(TIMES, (short)16);
 		
 		add(HTMLElement.DIV, defaultTextFont);
 		add(HTMLElement.SPAN, defaultTextFont);
@@ -30,8 +30,8 @@ public class FontSettings {
 		add(HTMLElement.A, defaultTextFont);
 	}
 	
-	private void add(HTMLElement element, String name, int size) {
-		add(element, new FontSpec(null, name, (short)size));
+	private void add(HTMLElement element, String family, int size) {
+		add(element, new FontSpec(family, (short)size));
 	}
 
 	private void add(HTMLElement element, FontSpec fontSpec) {

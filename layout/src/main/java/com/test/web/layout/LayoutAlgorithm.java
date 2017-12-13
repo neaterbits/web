@@ -1,17 +1,17 @@
 package com.test.web.layout;
 
 import com.test.web.css.common.CSSContext;
-import com.test.web.css.common.CSSLayoutStyles;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.document.common.Document;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io.common.Tokenizer;
-import com.test.web.render.common.IBufferRenderFactory;
+import com.test.web.layout.TextUtil.NumberOfChars;
+import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.IFont;
-import com.test.web.render.common.IRenderer;
 import com.test.web.render.common.ITextExtent;
 import com.test.web.types.FontSpec;
+import com.test.web.types.Pixels;
 
 
 /*
@@ -28,7 +28,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	private final ITextExtent textExtent;
 	
 	// For creating renderers, rendering occurs in the same pass (but renderer implenentation might just queue operations for later)
-	private final IBufferRenderFactory renderFactory;
+	private final IDelayedRendererFactory rendererFactory;
 	private final ILayoutDebugListener debugListener;
 	
 	private final FontSettings fontSettings;
@@ -37,30 +37,28 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	
 	public LayoutAlgorithm(
 			ITextExtent textExtent,
-			IBufferRenderFactory renderFactory,
+			IDelayedRendererFactory rendererFactory,
 			FontSettings fontSettings,
 			ILayoutDebugListener debugListener) {
 		this.textExtent = textExtent;
 		this.textUtil = new TextUtil(textExtent);
 		this.fontSettings = fontSettings;
-		this.renderFactory = renderFactory;
+		this.rendererFactory = rendererFactory;
 		this.debugListener = debugListener;
 	}
 
-	public PageLayout<ELEMENT> layout(Document<ELEMENT> document, ViewPort viewPort, CSSContext<ELEMENT> cssContext, HTMLElementListener<ELEMENT, IElementRenderLayout> listener, IRenderer displayRenderer) {
+	public void layout(Document<ELEMENT> document, ViewPort viewPort, CSSContext<ELEMENT> cssContext, PageLayout<ELEMENT> pageLayout, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
 		
-		final LayoutState<ELEMENT> state = new LayoutState<>(textExtent, viewPort, displayRenderer, cssContext, listener);
+		final LayoutState<ELEMENT> state = new LayoutState<>(textExtent, viewPort, cssContext, pageLayout, listener);
 		
 		document.iterate(this, state);
-		
-		return state.getPageLayout();
 	}
 	
 	private int getDebugDepth(LayoutState<ELEMENT> state) {
 		// state depth includes outer viewport so has to subtract one
 		return state.getDepth() - 1;
 	}
-	
+
     @Override
 	public void onElementStart(Document<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
     	
@@ -68,7 +66,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
     	if (!elementType.isLayoutElement()) {
     		return;
-    	}
+    	}	
     	
     	if (debugListener != null) {
     		debugListener.onElementStart(
@@ -80,33 +78,53 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	}
 
     	// get layout information for the container of the element we're getting a callback on
-    	final StackElement cur = state.getCur();
+    	final StackElement container = state.getCur();
 
     	// Push new sub-element onto stack with remaining width and height from current element
-    	final StackElement sub = state.push(cur.getRemainingWidth(), cur.getRemainingHeight());
+    	final StackElement sub = state.push(container.getRemainingWidth(), container.getRemainingHeight());
     	
     	// Compute all style information from defaults, css files, in-document style text and style attributes.
     	// Store the result in sub
     	computeStyles(state, document, element, elementType, sub);
+    
+    	final BaseLayoutCase layoutCase = LayoutCases.determineLayoutCase(container, sub.layoutStyles, elementType);
 
-    	tryComputeLayoutOfBlockBehavingElement(state, cur, sub);
+    	sub.setLayoutCase(layoutCase);
+    	
+    	layoutCase.onElementStart(container, element, sub, state);
 
-		// Set resulting font of element, this is common for all display styles
-		final FontSpec spec = sub.layoutStyles.getFont();
-		final IFont font = state.getOrOpenFont(spec, FontStyle.NONE); // TODO: font styles
-		sub.resultingLayout.setFont(font);
+		// Set resulting font of element, this is common for all display styles and is known at this point in time
+    	setResultingFont(state, sub);
 
 		// Got layout, set renderer from appropriate layer so that rendering can find it, rendering may happen already during this pass
-		final short zIndex = sub.layoutStyles.getZIndex();
-		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, renderFactory);
-		sub.resultingLayout.setRenderer(layer.getRenderer());
+    	setResultingRenderer(state, sub);
 
 		// listener, eg renderer
 		if (state.getListener() != null) {
-			state.getListener().onElementStart(document, element, null);
+			state.getListener().onElementStart(document, element, sub.resultingLayout);
+		}
+		
+		if (debugListener!= null && sub.resultingLayout.areBoundsComputed()) {
+			debugListener.onResultingLayout(getDebugDepth(state), sub.resultingLayout);
 		}
 	}
     
+    private void setResultingFont(LayoutState<ELEMENT> state, StackElement sub) {
+		final FontSpec spec = sub.layoutStyles.getFont();
+		final IFont font = state.getOrOpenFont(spec, FontStyle.NONE); // TODO: font styles
+		sub.resultingLayout.setFont(font);
+    }
+    
+    private void setResultingRenderer(LayoutState<ELEMENT> state, StackElement sub) {
+		final short zIndex = sub.layoutStyles.getZIndex();
+		
+		setResultingRenderer(state, sub, zIndex);
+    }
+    
+    private void setResultingRenderer(LayoutState<ELEMENT> state, StackElement sub, int zIndex) {
+		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, rendererFactory);
+		sub.resultingLayout.setRenderer(zIndex, layer.getRenderer());
+    }
   
     @Override
 	public void onElementEnd(Document<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
@@ -118,51 +136,39 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	}
     	
     	// End of element where wer're at
-		final StackElement cur = state.getCur();
-		
+		final StackElement sub = state.getCur();
+	
+		final boolean boundsAlreadyComputed = sub.resultingLayout.areBoundsComputed();
+			    
 		state.pop();
     	
     	if (debugListener != null) {
     		debugListener.onElementEnd(getDebugDepth(state) , elementType);
     	}
 
-		final StackElement parent = state.getCur();
-		
+		final StackElement container = state.getCur();
+
 		// Now should have collected relevant information to do layout and find the dimensions
 		// of the element and also the margins and padding?
 		// does not know size of content yet so cannot for sure know height of element
-		computeLayout(elementType, cur.layoutStyles, parent, cur, document, element);
-		
+		sub.getLayoutCase().onElementEnd(container, element, sub, state);
+
 		// Got layout, add to layer
-		final short zIndex = cur.layoutStyles.getZIndex();
+		final short zIndex = sub.layoutStyles.getZIndex();
 		
-		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, renderFactory);
-		
+		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, rendererFactory);
+
 		// make copy since resulting layout is reused
-		layer.add(element, cur.resultingLayout.makeCopy());
+		// TODO long-buffer version
+		layer.add(element, sub.resultingLayout.makeCopy());
 
-		// Has computed sub element size by now so can add
-		if (!parent.resultingLayout.hasCSSWidth()) {
-			// no width from CSS so must add this element to size of current element
-			//parent.resultingLayout.getOuter().addToWidth(cur.resultingLayout.getOuter().getWidth());
-		}
-		
-		// Add to height of current element if is taller than max for current element
-		final int height = cur.resultingLayout.getOuter().getHeight();
-
-		if (height > parent.getMaxBlockElementHeight()) {
-			parent.setMaxBlockElementHeight(height);
-		}
-	
-		/*
-		if (!parent.resultingLayout.hasCSSHeight()) {
-			// no width from CSS so must add this element to size of current element
-			parent.resultingLayout.getDimensions().addToHeight(cur.resultingLayout.getDimensions().getHeight());
-		}
-		*/
-		
 		if (state.getListener() != null) {
-			state.getListener().onElementEnd(document, element, cur.resultingLayout);
+			state.getListener().onElementEnd(document, element, sub.resultingLayout);
+		}
+		
+		// log layout computation if was done in onElementEnd()
+		if (debugListener != null && ! boundsAlreadyComputed && sub.resultingLayout.areBoundsComputed()) {
+			debugListener.onResultingLayout(getDebugDepth(state), sub.resultingLayout);
 		}
 	}
 
@@ -179,48 +185,114 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     	}
 
 		final StackElement cur = state.getCur();
+		
+		// just add to current text line as many characters as there are room for, or all the text if needed
+		computeAndAddInlineText_wrapAndRenderAsNecessary(document, element, cur, text, state);
+		
+		
+		// onTextComputeAndRender(document, element, text, cur, state);
+	}
+    
+    private void computeAndAddInlineText_wrapAndRenderAsNecessary(Document<ELEMENT> document, ELEMENT element, StackElement cur, String text, LayoutState<ELEMENT> state) {
+		final IFont font = cur.resultingLayout.getFont();
 
+		String remainingText = text;
+		
+		// Must push a separate layout for text for passing text bounds
+		final StackElement textElem = state.push(cur.getRemainingWidth(), cur.getRemainingHeight());
+		
+		setResultingRenderer(state, textElem, cur.layoutStyles.getZIndex());
+
+		// TODO must reflect any inline elements
+		int xPos = cur.getCollectedBlockWidth();
+		int yPos = cur.getCollectedBlockHeight();
+		
+		while ( ! remainingText.isEmpty() ) {
+		
+	    	// find number of chars width regards to this line
+			final NumberOfChars numChars = textUtil.findNumberOfChars(remainingText, cur.getRemainingWidth(), font);
+	
+			final boolean lineWrapped;
+			final String lineText;
+			
+			final int numCharsOnLine = numChars.getNumberOfChars();
+			
+			if (numCharsOnLine < text.length()) {
+				
+				// Not enough room for all of text, which means that line wraps.
+				// figure max height, baseline and render line
+				lineWrapped = true;
+				lineText = remainingText.substring(0, numCharsOnLine);
+
+				remainingText = remainingText.substring(numCharsOnLine);
+			}
+			else {
+				// space for all characters
+				lineWrapped = false;
+				lineText = remainingText;
+				
+				remainingText = ""; // to exit loop
+			}
+			
+
+			cur.addInlineText(lineText);
+			
+			final int lineHeight = font.getHeight();
+			
+			final ElementLayout containerLayout = cur.resultingLayout;
+			
+			// Compute bounds of text
+			textElem.resultingLayout.getOuter().init(xPos, yPos, numChars.getWidth(), lineHeight);
+			textElem.resultingLayout.getInner().init(xPos, yPos, numChars.getWidth(), lineHeight);
+			
+			textElem.resultingLayout.getAbsolute().init(
+					containerLayout.getAbsolute().getLeft() + xPos,
+					containerLayout.getAbsolute().getTop() + yPos,
+					numChars.getWidth(),
+					lineHeight);
+
+			textElem.resultingLayout.setBoundsComputed();
+			
+			// render each item of text in a separate callback
+			if (state.getListener() != null) {
+				state.getListener().onText(document, element, lineText, textElem.resultingLayout);
+			}
+
+			xPos = 0;
+			yPos += lineHeight;
+		}
+		
+		state.pop();
+    }
+ 
+    private void renderCurrentTextLine() {
+    	throw new UnsupportedOperationException("TODO");
+    }
+    
+    @Deprecated // does not take varying inline element height into account
+    private void onTextComputeAndRender(Document<ELEMENT> document, ELEMENT element, String text, StackElement cur, LayoutState<ELEMENT> state) {
 		final IFont font = cur.resultingLayout.getFont();
 		
 		final int width = textUtil.getTextLengthOrAvailableWidth(text, cur.getAvailableWidth(), font);
 		
-		int height = 0;
+		int height;
 		
-		if (cur.getAvailableWidth() != -1) {
+		if (cur.getAvailableWidth() != Pixels.NONE) {
 			// We have to compute number of lines for this text
 			// TODO: floats
-			
-			String s = text;
-			
-			for (;;) {
-			
-				// For each line, find with of text
-				int numChars = textUtil.findNumberOfChars(s, cur.getAvailableWidth(), font);
-				
-				if (numChars == 0 && !s.isEmpty()) {
-					throw new IllegalStateException("No room for characters in element of width " + cur.getAvailableWidth());
-				}
-				
-				// System.out.println("## numChars "+ numChars + " of \"" + s + "\"");
-				
-				height += textUtil.getTextLineHeight(cur, font);
-				
-				if (numChars == s.length()) {
-					// was room for rest of string, exit
-					break;
-				}
-				
-				s = s.substring(numChars);
-			}
+	
+			height = textUtil.computeTextLinesHeight(text, cur, font);
 		}
 		else {
 			// height is size of text line
 			height = textUtil.getTextLineHeight(cur, font);
 		}
 
+		/*
 		if (height > cur.getMaxBlockElementHeight()) {
 			cur.setMaxBlockElementHeight(height);
 		}
+		*/
 		
 		if (state.getListener() != null) {
 			
@@ -231,76 +303,18 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			
 			state.getListener().onText(document, element, text, cur.getResultingLayout());
 		}
-
-		// addWidthToCur(cur, width);
-	}
-    
-    /*
-    private void addWidthToCur(StackElement cur, int width) {
-		switch (cur.layoutStyles.getDisplay()) {
-		case BLOCK:
-			// adds to width if is larger than current width
-			// TODO margin and padding?
-			break;
-
-		case INLINE:
-			// text adds to width of element
-			cur.resultingLayout.getOuter().addToWidth(width);
-			break;
-
-		default:
-			throw new UnsupportedOperationException("Unknown display " + cur.layoutStyles.getDisplay());
-		}
     }
-    */
+    
 	
-	private void computeLayout(HTMLElement elementType, CSSLayoutStyles styles, StackElement cur, StackElement sub, Document<ELEMENT> document, ELEMENT element) {
-
-		// Can we compute the dimensions of the element regardless of the position? Depends on overflow property etc, whether can scroll? Has to takes current layout into account
-	
-		if (styles.getFloat() != null) {
-			throw new UnsupportedOperationException("TODO: support floats");
-		}
-		
-		if (styles.getDisplay() == null) {
-			throw new IllegalStateException("No CSS display computed for element of type " + elementType);
-		}
-
-		switch (styles.getDisplay()) {
-		case BLOCK:
-			
-			// continue after next element on this index
-			// computeBlockElementPosition(styles, dimensions);
-			// Since this a block
-			break;
-			
-		case INLINE:
-			// computeInlineElementPosition(styles, dimensions);
-			break;
-		
-		default:
-			throw new UnsupportedOperationException("Unknown display style " + styles.getDisplay());
-		}
-		
-	}
-	
-	private void computeBlockElementPosition(CSSLayoutStyles styles, Dimensions dimensions) {
-		
-	}
-
-	private void computeInlineElementPosition(CSSLayoutStyles styles, Dimensions dimensions) {
-		
-	}
-
 	private int setBlockBehavingElementWidthIfPresentInCSS(LayoutState<ELEMENT> state, StackElement container, StackElement sub) {
 		
-		int cssWidth;
+		int cssWidthPx;
 
 		if (sub.layoutStyles.hasWidth()) {
 			// has width, compute and update
-			cssWidth = LayoutHelperUnits.computeWidthPx(sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), container.getRemainingWidth());
+			cssWidthPx = LayoutHelperUnits.computeWidthPx(sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), container.getRemainingWidth());
 
-	    	if (cssWidth <= 0) {
+	    	if (cssWidthPx <= 0) {
 				throw new IllegalStateException("Computed width 0 from "  + sub.layoutStyles.getWidth() + " of unit " + sub.layoutStyles.getWidthUnit());
 			}
 	    	
@@ -308,57 +322,58 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 			sub.resultingLayout.setHasCSSWidth(true);
 			
 			// remaining - width may be negative below, eg if there is overflow
-			final int remaining = Math.max(0, container.getRemainingWidth() - cssWidth);
+			final int remaining = Math.max(0, container.getRemainingWidth() - cssWidthPx);
 			
 			container.setRemainingWidth(remaining);
 
-			sub.setAvailableWidth(cssWidth);
-			sub.setRemainingWidth(cssWidth);
+			sub.setAvailableWidth(cssWidthPx);
+			sub.setRemainingWidth(cssWidthPx);
 
 			if (debugListener != null) {
-	    		debugListener.onComputedWidth(getDebugDepth(state), container.getAvailableWidth(), sub.getAvailableWidth(), cssWidth, sub.layoutStyles.hasWidth());
+	    		debugListener.onComputedWidth(getDebugDepth(state), container.getAvailableWidth(), sub.getAvailableWidth(), cssWidthPx, sub.layoutStyles.hasWidth());
 	    	}
 		}
 		else {
-			cssWidth = -1;
+			cssWidthPx = Pixels.NONE;
 		}
 
-		return cssWidth;
+		return cssWidthPx;
  	}
 
+	@Deprecated
 	private int setBlockBehavingElementHeightIfPresentInCSS(LayoutState<ELEMENT> state, StackElement container, StackElement sub) {
 		// Cache values since may be updated further down
-		int height = -1;
-    	final int cssHeight;
+		int heightPx = Pixels.NONE;
+    	final int cssHeighPxt;
 		
 		if (sub.layoutStyles.hasHeight()) {
 			// has width, compute and update
-			cssHeight = LayoutHelperUnits.computeHeightPx(sub.layoutStyles.getHeight(), sub.layoutStyles.getHeightUnit(), container.getAvailableHeight());
+			cssHeighPxt = LayoutHelperUnits.computeHeightPx(sub.layoutStyles.getHeight(), sub.layoutStyles.getHeightUnit(), container.getAvailableHeight());
 
-	    	// height is -1 if cur.getAvailableHeight() == -1 (scrolled webage with no specified height)
-	    	if (cssHeight != -1) {
+	    	// height is Pixels.NONE if cur.getAvailableHeight() == Pixels.NONE (scrolled webage with no specified height)
+	    	if (cssHeighPxt != Pixels.NONE) {
 	    		sub.resultingLayout.setHasCSSHeight(true);
 	    	}
 		}
 		else {
-			cssHeight = -1;
+			cssHeighPxt = Pixels.NONE;
 		}
 		
     	if (debugListener != null) {
-    		debugListener.onComputedHeight(getDebugDepth(state), container.getAvailableHeight(), sub.getAvailableHeight(), cssHeight, sub.layoutStyles.hasHeight());
+    		debugListener.onComputedHeight(getDebugDepth(state), container.getAvailableHeight(), sub.getAvailableHeight(), cssHeighPxt, sub.layoutStyles.hasHeight());
     	}
 		
-		if (cssHeight == -1) {
+		if (cssHeighPxt == Pixels.NONE) {
 			// No CSS height, height is computed from what is available in container, or from size of element, knowing width
 			
 			if (container.getRemainingHeight() > 0) {
 				// Set to rest of available height
-				height = container.getRemainingHeight();
+				heightPx = container.getRemainingHeight();
 
 				// Not set remaining height to 0 here, that only happens when we switch to new block
 			}
 			else if (container.getRemainingHeight() == 0) {
-				height = 0;
+				heightPx = 0;
 			}
 			else {
 				// We must compute element height, but element is nested so we do not know yet, we must figure out
@@ -368,13 +383,14 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		}
 
 		
-		// height might be -1
-		sub.resultingLayout.getOuter().setHeight(height);
-		sub.setAvailableHeight(height);
+		// height might be Pixels.NONE
+		sub.resultingLayout.getOuter().setHeight(heightPx);
+		sub.setAvailableHeight(heightPx);
 		
-		return height;
+		return heightPx;
 	}
 
+	@Deprecated
 	private boolean tryComputeLayoutOfBlockBehavingElement(LayoutState<ELEMENT> state, StackElement cur, StackElement sub) {
 		// Adjust sub available width/height if is set
 
@@ -383,16 +399,12 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		
 		final boolean layoutComputed;
 		
-		if (width != -1 && height != -1) {
+		if (width != Pixels.NONE && height != Pixels.NONE) {
 			// Compute inner-dimensions
 			LayoutHelperWrappingBounds.computeDimensionsFromOuter(
 					sub.layoutStyles.getDisplay(),
-					cur.getRemainingWidth(),
-					width,
-					sub.layoutStyles.hasWidth(),
-					cur.getRemainingHeight(),
-					height,
-					sub.layoutStyles.hasHeight(),
+					cur.getRemainingWidth(),  width,  sub.layoutStyles.hasWidth(),
+					cur.getRemainingHeight(), height, sub.layoutStyles.hasHeight(),
 					sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
 	
 			if (debugListener != null) {
@@ -440,7 +452,5 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	    		debugListener.onElementStyleAttribute(getDebugDepth(state), sub.layoutStyles);
 	    	}
 		}
-	
 	}
-
 }

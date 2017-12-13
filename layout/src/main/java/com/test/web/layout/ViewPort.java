@@ -10,11 +10,11 @@ public class ViewPort {
 		this.viewPortHeight = viewPortHeight;
 	}
 
-	public int getViewPortWidth() {
+	public int getWidth() {
 		return viewPortWidth;
 	}
 
-	public int getViewPortHeight() {
+	public int getHeight() {
 		return viewPortHeight;
 	}
 }

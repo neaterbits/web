@@ -1,20 +1,81 @@
 package com.test.web.layout;
 
 import com.test.web.css.common.CSSDimensions;
+import com.test.web.css.common.CSSLayoutStyles;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.types.Pixels;
 
 // related to computing margins, padding and inner and outer bounds of elements
 class LayoutHelperWrappingBounds {
-	
+
+	  static void computeDimensionsFromKnownCSSDims(CSSLayoutStyles layoutStyles,
+			  int containerWidth, int containerHeight,
+			  int containerRemainingWidth, int containerRemainingHeight,
+			  ElementLayout resultingLayout) {
+		  
+		 if ( ! layoutStyles.hasWidth() || ! layoutStyles.hasHeight()) {
+			  throw new IllegalArgumentException("CSS dims not known");
+		 }
+		  
+		// Knows sub elements size already, can make some computations
+		final int widthPx  = LayoutHelperUnits.computeWidthPx (layoutStyles.getWidth(), layoutStyles.getWidthUnit(), containerWidth);
+		final int heightPx = LayoutHelperUnits.computeHeightPx(layoutStyles.getHeight(), layoutStyles.getHeightUnit(), containerHeight);
+		
+		LayoutHelperWrappingBounds.computeDimensionsFromOuter(
+			layoutStyles.getDisplay(),
+			containerRemainingWidth,  widthPx, layoutStyles.hasWidth(),
+			containerRemainingHeight, heightPx, layoutStyles.hasHeight(),
+			layoutStyles.getMargins(), layoutStyles.getPadding(), resultingLayout);
+		  
+	  }
+
+	  static void computeDimensionsFromOuter(
+	    		CSSLayoutStyles layoutStyles,
+				int containerWidth, int containerHeight,
+	    		int remainingWidth, int remainingHeight,
+	    		ElementLayout resultingLayout) {
+		  
+		  final int widthPx;
+		  final boolean hasCSSWidth;
+		  
+		  if (layoutStyles.hasWidth()) {
+			  widthPx = LayoutHelperUnits.computeWidthPx (layoutStyles.getWidth(), layoutStyles.getWidthUnit(), containerWidth);
+			  hasCSSWidth = true;
+		  }
+		  else {
+			  widthPx = Pixels.NONE;
+			  hasCSSWidth = false;
+		  }
+
+		  final int heightPx;
+		  final boolean hasCSSHeight;
+
+		  if (layoutStyles.hasHeight()) {
+			  heightPx = LayoutHelperUnits.computeHeightPx(layoutStyles.getHeight(), layoutStyles.getHeightUnit(), containerHeight);
+			  hasCSSHeight = true;
+		  }
+		  else {
+			  heightPx = Pixels.NONE;
+			  hasCSSHeight = false;
+		  }
+		  
+
+		  computeDimensionsFromOuter(
+				  layoutStyles.getDisplay(),
+				  remainingWidth, layoutStyles.getWidth(), layoutStyles.hasWidth(),
+				  remainingHeight, layoutStyles.getHeight(), layoutStyles.hasHeight(),
+				  layoutStyles.getMargins(), layoutStyles.getPadding(),
+				  resultingLayout);
+	  }
+
 	  static void computeDimensionsFromOuter(
 	    		CSSDisplay display,
-	    		int remainingWidth, int widthFromCSS, boolean hasWidthFromCSS,
-	    		int remainingHeight, int heightFromCSS, boolean hasHeightFromCSS,
+	    		int remainingWidth, int widthPxFromCSS, boolean hasWidthFromCSS,
+	    		int remainingHeight, int heightPxFromCSS, boolean hasHeightFromCSS,
 	    		CSSDimensions margins, CSSDimensions padding,
 	    		ElementLayout resultingLayout) {
-	    	
 	    	
 	    	final int topPadding 		= getPaddingSize(padding.getTop(), 		padding.getTopUnit(), 		padding.getTopType(),		remainingHeight);
 	    	final int rightPadding 	= getPaddingSize(padding.getRight(), 		padding.getRightUnit(), 		padding.getRightType(),		remainingWidth);
@@ -30,7 +91,7 @@ class LayoutHelperWrappingBounds {
 	    	
 	    	if (hasWidthFromCSS) {
 	    		// width is specified in CSS, we use that
-	    		innerWidth = widthFromCSS;
+	    		innerWidth = widthPxFromCSS;
 	    	}
 	    	else {
 	    		// no width in CSS so we'll use what space is available. For height this is probably the value -1, which means not known
@@ -38,7 +99,7 @@ class LayoutHelperWrappingBounds {
 	    	}
 		
 	    	if (hasHeightFromCSS) {
-	    	   	innerHeight = heightFromCSS;
+	    	   	innerHeight = heightPxFromCSS;
 	    	}
 	    	else {
 	    		innerHeight = remainingHeight;
@@ -51,7 +112,7 @@ class LayoutHelperWrappingBounds {
 	    	final long horizontalMargins = computeHorizontalMargins(
 	    			margins,
 	    			display,
-	    			remainingWidth, widthFromCSS, hasWidthFromCSS,
+	    			remainingWidth, widthPxFromCSS, hasWidthFromCSS,
 	    			leftPadding, rightPadding);
 	    	
 	    	final int leftMargin = (int)(horizontalMargins >> 32);
@@ -75,6 +136,7 @@ class LayoutHelperWrappingBounds {
 	    	
 	    	if (innerHeight != -1) {
 	    		resultingLayout.getOuter().setHeight(innerHeight + topPadding + bottomPadding + topMargin + bottomMargin);
+	    		resultingLayout.setBoundsComputed();
 	    	}
 	    }
 	    

@@ -12,8 +12,8 @@ public class FontKey extends FontSpec {
 		this.style = style;
 	}
 	
-	public FontKey(String family, String name, short size, short style) {
-		super(family, name, size);
+	public FontKey(String family, short size, short style) {
+		super(family, size);
 		
 		this.style = style;
 	}

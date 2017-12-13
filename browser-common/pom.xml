@@ -42,6 +42,12 @@
 
   	<dependency>
   		<groupId>${project.groupId}</groupId>
+  		<artifactId>render-queue</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
+
+  	<dependency>
+  		<groupId>${project.groupId}</groupId>
   		<artifactId>loadqueue-html</artifactId>
   		<version>${project.version}</version>
   	</dependency>

@@ -13,10 +13,10 @@ public class TextUtilTest extends TestCase {
 		final ITextExtent textExtent = new MockTextExtent();
 		
 		final TextUtil textUtil = new TextUtil(textExtent);
-		final IFont font = textExtent.getFont(null, null, 0, 0);
+		final IFont font = textExtent.getFont(null, 0, 0);
 	
 		try {
-			final int numChars = textUtil.findNumberOfChars("\n", 100, font);
+			final int numChars = textUtil.findNumberOfChars("\n", 100, font).getNumberOfChars();
 
 			fail("Expected exception due to newline");
 		}
@@ -30,9 +30,9 @@ public class TextUtilTest extends TestCase {
 		final ITextExtent textExtent = new MockTextExtent();
 		
 		final TextUtil textUtil = new TextUtil(textExtent);
-		final IFont font = textExtent.getFont(null, null, 0, 0);
+		final IFont font = textExtent.getFont(null, 0, 0);
 
-		final int numChars = textUtil.findNumberOfChars("Ths is a text that will wrap", 50, font);
+		final int numChars = textUtil.findNumberOfChars("Ths is a text that will wrap", 50, font).getNumberOfChars();
 
 		assertThat(numChars).isEqualTo(4);
 	}

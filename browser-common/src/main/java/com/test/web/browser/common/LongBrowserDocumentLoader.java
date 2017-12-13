@@ -13,15 +13,16 @@ import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser;
 import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.IHTMLParserListener;
-import com.test.web.render.common.IBufferRenderFactory;
+import com.test.web.render.common.IBufferRendererFactory;
+import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 
 public class LongBrowserDocumentLoader
 		extends BaseBrowserDocumentLoader<Integer, LongTokenizer, LongHTMLDocument, Integer, LongCSSDocument>
 		implements IBrowserDocumentLoader<Integer, Integer> {
 
-	public LongBrowserDocumentLoader(IBufferRenderFactory renderFactory, ITextExtent textExtent) {
-		super(renderFactory, textExtent);
+	public LongBrowserDocumentLoader(IDelayedRendererFactory rendererFactory,  IBufferRendererFactory bufferRendererFactory, ITextExtent textExtent, DebugListeners debugListeners) {
+		super(rendererFactory, bufferRendererFactory, textExtent, debugListeners);
 	}
 
 	private LongCSSDocument parseCSS(CharInput charInput, CSSContext<Integer> cssContext) throws IOException, ParserException {

@@ -8,16 +8,15 @@ import java.util.Map;
 import com.test.web.css.common.CSSContext;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.render.common.IFont;
-import com.test.web.render.common.IRenderFactory;
-import com.test.web.render.common.IRenderer;
+import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 import com.test.web.types.FontSpec;
 
 // State maintained while doing layout, ie. while recursing the DOM
-public final class LayoutState<ELEMENT> {
+public final class LayoutState<ELEMENT> implements ILayoutState {
 	
 	private final ITextExtent textExtent;
-	private final IRenderer displayRenderer;
+	private final ViewPort viewPort;
 	
 	// For finding size of text strings when using a particular font for rendering
 	private final CSSContext<ELEMENT> cssContext;
@@ -38,9 +37,9 @@ public final class LayoutState<ELEMENT> {
 	// Position of current display block
 	private int curBlockYPos;
 	
-	public LayoutState(ITextExtent textExtent, ViewPort viewPort, IRenderer displayRenderer, CSSContext<ELEMENT> cssContext, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
+	public LayoutState(ITextExtent textExtent, ViewPort viewPort, CSSContext<ELEMENT> cssContext, PageLayout<ELEMENT> pageLayout, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
 		this.textExtent = textExtent;
-		this.displayRenderer = displayRenderer;
+		this.viewPort = viewPort;
 		this.cssContext = cssContext;
 		this.listener = listener;
 
@@ -49,21 +48,22 @@ public final class LayoutState<ELEMENT> {
 
 		this.fonts = new HashMap<>();
 
-		this.pageLayout = new PageLayout<>();
+		this.pageLayout = pageLayout;
 		
 		// TODO how does this work for other zIndex? Will they have their separate layout?
 		this.curBlockYPos = 0;
 		
-		// Push intial element on stack
-		push(viewPort.getViewPortWidth(), viewPort.getViewPortHeight());
+		// Push intial element on stack, which is not a real element
+		push(viewPort.getWidth(), viewPort.getHeight());
 	}
 	
+	@Override
+	public ViewPort getViewPort() {
+		return viewPort;
+	}
+
 	CSSContext<ELEMENT> getCSSContext() {
 		return cssContext;
-	}
-	
-	IRenderer getDisplayRenderer()  {
-		return displayRenderer;
 	}
 	
 	PageLayout<ELEMENT> getPageLayout() {
@@ -74,8 +74,8 @@ public final class LayoutState<ELEMENT> {
 		return listener;
 	}
 
-	PageLayer<ELEMENT> addOrGetLayer(int index, IRenderFactory renderFactory) {
-		return pageLayout.addOrGetLayer(index, displayRenderer, renderFactory);
+	PageLayer<ELEMENT> addOrGetLayer(int index, IDelayedRendererFactory renderFactory) {
+		return pageLayout.addOrGetLayer(index, renderFactory);
 	}
 
 	StackElement getCur() {
@@ -87,7 +87,7 @@ public final class LayoutState<ELEMENT> {
 		final StackElement ret;
 		
 		if (curDepth == stack.size()) {
-			ret = new StackElement(availableWidth, availableHeight);
+			ret = new StackElement(curDepth, availableWidth, availableHeight);
 			
 			stack.add(ret);
 		}
@@ -115,7 +115,7 @@ public final class LayoutState<ELEMENT> {
 		IFont font = fonts.get(fontKey);
 		
 		if (font == null) {
-			font = textExtent.getFont(spec.getFamily(), spec.getName(), spec.getSize(), style);
+			font = textExtent.getFont(spec.getFamily(), spec.getSize(), style);
 
 			if (font == null) {
 				throw new IllegalStateException("Failed to open font " + spec + " with style " + style);

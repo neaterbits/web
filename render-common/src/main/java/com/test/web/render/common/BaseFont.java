@@ -6,6 +6,21 @@ public abstract class BaseFont implements IFont {
 	
 	protected abstract int textExtent(String s);
 	
+	private final String fontFamily;
+	private final int fontSize;
+	private final int styleFlags;
+	
+	protected BaseFont(String fontFamily, int fontSize, int styleFlags) {
+	
+		if (fontFamily == null) {
+			throw new IllegalArgumentException("fontFamily == null");
+		}
+
+		this.fontFamily = fontFamily;
+		this.fontSize = fontSize;
+		this.styleFlags = styleFlags;
+	}
+
 	@Override
 	public int getAverageWidth() {
 		return roundUp(textExtent(TESTCHARS) / (double)TESTCHARS.length());
@@ -21,4 +36,18 @@ public abstract class BaseFont implements IFont {
 		return asInteger;
 	}
 
+	@Override
+	public final String getFontFamily() {
+		return fontFamily;
+	}
+
+	@Override
+	public final int getFontSize() {
+		return fontSize;
+	}
+
+	@Override
+	public final int getStyleFlags() {
+		return styleFlags;
+	}
 }

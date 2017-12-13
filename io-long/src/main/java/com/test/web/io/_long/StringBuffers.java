@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 
 import com.test.web.buffers.BaseBuffers;
-import com.test.web.buffers.StringStorageBuffer;
+import com.test.web.buffers.DuplicateDetectingStringStorageBuffer;
 import com.test.web.io.common.CharInput;
 import com.test.web.io.common.LoadStream;
 import com.test.web.io.common.StreamStatus;
@@ -331,7 +331,7 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 	}
 	
 	@Override
-	public int addToBuffer(StringStorageBuffer buffer, int startOffset, int endSkip) {
+	public int addToBuffer(DuplicateDetectingStringStorageBuffer buffer, int startOffset, int endSkip) {
 		final long pos = tokenizerPos;
 
 		int bufNo = bufNo(pos);

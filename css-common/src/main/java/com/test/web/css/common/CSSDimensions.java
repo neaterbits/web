@@ -133,9 +133,9 @@ public class CSSDimensions {
 
 	@Override
 	public String toString() {
-		return "CSSDimensions [top=" + top + ", topUnit=" + topUnit + ", topType=" + topType + ", right=" + right
-				+ ", rightUnit=" + rightUnit + ", rightType=" + rightType + ", bottom=" + bottom + ", bottomUnit="
-				+ bottomUnit + ", bottomType=" + bottomType + ", left=" + left + ", leftUnit=" + leftUnit
-				+ ", leftType=" + leftType + "]";
+		return "[" + top + ":" + topUnit + ":" + topType +
+				        ", " + right + ":" + rightUnit + ":" + rightType +
+				        ", " + bottom + ":" + bottomUnit + ":" + bottomType +
+				        ", l" + left + ":" + leftUnit + ":" + leftType + "]";
 	}
 }

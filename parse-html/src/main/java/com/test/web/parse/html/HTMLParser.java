@@ -3,8 +3,6 @@ package com.test.web.parse.html;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import com.test.web.document.common.HTMLElement;
 import com.test.web.io.common.CharInput;
@@ -16,7 +14,6 @@ import com.test.web.parse.common.Lexer;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.common.TokenMergeHelper;
 import com.test.web.parse.css.CSSParser;
-import com.test.web.parse.css.ICSSDocumentParserListener;
 import com.test.web.types.IIndent;
 
 public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUMENT>

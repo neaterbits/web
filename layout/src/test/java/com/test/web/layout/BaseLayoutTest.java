@@ -12,9 +12,9 @@ import com.test.web.layout.PageLayout;
 import com.test.web.layout.PrintlnLayoutDebugListener;
 import com.test.web.layout.ViewPort;
 import com.test.web.parse.common.ParserException;
-import com.test.web.render.common.IBufferRenderFactory;
-import com.test.web.render.common.IRenderer;
+import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
+import com.test.web.render.queue.QueueRendererFactory;
 import com.test.web.testdata.TestData;
 
 import junit.framework.TestCase;
@@ -215,12 +215,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 
 	private PageLayer<HTML_ELEMENT> layout(Document<HTML_ELEMENT> doc, int viewPortWidth, int viewPortHeight) {
 		
-		final IBufferRenderFactory renderFactory = new IBufferRenderFactory() {
-			@Override
-			public IRenderer createRenderer() {
-				return new MockRenderer();
-			}
-		};
+		final IDelayedRendererFactory renderFactory = new QueueRendererFactory(null);
 		
 		final ViewPort viewPort = new ViewPort(viewPortWidth, viewPortHeight);
 		
@@ -234,7 +229,9 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 
 		final CSSContext<HTML_ELEMENT> cssContext = new CSSContext<>();
 		
-		final PageLayout<HTML_ELEMENT> pageLayout = layoutAgorithm.layout(doc, viewPort, cssContext, null, new MockRenderer());
+		final PageLayout<HTML_ELEMENT> pageLayout = new PageLayout<>();
+		
+		 layoutAgorithm.layout(doc, viewPort, cssContext, pageLayout, null);
 		
 		assertThat(pageLayout.getLayers().size()).isEqualTo(1);
 	

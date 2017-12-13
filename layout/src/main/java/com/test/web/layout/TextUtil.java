@@ -2,9 +2,10 @@ package com.test.web.layout;
 
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.ITextExtent;
+import com.test.web.types.Pixels;
 
 /*
- * Utiilties for computing text element lengths
+ * Utilities for computing text element lengths
  * 
  */
 
@@ -17,6 +18,7 @@ final class TextUtil {
 	}
 
     // Get text length or available width, whichever is longer
+	@Deprecated // not necessary?
     int getTextLengthOrAvailableWidth(String text, int availableWidth, IFont font) {
     	
     	if (text == null) {
@@ -31,7 +33,7 @@ final class TextUtil {
 
     	final int width = textExtent.getTextExtent(font, text);
     	
-    	return availableWidth == -1 ? width : Math.min(width, availableWidth);
+    	return availableWidth == Pixels.NONE ? width : Math.min(width, availableWidth);
     }
     
     private static int indexOfNewLine(String string) {
@@ -56,8 +58,26 @@ final class TextUtil {
   
     	return ret;
     }
+    
+    static class NumberOfChars {
+    	private final int numberOfChars;
+    	private final int width;
 
-	int findNumberOfChars(String inputString, int availableWidth, IFont font) {
+    	NumberOfChars(int numberOfChars, int width) {
+			this.numberOfChars = numberOfChars;
+			this.width = width;
+		}
+
+		int getNumberOfChars() {
+			return numberOfChars;
+		}
+
+		int getWidth() {
+			return width;
+		}
+    }
+    
+	NumberOfChars findNumberOfChars(String inputString, int availableWidth, IFont font) {
     	
 		// Only until first newline
 		final int newLineIdx = indexOfNewLine(inputString);
@@ -83,18 +103,23 @@ final class TextUtil {
     	
     	final int ret;
     	
+    	int retWidth;
+    	
     	if (width > availableWidth) {
     		// try with fewer characters
     		if (tryCharacters == 0) {
     			ret = 0;
+    			retWidth = 0;
     		}
     		else {
 	    		int numChars = tryCharacters - 1;
+	    		retWidth = -1;
 	    		
 	    		for (;;) {
 	    			final int w = textExtent.getTextExtent(font, string.substring(0, numChars));
 	    			
 	    			if (w <= availableWidth) {
+	    				retWidth = w;
 	    				break;
 	    			}
 	    			
@@ -106,37 +131,72 @@ final class TextUtil {
     	}
     	else  if (width == availableWidth) {
     		ret = tryCharacters;
+    		retWidth = width;
     	}
     	else if (tryCharacters == string.length()) {
     		ret = tryCharacters;
+    		retWidth = width;
     	}
     	else {
     		int numChars = tryCharacters + 1;
+    		retWidth = -1;
     		
     		for (;;) {
     			final int w = textExtent.getTextExtent(font, string.substring(0, numChars));
-    			
+    	
     			if (w > availableWidth) {
     				-- numChars;
     				break;
     			}
     			else if (w == availableWidth) {
-    				break;
+   			    	break;
     			}
-    			
+ 
+  				retWidth = w;
+  				 
     			++ numChars;
     		}
     		
     		ret = numChars;
     	}
     	
-    	return ret;
+    	return new NumberOfChars(ret, retWidth);
     }
     
     
     int getTextLineHeight(StackElement cur, IFont font) {
 		// TODO add spacing between text lines
     	return font.getHeight();
+    }
+    
+    @Deprecated // Should lay out one text line at a time
+    int computeTextLinesHeight(String text, StackElement cur, IFont font) {
+		String s = text;
+		
+		int height = 0;
+		
+		for (;;) {
+		
+			// For each line, find with of text
+			int numChars = findNumberOfChars(s, cur.getAvailableWidth(), font).getNumberOfChars();
+			
+			if (numChars == 0 && !s.isEmpty()) {
+				throw new IllegalStateException("No room for characters in element of width " + cur.getAvailableWidth());
+			}
+			
+			// System.out.println("## numChars "+ numChars + " of \"" + s + "\"");
+			
+			height += getTextLineHeight(cur, font);
+			
+			if (numChars == s.length()) {
+				// was room for rest of string, exit
+				break;
+			}
+			
+			s = s.substring(numChars);
+		}
+ 
+		return height;
     }
 }
 

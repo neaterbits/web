@@ -12,16 +12,17 @@ import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.FontSettings;
 import com.test.web.layout.IElementRenderLayout;
+import com.test.web.layout.ILayoutDebugListener;
 import com.test.web.layout.LayoutAlgorithm;
 import com.test.web.layout.LayoutState;
+import com.test.web.layout.PageLayout;
 import com.test.web.layout.PrintlnLayoutDebugListener;
 import com.test.web.layout.ViewPort;
 import com.test.web.loadqueue.common.ILoadQueue;
 import com.test.web.loadqueue.common.LoadCompletionListener;
 import com.test.web.parse.html.IHTMLParserListener;
 import com.test.web.parse.html.IDocumentParserListener;
-import com.test.web.render.common.IBufferRenderFactory;
-import com.test.web.render.common.IRenderer;
+import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 
 /*
@@ -63,10 +64,11 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 			ILoadQueue loadQueue,
 			ViewPort viewPort,
 			ITextExtent textExtent,
-			IRenderer displayRenderer,
-			IBufferRenderFactory renderFactory,
+			IDelayedRendererFactory renderFactory,
 			FontSettings fontSettings,
-			HTMLElementListener<ELEMENT, IElementRenderLayout> renderListener) {
+			PageLayout<ELEMENT> pageLayout,
+			HTMLElementListener<ELEMENT, IElementRenderLayout> renderListener,
+			ILayoutDebugListener layoutDebugListener) {
 
 		this.documentURL = documentURL;
 		this.delegate = delegate;
@@ -74,12 +76,12 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 		
 		this.fontSettings = fontSettings;
 	
-		this.layoutAlgorithm = new LayoutAlgorithm<>(textExtent, renderFactory, fontSettings, new PrintlnLayoutDebugListener(System.out));
+		this.layoutAlgorithm = new LayoutAlgorithm<>(textExtent, renderFactory, fontSettings, layoutDebugListener);
 		
 		this.tempLayoutStyles = new CSSLayoutStyles();
 		
 		this.cssContext = new CSSContext<>();
-		this.layoutState = new LayoutState<>(textExtent, viewPort, displayRenderer, cssContext, renderListener);
+		this.layoutState = new LayoutState<>(textExtent, viewPort, cssContext, pageLayout, renderListener);
 	}
 
 	@Override
