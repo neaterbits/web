@@ -83,7 +83,7 @@ public abstract class OOTagElement extends OODocumentElement {
 
 	final <T extends Enum<T>>T setOrClearAttribute(HTMLAttribute attribute, T value) {
 		if (attribute.getValueType() != HTMLAttributeValueType.ENUM) {
-			throw new IllegalArgumentException("Not a string attribute: " + attribute);
+			throw new IllegalArgumentException("Not an enum attribute: " + attribute);
 		}
 
 		return genericSetOrClearAttribute(attribute, value);
@@ -91,7 +91,7 @@ public abstract class OOTagElement extends OODocumentElement {
 
 	final BigDecimal setOrClearAttribute(HTMLAttribute attribute, BigDecimal value) {
 		if (attribute.getValueType() != HTMLAttributeValueType.BIGDECIMAL) {
-			throw new IllegalArgumentException("Not a string attribute: " + attribute);
+			throw new IllegalArgumentException("Not a bigdecimal attribute: " + attribute);
 		}
 
 		return genericSetOrClearAttribute(attribute, value);
