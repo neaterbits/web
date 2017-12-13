@@ -28,7 +28,7 @@ public abstract class BaseJSEngineTest extends TestCase {
 		
 		final JSVariableMap varMap = new JSVariableMap();
 		
-		varMap.add("javaObject", new JavaAsJSObjectAdapter() {
+		varMap.addWrapped("javaObject", new JavaAsJSObjectAdapter() {
 			@Override
 			public Object getProperty(String name) {
 				if (name.equals("javaMethod")) {
@@ -67,7 +67,7 @@ public abstract class BaseJSEngineTest extends TestCase {
 		
 		final JSVariableMap varMap = new JSVariableMap();
 		
-		varMap.add("javaObject", new JavaAsJSObjectAdapter() {
+		varMap.addWrapped("javaObject", new JavaAsJSObjectAdapter() {
 
 			@Override
 			public void setProperty(String name, Object value) {

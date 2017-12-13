@@ -3,23 +3,34 @@ package com.test.web.jsapi.dom;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.test.web.document.common.IDocumentNavigation;
-
 public abstract class EventTarget<ELEMENT, DOCUMENT extends IDocumentContext<ELEMENT>>
 		extends DocumentAccess<ELEMENT, DOCUMENT>
 		implements IEventTarget {
 
-	private final Map<ListenerKey, IEventListener> listeners;
+	private Map<ListenerKey, IEventListener> listeners;
 	
 
 	EventTarget() {
-		this.listeners = new HashMap<>();
 	}
 
+	public EventTarget(DOCUMENT document, ELEMENT element) {
+		super(document, element);
+	}
 
 	private void addListener(ListenerKey key, IEventListener listener) {
 		
-		final boolean wasEmpty = listeners.isEmpty();
+		final boolean wasEmpty;
+		
+		if (listeners == null) {
+			wasEmpty = true;
+			this.listeners = new HashMap<>();
+		}
+		else if (listeners.isEmpty()) {
+			wasEmpty = true;
+		}
+		else {
+			wasEmpty = false;
+		}
 		
 		listeners.put(key, listener);
 		

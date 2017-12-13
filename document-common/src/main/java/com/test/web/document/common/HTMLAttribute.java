@@ -68,6 +68,33 @@ public enum HTMLAttribute implements IKeyValue {
 	VALUE("value", false, ValueArity.ONE, HTMLAttributeValueType.DECIMAL, "0.0")
 	
 	;
+	
+	private static final HTMLAttribute [] globalAttributes;
+	
+	static {
+		int numGlobal = 0;
+		
+		for (HTMLAttribute attribute : HTMLAttribute.values()) {
+			if (attribute.isGlobal()) {
+				++ numGlobal;
+			}
+		}
+		
+		globalAttributes = new HTMLAttribute[numGlobal];
+
+		int idx = 0;
+
+		for (HTMLAttribute attribute : HTMLAttribute.values()) {
+			if (attribute.isGlobal()) {
+				globalAttributes[idx ++] = attribute;
+			}
+		}
+	}
+
+	public static HTMLAttribute [] getGlobalAttributes() {
+		return globalAttributes;
+	}
+
 	// 
 	private final String name;
 	private final boolean global;

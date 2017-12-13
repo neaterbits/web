@@ -21,7 +21,7 @@ final class NashornCompiledJS implements ICompiledJS {
 	public Object run(JSVariableMap variables) throws JSExecutionException {
 		final Bindings bindings = new SimpleBindings();
 		
-		variables.forEachKeyValue((key, value) -> bindings.put(key, new NashornJavaAsJSObject(value)));
+		variables.forEachWrapped((key, value) -> bindings.put(key, new NashornJavaAsJSObject(value)));
 		
 		final Object result;
 		try {
