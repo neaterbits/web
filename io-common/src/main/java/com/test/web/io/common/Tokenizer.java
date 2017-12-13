@@ -1,6 +1,7 @@
 package com.test.web.io.common;
 
 import com.test.web.buffers.DuplicateDetectingStringStorageBuffer;
+import java.math.BigDecimal;
 import com.test.web.types.IEnum;
 
 /**
@@ -20,4 +21,6 @@ public interface Tokenizer {
 	String asString(int startOffset, int endSkip);
 
 	int asDecimalSize(int startOffset, int endSkip);
+
+	BigDecimal asBigDecimal(int startOffset, int endSkip);
 }

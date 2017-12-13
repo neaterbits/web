@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -545,15 +546,15 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 
 	@Override
-	public int getProgressMax(Integer element) {
+	public BigDecimal getProgressMax(Integer element) {
 		// TODO Auto-generated method stub
-		return 0;
+		return null;
 	}
 
 	@Override
-	public int getProgressValue(Integer element) {
+	public BigDecimal getProgressValue(Integer element) {
 		// TODO Auto-generated method stub
-		return 0;
+		return null;
 	}
 
 	@Override
@@ -798,4 +799,82 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 		return doc;
 	}
+
+
+	// Document navigation
+	@Override
+	public Integer getParentElement(Integer element) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	// Attribute getters and setters
+	@Override
+	public int getNumAttributes(Integer element) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getIdxOfAttributeWithName(Integer element, String namespaceURI, String name) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	@Override
+	public String getAttributeName(Integer element, int idx) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getAttributeLocalName(Integer element, int idx) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getAttributeNamespaceURI(Integer element, int idx) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public String getAttributePrefix(Integer element, int idx) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public String getAttributeValue(Integer element, int idx) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public void setAttributeValue(Integer element, int idx, String value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void setAttributeValue(Integer element, String namespaceURI, String name, String value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void removeAttribute(Integer element, String namespaceURI, String name) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
 }

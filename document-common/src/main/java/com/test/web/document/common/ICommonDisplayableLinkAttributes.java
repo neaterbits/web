@@ -1,6 +1,6 @@
 package com.test.web.document.common;
 
-import com.test.web.document.common.enums.Target;
+import com.test.web.document.common.enums.HTMLTarget;
 
 // attributes common to <a> and <area>
 public interface ICommonDisplayableLinkAttributes {
@@ -8,9 +8,8 @@ public interface ICommonDisplayableLinkAttributes {
 	String getDownload();
 	void setDownload(String download);
 
-	Target getTarget();
-	void setTarget(Target target);
+	HTMLTarget getTarget();
+	void setTarget(HTMLTarget target, String targetFrame);
 
 	String getTargetFrame();
-	void setTargetFrame(String targetFrame);
 }

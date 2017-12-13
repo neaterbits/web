@@ -1,6 +1,8 @@
 package com.test.web.document.common.enums;
 
-public enum Target {
+import com.test.web.types.IEnum;
+
+public enum HTMLTarget implements IEnum {
 
 	BLANK("_blank"),
 	SELF("_self"),
@@ -9,10 +11,11 @@ public enum Target {
 	
 	private final String name;
 
-	private Target(String name) {
+	private HTMLTarget(String name) {
 		this.name = name;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

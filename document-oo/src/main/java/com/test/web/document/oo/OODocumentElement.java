@@ -2,6 +2,7 @@ package com.test.web.document.oo;
 
 abstract class OODocumentElement {
 
+	OODocumentElement parent;
 	OODocumentElement last;
 	OODocumentElement next;
 	

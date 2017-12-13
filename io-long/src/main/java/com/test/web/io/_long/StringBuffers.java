@@ -1,6 +1,7 @@
 package com.test.web.io._long;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 import com.test.web.buffers.BaseBuffers;
@@ -8,6 +9,7 @@ import com.test.web.buffers.DuplicateDetectingStringStorageBuffer;
 import com.test.web.io.common.CharInput;
 import com.test.web.io.common.LoadStream;
 import com.test.web.io.common.StreamStatus;
+import com.test.web.types.BigDecimalConversion;
 import com.test.web.types.DecimalSize;
 import com.test.web.types.IEnum;
 
@@ -427,5 +429,12 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 		final String s = asString(startOffset, endSkip);
 		
 		return DecimalSize.encodeFromString(s);
+	}
+	
+	@Override
+	public BigDecimal asBigDecimal(int startOffset, int endSkip) {
+		final String s = asString(startOffset, endSkip);
+		
+		return BigDecimalConversion.fromString(s);
 	}
 }

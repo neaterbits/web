@@ -1,15 +1,21 @@
 package com.test.web.document.oo;
 
+import java.math.BigDecimal;
+
+import com.test.web.document.common.DocumentState;
+import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
+import com.test.web.document.common.HTMLStringConversion;
+import com.test.web.types.BigDecimalConversion;
 import com.test.web.types.DecimalSize;
 
 class OOProgressElement extends OOLeafElement {
-	private int max;
-	private int value;
+	private BigDecimal max;
+	private BigDecimal value;
 	
 	OOProgressElement() {
-		this.max = DecimalSize.NONE;
-		this.value = DecimalSize.NONE;
+		this.max = null;
+		this.value = null;
 	}
 	
 	@Override
@@ -17,19 +23,60 @@ class OOProgressElement extends OOLeafElement {
 		return HTMLElement.PROGRESS;
 	}
 
-	int getMax() {
+	BigDecimal getMax() {
 		return max;
 	}
 
-	void setMax(int max) {
-		this.max = max;
+	void setMax(BigDecimal max) {
+		this.max = setOrClearAttribute(HTMLAttribute.MAX, max);
 	}
 
-	int getValue() {
+	BigDecimal getValue() {
 		return value;
 	}
 
-	void setValue(int value) {
-		this.value = value;
+	void setValue(BigDecimal value) {
+		this.value = setOrClearAttribute(HTMLAttribute.VALUE, value);
+	}
+
+	@Override
+	String getStandardAttributeValue(HTMLAttribute attribute) {
+		final String value;
+		
+		switch (attribute) {
+		case MAX:
+			value = max != null ? HTMLStringConversion.fromBigDecimal(max) : null;
+			break;
+			
+		case VALUE:
+			value = this.value != null ? HTMLStringConversion.fromBigDecimal(this.value) : null;
+			break;
+			
+		default:
+			value = super.getStandardAttributeValue(attribute);
+			break;
+		}
+
+		return value;
+	}
+
+	@Override
+	void setStandardAttributeValue(HTMLAttribute attribute, String value, DocumentState<OOTagElement> state) {
+		
+		switch (attribute) {
+		case MAX:
+			setMax(value != null ? BigDecimalConversion.fromString(value) : null);
+			break;
+			
+		case VALUE:
+			setValue(value != null ? BigDecimalConversion.fromString(value) : null);
+			break;
+		
+		default:
+			super.setStandardAttributeValue(attribute, value, state);
+			break;
+		}
+		
+		
 	}
 }

@@ -1,12 +1,12 @@
 package com.test.web.document.oo;
 
+import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 
 public class OOStyleElement extends OOTagElement {
 
 	private String type;
 	private String media;
-	private boolean scoped;
 	
 	@Override
 	HTMLElement getType() {
@@ -18,15 +18,15 @@ public class OOStyleElement extends OOTagElement {
 	}
 
 	final void setMedia(String media) {
-		this.media = media;
+		this.media = setOrClearAttribute(HTMLAttribute.TYPE, media);
 	}
 
 	final boolean isScoped() {
-		return scoped;
+		return isAttributeSet(HTMLAttribute.SCOPED);
 	}
 
 	final void setScoped(boolean scoped) {
-		this.scoped = scoped;
+		setOrClearMinimizableAttribute(HTMLAttribute.SCOPED, scoped);
 	}
 
 	final String getStyleType() {
@@ -34,6 +34,6 @@ public class OOStyleElement extends OOTagElement {
 	}
 
 	final void setStyleType(String type) {
-		this.type = type;
+		this.type = setOrClearAttribute(HTMLAttribute.TYPE, type);
 	}
 }
