@@ -152,7 +152,7 @@ public enum HTMLAttribute implements IKeyValue {
 	}
 	
 	public String getAttributeNamespaceURI() {
-		return Document.DEFAULT_NAMESPACE;
+		return IDocument.DEFAULT_NAMESPACE;
 	}
 	
 	public String getAttributePrefix() {

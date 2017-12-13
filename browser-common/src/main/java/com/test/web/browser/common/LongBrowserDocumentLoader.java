@@ -5,7 +5,7 @@ import java.io.IOException;
 import com.test.web.css._long.LongCSSDocument;
 import com.test.web.css.common.CSSContext;
 import com.test.web.document._long.LongHTMLDocument;
-import com.test.web.document.common.Document;
+import com.test.web.document.common.IDocument;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.io.common.CharInput;
 import com.test.web.io.common.LoadStream;
@@ -39,7 +39,7 @@ public class LongBrowserDocumentLoader
 	}
 
 	@Override
-	public Document<Integer> fromHTML(String html, CSSContext<Integer> cssContext) throws ParserException {
+	public IDocument<Integer> fromHTML(String html, CSSContext<Integer> cssContext) throws ParserException {
 		return LongHTMLDocument.parseHTMLDocument(html, charInput -> parseCSS(charInput, cssContext));
 	}
 

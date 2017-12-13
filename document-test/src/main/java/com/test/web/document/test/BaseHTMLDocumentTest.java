@@ -6,14 +6,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import com.test.web.document.common.Document;
+import com.test.web.document.common.IDocument;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.parse.common.ParserException;
 import com.test.web.testdata.TestData;
 
 import junit.framework.TestCase;
 
-public abstract class BaseHTMLDocumentTest<ELEMENT, DOCUMENT extends Document<ELEMENT>> extends TestCase {
+public abstract class BaseHTMLDocumentTest<ELEMENT, DOCUMENT extends IDocument<ELEMENT>> extends TestCase {
 	
 	protected abstract DOCUMENT parseHTMLDocument(String html) throws ParserException;
 	

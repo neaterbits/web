@@ -5,16 +5,16 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.test.web.css.common.ICSSDocumentStyles;
-import com.test.web.document.common.Document;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
+import com.test.web.document.common.IDocument;
 import com.test.web.document.common.enums.LinkRelType;
 
-abstract class BaseDocumentContext<ELEMENT> implements Document<ELEMENT> {
+abstract class BaseDocumentContext<ELEMENT> implements IDocument<ELEMENT> {
 	
-	final Document<ELEMENT> delegate;
+	final IDocument<ELEMENT> delegate;
 	
-	public BaseDocumentContext(Document<ELEMENT> delegate) {
+	public BaseDocumentContext(IDocument<ELEMENT> delegate) {
 		if (delegate == null) {
 			throw new IllegalArgumentException("delegate == null");
 		}

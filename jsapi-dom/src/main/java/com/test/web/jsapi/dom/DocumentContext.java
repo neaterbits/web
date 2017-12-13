@@ -1,12 +1,12 @@
 package com.test.web.jsapi.dom;
 
-import com.test.web.document.common.Document;
+import com.test.web.document.common.IDocument;
 
 final class DocumentContext<ELEMENT>
 	extends BaseDocumentContext<ELEMENT>
 	implements IDocumentContext<ELEMENT> {
 
-	DocumentContext(Document<ELEMENT> delegate) {
+	DocumentContext(IDocument<ELEMENT> delegate) {
 		super(delegate);
 	}
 

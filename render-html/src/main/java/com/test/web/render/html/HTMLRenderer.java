@@ -1,6 +1,6 @@
 package com.test.web.render.html;
 
-import com.test.web.document.common.Document;
+import com.test.web.document.common.IDocument;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.layout.IBounds;
@@ -30,7 +30,7 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 	}
 
 	@Override
-	public void onElementStart(Document<ELEMENT> document, ELEMENT element, IElementRenderLayout layout) {
+	public void onElementStart(IDocument<ELEMENT> document, ELEMENT element, IElementRenderLayout layout) {
 		
 		if (debugListener != null) {
 			debugListener.onElementStart(depth, document.getType(element), layout);
@@ -65,7 +65,7 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 	}
 
 	@Override
-	public void onElementEnd(Document<ELEMENT> document, ELEMENT element, IElementRenderLayout layout) {
+	public void onElementEnd(IDocument<ELEMENT> document, ELEMENT element, IElementRenderLayout layout) {
 
 		-- depth;
 
@@ -95,7 +95,7 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 	}
 
 	@Override
-	public void onText(Document<ELEMENT> document, ELEMENT element, String text, IElementRenderLayout layout) {
+	public void onText(IDocument<ELEMENT> document, ELEMENT element, String text, IElementRenderLayout layout) {
 
 		if (debugListener != null) {
 			debugListener.onText(depth, layout, text);
@@ -108,7 +108,7 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 		}
 	}
 	
-	private void renderElement(Document<ELEMENT> document, ELEMENT element, IElementRenderLayout layout) {
+	private void renderElement(IDocument<ELEMENT> document, ELEMENT element, IElementRenderLayout layout) {
 		
 		final IDelayedRenderer renderer = layout.getRenderer();
 		
