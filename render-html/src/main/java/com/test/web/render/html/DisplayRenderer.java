@@ -1,6 +1,6 @@
 package com.test.web.render.html;
 
-import com.test.web.document.common.Document;
+import com.test.web.document.common.IDocument;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.layout.IBounds;
 import com.test.web.layout.IElementLayout;
@@ -68,7 +68,7 @@ public class DisplayRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IE
 	
 
 	@Override
-	public void onElementStart(Document<ELEMENT> document, ELEMENT element, IElementLayout layout) {
+	public void onElementStart(IDocument<ELEMENT> document, ELEMENT element, IElementLayout layout) {
 		// Nothing to do here, we only sync when we are certain that have layout dimensions
 		// We figure startoffset for last elements before viewport start
 		
@@ -76,7 +76,7 @@ public class DisplayRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IE
 	}
 
 	@Override
-	public void onElementEnd(Document<ELEMENT> document, ELEMENT element, IElementLayout layout) {
+	public void onElementEnd(IDocument<ELEMENT> document, ELEMENT element, IElementLayout layout) {
 
 		// If overlaps with viewport, we will buffer offsets
 		final IBounds bounds = layout.getAbsoluteBounds();
@@ -131,7 +131,7 @@ public class DisplayRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IE
 	}
 
 	@Override
-	public void onText(Document<ELEMENT> document, ELEMENT element, String text, IElementLayout layout) {
+	public void onText(IDocument<ELEMENT> document, ELEMENT element, String text, IElementLayout layout) {
 		
 		final IBounds bounds = layout.getAbsoluteBounds();
 		

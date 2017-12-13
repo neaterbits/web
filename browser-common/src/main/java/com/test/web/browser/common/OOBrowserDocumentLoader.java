@@ -5,7 +5,7 @@ import java.io.IOException;
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.oo.OOCSSDocument;
 import com.test.web.css.oo.OOCSSElement;
-import com.test.web.document.common.Document;
+import com.test.web.document.common.IDocument;
 import com.test.web.document.oo.OOHTMLDocument;
 import com.test.web.document.oo.OOTagElement;
 import com.test.web.io.common.CharInput;
@@ -41,7 +41,7 @@ public class OOBrowserDocumentLoader
 	}
 
 	@Override
-	public Document<OOTagElement> fromHTML(String html, CSSContext<OOCSSElement> cssContext) throws ParserException {
+	public IDocument<OOTagElement> fromHTML(String html, CSSContext<OOCSSElement> cssContext) throws ParserException {
 		return OOHTMLDocument.parseHTMLDocument(html, charInput -> parseCSS(charInput, cssContext));
 	}
 

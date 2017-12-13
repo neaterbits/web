@@ -3,7 +3,7 @@ package com.test.web.layout;
 import java.io.IOException;
 
 import com.test.web.css.common.CSSContext;
-import com.test.web.document.common.Document;
+import com.test.web.document.common.IDocument;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.FontSettings;
 import com.test.web.layout.LayoutAlgorithm;
@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> extends TestCase {
 	
-	protected abstract Document<HTML_ELEMENT> parseDocument(String html) throws ParserException;
+	protected abstract IDocument<HTML_ELEMENT> parseDocument(String html) throws ParserException;
 	
 	public void testLayout() throws IOException, ParserException {
 		
@@ -33,7 +33,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"</div>\n"
 		);
 	
-		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 		final HTML_ELEMENT div = doc.getElementById("element_id");
@@ -54,7 +54,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"</div>\n"
 		);
 	
-		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -84,7 +84,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"</div>\n"
 		);
 	
-		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -106,7 +106,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"</div>\n"
 		);
 	
-		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -127,7 +127,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"</div>\n"
 		);
 	
-		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -149,7 +149,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"</div>\n"
 		);
 	
-		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -170,7 +170,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"</div>\n"
 		);
 	
-		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -192,7 +192,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"</div>\n"
 		);
 	
-		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -208,12 +208,12 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 	
 	private PageLayer<HTML_ELEMENT> layout(String html, int viewPortWidth, int viewPortHeight) throws ParserException {
 
-		final Document<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
 	
 		return layout(doc, viewPortWidth, viewPortHeight);
 	}
 
-	private PageLayer<HTML_ELEMENT> layout(Document<HTML_ELEMENT> doc, int viewPortWidth, int viewPortHeight) {
+	private PageLayer<HTML_ELEMENT> layout(IDocument<HTML_ELEMENT> doc, int viewPortWidth, int viewPortHeight) {
 		
 		final IDelayedRendererFactory renderFactory = new QueueRendererFactory(null);
 		

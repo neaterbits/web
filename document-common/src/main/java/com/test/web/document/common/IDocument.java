@@ -12,7 +12,7 @@ import com.test.web.document.common.enums.LinkRelType;
  * 
  */
 
-public interface Document<ELEMENT>
+public interface IDocument<ELEMENT>
 		extends IDocumentNavigation<ELEMENT>,
 					 IDocumentAttributeGetters<ELEMENT>,
 					 IDocumentAttributeSetters<ELEMENT>{

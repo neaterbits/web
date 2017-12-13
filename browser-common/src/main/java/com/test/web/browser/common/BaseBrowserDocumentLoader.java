@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import com.test.web.css.common.CSSContext;
-import com.test.web.document.common.Document;
+import com.test.web.document.common.IDocument;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io.common.LoadStream;
 import com.test.web.io.common.Tokenizer;
@@ -68,7 +68,7 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 	}
 
 	@Override
-	public final PageLayout<HTML_ELEMENT> layout(Document<HTML_ELEMENT> document, int viewPortWidth, int viewPortHeight, IRenderer displayRenderer) {
+	public final PageLayout<HTML_ELEMENT> layout(IDocument<HTML_ELEMENT> document, int viewPortWidth, int viewPortHeight, IRenderer displayRenderer) {
 
 		final ViewPort viewPort = new ViewPort(viewPortWidth, viewPortHeight);
 		

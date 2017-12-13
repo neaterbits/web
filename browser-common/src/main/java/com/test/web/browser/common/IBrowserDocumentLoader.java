@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import com.test.web.css.common.CSSContext;
-import com.test.web.document.common.Document;
+import com.test.web.document.common.IDocument;
 import com.test.web.layout.PageLayout;
 import com.test.web.parse.common.ParserException;
 import com.test.web.render.common.IRenderer;
@@ -20,13 +20,13 @@ public interface IBrowserDocumentLoader<HTML_ELEMENT, CSS_ELEMENT> {
 	 * @return a parsed document
 	 */
 	
-	Document<HTML_ELEMENT> fromHTML(String html, CSSContext<CSS_ELEMENT> cssContext) throws ParserException;
+	IDocument<HTML_ELEMENT> fromHTML(String html, CSSContext<CSS_ELEMENT> cssContext) throws ParserException;
 
 	/**
 	 *  TODO this would probably have to be async ?
 	 * @return layout of page
 	 */
-	PageLayout<HTML_ELEMENT> layout(Document<HTML_ELEMENT> document, int viewPortWidth, int viewPortHeight, IRenderer displayRenderer);
+	PageLayout<HTML_ELEMENT> layout(IDocument<HTML_ELEMENT> document, int viewPortWidth, int viewPortHeight, IRenderer displayRenderer);
 	
 	
 	/**

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import com.test.web.css.common.CSSContext;
-import com.test.web.document.common.Document;
+import com.test.web.document.common.IDocument;
 import com.test.web.parse.common.ParserException;
 import com.test.web.ui.common.IUICanvas;
 
@@ -33,7 +33,7 @@ final class BrowserTab<HTML_ELEMENT, CSS_ELEMENT> {
 	}
 
 	void showHTML(String html, CSSContext<CSS_ELEMENT> cssContext) throws ParserException {
-		final Document<HTML_ELEMENT> document = documentLoader.fromHTML(html, cssContext);
+		final IDocument<HTML_ELEMENT> document = documentLoader.fromHTML(html, cssContext);
 
 		// Layout and render the document in one pass
 		documentLoader.layout(document, uiCanvas.getWidth(), uiCanvas.getHeight(), uiCanvas);

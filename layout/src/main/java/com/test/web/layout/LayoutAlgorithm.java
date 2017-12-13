@@ -2,7 +2,7 @@ package com.test.web.layout;
 
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.common.ICSSDocumentStyles;
-import com.test.web.document.common.Document;
+import com.test.web.document.common.IDocument;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.io.common.Tokenizer;
@@ -47,7 +47,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		this.debugListener = debugListener;
 	}
 
-	public void layout(Document<ELEMENT> document, ViewPort viewPort, CSSContext<ELEMENT> cssContext, PageLayout<ELEMENT> pageLayout, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
+	public void layout(IDocument<ELEMENT> document, ViewPort viewPort, CSSContext<ELEMENT> cssContext, PageLayout<ELEMENT> pageLayout, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
 		
 		final LayoutState<ELEMENT> state = new LayoutState<>(textExtent, viewPort, cssContext, pageLayout, listener);
 		
@@ -60,7 +60,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	}
 
     @Override
-	public void onElementStart(Document<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
+	public void onElementStart(IDocument<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
     	
     	final HTMLElement elementType = document.getType(element);
 
@@ -127,7 +127,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     }
   
     @Override
-	public void onElementEnd(Document<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
+	public void onElementEnd(IDocument<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
 	
     	final HTMLElement elementType = document.getType(element);
     	
@@ -174,7 +174,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 
     @Override
-	public void onText(Document<ELEMENT> document, ELEMENT element, String text, LayoutState<ELEMENT> state) {
+	public void onText(IDocument<ELEMENT> document, ELEMENT element, String text, LayoutState<ELEMENT> state) {
 		// We have a text element, compute text extents according to current mode
 		// TODO: text-align, overflow
 
@@ -193,7 +193,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		// onTextComputeAndRender(document, element, text, cur, state);
 	}
     
-    private void computeAndAddInlineText_wrapAndRenderAsNecessary(Document<ELEMENT> document, ELEMENT element, StackElement cur, String text, LayoutState<ELEMENT> state) {
+    private void computeAndAddInlineText_wrapAndRenderAsNecessary(IDocument<ELEMENT> document, ELEMENT element, StackElement cur, String text, LayoutState<ELEMENT> state) {
 		final IFont font = cur.resultingLayout.getFont();
 
 		String remainingText = text;
@@ -270,7 +270,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     }
     
     @Deprecated // does not take varying inline element height into account
-    private void onTextComputeAndRender(Document<ELEMENT> document, ELEMENT element, String text, StackElement cur, LayoutState<ELEMENT> state) {
+    private void onTextComputeAndRender(IDocument<ELEMENT> document, ELEMENT element, String text, StackElement cur, LayoutState<ELEMENT> state) {
 		final IFont font = cur.resultingLayout.getFont();
 		
 		final int width = textUtil.getTextLengthOrAvailableWidth(text, cur.getAvailableWidth(), font);
@@ -420,7 +420,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		return layoutComputed;
 	}
 	
-	private void computeStyles(LayoutState<ELEMENT> state, Document<ELEMENT> document, ELEMENT element, HTMLElement elementType, StackElement sub) {
+	private void computeStyles(LayoutState<ELEMENT> state, IDocument<ELEMENT> document, ELEMENT element, HTMLElement elementType, StackElement sub) {
 
 		final FontSpec defaultFont = fontSettings.getFontForElement(elementType);
     	
