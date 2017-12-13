@@ -3,6 +3,7 @@ package com.test.web.document.common;
 import org.w3c.dom.html.HTMLDirectoryElement;
 
 import com.test.web.css.common.enums.CSStyle;
+import com.test.web.document.common.enums.LinkRelType;
 import com.test.web.types.IEnum;
 import com.test.web.types.IKeyValue;
 import com.test.web.types.IKeyValueList;
@@ -38,7 +39,7 @@ public enum HTMLAttribute implements IKeyValue {
 	
 	STYLE("style", true, CSStyle.class, HTMLAttributeValueType.CSS, null),
 	
-	REL("rel", false, ValueArity.ONE, HTMLAttributeValueType.STRING, null),
+	REL("rel", false, LinkRelType.class, HTMLAttributeValueType.ENUM, null),
 	TYPE("type", false, ValueArity.ONE, HTMLAttributeValueType.STRING, null),
 	HREF("href", false, ValueArity.ONE, HTMLAttributeValueType.STRING, null),
 	HREFLANG("hreflang", false, ValueArity.ONE, HTMLAttributeValueType.STRING, null),
@@ -132,11 +133,11 @@ public enum HTMLAttribute implements IKeyValue {
 		this.valueType = valueType;
 		this.defaultValue = defaultValue;
 		
-		if (IOptionEnum.class.isAssignableFrom(enumClass)) {
-			this.paramArity = ValueArity.ONE;
-		}
-		else if (IKeyValueList.class.isAssignableFrom(enumClass)) {
+		if (IKeyValueList.class.isAssignableFrom(enumClass)) {
 			this.paramArity = ValueArity.MULTIPLE;
+		}
+		else if (IEnum.class.isAssignableFrom(enumClass) || IOptionEnum.class.isAssignableFrom(enumClass)) {
+			this.paramArity = ValueArity.ONE;
 		}
 		else {
 			throw new IllegalStateException("unknown html enum type " + enumClass);
