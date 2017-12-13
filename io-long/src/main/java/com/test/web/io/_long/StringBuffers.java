@@ -140,8 +140,32 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 		return ret;
 	}
 	
-	
-	
+	@Override
+	public String peek(int num) throws IOException {
+		// Hack sine class is not threadsafe anyway so can just reset curReadPos
+		final long originalReadPos = curReadPos;
+		
+		final StringBuilder sb = new StringBuilder();
+		
+		int left = num;
+		
+		while (left > 0) {
+			final int val = readNext();
+				
+			if (val < 0) {
+				break; // EOF
+			}
+			
+			sb.append((char)val);
+			
+			-- left;
+		}
+		
+		this.curReadPos = originalReadPos;
+		
+		return sb.toString();
+	}
+
 	private long readMoreData() throws IOException {
 		// Read buffer-size data at current write pos
 		int bufNo = bufNo(curWritePos);
@@ -202,9 +226,14 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 	}
 
 	@Override
-	public void rewindOneCharacter() {
-		int bufNo = bufNo(tokenizerPos);
-		int bufOffset = bufOffset(tokenizerPos);
+	public void rewindOneCharacter(int val) {
+		
+		if (val < 0) {
+			throw new IllegalArgumentException("Rewinding EOF");
+		}
+		
+		int bufNo = bufNo(curReadPos);
+		int bufOffset = bufOffset(curReadPos);
 		
 		if (bufOffset == 0) {
 			if (bufNo == 0) {
@@ -218,7 +247,14 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 			-- bufOffset;
 		}
 		
-		this.tokenizerPos = stringRef(bufNo, bufOffset, 0);
+		final long newPos = stringRef(bufNo, bufOffset, 0);
+		
+		final char c = characterAt(newPos);
+		if (c != (char)val) {
+			throw new IllegalStateException("character mismatch: " + c + "/" + (char)val);
+		}
+		
+		this.curReadPos = newPos;
 	}
 
 	@Override
@@ -408,6 +444,13 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 		length -= endSkip;
 		
 		return stringRef(bufNo, bufOffset, length);
+	}
+	
+	private char characterAt(long ref) {
+		int bufNo = bufNo(ref);
+		int bufOffset = bufOffset(ref);
+
+		return buffers[bufNo][bufOffset];
 	}
 	
 	public String getString(long ref) {

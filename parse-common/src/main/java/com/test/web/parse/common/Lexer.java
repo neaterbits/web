@@ -18,7 +18,6 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	private final TOKEN tokEOF;
 	
 	private final StringBuilder cur;
-	private int buffered;
 	
 	// Scratch array for maintaining number of matching tokens at any given type
 	private final TOKEN [] possiblyMatchingTokens;
@@ -51,7 +50,6 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		this.tokNone = tokNone;
 		this.tokEOF = tokEOF;
 		this.cur = new StringBuilder();
-		this.buffered = -1;
 		this.lineNo = 1;
 	}
 	
@@ -87,15 +85,6 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 			// Mark so that tokenizer may know starting point of string
 
 			input.mark();
-
-			// if character was buffered, that means mark() set buffer to a curReadPos that is one more than should be
-			// since the character is read from buffer but must be part of tokenizer returned characters
-			// so rewind buffer tokenizerPos by one character here
-			if (buffered > 0) {
-				// put back character, so rewind tokenizer pos since we read one too much
-				// TODO fix this hack in better way
-				input.rewindOneCharacter();
-			}
 		}
 		
 		// Scan all tokens for input from reader and check whether any tokens match 
@@ -117,7 +106,6 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 				// If found a matching token, return that
 				if (longestFoundSoFar != null) {
 					found = longestFoundSoFar;
-					bufferCharacter(val); // put EOF back
 				}
 				else {
 					if (tokEOF != null) {
@@ -234,7 +222,13 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		} while (found == null);
 		
 		if (hasDebugLevel(1)) {
-			debug("returned token " + found + " at " + lineNo + ", buf=\"" + cur + "\", buffered char='"+ (char)buffered + "'");
+			final int peekLength = 20;
+			String next = input.peek(peekLength);
+			if (next.length() == peekLength) {
+				next += "...";
+			}
+					
+			debug("returned token " + found + " at " + lineNo + ", buf=\"" + cur + "\", next=\""+ next + "\"");
 		}
 		
 		this.lastToken = found;
@@ -399,19 +393,14 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	private final int read() throws IOException {
 		final int ret;
 		
-		if (buffered >= 0) {
-			ret = buffered;
-			this.buffered = -1;
-		}
-		else {
-			ret = input.readNext();
-		}
+		ret = input.readNext();
 
 		return ret;
 	}
 	
 	private void bufferCharacter(int val) {
-		this.buffered = val;
+		
+		input.rewindOneCharacter(val);
 		
 		if ((char) val == '\n') {
 			// if buffering newline, subtract from previously increased lineNo
@@ -428,9 +417,9 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	}
 	
 	public final int getEndSkip() {
-		return buffered >= 0 ? 1 : 0;
+		return 0;
 	}
-	
+  
 	private void debug(String s) {
 		System.out.println(PREFIX + " " + lineNo + ": " + s);
 	}
