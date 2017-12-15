@@ -1,4 +1,4 @@
-package com.test.web.parse.html.enums;
+package com.test.web.document.common.enums;
 
 import com.test.web.types.IEnum;
 

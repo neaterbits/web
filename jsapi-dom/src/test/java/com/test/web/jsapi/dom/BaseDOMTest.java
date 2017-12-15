@@ -4,6 +4,7 @@ import com.test.web.css.common.CSSContext;
 import com.test.web.css.oo.OOCSSDocument;
 import com.test.web.css.oo.OOCSSElement;
 import com.test.web.document.common.HTMLAttribute;
+import com.test.web.document.common.HTMLAttributeValueType;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.oo.OOHTMLDocument;
 import com.test.web.document.oo.OOTagElement;
@@ -13,40 +14,120 @@ import com.test.web.jsengine.common.JSCompileException;
 import com.test.web.jsengine.common.JSExecutionException;
 import com.test.web.jsengine.common.JSVariableMap;
 import com.test.web.parse.common.ParserException;
+import com.test.web.types.IEnum;
 
 import junit.framework.TestCase;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.function.Consumer;
 
 public abstract class BaseDOMTest extends TestCase {
 
 	abstract IJSEngine getJSEngine();
 
+	private static final AttributeTestValues [] testValues = new AttributeTestValues [] {
+			new AttributeTestValues(HTMLAttributeValueType.STRING, 							"a_string", 		 	"another_string", 	null),
+			new AttributeTestValues(HTMLAttributeValueType.STRING_ARRAY,	 			"value1 value2", 	"value3 value4", 	null),
+			new AttributeTestValues(HTMLAttributeValueType.BOOLEAN_TRUE_FALSE,	 "true", 				 	"false", 					null),
+			new AttributeTestValues(HTMLAttributeValueType.BOOLEAN_MINIMIZABLE,	 a -> a.getName(),  a -> "false", 			a -> null),
+			new AttributeTestValues(HTMLAttributeValueType.BIGDECIMAL, 					"2732839.34984", 	"32987245.23442", "abcde"),
+			new AttributeTestValues(HTMLAttributeValueType.DECIMAL, 						"239.4", 		 		"4352.43", 			"fghij"),
+			new AttributeTestValues(HTMLAttributeValueType.YES_NO, 							"yes", 		 			"no", 					"someothertext"),
+			new AttributeTestValues(HTMLAttributeValueType.INTEGER, 						"123", 		 			"456", 					"notaninteger"),
+			new AttributeTestValues(HTMLAttributeValueType.ENUM, 								a -> getEnumName(a, 0), a -> getEnumName(a, 1), a -> "notanenumconstant"),
+			new AttributeTestValues(HTMLAttributeValueType.ENUM_OR_STRING, 			a -> getEnumName(a, 0), a -> "a_string_value", a -> null),
+			new AttributeTestValues(HTMLAttributeValueType.CSS, 								"width:100px;height:50px",  "display:block;text-align:center",  "notvalidcss"),
+	};
+
+	private static String getEnumName(HTMLAttribute attribute, int ordinal) {
+		if (attribute.getEnumType() == null) {
+			throw new IllegalStateException("No enum type for " + attribute);
+		}
+
+		final Enum<?> [] enumConstants = attribute.getEnumType().getEnumConstants();
+		
+		if (enumConstants == null) {
+			throw new IllegalStateException("No enum constants for " + attribute.getEnumType().getSimpleName());
+		}
+	
+		return ((IEnum)enumConstants[ordinal]).getName();
+	}
+
 	public void testAttributeSetting() throws ParserException, JSCompileException, JSExecutionException {
 
+		final AttributeTestHelper testHelper = new AttributeTestHelper(testValues);
 		final IJSEngine jsEngine = getJSEngine();
-
+	
+		iterateAllAttributesOfAllElements(testHelper, AttributeTest.INITIAL, atc -> checkAttributeInitial(jsEngine, atc));
+	}
+	
+	private void iterateAllAttributesOfAllElements(AttributeTestHelper testHelper, AttributeTest attributeTest, Consumer<AttributeTestCase> testCaseRunner) {
 		// Loop through all elements and their attributes
 		for (HTMLElement element : HTMLElement.values()) {
 			
 			// Global attributes
 			for (HTMLAttribute attribute : HTMLAttribute.getGlobalAttributes()) {
-				checkAttribute(jsEngine, element, attribute);
+				testHelper.checkAttribute(element, attribute, attributeTest, testCaseRunner);
 			}
 			
 			// Element specific attributes
 			for (HTMLAttribute attribute : element.getAttributes()) {
-				checkAttribute(jsEngine, element, attribute);
+				testHelper.checkAttribute(element, attribute, attributeTest, testCaseRunner);
 			}
 		}
 	}
 
-	private void checkAttribute(IJSEngine jsEngine, HTMLElement element, HTMLAttribute attribute) throws ParserException, JSCompileException, JSExecutionException {
+	private void checkAttributeInitial(IJSEngine jsEngine, AttributeTestCase atc) {
+		try {
+			checkAttributeValueEx(jsEngine, atc);
+		} catch (ParserException | JSCompileException | JSExecutionException ex) {
+			throw new IllegalStateException("Exception while executing", ex);
+		}
+	}
 
-		// Generate some simple HTML for a DOM
-		
-		final String elementId = "element_to_test";
+	private void checkAttributeValueEx(IJSEngine jsEngine, AttributeTestCase atc) throws ParserException, JSCompileException, JSExecutionException {
 
-		final String html = "";
+		System.out.println("checkAttribute:\n" + atc.getHtml());
 		
+		final JSVariableMap varMap = prepareVarMap(atc.getHtml());
+
+		final int numAttributes;
+		final int attrIdx;
+		
+		final HTMLAttribute attribute = atc.getAttribute();
+		final String elementId = atc.getElementId();
+		
+		if (attribute == HTMLAttribute.ID) {
+			numAttributes = 1;
+			attrIdx = 0;
+		}
+		else {
+			numAttributes = 2;
+			attrIdx = 1;
+		}
+
+		final Integer attributesLength = (Integer)jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.length", varMap);
+		assertThat(attributesLength).isNotNull();
+		assertThat(attributesLength).isEqualTo(numAttributes);
+
+		final String attrName 					= (String)jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.item(" + attrIdx + ").name", varMap);
+		final String attrNamespaceURI 	= (String)jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.item(" + attrIdx + ").namespaceURI", varMap);
+		final String attrPrefix 					= (String)jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.item(" + attrIdx + ").prefix", varMap);
+		final String attrLocalName 			= (String)jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.item(" + attrIdx + ").localName", varMap);
+		final String attrValue 					= (String)jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.item(" + attrIdx + ").value", varMap);
+
+		assertThat(attrName).isEqualTo(attribute.getAttributeName());
+		assertThat(attrNamespaceURI).isEqualTo(attribute.getAttributeNamespaceURI());
+		assertThat(attrPrefix).isEqualTo(attribute.getAttributePrefix());
+		assertThat(attrLocalName).isEqualTo(attribute.getAttributeLocalName());
+		assertThat(attrValue).isEqualTo(atc.getAttributeValue());
+
+		// update attribute
+		
+	}
+	
+	private JSVariableMap prepareVarMap(String html) throws ParserException {
 		final CSSContext<OOCSSElement> cssContext = new CSSContext<>();
 		
 		final OOHTMLDocument document = OOHTMLDocument.parseHTMLDocument(
@@ -55,12 +136,12 @@ public abstract class BaseDOMTest extends TestCase {
 
 		// Now run some JS tests
 		final JSVariableMap varMap = new JSVariableMap();
-		
+
 		final DocumentContext<OOTagElement> documentContext = new DocumentContext<>(document);
 
-		varMap.addReflected("document", new DOMDocument<OOTagElement, DocumentContext<OOTagElement>>(documentContext, null));
-		
-		jsEngine.evalJS("document.getElementById()", varMap);
+		varMap.addReflected("document", new DOMDocument<OOTagElement, DocumentContext<OOTagElement>>(documentContext));
+
+		return varMap;
 	}
 }
 

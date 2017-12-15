@@ -37,7 +37,7 @@ final class LongStyleDocument extends BaseLongCSSDocument
 	// Called before starting parsing of a CSS element, allows us to map the parsed element
 	// to the HTML element that contains it
 	@Override
-	public void startParseStyleElement(Integer htmlElement) {
+	public void startParseStyleElement(Integer htmlElement, String styleText) {
 		final int [] existing = htmlToStyleElements.get(htmlElement);
 		
 		final int cssElement = allocateCurParseElement();

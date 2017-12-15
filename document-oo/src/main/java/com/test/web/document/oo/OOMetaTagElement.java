@@ -1,5 +1,7 @@
 package com.test.web.document.oo;
 
+import com.test.web.document.common.DocumentState;
+import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 
 public class OOMetaTagElement extends OOMetaElement {
@@ -20,7 +22,7 @@ public class OOMetaTagElement extends OOMetaElement {
 	}
 
 	final void setCharset(String charset) {
-		this.charset = charset;
+		this.charset = setOrClearAttribute(HTMLAttribute.CHARSET, charset);
 	}
 
 	final String getContent() {
@@ -28,7 +30,7 @@ public class OOMetaTagElement extends OOMetaElement {
 	}
 
 	final void setContent(String content) {
-		this.content = content;
+		this.content = setOrClearAttribute(HTMLAttribute.CONTENT, content);
 	}
 
 	final String getHttpEquiv() {
@@ -36,7 +38,7 @@ public class OOMetaTagElement extends OOMetaElement {
 	}
 
 	final void setHttpEquiv(String httpEquiv) {
-		this.httpEquiv = httpEquiv;
+		this.httpEquiv = setOrClearAttribute(HTMLAttribute.HTTP_EQUIV, httpEquiv);
 	}
 
 	final String getName() {
@@ -44,7 +46,7 @@ public class OOMetaTagElement extends OOMetaElement {
 	}
 
 	final void setName(String name) {
-		this.name = name;
+		this.name = setOrClearAttribute(HTMLAttribute.NAME, name);
 	}
 
 	final String getScheme() {
@@ -52,6 +54,69 @@ public class OOMetaTagElement extends OOMetaElement {
 	}
 
 	final void setScheme(String scheme) {
-		this.scheme = scheme;
+		this.scheme = setOrClearAttribute(HTMLAttribute.SCHEME, scheme);
+	}
+
+	@Override
+	String getStandardAttributeValue(HTMLAttribute attribute) {
+		final String value;
+		
+		switch (attribute) {
+		case CHARSET:
+			value = charset;
+			break;
+			
+		case CONTENT:
+			value = content;
+			break;
+			
+		case HTTP_EQUIV:
+			value = httpEquiv;
+			break;
+			
+		case NAME:
+			value = name;
+			break;
+			
+		case SCHEME:
+			value = scheme;
+			break;
+			
+		default:
+			value = super.getStandardAttributeValue(attribute);
+			break;
+		}
+
+		return value;
+	}
+
+	@Override
+	void setStandardAttributeValue(HTMLAttribute attribute, String value, DocumentState<OOTagElement> state) {
+		
+		switch (attribute) {
+		case CHARSET:
+			setCharset(value);
+			break;
+			
+		case CONTENT:
+			setContent(value);
+			break;
+			
+		case HTTP_EQUIV:
+			setHttpEquiv(value);
+			break;
+			
+		case NAME:
+			setName(value);
+			break;
+			
+		case SCHEME:
+			setScheme(value);
+			break;
+			
+		default:
+			super.getStandardAttributeValue(attribute);
+			break;
+		}
 	}
 }

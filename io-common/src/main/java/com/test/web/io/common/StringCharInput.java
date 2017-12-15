@@ -42,9 +42,19 @@ public class StringCharInput implements CharInput {
 	public void rewindOneCharacter(int val) {
 		throw new UnsupportedOperationException();
 	}
+	
+	@Override
+	public void rewind(int numCharacters) {
+		throw new UnsupportedOperationException();
+	}
 
 	@Override
 	public String peek(int num) throws IOException {
 		return string.substring(pos, Math.min(string.length(), pos + num));
+	}
+
+	@Override
+	public int peek() throws IOException {
+		return pos >= string.length() ? -1 : string.charAt(pos + 1);
 	}
 }

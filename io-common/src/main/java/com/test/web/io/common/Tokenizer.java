@@ -12,13 +12,15 @@ import com.test.web.types.IEnum;
 
 public interface Tokenizer {
 	
-	<E extends Enum<E> & IEnum> E asEnum(Class<E> enumClass, boolean caseSensitive);
+	<E extends Enum<E> & IEnum> E asEnum(Class<E> enumClass, int startOffset, int endSkip, boolean caseSensitive);
 	
-	boolean equalsIgnoreCase(String s);
+	boolean equalsIgnoreCase(String s, int startOffset, int endSkip);
 	
 	int addToBuffer(DuplicateDetectingStringStorageBuffer buffer, int startOffset, int endSkip);
 	
 	String asString(int startOffset, int endSkip);
+
+	Integer asInteger(int startOffset, int endSkip);
 
 	int asDecimalSize(int startOffset, int endSkip);
 

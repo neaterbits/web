@@ -38,4 +38,24 @@ public class StringUtils {
 		
 		return trimmed;
 	}
+
+	public static Integer asIntegerOrNull(String value) {
+		Integer integer;
+
+		final String trimmed = value.trim();
+
+		if (trimmed.isEmpty()) {
+			integer = null;
+		}
+		else {
+			try {
+				integer = Integer.parseInt(value);
+			}
+			catch (NumberFormatException ex) {
+				integer = null;
+			}
+		}
+
+		return integer;
+	}
 }

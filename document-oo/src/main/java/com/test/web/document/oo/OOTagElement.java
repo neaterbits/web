@@ -10,7 +10,8 @@ import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLAttributeValueType;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLStringConversion;
-import com.test.web.parse.html.enums.HTMLDirection;
+import com.test.web.document.common.enums.HTMLDirection;
+import com.test.web.document.common.enums.HTMLDropzone;
 import com.test.web.types.IEnum;
 import com.test.web.types.StringUtils;
 
@@ -31,8 +32,14 @@ public abstract class OOTagElement extends OODocumentElement {
 	private HTMLDirection direction;
 	private String lang;
 	private String title;
+	private boolean translate;
+	private boolean spellcheck;
+	private boolean draggable;
+	private HTMLDropzone dropzone;
+	private int tabindex;
 	
 	private OOCSSElement styleElement;
+	private String style; // store style as plain text as well as parsed CSS
 	
 	abstract HTMLElement getType();
 	
@@ -72,8 +79,9 @@ public abstract class OOTagElement extends OODocumentElement {
 	}
 
 	final boolean setOrClearAttribute(HTMLAttribute attribute, Boolean value) {
-		if (attribute.getValueType() != HTMLAttributeValueType.BOOLEAN_TRUE_FALSE) {
-			throw new IllegalArgumentException("Not a string attribute: " + attribute);
+		if (     attribute.getValueType() != HTMLAttributeValueType.BOOLEAN_TRUE_FALSE
+			 && attribute.getValueType() != HTMLAttributeValueType.YES_NO) {
+			throw new IllegalArgumentException("Not a boolean attribute: " + attribute);
 		}
 
 		final Boolean ret = genericSetOrClearAttribute(attribute, value);
@@ -84,6 +92,14 @@ public abstract class OOTagElement extends OODocumentElement {
 	final <T extends Enum<T>>T setOrClearAttribute(HTMLAttribute attribute, T value) {
 		if (attribute.getValueType() != HTMLAttributeValueType.ENUM) {
 			throw new IllegalArgumentException("Not an enum attribute: " + attribute);
+		}
+
+		return genericSetOrClearAttribute(attribute, value);
+	}
+
+	final Integer setOrClearAttribute(HTMLAttribute attribute, Integer value) {
+		if (attribute.getValueType() != HTMLAttributeValueType.INTEGER) {
+			throw new IllegalArgumentException("Not an integer attribute: " + attribute);
 		}
 
 		return genericSetOrClearAttribute(attribute, value);
@@ -128,12 +144,22 @@ public abstract class OOTagElement extends OODocumentElement {
 		}
 	}
 
+	final void setAttributeFlagIfNotSet(HTMLAttribute attribute) {
+		if (!isAttributeSet(attribute)) {
+			setAttributeFlag(attribute);
+		}
+	}
+	
 	final void setAttributeFlag(HTMLAttribute attribute) {
 		
 		if (attribute == null) {
 			throw new IllegalArgumentException("attribute == null");
 		}
-		
+
+		if (isAttributeSet(attribute)) {
+			throw new IllegalStateException("attribute " + attribute + " already set");
+		}
+
 		if (numStandardAttributes == standardAttributes.length) {
 			this.standardAttributes = Arrays.copyOf(standardAttributes, standardAttributes.length * 2);
 		}
@@ -198,7 +224,7 @@ public abstract class OOTagElement extends OODocumentElement {
 	}
 	
 	final void addClass(String classString, DocumentState<OOTagElement> state) {
-		setAttributeFlag(HTMLAttribute.CLASS);
+		setAttributeFlagIfNotSet(HTMLAttribute.CLASS);
 
 		if (classes == null) {
 			this.classes = new String [] { classString };
@@ -206,7 +232,7 @@ public abstract class OOTagElement extends OODocumentElement {
 		else {
 			this.classes = Arrays.copyOf(classes, classes.length + 1);
 			
-			this.classes[classes.length] = classString;
+			this.classes[classes.length - 1] = classString;
 		}
 		
 		state.addElementClass(classString, this);
@@ -225,7 +251,7 @@ public abstract class OOTagElement extends OODocumentElement {
 	}
 
 	final void setAccessKey(String accessKey) {
-		this.accessKey = setOrClearAttribute(HTMLAttribute.CONTENTEDITABLE, accessKey);
+		this.accessKey = setOrClearAttribute(HTMLAttribute.ACCESSKEY, accessKey);
 	}
 
 	final String getContextMenu() {
@@ -260,13 +286,76 @@ public abstract class OOTagElement extends OODocumentElement {
 		this.title = setOrClearAttribute(HTMLAttribute.TITLE, title);
 	}
 
+	final boolean getTranslate() {
+		return translate;
+	}
+
+	final void setTranslate(Boolean translate) {
+		this.translate = setOrClearAttribute(HTMLAttribute.TRANSLATE, translate);
+	}
+
+	final boolean getSpellcheck() {
+		return spellcheck;
+	}
+
+	final void setSpellcheck(Boolean spellcheck) {
+		this.spellcheck = setOrClearAttribute(HTMLAttribute.SPELLCHECK, spellcheck);
+	}
+
+	final boolean getHidden() {
+		return isAttributeSet(HTMLAttribute.HIDDEN);
+	}
+
+	void setHidden() {
+		setAttributeFlagIfNotSet(HTMLAttribute.HIDDEN);
+	}
+
+	final boolean getDraggable() {
+		return draggable;
+	}
+
+	final void setDraggable(Boolean draggable) {
+		this.draggable = setOrClearAttribute(HTMLAttribute.DRAGGABLE, draggable);
+	}
+
+	final HTMLDropzone getDropzone() {
+		return dropzone;
+	}
+
+	final void setDropzone(HTMLDropzone dropzone) {
+		this.dropzone = setOrClearAttribute(HTMLAttribute.DROPZONE, dropzone);
+	}
+
+	final int getTabindex() {
+		return tabindex;
+	}
+
+	final void setTabindex(Integer tabindex) {
+		this.tabindex = setOrClearAttribute(HTMLAttribute.TABINDEX, tabindex);
+	}
+
 	final OOCSSElement getStyleElement() {
 		return styleElement;
 	}
-
-	final void setStyleElement(OOCSSElement styleElement) {
-		this.styleElement = genericSetOrClearAttribute(HTMLAttribute.STYLE, styleElement);
+	
+	final String getStyle() {
+		return style;
 	}
+
+	final void setStyle(OOCSSElement styleElement, String style) {
+		
+		if (styleElement == null && style != null) {
+			throw new IllegalArgumentException("styleElement == null && style != null");
+		}
+
+		if (styleElement != null && style == null) {
+			throw new IllegalArgumentException("styleElement != null && style == null");
+		}
+		
+		this.styleElement = genericSetOrClearAttribute(HTMLAttribute.STYLE, styleElement);
+		this.style = style;
+	}
+
 	
 	final int getNumAttributes() {
 		int num = numStandardAttributes;
@@ -435,11 +524,47 @@ public abstract class OOTagElement extends OODocumentElement {
 			value = title;
 			break;
 			
+		case TRANSLATE:
+			value = HTMLStringConversion.yesNoString(translate);
+			break;
+
+		case SPELLCHECK:
+			value = HTMLStringConversion.booleanString(spellcheck);
+			break;
+
+		case DRAGGABLE:
+			value = HTMLStringConversion.booleanString(draggable);
+			break;
+			
+		case DROPZONE:
+			value = dropzone.getName();
+			break;
+
+		case TABINDEX:
+			value = String.valueOf(tabindex);
+			break;
+			
+		case HIDDEN:
+			value= minimizableValue(attribute);
+			break;
+			
+		case STYLE:
+			value = style;
+			break;
+			
 		default:
-			throw new IllegalStateException("Unknown attribute " + attribute);
+			throw new IllegalStateException("Unknown attribute " + attribute + " in " + getType());
 		}
 		
 		return value;
+	}
+	
+	final String minimizableValue(HTMLAttribute attribute) {
+		if (attribute.getValueType() != HTMLAttributeValueType.BOOLEAN_MINIMIZABLE) {
+			throw new IllegalArgumentException("Not minimizable: " + attribute);
+		}
+		
+		return isAttributeSet(attribute) ? attribute.getName() : null;
 	}
 
 	final HTMLAttribute setAttributeValue(int idx, String value, DocumentState<OOTagElement> state) {
@@ -490,13 +615,14 @@ public abstract class OOTagElement extends OODocumentElement {
 			ClassAttributeParser.parseClassAttribute(value, classString -> addClass(classString, state));
 			break;
 
-		case CONTENTEDITABLE:
+		case CONTENTEDITABLE: {
 			final Boolean b = HTMLStringConversion.booleanValue(value);
 			
 			if (b != null) {
 				setContentEditable(b);
 			}
 			break;
+		}
 
 		case ACCESSKEY:
 			setAccessKey(value);
@@ -505,11 +631,11 @@ public abstract class OOTagElement extends OODocumentElement {
 		case CONTEXTMENU:
 			setContextMenu(value);
 			break;
-			
+
 		case DIRECTION:
-			final HTMLDirection directon = IEnum.asEnum(HTMLDirection.class, value, true);
+			final HTMLDirection direction = IEnum.asEnum(HTMLDirection.class, value, true);
 			if (direction != null) {
-				setDirection(directon);
+				setDirection(direction);
 			}
 			break;
 			
@@ -521,6 +647,49 @@ public abstract class OOTagElement extends OODocumentElement {
 			setTitleAttribute(title);
 			break;
 			
+		case TRANSLATE: {
+			final Boolean b = HTMLStringConversion.yesNoValue(value);
+			
+			if (b != null) {
+				setTranslate(b);
+			}
+			break;
+		}
+
+		case SPELLCHECK: {
+			final Boolean b = HTMLStringConversion.booleanValue(value);
+			
+			if (b != null) {
+				setSpellcheck(b);
+			}
+			break;
+		}
+
+		case DRAGGABLE: {
+			final Boolean b = HTMLStringConversion.booleanValue(value);
+			
+			if (b != null) {
+				setDraggable(b);
+			}
+			break;
+		}
+
+		case DROPZONE:
+			final HTMLDropzone dropzone = IEnum.asEnum(HTMLDropzone.class, value, true);
+			if (dropzone != null) {
+				setDropzone(dropzone);
+			}
+			break;
+
+		case TABINDEX: {
+			final Integer i = HTMLStringConversion.integerValue(value);
+			
+			if (i != null) {
+				setTabindex(i);
+			}
+			break;
+		}
+
 		default:
 			throw new IllegalStateException("Unknown attribute " + attribute);
 		}

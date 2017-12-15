@@ -6,6 +6,7 @@ import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.ICommonDisplayableLinkAttributes;
 import com.test.web.document.common.ICommonLinkAttributes;
 import com.test.web.document.common.enums.LinkRelType;
+import com.test.web.document.common.enums.LinkRevType;
 import com.test.web.document.common.enums.HTMLTarget;
 
 final class OOAreaElement extends OOLeafElement
@@ -98,6 +99,16 @@ final class OOAreaElement extends OOLeafElement
 	@Override
 	public String getTargetFrame() {
 		return commonLinkAttributes.getTargetFrame();
+	}
+
+	@Override
+	public LinkRevType getRev() {
+		throw new UnsupportedOperationException("Not supported for area elements");
+	}
+
+	@Override
+	public void setRev(LinkRevType rev) {
+		throw new UnsupportedOperationException("Not supported for area elements");
 	}
 
 	@Override

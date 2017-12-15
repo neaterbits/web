@@ -15,6 +15,7 @@ import com.test.web.parse.common.ParserException;
 import com.test.web.parse.common.TokenMergeHelper;
 import com.test.web.parse.css.CSSParser;
 import com.test.web.types.IIndent;
+import com.test.web.types.Value;
 
 public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUMENT>
 	extends BaseParser<HTMLToken, CharInput>
@@ -107,18 +108,18 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 						throw lexer.unexpectedToken();
 					}
 					break;
-					
+
 				case COMMENT_CONTENT:
 					// Probably a comment
 					found = null;
 					break;
-					
+
 				case TAG_SLASH:
 					// This is end-of-tag for current tag, skip tag
 					if (lexSkipWS(currentTag) != currentTag) {
 						throw lexer.unexpectedToken();
 					}
-					
+
 					debugExit(currentTag.getElement().getName());
 
 					htmlListener.onElementEnd(tokenizer, currentTag.getElement());
@@ -130,7 +131,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 					
 					found = HTMLToken.TAG_END;
 					break;
-	
+					
 				default:
 					// Found element
 					debugEnter(tagToken.getElement().getName());
@@ -153,6 +154,10 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 							
 						case TAG_GREATER_THAN:
 							// End of tag, just exit loop with start tag
+							if ( ! tagToken.getElement().hasAnyContent() ) {
+								// Cannot have content so look for end tag
+								checkTagEnd(tagToken);
+							}
 							found = tagToken;
 							break;
 							
@@ -272,22 +277,40 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 	
 	private void parseHTML() throws IOException, ParserException {
 		
-		final HTMLToken token = endTagOrSub(HTMLToken.HTML, true, HTMLToken.HEAD);
-
-		if (token == HTMLToken.HEAD) {
+		HTMLToken token = endTagOrSub(HTMLToken.HTML, true, HTMLToken.HEAD, HTMLToken.BODY);
+		
+		boolean parsedBody = false;
+		
+		switch (token) {
+		case HEAD:
 			parseHead();
+			break;
+			
+		case BODY:
+			parsedBody = true;
+			parseBody();
+			break;
+			
+		case TAG_END:
+			break;
+			
+		default:
+			throw lexer.unexpectedToken();
 		}
 		
-		if (token != HTMLToken.TAG_END) {
-			// Was not end of file, and may have parsed <head> tag, parse <body> if any
-			switch (endTagOrSub(HTMLToken.HTML, true, HTMLToken.BODY)) {
+		
+		if ( ! parsedBody ) {
+
+			token = endTagOrSub(HTMLToken.HTML, true, HTMLToken.BODY);
+
+			switch (token) {
 			case BODY:
 				parseBody();
 				break;
 				
 			case TAG_END:
 				break;
-				
+
 			default:
 				throw lexer.unexpectedToken();
 			}
@@ -295,32 +318,32 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 	}
 
 	private void parseHead() throws IOException, ParserException {
-		
+
 		boolean done = false;
-		
+
 		do {
 			switch (endTagOrSub(HTMLToken.HEAD, false, HTMLToken.TITLE, HTMLToken.META, HTMLToken.LINK, HTMLToken.SCRIPT, HTMLToken.ELEM_STYLE)) {
 
 			case TITLE:
 				parseText(HTMLToken.TITLE);
 				break;
-				
+
 			case META:
 				break;
 
 			case SCRIPT:
 				parseText(HTMLToken.SCRIPT);
 				break;
-				
+
 			case ELEM_STYLE:
 				parseStyleContent(HTMLToken.ELEM_STYLE);
 				break;
-				
+
 			case LINK:
 				break;
 
 			case TAG_END:
-				//end tag
+				// </head>end tag
 				done = true;
 				break;
 	
@@ -349,10 +372,21 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 		parseContainer(HTMLToken.A, true);
 	}
 
-	private void parseInput() throws IOException, ParserException {
-		throw new UnsupportedOperationException("TODO");
+	private void parseFieldset() throws IOException, ParserException {
+		parseContainer(HTMLToken.FIELDSET, true);
+	}
+
+	private void parseUl() throws IOException, ParserException {
+		parseContainer(HTMLToken.UL, true);
+	}
+
+	private void parseLi() throws IOException, ParserException {
+		parseContainer(HTMLToken.LI, true);
 	}
 	
+	private void parseProgress() throws IOException, ParserException {
+		parseContainer(HTMLToken.PROGRESS, true);
+	}
 
 	private void parseContainer(HTMLToken curToken, boolean text) throws IOException, ParserException {
 		
@@ -364,7 +398,12 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 					HTMLToken.DIV,
 					HTMLToken.SPAN,
 					HTMLToken.A,
-					HTMLToken.INPUT)) {
+					HTMLToken.INPUT,
+					HTMLToken.IMG,
+					HTMLToken.FIELDSET,
+					HTMLToken.UL,
+					HTMLToken.LI,
+					HTMLToken.PROGRESS)) {
 			
 			case DIV:
 				parseDiv();
@@ -378,10 +417,30 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 				parseA();
 				break;
 				
-			case INPUT:
-				parseInput();
+			case FIELDSET:
+				parseFieldset();
 				break;
 				
+			case UL:
+				parseUl();
+				break;
+				
+			case LI:
+				parseLi();
+				break;
+			
+			case PROGRESS:
+				parseProgress();
+				break;
+				
+			case INPUT:
+				// only attributes
+				break;
+				
+			case IMG:
+				// only attributes
+				break;
+
 			case TEXT:
 				htmlListener.onText(tokenizer, 0, lexer.getEndSkip());
 				break;
@@ -473,7 +532,6 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 			throw lexer.unexpectedToken();
 		}
 	}
-	
 	
 	private STYLE_DOCUMENT parseStyleContent(HTMLToken elementToken) throws IOException, ParserException {
 		
@@ -616,9 +674,14 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 		
 		final HTMLToken token = lexSkipWS(HTMLToken.QUOTE, HTMLToken.SINGLE_QUOTE);
 
+		final HTMLToken peekToken;
 		switch (token) {
 		case QUOTE:
+			peekToken = HTMLToken.UNTIL_QUOTE;
+			break;
+			
 		case SINGLE_QUOTE:
+			peekToken = HTMLToken.UNTIL_SINGLE_QUOTE;
 			break;
 			
 		default:
@@ -627,9 +690,15 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 		
 		// Now parse CSS elements in a loop
 		for (;;) {
+			final Value<String> styleText = new Value<>();
+			// We'd like to keep style text as well
 			
+			if (peekToken != lexer.peek(styleText, peekToken)) {
+				throw new ParserException("Failed to find matching end of style attribute");
+			}
+
 			// Must set HTML element in CSS document so that we can later find back to CSS element from HTML element
-			styleAttributeListener.startParseStyleElement(documentElement);
+			styleAttributeListener.startParseStyleElement(documentElement, styleText.get());
 			
 			// Call CSS parser to parse element
 			final boolean semiColonRead = styleAttributeParser.parseElement(null);

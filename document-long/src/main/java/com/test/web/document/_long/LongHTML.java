@@ -1,7 +1,8 @@
 package com.test.web.document._long;
 
 import com.test.web.document.common.HTMLElement;
-import com.test.web.parse.html.enums.HTMLDirection;
+import com.test.web.document.common.enums.HTMLDirection;
+import com.test.web.document.common.enums.HTMLDropzone;
 
 /**
  * Helper class for indexing attributes for HTML elements
@@ -316,7 +317,7 @@ final class LongHTML extends LongHTMLHeaderFlags {
 			break;
 			
 		default:
-			ret = element.isContainerElement()
+			ret = element.isElemOrTextContainerElement()
 				? LongHTML.SIZE_CONTAINER_ELEMENT
 				: LongHTML.SIZE_LEAF_ELEMENT;
 			break;

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -13,7 +12,11 @@ import com.test.web.document.common.DocumentState;
 import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
+import com.test.web.document.common.HTMLStringConversion;
+import com.test.web.document.common.enums.HTMLDirection;
+import com.test.web.document.common.enums.HTMLDropzone;
 import com.test.web.document.common.enums.LinkRelType;
+import com.test.web.document.common.enums.LinkRevType;
 import com.test.web.io.common.LoadStream;
 import com.test.web.io.common.SimpleLoadStream;
 import com.test.web.io.oo.OOStringBuffer;
@@ -25,7 +28,6 @@ import com.test.web.parse.html.HTMLUtils;
 import com.test.web.parse.html.IDocumentParserListener;
 import com.test.web.parse.html.IHTMLParserListener;
 import com.test.web.parse.html.IHTMLStyleParserListener;
-import com.test.web.parse.html.enums.HTMLDirection;
 
 public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOTokenizer>{
 
@@ -324,8 +326,32 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			ret = new OOSpanElement();
 			break;
 
+		case INPUT:
+			ret = new OOInputElement();
+			break;
+
+		case IMG:
+			ret = new OOImgElement();
+			break;
+
 		case A:
 			ret = new OOAElement();
+			break;
+			
+		case FIELDSET:
+			ret = new OOFieldsetElement();
+			break;
+			
+		case UL:
+			ret = new OOUlElement();
+			break;
+			
+		case LI:
+			ret = new OOLiElement();
+			break;
+			
+		case PROGRESS:
+			ret = new OOProgressElement();
 			break;
 
 		default:
@@ -378,12 +404,20 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 		}
 	}
 	
-	private static boolean booleanValue(OOTokenizer tokenizer) {
-		return tokenizer.equalsIgnoreCase("true");
+	private static boolean booleanValue(OOTokenizer tokenizer, int startOffset, int endSkip) {
+		return HTMLStringConversion.booleanValue(tokenizer.getString(startOffset, endSkip));
+	}
+
+	private static boolean booleanMinimizable(OOTokenizer tokenizer, int startOffset, int endSkip) {
+		return ! tokenizer.getString(startOffset, endSkip).isEmpty();
+	}
+
+	private static boolean yesNoValue(OOTokenizer tokenizer, int startOffset, int endSkip) {
+		return HTMLStringConversion.yesNoValue(tokenizer.asString(startOffset, endSkip));
 	}
 
 	@Override
-	public void onAttributeWithValue(OOTokenizer tokenizer, HTMLAttribute attribute, int startOffset, int endSkip, HTMLElement element) {
+	public void onAttributeWithValue (OOTokenizer tokenizer, HTMLAttribute attribute, int startOffset, int endSkip, HTMLElement element) {
 		final OOTagElement ref = getCurElement();
 
 		if (element != ref.getType()) {
@@ -403,7 +437,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			break;
 			
 		case CONTENTEDITABLE:
-			ref.setContentEditable(booleanValue(tokenizer));
+			ref.setContentEditable(booleanValue(tokenizer, startOffset, endSkip));
 			break;
 			
 		case CONTEXTMENU:
@@ -411,15 +445,39 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			break;
 			
 		case DIRECTION:
-			ref.setDirection(tokenizer.asEnum(HTMLDirection.class, false));
+			ref.setDirection(tokenizer.asEnum(HTMLDirection.class, startOffset, endSkip, false));
 			break;
 			
 		case TITLE:
 			ref.setTitleAttribute(tokenizer.asString(startOffset, endSkip));
 			break;
 
+		case TRANSLATE:
+			ref.setTranslate(yesNoValue(tokenizer, startOffset, endSkip));
+			break;
+
+		case SPELLCHECK:
+			ref.setSpellcheck(booleanValue(tokenizer, startOffset, endSkip));
+			break;
+			
+		case HIDDEN:
+			ref.setHidden();
+			break;
+
+		case DRAGGABLE:
+			ref.setDraggable(booleanValue(tokenizer, startOffset, endSkip));
+			break;
+			
+		case DROPZONE:
+			ref.setDropzone(tokenizer.asEnum(HTMLDropzone.class, startOffset, endSkip, false));
+			break;
+			
+		case TABINDEX:
+			ref.setTabindex(tokenizer.asInteger(startOffset, endSkip));
+			break;
+
 		case REL:
-			final LinkRelType linkRelType = tokenizer.asEnum(LinkRelType.class, false);
+			final LinkRelType linkRelType = tokenizer.asEnum(LinkRelType.class, startOffset, endSkip, false);
 			
 			switch (element) {
 			case LINK:
@@ -539,7 +597,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 		case SCOPED:
 			switch (element) {
 			case STYLE:
-				((OOStyleElement)ref).setScoped(booleanValue(tokenizer));
+				((OOStyleElement)ref).setScoped(booleanMinimizable(tokenizer, startOffset, endSkip));
 				break;
 			
 			default:
@@ -548,9 +606,15 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			break;
 
 		case REV:
+			final LinkRevType linkRevType = tokenizer.asEnum(LinkRevType.class, startOffset, endSkip, false);
+
 			switch (element) {
 			case LINK:
-				// not supported in HTML 5
+				((OOLink)ref).setRev(linkRevType);
+				break;
+				
+			case A:
+				((OOAElement)ref).setRev(linkRevType);
 				break;
 				
 			default:
@@ -681,7 +745,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 		//throw new UnsupportedOperationException("TODO");
 	}
 
-	private static final OOStyleDocument styleParserListener = new OOStyleDocument();
+	private final OOStyleDocument styleParserListener = new OOStyleDocument();
 	
 	@Override
 	public IHTMLStyleParserListener<OOTagElement, OOTokenizer> getStyleParserListener() {

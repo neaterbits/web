@@ -12,6 +12,10 @@ public abstract class EventTarget<ELEMENT, DOCUMENT extends IDocumentContext<ELE
 
 	EventTarget() {
 	}
+	
+	EventTarget(DOCUMENT document) {
+		super(document);
+	}
 
 	public EventTarget(DOCUMENT document, ELEMENT element) {
 		super(document, element);

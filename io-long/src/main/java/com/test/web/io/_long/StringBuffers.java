@@ -12,6 +12,7 @@ import com.test.web.io.common.StreamStatus;
 import com.test.web.types.BigDecimalConversion;
 import com.test.web.types.DecimalSize;
 import com.test.web.types.IEnum;
+import com.test.web.types.StringUtils;
 
 public class StringBuffers extends BaseBuffers<char[][], char[]> implements CharInput, LongTokenizer {
 	
@@ -142,7 +143,7 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 	
 	@Override
 	public String peek(int num) throws IOException {
-		// Hack sine class is not threadsafe anyway so can just reset curReadPos
+		// Hack since class is not threadsafe anyway so can just reset curReadPos
 		final long originalReadPos = curReadPos;
 		
 		final StringBuilder sb = new StringBuilder();
@@ -164,6 +165,18 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 		this.curReadPos = originalReadPos;
 		
 		return sb.toString();
+	}
+	
+	@Override
+	public int peek() throws IOException {
+		// Hack since class is not threadsafe anyway so can just reset curReadPos
+		final long originalReadPos = curReadPos;
+
+		final int val = readNext();
+		
+		this.curReadPos = originalReadPos;
+
+		return val;
 	}
 
 	private long readMoreData() throws IOException {
@@ -258,6 +271,30 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 	}
 
 	@Override
+	public void rewind(int numCharacters) {
+		int bufNo = bufNo(curReadPos);
+		int bufOffset = bufOffset(curReadPos);
+
+		for (int i = 0; i < numCharacters; ++ i) {
+			if (bufOffset == 0) {
+				if (bufNo == 0) {
+					throw new IllegalStateException("at start of first buf");
+				}
+				
+				-- bufNo;
+				bufOffset = BUFFER_SIZE - 1;
+			}
+			else {
+				-- bufOffset;
+			}
+		}
+		
+		final long newPos = stringRef(bufNo, bufOffset, 0);
+
+		this.curReadPos = newPos;
+	}
+
+	@Override
 	protected char[] get(char[][] array, int bufNo) {
 		return array[bufNo];
 	}
@@ -278,11 +315,11 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 	}
 
 	@Override
-	public <E extends Enum<E> & IEnum> E asEnum(Class<E> enumClass, boolean caseSensitive) {
+	public <E extends Enum<E> & IEnum> E asEnum(Class<E> enumClass, int startOffset, int endSkip, boolean caseSensitive) {
 		final E [] values = enumClass.getEnumConstants();
 		
 		for (E e : values) {
-			if (equals(e.getName(), caseSensitive)) {
+			if (equals(e.getName(), startOffset, endSkip, caseSensitive)) {
 				return e;
 			}
 		}
@@ -291,12 +328,12 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 	}
 
 	@Override
-	public boolean equalsIgnoreCase(String s) {
-		return equals(s, false);
+	public boolean equalsIgnoreCase(String s, int startOffset, int endSkip) {
+		return equals(s, startOffset, endSkip, false);
 	}
 	
-	private boolean equals(String s, boolean caseSensitive) {
-		final long pos = tokenizerPos;
+	private boolean equals(String s, int startOffset, int endSkip, boolean caseSensitive) {
+		final long pos = get(startOffset, endSkip);
 
 		boolean equals = true;
 		
@@ -468,6 +505,11 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 	}
 
 	@Override
+	public Integer asInteger(int startOffset, int endSkip) {
+		return StringUtils.asIntegerOrNull(getString(get(startOffset, endSkip)));
+	}
+
+	@Override
 	public int asDecimalSize(int startOffset, int endSkip) {
 		final String s = asString(startOffset, endSkip);
 		
@@ -479,5 +521,15 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 		final String s = asString(startOffset, endSkip);
 		
 		return BigDecimalConversion.fromString(s);
+	}
+
+	@Override
+	public String toString() {
+		return "StringBuffers [curWritePos=" + posString(curWritePos) + ", curReadPos=" + posString(curReadPos) + ", tokenizerPos="
+				+ posString(tokenizerPos) + "]";
+	}
+	
+	private static String posString(long ref) {
+		return "[" + bufNo(ref) + "," + bufOffset(ref) + "]";
 	}
 }

@@ -19,7 +19,7 @@ public enum HTMLToken implements IToken {
 	
 	TAG_EXCLAMATION_POINT('!'),
 	
-	// Pseudo-token to return that we reached end og tag
+	// Pseudo-token to return that we reached end of tag
 	TAG_END(' '),
 
 	QUOTE('"'),
@@ -34,6 +34,9 @@ public enum HTMLToken implements IToken {
 	WS(CharTypeWS.INSTANCE),
 	
 	TEXT(HTMLCharTypeText.INSTANCE),
+	
+	UNTIL_QUOTE('"', false),
+	UNTIL_SINGLE_QUOTE('\'', false),
 	
 	DOCTYPE("DOCTYPE", false),
 	DOCTYPE_HTML("HTML", false),
@@ -51,10 +54,12 @@ public enum HTMLToken implements IToken {
 	DIV(HTMLElement.DIV),
 	SPAN(HTMLElement.SPAN),
 	INPUT(HTMLElement.INPUT),
+	IMG(HTMLElement.IMG),
 	FIELDSET(HTMLElement.FIELDSET),
 	UL(HTMLElement.UL),
 	LI(HTMLElement.LI),
 	A(HTMLElement.A),
+	PROGRESS(HTMLElement.PROGRESS),
 	
 	// Attributes
 	
@@ -94,6 +99,9 @@ public enum HTMLToken implements IToken {
 	HTTP_EQUIV(HTMLAttribute.HTTP_EQUIV),
 	NAME(HTMLAttribute.NAME),
 	SCHEME(HTMLAttribute.SCHEME),
+	
+	VALUE(HTMLAttribute.VALUE),
+	MAX(HTMLAttribute.MAX),
 	
 	CLASS_NAME(CharTypeHTMLElementClass.INSTANCE),
 	ANY_TAG(CharTypeHTMLElementTag.INSTANCE)
@@ -176,6 +184,18 @@ public enum HTMLToken implements IToken {
 		this.element = null;
 		this.attribute = null;
 	}
+	
+	private HTMLToken(char toCharacter, boolean include) {
+		this.tokenType = include ? TokenType.INCLUDING_CHAR : TokenType.EXCLUDING_CHAR;
+		this.character = 0;
+		this.toCharacter = toCharacter;
+		this.literal = null;
+		this.toLiteral = null;
+		this.charType = null;
+		this.element = null;
+		this.attribute = null;
+	}
+
 
 	private HTMLToken(String literal) {
 		this(literal, true, null, null);

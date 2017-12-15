@@ -23,6 +23,8 @@ final class NashornCompiledJS implements ICompiledJS {
 		
 		variables.forEachWrapped((key, value) -> bindings.put(key, new NashornJavaAsJSObject(value)));
 		
+		variables.forEachReflected((key, value) -> bindings.put(key, value));
+		
 		final Object result;
 		try {
 			result = compiledScript.eval(bindings);

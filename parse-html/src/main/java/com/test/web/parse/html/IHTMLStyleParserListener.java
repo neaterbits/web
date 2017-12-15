@@ -7,5 +7,5 @@ public interface IHTMLStyleParserListener<HTML_ELEMENT, TOKENIZER extends Tokeni
 	extends CSSParserListener<TOKENIZER, Void> {
 	
 	// Starts parsing a single value/attribute pair of the style attribute
-	void startParseStyleElement(HTML_ELEMENT htmlElement);
+	void startParseStyleElement(HTML_ELEMENT htmlElement, String styleText);
 }

@@ -11,38 +11,38 @@ import com.test.web.css.common.enums.CSSDisplay;
 
 public enum HTMLElement {
 
-	HTML(	"html",		true,		Place.ROOT,	CSSDisplay.BLOCK,	HTMLAttribute.XMLNS, HTMLAttribute.XML_LANG),
-	HEAD(	"head",		true,		Place.HTML, 	null),
-	BODY(	"body", 		true,		Place.HTML, 	null),
-	TITLE(	"title", 		false,	Place.HEAD, 	null),
-	META(  "meta",     false,    Place.HEAD, 	null,							HTMLAttribute.CHARSET, HTMLAttribute.CONTENT, HTMLAttribute.HTTP_EQUIV, HTMLAttribute.NAME, HTMLAttribute.SCHEME),
-	LINK(	"link", 		false,	Place.HEAD, 	null, 						HTMLAttribute.REL, HTMLAttribute.TYPE, HTMLAttribute.HREF, HTMLAttribute.HREFLANG, HTMLAttribute.MEDIA, HTMLAttribute.REV),
-	SCRIPT("script", 	false,	Place.BOTH, 	null, 						HTMLAttribute.TYPE),
-	STYLE("style",		false,   	Place.BOTH,  null,							HTMLAttribute.TYPE, HTMLAttribute.MEDIA, HTMLAttribute.SCOPED),
-	DIV("div", 				true, 	Place.BODY,	CSSDisplay.BLOCK),
-	SPAN("span", 		true, 	Place.BODY, 	CSSDisplay.INLINE),
-	INPUT("input", 		false,	Place.BODY,	CSSDisplay.INLINE),
-	FIELDSET("fieldset", true, 	Place.BODY, 	null),
-	UL("ul", 				true,		Place.BODY,	null),
-	LI("li", 					true,		Place.BODY, 	null),
+	HTML(	"html",		Content.ELEMS_OR_TEXT,		Place.ROOT,	CSSDisplay.BLOCK,	HTMLAttribute.XMLNS, HTMLAttribute.XML_LANG),
+	HEAD(	"head",		Content.ELEMS_OR_TEXT,		Place.HTML, 	null),
+	BODY(	"body", 		Content.ELEMS_OR_TEXT,		Place.HTML, 	null),
+	TITLE(	"title", 		Content.TEXT,						Place.HEAD, 	null),
+	META(  "meta",     Content.NONE,    					Place.HEAD, 	null,							HTMLAttribute.CHARSET, HTMLAttribute.CONTENT, HTMLAttribute.HTTP_EQUIV, HTMLAttribute.NAME, HTMLAttribute.SCHEME),
+	LINK(	"link", 		Content.NONE,						Place.HEAD, 	null, 						HTMLAttribute.REL, HTMLAttribute.TYPE, HTMLAttribute.HREF, HTMLAttribute.HREFLANG, HTMLAttribute.MEDIA, HTMLAttribute.REV),
+	SCRIPT("script", 	Content.SCRIPT,					Place.BOTH, 	null, 						HTMLAttribute.TYPE),
+	STYLE("style",		Content.STYLING,   				Place.BOTH,  null,							HTMLAttribute.TYPE, HTMLAttribute.MEDIA, HTMLAttribute.SCOPED),
+	DIV("div", 				Content.ELEMS_OR_TEXT, 	Place.BODY,	CSSDisplay.BLOCK),
+	SPAN("span", 		Content.ELEMS_OR_TEXT, 	Place.BODY, 	CSSDisplay.INLINE),
+	INPUT("input", 		Content.NONE,						Place.BODY,	CSSDisplay.INLINE),
+	FIELDSET("fieldset", Content.ELEMS, 					Place.BODY, 	null),
+	UL("ul", 				Content.ELEMS,						Place.BODY,	null),
+	LI("li", 					Content.ELEMS_OR_TEXT,		Place.BODY, 	null),
 	
-	A("a",					true,		Place.BODY,	CSSDisplay.INLINE,	HTMLAttribute.REL, HTMLAttribute.TYPE, HTMLAttribute.HREF, HTMLAttribute.HREFLANG, HTMLAttribute.MEDIA, HTMLAttribute.REV),
-	AREA("area",		false,	Place.BODY,	null,							HTMLAttribute.REL, HTMLAttribute.TYPE, HTMLAttribute.HREF, HTMLAttribute.HREFLANG, HTMLAttribute.MEDIA, HTMLAttribute.REV),
-	IMG("img", 			false,	Place.BODY,	CSSDisplay.INLINE),
+	A("a",					Content.ELEMS_OR_TEXT,		Place.BODY,	CSSDisplay.INLINE,	HTMLAttribute.REL, HTMLAttribute.TYPE, HTMLAttribute.HREF, HTMLAttribute.HREFLANG, HTMLAttribute.MEDIA, HTMLAttribute.REV),
+	AREA("area",		Content.NONE,						Place.MAP,	null,							HTMLAttribute.REL, HTMLAttribute.TYPE, HTMLAttribute.HREF, HTMLAttribute.HREFLANG, HTMLAttribute.MEDIA),
+	IMG("img", 			Content.NONE,						Place.BODY,	CSSDisplay.INLINE),
 	
-	PROGRESS("progress", false, Place.BODY,	CSSDisplay.INLINE, HTMLAttribute.MAX, HTMLAttribute.VALUE)
+	PROGRESS("progress", Content.ELEMS_OR_TEXT, Place.BODY,	CSSDisplay.INLINE, HTMLAttribute.MAX, HTMLAttribute.VALUE)
 
 	;
 	
 	private final String name;
-	private final boolean container;
+	private final Content content;
 	private final Place placement;
 	private final CSSDisplay defaultDisplay;
 	private final HTMLAttribute [] attributes;
 	
-	private HTMLElement(String name, boolean container, Place placement, CSSDisplay defaultDisplay, HTMLAttribute ... attributes) {
+	private HTMLElement(String name, Content content, Place placement, CSSDisplay defaultDisplay, HTMLAttribute ... attributes) {
 		this.name = name;
-		this.container = container;
+		this.content = content;
 		this.placement = placement;
 		this.defaultDisplay = defaultDisplay;
 		this.attributes = attributes;
@@ -56,8 +56,12 @@ public enum HTMLElement {
 		return attributes;
 	}
 	
-	public boolean isContainerElement() {
-		return container;
+	public boolean isElemOrTextContainerElement() {
+		return content.isElemOrTextContainer();
+	}
+	
+	public boolean hasAnyContent() {
+		return content.hasAnyContent();
 	}
 	
 	public Place getPlacement() {

@@ -18,26 +18,30 @@ public final class NamedNodeMap<ELEMENT, DOCUMENT extends IDocumentContext<ELEME
 		this.ownerElement = ownerElement;
 	}
 
-	public int length() {
+	public final int getLength() {
 		return getDocument().getNumAttributes(getElement());
 	}
 	
-	@Override
-	public Object getArrayElem(int index) {
+	public final Attr<ELEMENT, DOCUMENT> item(int index) {
 		return index < getArrayLength()
-			? new Attr<>(getDocument(), getElement(), index, ownerElement)
-			: null;
+				? new Attr<>(getDocument(), getElement(), index, ownerElement)
+				: null;
+	}
+	
+	@Override
+	public final Object getArrayElem(int index) {
+		return item(index);
 	}
 
 	@Override
-	public void setArrayElem(int index, Object value) {
+	public final void setArrayElem(int index, Object value) {
 		if (index < getArrayLength()) {
 			getDocument().setAttributeValue(getElement(), index, (String)value);
 		}
 	}
 
 	@Override
-	public long getArrayLength() {
+	public final long getArrayLength() {
 		return getDocument().getNumAttributes(getElement());
 	}
 }

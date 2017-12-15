@@ -1,9 +1,10 @@
 package com.test.web.document.common;
 
-import org.w3c.dom.html.HTMLDirectoryElement;
-
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.document.common.enums.LinkRelType;
+import com.test.web.document.common.enums.LinkRevType;
+import com.test.web.document.common.enums.HTMLDirection;
+import com.test.web.document.common.enums.HTMLDropzone;
 import com.test.web.types.IEnum;
 import com.test.web.types.IKeyValue;
 import com.test.web.types.IKeyValueList;
@@ -27,8 +28,8 @@ public enum HTMLAttribute implements IKeyValue {
 	HIDDEN("hidden", true, ValueArity.ONE, HTMLAttributeValueType.BOOLEAN_MINIMIZABLE, null),
 	DRAGGABLE("draggable", true, ValueArity.ONE, false),
 	CONTENTEDITABLE("contenteditable", true, ValueArity.ONE, false),
-	DROPZONE("dropzone", true, ValueArity.ONE, HTMLAttributeValueType.ENUM, null),
-	DIRECTION("direction", true, ValueArity.ONE, HTMLAttributeValueType.ENUM, null),
+	DROPZONE("dropzone", true, HTMLDropzone.class, HTMLAttributeValueType.ENUM, null),
+	DIRECTION("direction", true, HTMLDirection.class, HTMLAttributeValueType.ENUM, null),
 	
 	ACCESSKEY("accesskey", true, ValueArity.ONE, HTMLAttributeValueType.STRING, null),
 	CONTEXTMENU("contextmenu", true, ValueArity.ONE, HTMLAttributeValueType.STRING, null),
@@ -37,7 +38,7 @@ public enum HTMLAttribute implements IKeyValue {
 	LANG("lang", true, ValueArity.ONE, HTMLAttributeValueType.STRING, null),
 	TABINDEX("tabindex", true, ValueArity.ONE, HTMLAttributeValueType.INTEGER, null),
 	
-	STYLE("style", true, CSStyle.class, HTMLAttributeValueType.CSS, null),
+	STYLE("style", true, CSStyle.class, HTMLAttributeValueType.ENUM, null),
 	
 	REL("rel", false, LinkRelType.class, HTMLAttributeValueType.ENUM, null),
 	TYPE("type", false, ValueArity.ONE, HTMLAttributeValueType.STRING, null),
@@ -45,7 +46,7 @@ public enum HTMLAttribute implements IKeyValue {
 	HREFLANG("hreflang", false, ValueArity.ONE, HTMLAttributeValueType.STRING, null),
 	MEDIA("media", false, ValueArity.ONE, HTMLAttributeValueType.STRING),
 	
-	REV("rev", false, ValueArity.ONE, HTMLAttributeValueType.ENUM, null), // not supported in HTML 5
+	REV("rev", false, LinkRevType.class, HTMLAttributeValueType.ENUM, null), // not supported in HTML 5
 	
 	DOWNLOAD("download", false, ValueArity.ONE, HTMLAttributeValueType.STRING),
 	TARGET("target", false, ValueArity.ONE, HTMLAttributeValueType.ENUM_OR_STRING, null),
@@ -65,8 +66,8 @@ public enum HTMLAttribute implements IKeyValue {
 	
 	
 	// progress element
-	MAX("max", false, ValueArity.ONE, HTMLAttributeValueType.DECIMAL, "0.0"),
-	VALUE("value", false, ValueArity.ONE, HTMLAttributeValueType.DECIMAL, "0.0")
+	MAX("max", false, ValueArity.ONE, HTMLAttributeValueType.BIGDECIMAL, "0.0"),
+	VALUE("value", false, ValueArity.ONE, HTMLAttributeValueType.BIGDECIMAL, "0.0")
 	
 	;
 	
@@ -116,7 +117,6 @@ public enum HTMLAttribute implements IKeyValue {
 		this(name, global,paramType, HTMLAttributeValueType.ENUM, defaultValue.getName());
 	}
 
-	
 	private HTMLAttribute(String name, boolean global, ValueArity paramArity, HTMLAttributeValueType valueType, String defaultValue) {
 		this.name = name;
 		this.global = global;
@@ -125,14 +125,19 @@ public enum HTMLAttribute implements IKeyValue {
 		this.valueType = valueType;
 		this.defaultValue = defaultValue;
 	}
-	
+
 	private HTMLAttribute(String name, boolean global, Class<? extends IEnum> enumClass, HTMLAttributeValueType valueType, String defaultValue) {
+		
+		if (valueType != HTMLAttributeValueType.ENUM && valueType != HTMLAttributeValueType.ENUM_OR_STRING) {
+			throw new IllegalArgumentException("not an enum type: " + valueType);
+		}
+
 		this.name = name;
 		this.global = global;
 		this.htmlEnum = enumClass;
 		this.valueType = valueType;
 		this.defaultValue = defaultValue;
-		
+
 		if (IKeyValueList.class.isAssignableFrom(enumClass)) {
 			this.paramArity = ValueArity.MULTIPLE;
 		}
@@ -176,6 +181,11 @@ public enum HTMLAttribute implements IKeyValue {
 	@Override
 	public ValueArity getValueArity() {
 		return paramArity;
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Class<? extends Enum<?>> getEnumType() {
+		return (Class)htmlEnum;
 	}
 	
 	public HTMLAttributeValueType getValueType() {

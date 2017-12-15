@@ -9,7 +9,26 @@ public abstract class DocumentAccess<ELEMENT, DOCUMENT extends IDocumentContext<
 
 	}
 
+	DocumentAccess(DOCUMENT document) {
+		
+		if (document == null) {
+			throw new IllegalArgumentException("document == null");
+		}
+
+		this.document = document;
+		this.element = null;
+	}
+
 	public DocumentAccess(DOCUMENT document, ELEMENT element) {
+		
+		if (document == null) {
+			throw new IllegalArgumentException("document == null");
+		}
+		
+		if (element == null) {
+			throw new IllegalArgumentException("element == null");
+		}
+
 		this.document = document;
 		this.element = element;
 	}

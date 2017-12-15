@@ -17,6 +17,7 @@ import com.test.web.document.common.DocumentState;
 import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
+import com.test.web.document.common.enums.HTMLDirection;
 import com.test.web.document.common.enums.LinkRelType;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.io._long.StringBuffers;
@@ -27,7 +28,6 @@ import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.HTMLUtils;
 import com.test.web.parse.html.IDocumentParserListener;
 import com.test.web.parse.html.IHTMLStyleParserListener;
-import com.test.web.parse.html.enums.HTMLDirection;
 import com.test.web.types.Debug;
 
 /**
@@ -151,7 +151,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 			throw new IllegalStateException("Header not 0 at " + elementOffset);
 		}
 
-		if (element.isContainerElement()) {
+		if (element.isElemOrTextContainerElement()) {
 			initHeadTail(elementBuf, elementOffset);
 		}
 		
@@ -198,7 +198,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 			throw new IllegalStateException("Header not 0");
 		}
 
-		if (CHECK_IS_CONTAINER && !LongHTML.getHTMLElement(curBuf, curOffset).isContainerElement()) {
+		if (CHECK_IS_CONTAINER && !LongHTML.getHTMLElement(curBuf, curOffset).isElemOrTextContainerElement()) {
 			throw new IllegalStateException("Not a container element at " + curOffset
 					+ ": " + LongHTML.getHTMLElement(curBuf, curOffset)
 					+ " when appending " + element);
@@ -276,7 +276,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		
 		final HTMLElement curElement = LongHTML.getHTMLElement(curBuf, curOffset); 
 
-		if (curElement.isContainerElement()) {
+		if (curElement.isElemOrTextContainerElement()) {
 			appendElement(cur, curBuf, curOffset, elementRef, null);
 		}
 		else {
@@ -342,7 +342,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 			break;
 			
 		case CONTENTEDITABLE:
-			LongHTML.setContentEditable(elementBuf, elementOffset, tokenizer.equalsIgnoreCase("true"));
+			LongHTML.setContentEditable(elementBuf, elementOffset, tokenizer.equalsIgnoreCase("true", startOffset, endSkip));
 			break;
 			
 		case CONTEXTMENU:
@@ -350,7 +350,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 			break;
 			
 		case DIRECTION:
-			LongHTML.setDirection(elementBuf, elementOffset, tokenizer.asEnum(HTMLDirection.class, false));
+			LongHTML.setDirection(elementBuf, elementOffset, tokenizer.asEnum(HTMLDirection.class, startOffset, endSkip, false));
 			break;
 			
 		case REL:

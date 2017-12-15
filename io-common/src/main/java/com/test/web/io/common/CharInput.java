@@ -20,6 +20,10 @@ public interface CharInput {
 	// val param is just to verify that matches with last param
 	void rewindOneCharacter(int val);
 	
+	void rewind(int numCharacters);
+	
 	// For debug, peek the number of characters, or whatever is left in the stream
 	String peek(int num) throws IOException;
+	
+	int peek() throws IOException;
 }

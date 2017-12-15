@@ -6,10 +6,11 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import com.test.web.io.common.CharInput;
+import com.test.web.types.Value;
 
 public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharInput> {
 
-	private static final int DEBUG_LEVEL= 0;
+	private static final int DEBUG_LEVEL = 0;
 
 	private static final String PREFIX = "Lexer";
 
@@ -28,7 +29,6 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	
 	// For debug
 	private TOKEN lastToken;
-	
 	
 	public Lexer(INPUT input, Class<TOKEN> tokenClass, TOKEN tokNone, TOKEN tokEOF) {
 		
@@ -64,15 +64,41 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		private boolean mightMatch;
 	}
 
+	private static final LexerMatch DEFAULT_MATCH = LexerMatch.LONGEST_MATCH;
+
+	public TOKEN peek(Value<String> value, @SuppressWarnings("unchecked") TOKEN ... inputTokens) throws IOException {
+		return peek(DEFAULT_MATCH, value, inputTokens);
+	}
+
+	public TOKEN peek(LexerMatch matchMethod, Value<String> value, @SuppressWarnings("unchecked") TOKEN ... inputTokens) throws IOException {
+		
+		final String existing = cur.toString();
+		
+		// will reset cur
+		final TOKEN lexed = lex(matchMethod, inputTokens);
+		
+		// must revert chars back to stream
+		input.rewind(cur.length());
+		
+		if (value != null) {
+			value.set(cur.toString());
+		}
+	
+		cur.setLength(0);
+		cur.append(existing);
+		
+		return lexed;
+	}
+
 	public TOKEN lex(@SuppressWarnings("unchecked") TOKEN ... inputTokens) throws IOException {
-		return lex(LexerMatch.LONGEST_MATCH, inputTokens);
+		return lex(DEFAULT_MATCH, inputTokens);
 	}
 	
 	public TOKEN lex(LexerMatch matchMethod, @SuppressWarnings("unchecked") TOKEN ... inputTokens) throws IOException {
 		
 		if (hasDebugLevel(1)) {
 			debug("----");
-			debug("lex(" + Arrays.toString(inputTokens) + ")");
+			debug("lex(\"" + input.peek(20) + "\": " + Arrays.toString(inputTokens) + ")");
 		}
 		
 		if (inputTokens.length > possiblyMatchingTokens.length) {
@@ -222,18 +248,23 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		} while (found == null);
 		
 		if (hasDebugLevel(1)) {
-			final int peekLength = 20;
-			String next = input.peek(peekLength);
-			if (next.length() == peekLength) {
-				next += "...";
-			}
 					
-			debug("returned token " + found + " at " + lineNo + ", buf=\"" + cur + "\", next=\""+ next + "\"");
+			debug("returned token " + found + " at " + lineNo + ", buf=\"" + cur + "\", next=\""+ getNext() + "\"");
 		}
 		
 		this.lastToken = found;
 		
 		return found;
+	}
+	
+	private String getNext() throws IOException {
+		final int peekLength = 20;
+		String next = input.peek(peekLength);
+		if (next.length() == peekLength) {
+			next += "...";
+		}
+
+		return next;
 	}
 
 	private String tokensToString(TOKEN [] tokens, int numTokens) {
@@ -256,7 +287,7 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		return cur.toString().replaceAll("\n", "<newline>");
 	}
 
-	private void matchToken(TOKEN token, char c, TokenMatch tokenMatch) {
+	private void matchToken(TOKEN token, char c, TokenMatch tokenMatch) throws IOException {
 		
 		final boolean match;
 		final boolean possibleMatch;
@@ -331,6 +362,20 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 				possibleMatch = true;
 			}
 			break;
+			
+		case EXCLUDING_CHAR: {
+			final char next = (char)input.peek();
+			
+			if (next == token.getToCharacter()) {
+				match = true;
+				possibleMatch = true;
+			}
+			else {
+				match = false;
+				possibleMatch = true;
+			}
+			break;
+		}
 			
 		case CS_LITERAL:
 			if (cur.length() < token.getLiteral().length()) {
@@ -413,7 +458,16 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	}
 	
 	public final ParserException unexpectedToken() {
-		return new ParserException("Unexpected token for \"" + cur.toString() + "\" at " + lineNo + ": " + lastToken);
+		
+		String next;
+		
+		try {
+			next = getNext();
+		} catch (IOException e) {
+			next = "<exception>";
+		}
+		
+		return new ParserException("Unexpected token for \"" + cur.toString() + "\" at " + lineNo + ": " + lastToken+ "\", next=\""+ next + "\"");
 	}
 	
 	public final int getEndSkip() {

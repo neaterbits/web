@@ -76,7 +76,5 @@ class OOProgressElement extends OOLeafElement {
 			super.setStandardAttributeValue(attribute, value, state);
 			break;
 		}
-		
-		
 	}
 }

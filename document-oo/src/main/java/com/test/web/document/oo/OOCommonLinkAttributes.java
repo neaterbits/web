@@ -3,6 +3,7 @@ package com.test.web.document.oo;
 import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.ICommonLinkAttributes;
 import com.test.web.document.common.enums.LinkRelType;
+import com.test.web.document.common.enums.LinkRevType;
 import com.test.web.types.IEnum;
 import com.test.web.types.StringUtils;
 
@@ -12,6 +13,8 @@ class OOCommonLinkAttributes implements ICommonLinkAttributes {
 	private String media;
 	private String mediaType;
 	private LinkRelType rel;
+	private LinkRevType rev;
+	
 	
 	@Override
 	public final String getHRef() {
@@ -63,6 +66,16 @@ class OOCommonLinkAttributes implements ICommonLinkAttributes {
 		this.rel = rel;
 	}
 
+	@Override
+	public LinkRevType getRev() {
+		return rev;
+	}
+
+	@Override
+	public void setRev(LinkRevType rev) {
+		this.rev = rev;
+	}
+
 	String getAttributeValue(HTMLAttribute attribute) {
 		
 		final String value;
@@ -86,6 +99,10 @@ class OOCommonLinkAttributes implements ICommonLinkAttributes {
 			
 		case REL:
 			value = rel.getName();
+			break;
+			
+		case REV:
+			value = rev.getName();
 			break;
 			
 		default:
@@ -119,6 +136,10 @@ class OOCommonLinkAttributes implements ICommonLinkAttributes {
 			
 		case REL:
 			this.rel = IEnum.asEnum(LinkRelType.class, trimmed, true);
+			break;
+			
+		case REV:
+			this.rev = IEnum.asEnum(LinkRevType.class, trimmed, true);
 			break;
 			
 		default:

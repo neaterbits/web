@@ -5,5 +5,7 @@ public enum Place {
 	HTML, // Directly under HTML
 	HEAD,
 	BODY,
-	BOTH;
+	BOTH,
+	
+	MAP; // beneath map element
 }

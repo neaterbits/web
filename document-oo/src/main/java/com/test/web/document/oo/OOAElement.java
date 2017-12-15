@@ -6,6 +6,7 @@ import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.ICommonDisplayableLinkAttributes;
 import com.test.web.document.common.ICommonLinkAttributes;
 import com.test.web.document.common.enums.LinkRelType;
+import com.test.web.document.common.enums.LinkRevType;
 import com.test.web.document.common.enums.HTMLTarget;
 
 final class OOAElement extends OOInlineElement
@@ -106,6 +107,7 @@ final class OOAElement extends OOInlineElement
 		case MEDIA:
 		case TYPE:
 		case REL:
+		case REV:
 		case DOWNLOAD:
 		case TARGET:
 			value = commonLinkAttributes.getAttributeValue(attribute);
@@ -127,6 +129,7 @@ final class OOAElement extends OOInlineElement
 		case MEDIA:
 		case TYPE:
 		case REL:
+		case REV:
 		case DOWNLOAD:
 		case TARGET:
 			final boolean wasSet = commonLinkAttributes.setAttributeValue(attribute, value);
@@ -137,5 +140,15 @@ final class OOAElement extends OOInlineElement
 			super.setStandardAttributeValue(attribute, value, state);
 			break;
 		}
+	}
+
+	@Override
+	public LinkRevType getRev() {
+		return commonLinkAttributes.getRev();
+	}
+
+	@Override
+	public void setRev(LinkRevType rev) {
+		commonLinkAttributes.setRev(setOrClearAttribute(HTMLAttribute.REV, rev));
 	}
 }
