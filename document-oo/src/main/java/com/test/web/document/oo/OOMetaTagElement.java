@@ -115,7 +115,7 @@ public class OOMetaTagElement extends OOMetaElement {
 			break;
 			
 		default:
-			super.getStandardAttributeValue(attribute);
+			super.setStandardAttributeValue(attribute, value, state);
 			break;
 		}
 	}

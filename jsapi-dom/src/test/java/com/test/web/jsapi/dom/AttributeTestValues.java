@@ -22,7 +22,7 @@ final class AttributeTestValues {
 			Function<HTMLAttribute, String> erroneous) {
 		this.valueType = valueType;
 		this.initial = initial;
-		this.update = initial;
+		this.update = update;
 		this.erroneous = erroneous;
 	}
 	

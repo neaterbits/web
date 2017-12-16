@@ -1,9 +1,11 @@
 package com.test.web.document.oo;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
+import com.test.web.css.oo.OOCSSDocument;
 import com.test.web.css.oo.OOCSSElement;
 import com.test.web.document.common.DocumentState;
 import com.test.web.document.common.HTMLAttribute;
@@ -12,6 +14,13 @@ import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLStringConversion;
 import com.test.web.document.common.enums.HTMLDirection;
 import com.test.web.document.common.enums.HTMLDropzone;
+import com.test.web.io.common.CharInput;
+import com.test.web.io.common.StringCharInput;
+import com.test.web.io.oo.OOTokenizer;
+import com.test.web.parse.common.Lexer;
+import com.test.web.parse.common.ParserException;
+import com.test.web.parse.css.CSSParser;
+import com.test.web.parse.css.CSSToken;
 import com.test.web.types.IEnum;
 import com.test.web.types.StringUtils;
 
@@ -37,6 +46,7 @@ public abstract class OOTagElement extends OODocumentElement {
 	private boolean draggable;
 	private HTMLDropzone dropzone;
 	private int tabindex;
+	private String hidden;
 	
 	private OOCSSElement styleElement;
 	private String style; // store style as plain text as well as parsed CSS
@@ -54,18 +64,27 @@ public abstract class OOTagElement extends OODocumentElement {
 	}
 
 	private void clearAttribute(HTMLAttribute attribute) {
-		
+
 		final int attrIdx = getAttributeIdx(attribute);
-		
-		clearAttribute(attrIdx);
+
+		if (attrIdx < 0) {
+			throw new IllegalStateException("Attribute not set");
+		}
+
+		clearAttribute(attrIdx, attribute);
 	}
 
-	private void clearAttribute(int attrIdx) {
+	private void clearAttribute(int attrIdx, HTMLAttribute attribute) {
+		
+		if (standardAttributes[attrIdx] != attribute) {
+			throw new IllegalStateException("Not set: " + attribute);
+		}
+
 		// Clear the attribute value by removing from list of non-standard attrs
 		for (int i = attrIdx + 1; i < numStandardAttributes; ++ i) {
 			standardAttributes[i - 1] = standardAttributes[i];
 		}
-		
+
 		-- this.numStandardAttributes;
 	}
 	
@@ -139,7 +158,7 @@ public abstract class OOTagElement extends OODocumentElement {
 		}
 		else {
 			if (attrIdx >= 0) {
-				clearAttribute(attrIdx);
+				clearAttribute(attrIdx, attribute);
 			}
 		}
 	}
@@ -188,7 +207,9 @@ public abstract class OOTagElement extends OODocumentElement {
 			}
 		}
 		else {
-			setAttributeFlag(HTMLAttribute.ID);
+			if ( ! attributeAlreadySet ) {
+				setAttributeFlag(HTMLAttribute.ID);
+			}
 			
 			this.id = trimmed;
 			state.addElement(trimmed, this);
@@ -206,7 +227,7 @@ public abstract class OOTagElement extends OODocumentElement {
 		if (attributeAlreadySet) {
 			state.removeElementClasses(classes, this);
 		}
-		
+
 		if (classes == null || classes.length == 0) {
 			if (attributeAlreadySet) {
 				clearAttribute(HTMLAttribute.CLASS);
@@ -222,7 +243,7 @@ public abstract class OOTagElement extends OODocumentElement {
 			}
 		}
 	}
-	
+
 	final void addClass(String classString, DocumentState<OOTagElement> state) {
 		setAttributeFlagIfNotSet(HTMLAttribute.CLASS);
 
@@ -306,8 +327,10 @@ public abstract class OOTagElement extends OODocumentElement {
 		return isAttributeSet(HTMLAttribute.HIDDEN);
 	}
 
-	void setHidden() {
+	void setHidden(String value) {
 		setAttributeFlagIfNotSet(HTMLAttribute.HIDDEN);
+		
+		this.hidden = value;
 	}
 
 	final boolean getDraggable() {
@@ -545,7 +568,7 @@ public abstract class OOTagElement extends OODocumentElement {
 			break;
 			
 		case HIDDEN:
-			value= minimizableValue(attribute);
+			value= minimizableValue(attribute, hidden);
 			break;
 			
 		case STYLE:
@@ -559,12 +582,12 @@ public abstract class OOTagElement extends OODocumentElement {
 		return value;
 	}
 	
-	final String minimizableValue(HTMLAttribute attribute) {
+	final String minimizableValue(HTMLAttribute attribute, String textualValue) {
 		if (attribute.getValueType() != HTMLAttributeValueType.BOOLEAN_MINIMIZABLE) {
 			throw new IllegalArgumentException("Not minimizable: " + attribute);
 		}
 		
-		return isAttributeSet(attribute) ? attribute.getName() : null;
+		return isAttributeSet(attribute) ? textualValue : null; // attribute.getName() : null;
 	}
 
 	final HTMLAttribute setAttributeValue(int idx, String value, DocumentState<OOTagElement> state) {
@@ -605,7 +628,7 @@ public abstract class OOTagElement extends OODocumentElement {
 	void setStandardAttributeValue(HTMLAttribute attribute, String value, DocumentState<OOTagElement> state) {
 		switch (attribute) {
 		case ID:
-			this.id = value;
+			setId(value, state);
 			break;
 			
 		case CLASS:
@@ -644,7 +667,7 @@ public abstract class OOTagElement extends OODocumentElement {
 			break;
 			
 		case TITLE:
-			setTitleAttribute(title);
+			setTitleAttribute(value);
 			break;
 			
 		case TRANSLATE: {
@@ -689,11 +712,81 @@ public abstract class OOTagElement extends OODocumentElement {
 			}
 			break;
 		}
+		
+		case HIDDEN:
+			setHidden(value);
+			break;
 
+		case STYLE:
+			// TODO perhaps cache parser
+			final String trimmed = value.trim();
+			try {
+				parseStyle(trimmed);
+			} catch (IOException | ParserException ex) {
+				throw new IllegalStateException("Failed to parse style", ex);
+			}
+			break;
+			
 		default:
 			throw new IllegalStateException("Unknown attribute " + attribute);
 		}
 	}
+
+	private void parseStyle(String value) throws IOException, ParserException {
+		final CharInput charInput = new StringCharInput(value);
+		
+		final OOStyleDocument listener = new OOStyleDocument();
+		
+		OOCSSElement cssElement = getStyleElement();
+		
+		if (cssElement == null) {
+			cssElement = listener.allocateCurParseElement();
+		}
+		else{
+			listener.setCurParseElement(cssElement);
+		}
+
+		final Lexer<CSSToken, CharInput> lexer = CSSParser.createLexer(charInput);
+		final CSSParser<OOTokenizer, Void> cssParser = new CSSParser<>(charInput, listener);
+		
+		boolean done = false;
+
+		do {
+			boolean semiColonRead = cssParser.parseElement(null);
+			
+			if (semiColonRead) {
+				// just skip to next
+			}
+			else {
+				// this was the last element?
+				do {
+					final CSSToken token = lexer.lex(CSSToken.WS, CSSToken.SEMICOLON, CSSToken.EOF);
+					
+					switch (token) {
+					
+					case WS:
+						// skip
+						break;
+						
+					case SEMICOLON:
+						semiColonRead = true;
+						break;
+						
+					case EOF: // end of string probably
+						done = true;
+						break;
+						
+					default:
+						throw lexer.unexpectedToken();
+					}
+					
+				} while (!done && !semiColonRead);
+			}
+		} while (!done);
+	
+		setStyle(cssElement, value);
+	}
+	
 	
 	private int getAttributeIdx(HTMLAttribute attribute) {
 		
@@ -748,6 +841,7 @@ public abstract class OOTagElement extends OODocumentElement {
 			}
 			
 			this.id = null;
+			clearAttribute(attrIdx, attribute);
 		}
 		else if (attribute== HTMLAttribute.CLASS) {
 			if (classes != null) {
@@ -755,6 +849,8 @@ public abstract class OOTagElement extends OODocumentElement {
 			}
 			
 			this.classes = null;
+			
+			clearAttribute(attrIdx, attribute);
 		}
 		else {
 

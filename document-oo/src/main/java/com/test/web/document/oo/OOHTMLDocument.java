@@ -13,6 +13,7 @@ import com.test.web.document.common.HTMLAttribute;
 import com.test.web.document.common.HTMLElement;
 import com.test.web.document.common.HTMLElementListener;
 import com.test.web.document.common.HTMLStringConversion;
+import com.test.web.document.common.IDocumentListener;
 import com.test.web.document.common.enums.HTMLDirection;
 import com.test.web.document.common.enums.HTMLDropzone;
 import com.test.web.document.common.enums.LinkRelType;
@@ -31,6 +32,7 @@ import com.test.web.parse.html.IHTMLStyleParserListener;
 
 public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOTokenizer>{
 
+	private final IDocumentListener<OOTagElement> listener;
 	private final List<OOTagElement> stack;
 
 	private final DocumentState<OOTagElement> state;
@@ -71,9 +73,13 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 		return document;
 	}
 
-	
 	public OOHTMLDocument() {
+		this(null);
+	}
+	
+	public OOHTMLDocument(IDocumentListener<OOTagElement> listener) {
 		
+		this.listener = listener;
 		this.stack = new ArrayList<>();
 
 		this.state = new DocumentState<>();
@@ -408,8 +414,8 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 		return HTMLStringConversion.booleanValue(tokenizer.getString(startOffset, endSkip));
 	}
 
-	private static boolean booleanMinimizable(OOTokenizer tokenizer, int startOffset, int endSkip) {
-		return ! tokenizer.getString(startOffset, endSkip).isEmpty();
+	private static String booleanMinimizable(OOTokenizer tokenizer, int startOffset, int endSkip) {
+		return tokenizer.getString(startOffset, endSkip);
 	}
 
 	private static boolean yesNoValue(OOTokenizer tokenizer, int startOffset, int endSkip) {
@@ -461,7 +467,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 			break;
 			
 		case HIDDEN:
-			ref.setHidden();
+			ref.setHidden(booleanMinimizable(tokenizer, startOffset, endSkip));
 			break;
 
 		case DRAGGABLE:
@@ -811,8 +817,9 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 		triggerUIUpdates(element, element.removeAttribute(namespaceURI, name, state));
 	}
 
-	private void triggerUIUpdates(OOTagElement lement, HTMLAttribute attribute) {
-		// TODO update UI for some attributes, eg class
-		throw new UnsupportedOperationException();
+	private void triggerUIUpdates(OOTagElement element, HTMLAttribute attribute) {
+		if (listener != null) {
+			listener.onAttributeUpdated(element, attribute);
+		}
 	}
 }

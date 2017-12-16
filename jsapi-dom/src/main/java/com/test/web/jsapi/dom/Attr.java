@@ -1,6 +1,6 @@
 package com.test.web.jsapi.dom;
 
-public class Attr<ELEMENT, DOCUMENT extends IDocumentContext<ELEMENT>>
+public final class Attr<ELEMENT, DOCUMENT extends IDocumentContext<ELEMENT>>
 	extends DocumentAccess<ELEMENT, DOCUMENT> {
 	
 	private final int idx;

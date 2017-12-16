@@ -826,9 +826,17 @@ public abstract class BaseOOCSSDocument
 		return ref.getFontWeightEnum();
 	}
 
-	protected final OOCSSElement allocateCurParseElement() {
+	public final OOCSSElement allocateCurParseElement() {
 		this.curParseElement = new OOCSSElement();
 		
 		return this.curParseElement;
+	}
+
+	public final void setCurParseElement(OOCSSElement element) {
+		if (element == null) {
+			throw new IllegalArgumentException("element == null");
+		}
+
+		this.curParseElement = element;
 	}
 }

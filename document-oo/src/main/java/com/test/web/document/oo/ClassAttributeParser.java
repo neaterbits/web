@@ -26,6 +26,10 @@ class ClassAttributeParser {
 					}
 				}
 			}
+
+			if (lastIdx != s.length() - 1) {
+				addClass.accept(s.substring(lastIdx));
+			}
 		}
 	}
 }

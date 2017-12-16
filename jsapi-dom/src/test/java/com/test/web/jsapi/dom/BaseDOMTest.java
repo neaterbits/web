@@ -37,7 +37,7 @@ public abstract class BaseDOMTest extends TestCase {
 			new AttributeTestValues(HTMLAttributeValueType.INTEGER, 						"123", 		 			"456", 					"notaninteger"),
 			new AttributeTestValues(HTMLAttributeValueType.ENUM, 								a -> getEnumName(a, 0), a -> getEnumName(a, 1), a -> "notanenumconstant"),
 			new AttributeTestValues(HTMLAttributeValueType.ENUM_OR_STRING, 			a -> getEnumName(a, 0), a -> "a_string_value", a -> null),
-			new AttributeTestValues(HTMLAttributeValueType.CSS, 								"width:100px;height:50px",  "display:block;text-align:center",  "notvalidcss"),
+			new AttributeTestValues(HTMLAttributeValueType.CSS, 								"width:100px;height:50px",  "float:left;text-align:center",  "notvalidcss"),
 	};
 
 	private static String getEnumName(HTMLAttribute attribute, int ordinal) {
@@ -59,6 +59,7 @@ public abstract class BaseDOMTest extends TestCase {
 		final AttributeTestHelper testHelper = new AttributeTestHelper(testValues);
 		final IJSEngine jsEngine = getJSEngine();
 	
+		// TODO init from JS
 		iterateAllAttributesOfAllElements(testHelper, AttributeTest.INITIAL, atc -> checkAttributeInitial(jsEngine, atc));
 	}
 	
@@ -123,8 +124,30 @@ public abstract class BaseDOMTest extends TestCase {
 		assertThat(attrLocalName).isEqualTo(attribute.getAttributeLocalName());
 		assertThat(attrValue).isEqualTo(atc.getAttributeValue());
 
-		// update attribute
+		final String updatedValue = atc.getAttributeTestValues().getUpdate(atc.getAttribute());
 		
+		final String updatedElementId;
+		
+		if (attribute == HTMLAttribute.ID) {
+
+			jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.item(" + attrIdx + ").value = \"" + updatedValue + "\"", varMap);
+
+			// should have removed for the old ID
+			final Object elementForInitialId = jsEngine.evalJS("document.getElementById(\"" + elementId + "\")", varMap);
+			assertThat(elementForInitialId).isNull();
+			
+			updatedElementId = updatedValue;
+		}
+		else {
+			updatedElementId = elementId;
+		}
+
+		jsEngine.evalJS("document.getElementById(\"" + updatedElementId + "\").attributes.item(" + attrIdx + ").value = \"" + updatedValue + "\"", varMap);
+		final Integer attributesLength2 = (Integer)jsEngine.evalJS("document.getElementById(\"" + updatedElementId + "\").attributes.length", varMap);
+		assertThat(attributesLength2).isNotNull();
+		assertThat(attributesLength).isEqualTo(numAttributes);
+		final String attrValue2 = (String)jsEngine.evalJS("document.getElementById(\"" + updatedElementId + "\").attributes.item(" + attrIdx + ").value", varMap);
+		assertThat(attrValue2).isEqualTo(updatedValue);
 	}
 	
 	private JSVariableMap prepareVarMap(String html) throws ParserException {

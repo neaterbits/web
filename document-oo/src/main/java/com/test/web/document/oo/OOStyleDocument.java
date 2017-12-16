@@ -32,9 +32,9 @@ public class OOStyleDocument extends BaseOOCSSDocument
 	// to the HTML element that contains it
 	@Override
 	public void startParseStyleElement(OOTagElement htmlElement, String styleText) {
-		
+
 		OOCSSElement cssElement = htmlElement.getStyleElement();
-		
+
 		if (cssElement == null) {
 			cssElement = allocateCurParseElement();
 

@@ -9,13 +9,15 @@ final class AttributeTestCase {
 	private final  String html;
 	private final String elementId;
 	private final String attributeValue;
+	private final AttributeTestValues attributeTestValues;
 	
-	AttributeTestCase(HTMLElement element, HTMLAttribute attribute, String html, String elementId, String attributeValue) {
+	AttributeTestCase(HTMLElement element, HTMLAttribute attribute, String html, String elementId, String attributeValue, AttributeTestValues attributeTestValues) {
 		this.element = element;
 		this.attribute = attribute;
 		this.html = html;
 		this.elementId = elementId;
 		this.attributeValue = attributeValue;
+		this.attributeTestValues = attributeTestValues;
 	}
 
 	HTMLElement getElement() {
@@ -36,5 +38,9 @@ final class AttributeTestCase {
 
 	String getAttributeValue() {
 		return attributeValue;
+	}
+
+	AttributeTestValues getAttributeTestValues() {
+		return attributeTestValues;
 	}
 }

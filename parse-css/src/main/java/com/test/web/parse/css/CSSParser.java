@@ -45,11 +45,19 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 	private final Lexer<CSSToken, CharInput> lexer; 
 	private final CSSParserListener<TOKENIZER, LISTENER_CONTEXT> listener;
 
-	public CSSParser(CharInput input, CSSParserListener<TOKENIZER, LISTENER_CONTEXT> listener) {
-		super(new Lexer<CSSToken, CharInput>(input, CSSToken.class, CSSToken.NONE, CSSToken.EOF), CSSToken.WS);
+	public CSSParser(Lexer<CSSToken, CharInput> lexer, CSSParserListener<TOKENIZER, LISTENER_CONTEXT> listener) {
+		super(lexer, CSSToken.WS);
 		
 		this.lexer = getLexer();
 		this.listener = listener;
+	}
+	
+	public static Lexer<CSSToken, CharInput> createLexer(CharInput input) {
+		return new Lexer<CSSToken, CharInput>(input, CSSToken.class, CSSToken.NONE, CSSToken.EOF);
+	}
+		
+	public CSSParser(CharInput input, CSSParserListener<TOKENIZER, LISTENER_CONTEXT> listener) {
+		this(createLexer(input), listener);
 	}
 	
 	@SafeVarargs

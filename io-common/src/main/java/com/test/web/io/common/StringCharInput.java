@@ -40,7 +40,15 @@ public class StringCharInput implements CharInput {
 
 	@Override
 	public void rewindOneCharacter(int val) {
-		throw new UnsupportedOperationException();
+		if (pos == 0) {
+			throw new IllegalStateException("already at start");
+		}
+		
+		if (string.charAt(pos - 1) != (char)val) {
+			throw new IllegalStateException("chars do not match");
+		}
+		
+		-- pos;
 	}
 	
 	@Override

@@ -9,7 +9,8 @@ public class OOStyleElement extends OOTagElement {
 
 	private String type;
 	private String media;
-	
+	private String scoped;
+
 	@Override
 	HTMLElement getType() {
 		return HTMLElement.STYLE;
@@ -23,12 +24,14 @@ public class OOStyleElement extends OOTagElement {
 		this.media = setOrClearAttribute(HTMLAttribute.MEDIA, media);
 	}
 
-	final boolean isScoped() {
-		return isAttributeSet(HTMLAttribute.SCOPED);
+	final String getScoped() {
+		return scoped;
 	}
 
-	final void setScoped(boolean scoped) {
-		setOrClearMinimizableAttribute(HTMLAttribute.SCOPED, scoped);
+	final void setScoped(String scoped) {
+		setOrClearMinimizableAttribute(HTMLAttribute.SCOPED, scoped != null);
+	
+		this.scoped = scoped;
 	}
 
 	final String getStyleType() {
@@ -53,7 +56,7 @@ public class OOStyleElement extends OOTagElement {
 			break;
 
 		case SCOPED:
-			value = minimizableValue(attribute);
+			value = minimizableValue(attribute, scoped);
 			break;
 			
 		default:
@@ -76,7 +79,7 @@ public class OOStyleElement extends OOTagElement {
 			break;
 			
 		case SCOPED:
-			setOrClearMinimizableAttribute(attribute, true);
+			setScoped(value);
 			break;
 			
 		default:

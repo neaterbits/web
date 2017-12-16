@@ -10,7 +10,7 @@ import com.test.web.testdata.TestData;
 class AttributeTestHelper {
 
 	private final AttributeTestValues [] testValues;
-	
+
 	AttributeTestHelper(AttributeTestValues[] testValues) {
 		this.testValues = testValues;
 	}
@@ -21,9 +21,10 @@ class AttributeTestHelper {
 		final String defaultElementId = "element_to_test";
 		final String attributeTagValue;
 		final String elementId;
-		
-		final String attributeValue = getAttributeTestValue(attribute, attributeTest);
-		
+
+		final AttributeTestValues testValues = getAttributeTestValues(attribute);
+		final String attributeValue = getAttributeTestValue(attribute, testValues, attributeTest);
+
 		if (attribute == HTMLAttribute.ID) {
 			attributeTagValue = makeAttributeTag(element, attribute, null, attributeValue);
 			elementId = attributeValue; // if testing the id attribute, then we have to use that value for lookup
@@ -32,12 +33,12 @@ class AttributeTestHelper {
 			attributeTagValue = makeAttributeTag(element, attribute, defaultElementId, attributeValue);
 			elementId = defaultElementId;
 		}
-		
+
 		final boolean runTest;
-		
+
 		String html = TestData.DOCTYPE
 				+ "<html>";
-		
+
 		switch (element.getPlacement()) {
 		case ROOT:
 		case HTML:
@@ -78,7 +79,7 @@ class AttributeTestHelper {
 		html += "</html>";
 		
 		if (runTest) {
-			testCaseRunner.accept(new AttributeTestCase(element, attribute, html, elementId, attributeValue));
+			testCaseRunner.accept(new AttributeTestCase(element, attribute, html, elementId, attributeValue, testValues));
 		}
 	}
 	
@@ -100,19 +101,18 @@ class AttributeTestHelper {
 	}
 	
 	// TODO also run with invalid values
-	String getAttributeTestValue(HTMLAttribute attribute, AttributeTest test) {
+	private AttributeTestValues getAttributeTestValues(HTMLAttribute attribute) {
 
-		final String testValue;
+		final AttributeTestValues testValues;
 		
 		if (attribute == HTMLAttribute.STYLE) {
-			final AttributeTestValues testValues = getAttributeTestValue(HTMLAttributeValueType.CSS);
-			testValue = getAttributeTestValueFromType(attribute, testValues, test);
+			testValues = getAttributeTestValue(HTMLAttributeValueType.CSS);
 		}
 		else {
-			testValue = getAttributeTestValueFromType(attribute, test);
+			testValues = getAttributeTestValue(attribute.getValueType());
 		}
 
-		return testValue;
+		return testValues;
 	}
 	private AttributeTestValues getAttributeTestValue(HTMLAttributeValueType valueType) {
 		AttributeTestValues found = null;
@@ -131,14 +131,7 @@ class AttributeTestHelper {
 		return found;
 	}
 	
-	private String getAttributeTestValueFromType(HTMLAttribute attribute, AttributeTest test) {
-		
-		final AttributeTestValues testValues = getAttributeTestValue(attribute.getValueType());
-	
-		return getAttributeTestValueFromType(attribute, testValues, test);
-	}
-
-	private static String getAttributeTestValueFromType(HTMLAttribute attribute, AttributeTestValues testValues, AttributeTest test) {
+	private static String getAttributeTestValue(HTMLAttribute attribute, AttributeTestValues testValues, AttributeTest test) {
 		final String value;
 		
 		switch (test) {
