@@ -5,8 +5,8 @@
     <artifactId>root</artifactId>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>layout</artifactId>
-  <name>Parser for HTML</name>
+  <artifactId>layout-algorithm</artifactId>
+  <name>Layout algorithm</name>
   <packaging>jar</packaging>
   <dependencies>
 
