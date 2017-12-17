@@ -21,7 +21,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 	extends BaseParser<HTMLToken, CharInput>
 	implements IIndent {
 	
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	private static final PrintStream DEBUG_OUT = System.out;
 	
 	private int debugStackLevel;
@@ -189,22 +189,29 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 	
 	private void debugEnter(String context) {
 
-		indent(debugStackLevel, DEBUG_OUT);
-
-		DEBUG_OUT.append("Start ").append(context).println();
+		if (DEBUG) {
+			indent(debugStackLevel, DEBUG_OUT);
+	
+			DEBUG_OUT.append("Start ").append(context).println();
+		}
 
 		++ debugStackLevel;
 	}
 
 	private void debugExit(String context) {
 		-- debugStackLevel;
-		indent(debugStackLevel, DEBUG_OUT);
-		DEBUG_OUT.append("End ").append(context).println();
+
+		if (DEBUG) {
+			indent(debugStackLevel, DEBUG_OUT);
+			DEBUG_OUT.append("End ").append(context).println();
+		}
 	}
 
 	private void debugText() {
-		indent(debugStackLevel, DEBUG_OUT);
-		DEBUG_OUT.append("Text: \"").append(tokenizer.asString(0, lexer.getEndSkip())).println("\"");
+		if (DEBUG) {
+			indent(debugStackLevel, DEBUG_OUT);
+			DEBUG_OUT.append("Text: \"").append(tokenizer.asString(0, lexer.getEndSkip())).println("\"");
+		}
 	}
 
 	public void parseHTMLFile() throws IOException, ParserException {
