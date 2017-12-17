@@ -5,55 +5,30 @@
     <artifactId>root</artifactId>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>document-long</artifactId>
-  <name>Long document object code</name>
+  <artifactId>document-html-common</artifactId>
+  <name>Common HTML document object code</name>
   <packaging>jar</packaging>
   <dependencies>
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>buffers</artifactId>
+		<artifactId>types</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>document-html-common</artifactId>
+		<artifactId>css-common</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>parse-html</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>io-long</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>css-long</artifactId>
+		<artifactId>document-common</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 
 	<!-- test dependencies --> 
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>document-test</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>testdata</artifactId>
-		<version>${project.version}</version>
-		<scope>test</scope>
-	</dependency>
 
     <dependency>
       <groupId>junit</groupId>
