@@ -6,9 +6,9 @@ import java.net.URL;
 
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.common.CSSLayoutStyles;
-import com.test.web.document.common.HTMLAttribute;
-import com.test.web.document.common.HTMLElement;
-import com.test.web.document.common.HTMLElementListener;
+import com.test.web.document.html.common.HTMLAttribute;
+import com.test.web.document.html.common.HTMLElement;
+import com.test.web.document.html.common.HTMLElementListener;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.FontSettings;
 import com.test.web.layout.IElementRenderLayout;

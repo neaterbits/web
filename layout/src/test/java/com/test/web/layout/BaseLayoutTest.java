@@ -3,7 +3,7 @@ package com.test.web.layout;
 import java.io.IOException;
 
 import com.test.web.css.common.CSSContext;
-import com.test.web.document.common.IDocument;
+import com.test.web.document.html.common.IDocument;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.FontSettings;
 import com.test.web.layout.LayoutAlgorithm;

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import com.test.web.css.common.CSSContext;
-import com.test.web.document.common.IDocument;
+import com.test.web.document.html.common.IDocument;
 import com.test.web.layout.PageLayout;
 import com.test.web.parse.common.ParserException;
 import com.test.web.render.common.IRenderer;

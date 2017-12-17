@@ -1,7 +1,7 @@
 package com.test.web.render.html;
 
-import com.test.web.document.common.IDocument;
-import com.test.web.document.common.HTMLElementListener;
+import com.test.web.document.html.common.HTMLElementListener;
+import com.test.web.document.html.common.IDocument;
 import com.test.web.layout.IBounds;
 import com.test.web.layout.IElementLayout;
 import com.test.web.layout.IElementRenderLayout;

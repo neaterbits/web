@@ -1,8 +1,8 @@
 package com.test.web.document._long;
 
-import com.test.web.document.common.HTMLElement;
-import com.test.web.document.common.enums.HTMLDirection;
-import com.test.web.document.common.enums.HTMLDropzone;
+import com.test.web.document.html.common.HTMLElement;
+import com.test.web.document.html.common.enums.HTMLDirection;
+import com.test.web.document.html.common.enums.HTMLDropzone;
 
 public class LongHTMLHeaderFlags extends LongHTMLBase {
 	private static final int HEADER_ELEMENT_BITS = 5;

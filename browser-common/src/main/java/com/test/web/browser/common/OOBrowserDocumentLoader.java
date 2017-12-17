@@ -5,7 +5,7 @@ import java.io.IOException;
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.oo.OOCSSDocument;
 import com.test.web.css.oo.OOCSSElement;
-import com.test.web.document.common.IDocument;
+import com.test.web.document.html.common.IDocument;
 import com.test.web.document.oo.OOHTMLDocument;
 import com.test.web.document.oo.OOTagElement;
 import com.test.web.io.common.CharInput;

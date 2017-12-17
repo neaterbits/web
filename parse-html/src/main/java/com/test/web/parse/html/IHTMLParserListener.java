@@ -2,8 +2,8 @@ package com.test.web.parse.html;
 
 import java.io.IOException;
 
-import com.test.web.document.common.HTMLAttribute;
-import com.test.web.document.common.HTMLElement;
+import com.test.web.document.html.common.HTMLAttribute;
+import com.test.web.document.html.common.HTMLElement;
 import com.test.web.io.common.Tokenizer;
 
 /**

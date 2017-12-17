@@ -1,8 +1,8 @@
 package com.test.web.document._long;
 
-import com.test.web.document.common.HTMLElement;
-import com.test.web.document.common.enums.HTMLDirection;
-import com.test.web.document.common.enums.HTMLDropzone;
+import com.test.web.document.html.common.HTMLElement;
+import com.test.web.document.html.common.enums.HTMLDirection;
+import com.test.web.document.html.common.enums.HTMLDropzone;
 
 /**
  * Helper class for indexing attributes for HTML elements

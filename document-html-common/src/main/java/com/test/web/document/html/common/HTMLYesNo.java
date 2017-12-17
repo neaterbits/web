@@ -1,4 +1,4 @@
-package com.test.web.document.common;
+package com.test.web.document.html.common;
 
 import com.test.web.types.IEnum;
 

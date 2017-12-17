@@ -2,9 +2,9 @@ package com.test.web.layout;
 
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.common.ICSSDocumentStyles;
-import com.test.web.document.common.IDocument;
-import com.test.web.document.common.HTMLElement;
-import com.test.web.document.common.HTMLElementListener;
+import com.test.web.document.html.common.HTMLElement;
+import com.test.web.document.html.common.HTMLElementListener;
+import com.test.web.document.html.common.IDocument;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.TextUtil.NumberOfChars;
 import com.test.web.render.common.IDelayedRendererFactory;

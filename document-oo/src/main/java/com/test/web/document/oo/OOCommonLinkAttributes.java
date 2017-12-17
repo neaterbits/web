@@ -1,9 +1,9 @@
 package com.test.web.document.oo;
 
-import com.test.web.document.common.HTMLAttribute;
-import com.test.web.document.common.ICommonLinkAttributes;
-import com.test.web.document.common.enums.LinkRelType;
-import com.test.web.document.common.enums.LinkRevType;
+import com.test.web.document.html.common.HTMLAttribute;
+import com.test.web.document.html.common.ICommonLinkAttributes;
+import com.test.web.document.html.common.enums.LinkRelType;
+import com.test.web.document.html.common.enums.LinkRevType;
 import com.test.web.types.IEnum;
 import com.test.web.types.StringUtils;
 

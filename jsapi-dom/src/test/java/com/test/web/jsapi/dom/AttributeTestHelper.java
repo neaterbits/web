@@ -2,9 +2,9 @@ package com.test.web.jsapi.dom;
 
 import java.util.function.Consumer;
 
-import com.test.web.document.common.HTMLAttribute;
-import com.test.web.document.common.HTMLAttributeValueType;
-import com.test.web.document.common.HTMLElement;
+import com.test.web.document.html.common.HTMLAttribute;
+import com.test.web.document.html.common.HTMLAttributeValueType;
+import com.test.web.document.html.common.HTMLElement;
 import com.test.web.testdata.TestData;
 
 class AttributeTestHelper {

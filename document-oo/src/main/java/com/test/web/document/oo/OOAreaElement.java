@@ -1,13 +1,13 @@
 package com.test.web.document.oo;
 
 import com.test.web.document.common.DocumentState;
-import com.test.web.document.common.HTMLAttribute;
-import com.test.web.document.common.HTMLElement;
-import com.test.web.document.common.ICommonDisplayableLinkAttributes;
-import com.test.web.document.common.ICommonLinkAttributes;
-import com.test.web.document.common.enums.LinkRelType;
-import com.test.web.document.common.enums.LinkRevType;
-import com.test.web.document.common.enums.HTMLTarget;
+import com.test.web.document.html.common.HTMLAttribute;
+import com.test.web.document.html.common.HTMLElement;
+import com.test.web.document.html.common.ICommonDisplayableLinkAttributes;
+import com.test.web.document.html.common.ICommonLinkAttributes;
+import com.test.web.document.html.common.enums.HTMLTarget;
+import com.test.web.document.html.common.enums.LinkRelType;
+import com.test.web.document.html.common.enums.LinkRevType;
 
 final class OOAreaElement extends OOLeafElement
 		implements ICommonLinkAttributes, ICommonDisplayableLinkAttributes {

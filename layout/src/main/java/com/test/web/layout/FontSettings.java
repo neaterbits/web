@@ -3,7 +3,7 @@ package com.test.web.layout;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.test.web.document.common.HTMLElement;
+import com.test.web.document.html.common.HTMLElement;
 import com.test.web.types.FontSpec;
 
 // Settings, default fonts for various elements

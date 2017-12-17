@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
 
-import com.test.web.document.common.HTMLElement;
+import com.test.web.document.html.common.HTMLElement;
 import com.test.web.io.common.CharInput;
 import com.test.web.io.common.StringCharInput;
 import com.test.web.io.common.Tokenizer;

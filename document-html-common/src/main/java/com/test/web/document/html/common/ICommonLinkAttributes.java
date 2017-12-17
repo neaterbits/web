@@ -1,7 +1,7 @@
-package com.test.web.document.common;
+package com.test.web.document.html.common;
 
-import com.test.web.document.common.enums.LinkRelType;
-import com.test.web.document.common.enums.LinkRevType;
+import com.test.web.document.html.common.enums.LinkRelType;
+import com.test.web.document.html.common.enums.LinkRevType;
 
 public interface ICommonLinkAttributes {
 	String getHRef();
