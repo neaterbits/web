@@ -1,6 +1,6 @@
-package com.test.web.document.common.enums;
+package com.test.web.document.html.common.enums;
 
-import com.test.web.document.common.HTMLElement;
+import com.test.web.document.html.common.HTMLElement;
 import com.test.web.types.IEnum;
 import com.test.web.types.Status;
 

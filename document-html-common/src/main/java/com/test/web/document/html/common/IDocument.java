@@ -1,11 +1,14 @@
-package com.test.web.document.common;
+package com.test.web.document.html.common;
 
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.util.List;
 
 import com.test.web.css.common.ICSSDocumentStyles;
-import com.test.web.document.common.enums.LinkRelType;
+import com.test.web.document.common.IDocumentAttributeGetters;
+import com.test.web.document.common.IDocumentAttributeSetters;
+import com.test.web.document.common.IDocumentNavigation;
+import com.test.web.document.html.common.enums.LinkRelType;
 
 /*
  * Represents document object model for HTML

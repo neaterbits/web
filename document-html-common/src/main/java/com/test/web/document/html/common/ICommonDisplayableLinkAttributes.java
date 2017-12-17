@@ -1,6 +1,6 @@
-package com.test.web.document.common;
+package com.test.web.document.html.common;
 
-import com.test.web.document.common.enums.HTMLTarget;
+import com.test.web.document.html.common.enums.HTMLTarget;
 
 // attributes common to <a> and <area>
 public interface ICommonDisplayableLinkAttributes {

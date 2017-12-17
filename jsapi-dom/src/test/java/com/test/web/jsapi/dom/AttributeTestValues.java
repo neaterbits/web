@@ -2,8 +2,8 @@ package com.test.web.jsapi.dom;
 
 import java.util.function.Function;
 
-import com.test.web.document.common.HTMLAttribute;
-import com.test.web.document.common.HTMLAttributeValueType;
+import com.test.web.document.html.common.HTMLAttribute;
+import com.test.web.document.html.common.HTMLAttributeValueType;
 
 final class AttributeTestValues {
 	private final HTMLAttributeValueType valueType;

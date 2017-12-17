@@ -1,6 +1,6 @@
 package com.test.web.layout;
 
-import com.test.web.document.common.IDocument;
+import com.test.web.document.html.common.IDocument;
 import com.test.web.document.oo.OOHTMLDocument;
 import com.test.web.document.oo.OOTagElement;
 import com.test.web.io.oo.OOTokenizer;

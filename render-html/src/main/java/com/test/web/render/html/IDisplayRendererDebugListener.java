@@ -1,6 +1,6 @@
 package com.test.web.render.html;
 
-import com.test.web.document.common.HTMLElement;
+import com.test.web.document.html.common.HTMLElement;
 
 public interface IDisplayRendererDebugListener {
 	

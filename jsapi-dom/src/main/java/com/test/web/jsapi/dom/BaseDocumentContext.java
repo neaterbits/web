@@ -5,10 +5,10 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.test.web.css.common.ICSSDocumentStyles;
-import com.test.web.document.common.HTMLElement;
-import com.test.web.document.common.HTMLElementListener;
-import com.test.web.document.common.IDocument;
-import com.test.web.document.common.enums.LinkRelType;
+import com.test.web.document.html.common.HTMLElement;
+import com.test.web.document.html.common.HTMLElementListener;
+import com.test.web.document.html.common.IDocument;
+import com.test.web.document.html.common.enums.LinkRelType;
 
 abstract class BaseDocumentContext<ELEMENT> implements IDocument<ELEMENT> {
 	

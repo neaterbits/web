@@ -5,7 +5,7 @@ import java.io.IOException;
 import com.test.web.css._long.LongCSSDocument;
 import com.test.web.css.common.CSSContext;
 import com.test.web.document._long.LongHTMLDocument;
-import com.test.web.document.common.IDocument;
+import com.test.web.document.html.common.IDocument;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.io.common.CharInput;
 import com.test.web.io.common.LoadStream;

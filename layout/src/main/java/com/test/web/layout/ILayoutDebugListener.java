@@ -1,7 +1,7 @@
 package com.test.web.layout;
 
 import com.test.web.css.common.CSSLayoutStyles;
-import com.test.web.document.common.HTMLElement;
+import com.test.web.document.html.common.HTMLElement;
 
 // For debugging elements
 public interface ILayoutDebugListener {

@@ -1,7 +1,7 @@
 package com.test.web.parse.html;
 
-import com.test.web.document.common.HTMLAttribute;
-import com.test.web.document.common.HTMLElement;
+import com.test.web.document.html.common.HTMLAttribute;
+import com.test.web.document.html.common.HTMLElement;
 import com.test.web.parse.common.CharType;
 import com.test.web.parse.common.CharTypeWS;
 import com.test.web.parse.common.IToken;

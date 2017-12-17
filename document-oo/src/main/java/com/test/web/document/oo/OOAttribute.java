@@ -1,6 +1,6 @@
 package com.test.web.document.oo;
 
-import com.test.web.document.common.HTMLAttribute;
+import com.test.web.document.html.common.HTMLAttribute;
 
 final class OOAttribute {
 	

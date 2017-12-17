@@ -1,8 +1,8 @@
 package com.test.web.document.oo;
 
-import com.test.web.document.common.HTMLAttribute;
-import com.test.web.document.common.ICommonDisplayableLinkAttributes;
-import com.test.web.document.common.enums.HTMLTarget;
+import com.test.web.document.html.common.HTMLAttribute;
+import com.test.web.document.html.common.ICommonDisplayableLinkAttributes;
+import com.test.web.document.html.common.enums.HTMLTarget;
 import com.test.web.types.IEnum;
 import com.test.web.types.StringUtils;
 

@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.URL;
 
 import com.test.web.css.common.CSSContext;
-import com.test.web.document.common.IDocument;
-import com.test.web.document.common.HTMLElementListener;
+import com.test.web.document.html.common.HTMLElementListener;
+import com.test.web.document.html.common.IDocument;
 import com.test.web.io.common.LoadStream;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.FontSettings;

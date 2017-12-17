@@ -1,6 +1,6 @@
 package com.test.web.jsapi.dom;
 
-import com.test.web.document.common.IDocument;
+import com.test.web.document.html.common.IDocument;
 
 public interface IDocumentContext<ELEMENT> extends IDocument<ELEMENT> {
 
