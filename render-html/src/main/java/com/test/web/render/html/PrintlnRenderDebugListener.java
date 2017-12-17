@@ -3,7 +3,7 @@ package com.test.web.render.html;
 import java.io.PrintStream;
 
 import com.test.web.document.html.common.HTMLElement;
-import com.test.web.layout.IElementLayout;
+import com.test.web.layout.common.IElementLayout;
 import com.test.web.types.IIndent;
 
 public class PrintlnRenderDebugListener implements IRenderDebugListener, IIndent {

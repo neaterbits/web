@@ -8,7 +8,7 @@ import com.test.web.browser.common.IBrowserDocumentLoader;
 import com.test.web.browser.common.OOBrowserDocumentLoader;
 import com.test.web.css.oo.OOCSSElement;
 import com.test.web.document.html.oo.OOTagElement;
-import com.test.web.layout.PrintlnLayoutDebugListener;
+import com.test.web.layout.algorithm.PrintlnLayoutDebugListener;
 import com.test.web.render.common.IBufferRendererFactory;
 import com.test.web.render.common.ITextExtent;
 import com.test.web.render.html.PrintlnDisplayRendererListener;

@@ -1,7 +1,7 @@
 package com.test.web.render.html;
 
 import com.test.web.document.html.common.HTMLElement;
-import com.test.web.layout.IElementLayout;
+import com.test.web.layout.common.IElementLayout;
 
 public interface IRenderDebugListener {
 

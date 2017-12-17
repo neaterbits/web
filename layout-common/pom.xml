@@ -5,8 +5,8 @@
     <artifactId>root</artifactId>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>layout-algorithm</artifactId>
-  <name>Layout algorithm</name>
+  <artifactId>layout-common</artifactId>
+  <name>Common layout types</name>
   <packaging>jar</packaging>
   <dependencies>
 
@@ -24,42 +24,10 @@
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>layout-common</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>css-common</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
 		<artifactId>document-common</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>render-common</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-<!-- 
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>parse-common</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>parse-css</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
- -->
  
 	<!-- test dependencies --> 
 	<dependency>

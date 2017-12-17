@@ -1,6 +1,6 @@
 package com.test.web.browser.common;
 
-import com.test.web.layout.ILayoutDebugListener;
+import com.test.web.layout.common.ILayoutDebugListener;
 import com.test.web.render.html.IDisplayRendererDebugListener;
 import com.test.web.render.html.IRenderDebugListener;
 import com.test.web.render.queue.IRenderQueueDebugListener;

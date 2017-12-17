@@ -37,6 +37,7 @@
 	    <module>jsengine-common</module>
 	    <module>jsengine-test</module>
 	    <module>jsengine-nashorn</module>
+	    <module>layout-common</module>
 	    <module>layout-algorithm</module>
 	    <module>parse-common</module>
 	    <module>parse-css</module>
