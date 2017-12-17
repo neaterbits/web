@@ -4,7 +4,7 @@ import com.test.web.browser.common.BrowserMain;
 import com.test.web.browser.common.IBrowserDocumentLoader;
 import com.test.web.browser.common.OOBrowserDocumentLoader;
 import com.test.web.css.oo.OOCSSElement;
-import com.test.web.document.oo.OOTagElement;
+import com.test.web.document.html.oo.OOTagElement;
 import com.test.web.render.awt.AWTBufferRenderFactory;
 import com.test.web.render.awt.AWTTextExtent;
 import com.test.web.render.common.IBufferRendererFactory;

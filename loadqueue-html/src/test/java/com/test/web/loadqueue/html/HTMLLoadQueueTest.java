@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.test.web.document._long.LongHTMLDocument;
+import com.test.web.document.html._long.LongHTMLDocument;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.io._long.StringBuffers;
 import com.test.web.layout.FontSettings;

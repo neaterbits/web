@@ -1,6 +1,6 @@
 package com.test.web.layout;
 
-import com.test.web.document._long.LongHTMLDocument;
+import com.test.web.document.html._long.LongHTMLDocument;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.io._long.LongTokenizer;
 import com.test.web.parse.common.ParserException;
