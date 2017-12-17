@@ -42,6 +42,7 @@
 	    <module>parse-css</module>
 	    <module>parse-html</module>
 	    <module>document-common</module>
+	    <module>document-html-common</module>
 	    <module>document-long</module>
 	    <module>document-oo</module>
 	    <module>document-test</module>

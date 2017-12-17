@@ -24,6 +24,12 @@
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
+		<artifactId>document-html-common</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>${project.groupId}</groupId>
 		<artifactId>parse-common</artifactId>
 		<version>${project.version}</version>
 	</dependency>
