@@ -1,13 +1,14 @@
-package com.test.web.layout.common;
+package com.test.web.render.html;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import com.test.web.document.html.common.HTMLElement;
+import com.test.web.layout.common.IFontSettings;
 import com.test.web.types.FontSpec;
 
 // Settings, default fonts for various elements
-public class FontSettings {
+public class FontSettings implements IFontSettings<HTMLElement> {
 
 	private static final String COURIER = "Courier";
 	private static final String TIMES = "Times";
@@ -38,6 +39,7 @@ public class FontSettings {
 		defaultFonts.put(element, fontSpec);
 	}
 
+	@Override
 	public FontSpec getFontForElement(HTMLElement element) {
 		return defaultFonts.get(element);
 	}

@@ -7,6 +7,7 @@ import java.util.List;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.document.common.IDocumentAttributeGetters;
 import com.test.web.document.common.IDocumentAttributeSetters;
+import com.test.web.document.common.IDocumentBase;
 import com.test.web.document.common.IDocumentNavigation;
 import com.test.web.document.html.common.enums.LinkRelType;
 
@@ -16,14 +17,14 @@ import com.test.web.document.html.common.enums.LinkRelType;
  */
 
 public interface IDocument<ELEMENT>
-		extends IDocumentNavigation<ELEMENT>,
+		extends IDocumentBase<ELEMENT, HTMLElement, IDocument<ELEMENT>>,
+					 IDocumentNavigation<ELEMENT>,
 					 IDocumentAttributeGetters<ELEMENT>,
 					 IDocumentAttributeSetters<ELEMENT>{
 
 	
 	public static final String DEFAULT_NAMESPACE = "http://www.w3.org/1999/xhtml";
 	
-	HTMLElement getType(ELEMENT element);
 	
 	ELEMENT getElementById(String id);
 	
@@ -32,7 +33,12 @@ public interface IDocument<ELEMENT>
 	default String getTag(ELEMENT element) {
 		return getType(element).getName();
 	}
-	
+
+	@Override
+	default boolean isLayoutElement(HTMLElement elementType) {
+		return elementType.isLayoutElement();
+	}
+
 	String [] getClasses(ELEMENT element);
 	
 	ICSSDocumentStyles<ELEMENT> getStyles(ELEMENT element);
@@ -56,9 +62,5 @@ public interface IDocument<ELEMENT>
 	BigDecimal getProgressMax(ELEMENT element);
 	BigDecimal getProgressValue(ELEMENT element);
 	
-	<PARAM> void iterate(HTMLElementListener<ELEMENT, PARAM> listener, PARAM param);
-	
-	<PARAM> void iterateFrom(ELEMENT element, HTMLElementListener<ELEMENT, PARAM> listener, PARAM param);
-
 	void dumpFlat(PrintStream out);
 }

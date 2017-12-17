@@ -1,10 +1,8 @@
 package com.test.web.document.html.common;
 
-public interface HTMLElementListener<ELEMENT, PARAM> {
+import com.test.web.document.common.IElementListener;
 
-	void onElementStart(IDocument<ELEMENT> document,  ELEMENT element, PARAM param);
+public interface HTMLElementListener<ELEMENT, PARAM>
+	extends IElementListener<ELEMENT, HTMLElement, IDocument<ELEMENT>, PARAM>{
 
-	void onElementEnd(IDocument<ELEMENT> document,  ELEMENT element, PARAM param);
-
-	void onText(IDocument<ELEMENT> document,  ELEMENT element, String text, PARAM param);
 }

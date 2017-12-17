@@ -34,6 +34,12 @@
 		<version>${project.version}</version>
 	</dependency>
 
+	<dependency>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>layout-html</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+
 	<!-- test dependencies --> 
 
 	<dependency>
@@ -46,6 +52,13 @@
 	<dependency>
 		<groupId>${project.groupId}</groupId>
 		<artifactId>document-html-long</artifactId>
+		<version>${project.version}</version>
+		<scope>test</scope>
+	</dependency>
+
+	<dependency>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>render-html</artifactId>
 		<version>${project.version}</version>
 		<scope>test</scope>
 	</dependency>

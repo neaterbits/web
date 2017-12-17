@@ -5,17 +5,20 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.test.web.css.common.CSSContext;
-import com.test.web.css.common.CSSLayoutStyles;
+import com.test.web.document.common.IDocumentBase;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.HTMLElementListener;
+import com.test.web.document.html.common.IDocument;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.algorithm.LayoutAlgorithm;
 import com.test.web.layout.algorithm.LayoutState;
 import com.test.web.layout.algorithm.PageLayout;
 import com.test.web.layout.algorithm.PrintlnLayoutDebugListener;
-import com.test.web.layout.common.FontSettings;
+import com.test.web.layout.common.LayoutStyles;
+import com.test.web.layout.common.HTMLLayoutContext;
 import com.test.web.layout.common.IElementRenderLayout;
+import com.test.web.layout.common.IFontSettings;
 import com.test.web.layout.common.ILayoutDebugListener;
 import com.test.web.layout.common.ViewPort;
 import com.test.web.loadqueue.common.ILoadQueue;
@@ -30,7 +33,9 @@ import com.test.web.render.common.ITextExtent;
  * as soon as this information is available.
  */
 
-public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Tokenizer>
+public class DependencyCollectingParserListener<
+				ELEMENT,
+				TOKENIZER extends Tokenizer>
 			implements IHTMLParserListener<ELEMENT, TOKENIZER> {
 
 	// Base URL of the document we are loading, in order to resolve URLs to externa dependencies
@@ -39,12 +44,12 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 	private final IDocumentParserListener<ELEMENT, TOKENIZER> delegate;
 	private final ILoadQueue loadQueue;
 
-	private final LayoutAlgorithm<ELEMENT, TOKENIZER> layoutAlgorithm;
+	private final LayoutAlgorithm<ELEMENT, HTMLElement, IDocument<ELEMENT>, TOKENIZER> layoutAlgorithm;
 
-	private final FontSettings fontSettings;
+	private final IFontSettings<HTMLElement> fontSettings;
 	
 	// temp var for computing styles
-	private final CSSLayoutStyles tempLayoutStyles;
+	private final LayoutStyles tempLayoutStyles;
 	
 	private HTMLElement curElement;
 	
@@ -56,7 +61,7 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 	
 	private final CSSContext<ELEMENT> cssContext;
 
-	private final LayoutState<ELEMENT>layoutState;
+	private final LayoutState<ELEMENT, HTMLElement, IDocument<ELEMENT>>layoutState;
 	
 	public DependencyCollectingParserListener(
 			URL documentURL,
@@ -65,10 +70,10 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 			ViewPort viewPort,
 			ITextExtent textExtent,
 			IDelayedRendererFactory renderFactory,
-			FontSettings fontSettings,
+			IFontSettings<HTMLElement> fontSettings,
 			PageLayout<ELEMENT> pageLayout,
 			HTMLElementListener<ELEMENT, IElementRenderLayout> renderListener,
-			ILayoutDebugListener layoutDebugListener) {
+			ILayoutDebugListener<HTMLElement> layoutDebugListener) {
 
 		this.documentURL = documentURL;
 		this.delegate = delegate;
@@ -78,10 +83,15 @@ public class DependencyCollectingParserListener<ELEMENT, TOKENIZER extends Token
 	
 		this.layoutAlgorithm = new LayoutAlgorithm<>(textExtent, renderFactory, fontSettings, layoutDebugListener);
 		
-		this.tempLayoutStyles = new CSSLayoutStyles();
+		this.tempLayoutStyles = new LayoutStyles();
 		
 		this.cssContext = new CSSContext<>();
-		this.layoutState = new LayoutState<>(textExtent, viewPort, cssContext, pageLayout, renderListener);
+		this.layoutState = new LayoutState<>(
+				textExtent,
+				viewPort,
+				new HTMLLayoutContext<>(cssContext),
+				pageLayout,
+				renderListener);
 	}
 
 	@Override

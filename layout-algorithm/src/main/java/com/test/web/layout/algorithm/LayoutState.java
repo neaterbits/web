@@ -5,10 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.test.web.css.common.CSSContext;
-import com.test.web.document.html.common.HTMLElementListener;
+import com.test.web.document.common.IDocumentBase;
+import com.test.web.document.common.IElementListener;
 import com.test.web.layout.common.FontKey;
 import com.test.web.layout.common.IElementRenderLayout;
+import com.test.web.layout.common.ILayoutContext;
 import com.test.web.layout.common.ILayoutState;
 import com.test.web.layout.common.ViewPort;
 import com.test.web.render.common.IFont;
@@ -17,16 +18,21 @@ import com.test.web.render.common.ITextExtent;
 import com.test.web.types.FontSpec;
 
 // State maintained while doing layout, ie. while recursing the DOM
-public final class LayoutState<ELEMENT> implements ILayoutState {
+public final class LayoutState<
+			ELEMENT,
+			ELEMENT_TYPE,
+			DOCUMENT extends IDocumentBase<ELEMENT, ELEMENT_TYPE, DOCUMENT>> 
+
+		implements ILayoutState {
 	
 	private final ITextExtent textExtent;
 	private final ViewPort viewPort;
 	
 	// For finding size of text strings when using a particular font for rendering
-	private final CSSContext<ELEMENT> cssContext;
+	private final ILayoutContext<ELEMENT, ELEMENT_TYPE, DOCUMENT> layoutContext;
 
 	// Optional listener to eg do rendering in the layout flow
-	private final HTMLElementListener<ELEMENT, IElementRenderLayout> listener;
+	private final IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT, IElementRenderLayout> listener;
 	
 	// We have to maintain a stack for computed elements, ElementLayout contains computed values for element at that level
 	private final List<StackElement> stack;
@@ -41,10 +47,15 @@ public final class LayoutState<ELEMENT> implements ILayoutState {
 	// Position of current display block
 	private int curBlockYPos;
 	
-	public LayoutState(ITextExtent textExtent, ViewPort viewPort, CSSContext<ELEMENT> cssContext, PageLayout<ELEMENT> pageLayout, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
+	public LayoutState(
+			ITextExtent textExtent,
+			ViewPort viewPort,
+			ILayoutContext<ELEMENT, ELEMENT_TYPE, DOCUMENT> layoutContext,
+			PageLayout<ELEMENT> pageLayout,
+			IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT, IElementRenderLayout> listener) {
 		this.textExtent = textExtent;
 		this.viewPort = viewPort;
-		this.cssContext = cssContext;
+		this.layoutContext = layoutContext;
 		this.listener = listener;
 
 		this.stack = new ArrayList<>();
@@ -66,15 +77,15 @@ public final class LayoutState<ELEMENT> implements ILayoutState {
 		return viewPort;
 	}
 
-	CSSContext<ELEMENT> getCSSContext() {
-		return cssContext;
+	ILayoutContext<ELEMENT, ELEMENT_TYPE, DOCUMENT> getLayoutContext() {
+		return layoutContext;
 	}
 	
 	PageLayout<ELEMENT> getPageLayout() {
 		return pageLayout;
 	}
 	
-	HTMLElementListener<ELEMENT, IElementRenderLayout> getListener() {
+	IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT, IElementRenderLayout> getListener() {
 		return listener;
 	}
 

@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.test.web.css.common.ICSSDocumentStyles;
+import com.test.web.document.common.IElementListener;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.HTMLElementListener;
 import com.test.web.document.html.common.IDocument;
@@ -163,12 +164,12 @@ abstract class BaseDocumentContext<ELEMENT> implements IDocument<ELEMENT> {
 	}
 
 	@Override
-	public final <PARAM> void iterate(HTMLElementListener<ELEMENT, PARAM> listener, PARAM param) {
+	public final <PARAM> void iterate(IElementListener<ELEMENT, HTMLElement, IDocument<ELEMENT>, PARAM> listener, PARAM param) {
 		delegate.iterate(listener, param);
 	}
 
 	@Override
-	public final <PARAM> void iterateFrom(ELEMENT element, HTMLElementListener<ELEMENT, PARAM> listener, PARAM param) {
+	public final <PARAM> void iterateFrom(ELEMENT element, IElementListener<ELEMENT, HTMLElement, IDocument<ELEMENT>, PARAM> listener, PARAM param) {
 		delegate.iterateFrom(element, listener, param);
 	}
 

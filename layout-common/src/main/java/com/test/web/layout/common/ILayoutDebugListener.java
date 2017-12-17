@@ -1,23 +1,20 @@
 package com.test.web.layout.common;
 
-import com.test.web.css.common.CSSLayoutStyles;
-import com.test.web.document.html.common.HTMLElement;
-
 // For debugging elements
-public interface ILayoutDebugListener {
+public interface ILayoutDebugListener<ELEMENT_TYPE> {
 
 	void onElementStart(
 			int depth,
-			HTMLElement element,
+			ELEMENT_TYPE element,
 			String id,
 			String tag,
 			String [] classes);
 
 	// After applied CSS styles
-	void onElementCSS(int depth, CSSLayoutStyles layoutStyles);
+	void onElementCSS(int depth, ILayoutStylesGetters layoutStyles);
 	
 	// After also applied anything from style attribute
-	void onElementStyleAttribute(int depth, CSSLayoutStyles layoutStyles);
+	void onElementStyleAttribute(int depth, ILayoutStylesGetters layoutStyles);
 	
 	void onComputedWidth(int depth, int curAvailableWidth, int subAvailableWidth, int subCSSWidth, boolean hasCSSWidth);
 
@@ -26,5 +23,5 @@ public interface ILayoutDebugListener {
 	void onResultingLayout(int depth, IElementLayout layout);
 	
 	// after element
-	void onElementEnd(int depth, HTMLElement element);
+	void onElementEnd(int depth, ELEMENT_TYPE element);
 }

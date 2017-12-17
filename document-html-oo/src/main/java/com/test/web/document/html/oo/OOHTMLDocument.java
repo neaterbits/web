@@ -9,10 +9,12 @@ import java.util.function.Consumer;
 
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.document.common.DocumentState;
+import com.test.web.document.common.IElementListener;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.HTMLElementListener;
 import com.test.web.document.html.common.HTMLStringConversion;
+import com.test.web.document.html.common.IDocument;
 import com.test.web.document.html.common.IDocumentListener;
 import com.test.web.document.html.common.enums.HTMLDirection;
 import com.test.web.document.html.common.enums.HTMLDropzone;
@@ -228,19 +230,19 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 	}
 
 	@Override
-	public <PARAM> void iterate(HTMLElementListener<OOTagElement, PARAM> listener, PARAM param) {
+	public <PARAM> void iterate(IElementListener<OOTagElement, HTMLElement, IDocument<OOTagElement>, PARAM> listener, PARAM param) {
 		iterate(null, rootElement, listener, param, rootElement,  true);
 	}
 	
 	@Override
-	public <PARAM> void iterateFrom(OOTagElement element, HTMLElementListener<OOTagElement, PARAM> listener, PARAM param) {
+	public <PARAM> void iterateFrom(OOTagElement element, IElementListener<OOTagElement, HTMLElement, IDocument<OOTagElement>, PARAM> listener, PARAM param) {
 		iterate(null, rootElement, listener, param, element, false);
 	}
 	
 	private <PARAM> boolean iterate(
 			OOTagElement containerElement,
 			OODocumentElement curElement,
-			HTMLElementListener<OOTagElement, PARAM> listener,
+			IElementListener<OOTagElement, HTMLElement, IDocument<OOTagElement>, PARAM> listener,
 			PARAM param,
 			OODocumentElement startCallListenerElement,
 			boolean callListener) {

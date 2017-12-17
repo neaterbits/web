@@ -10,6 +10,9 @@ import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
+import com.test.web.layout.common.StyleDimensions;
+import com.test.web.layout.common.ILayoutStylesSetters;
+import com.test.web.layout.common.LayoutStyles;
 import com.test.web.types.FontSpec;
 
 /*
@@ -46,10 +49,10 @@ public class CSSContext<TARGET> {
 			String elementId,
 			String elementType,
 			String [] elementClasses,
-			CSSLayoutStyles result) {
+			ILayoutStylesSetters result) {
 		
 		if (defaultDisplay != null) {
-			result.setDisplay(defaultDisplay);
+			result.setDisplay(defaultDisplay.getLayoutDisplay());
 		}
 		
 		if (defaultFont != null) {
@@ -76,7 +79,7 @@ public class CSSContext<TARGET> {
 	}
 	
 	// eg for styles attribute within any html tag
-	public void applyLayoutStyles(ICSSDocumentStyles<TARGET> document, TARGET target, CSSLayoutStyles result) {
+	public void applyLayoutStyles(ICSSDocumentStyles<TARGET> document, TARGET target, ILayoutStylesSetters result) {
 		
 		// Apply dimensions from document
 		final CSSDisplay display = document.getDisplay(target);
@@ -99,12 +102,12 @@ public class CSSContext<TARGET> {
 			? document.getZIndex(target)
 			: (short)0;
 
-		result.merge(display, position, cssFloat,
+		result.merge(display.getLayoutDisplay(), position.getLayoutPosition(), cssFloat.getLayoutFloat(),
 				
 				null, // TODO: font from CSS document
 				
-				positionLeft, positionLeftUnit, positionTop, positionTopUnit,
-				width, widthUnit, height, heightUnit,
+				positionLeft, positionLeftUnit.getLayoutUnit(), positionTop, positionTopUnit.getLayoutUnit(),
+				width, widthUnit.getLayoutUnit(), height, heightUnit.getLayoutUnit(),
 				zIndex);
 		
 		document.getMargins(target, dimensionsSetter, result.getMargins());
@@ -112,7 +115,7 @@ public class CSSContext<TARGET> {
 	}
 		
 
-	private void applyLayoutStyles(ICSSDocument<TARGET> document, CSSTarget cssTarget, String targetName, CSSLayoutStyles result) {
+	private void applyLayoutStyles(ICSSDocument<TARGET> document, CSSTarget cssTarget, String targetName, ILayoutStylesSetters result) {
 		final List<TARGET> targets = document.get(cssTarget, targetName);
 
 		if (targets != null) {
@@ -123,11 +126,11 @@ public class CSSContext<TARGET> {
 		}
 	}
 	
-	private static class MarginsSetter implements ICSSJustify<CSSDimensions> {
+	private static class MarginsSetter implements ICSSJustify<StyleDimensions> {
 
 		@Override
 		public void set(
-				CSSDimensions param,
+				StyleDimensions param,
 				int top, CSSUnit topUnit, CSSJustify topType,
 				int right, CSSUnit rightUnit, CSSJustify rightType,
 				int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
@@ -138,10 +141,10 @@ public class CSSContext<TARGET> {
 			}
 
 			param.merge(
-					top, topUnit, topType,
-					right, rightUnit, rightType,
-					bottom, bottomUnit, bottomType,
-					left, leftUnit, leftType);
+					top, topUnit.getLayoutUnit(), topType.getLayoutJustify(),
+					right, rightUnit.getLayoutUnit(), rightType.getLayoutJustify(),
+					bottom, bottomUnit.getLayoutUnit(), bottomType.getLayoutJustify(),
+					left, leftUnit.getLayoutUnit(), leftType.getLayoutJustify());
 		}
 	}
 }

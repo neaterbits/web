@@ -1,17 +1,17 @@
 package com.test.web.layout.algorithm;
 
-import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.layout.common.IBounds;
 import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.IWrapping;
 import com.test.web.layout.common.Wrapping;
+import com.test.web.layout.common.enums.Display;
 import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IFont;
 
 final class ElementLayout implements IElementRenderLayout {
 	
 	// display class for this element
-	private CSSDisplay display;
+	private Display display;
 	
 	// font used to render this element
 	private IFont font;
@@ -84,11 +84,11 @@ final class ElementLayout implements IElementRenderLayout {
 		return new ElementLayout(this);
 	}
 
-	CSSDisplay getDisplay() {
+	Display getDisplay() {
 		return display;
 	}
 
-	void setDisplay(CSSDisplay display) {
+	void setDisplay(Display display) {
 		this.display = display;
 	}
 	

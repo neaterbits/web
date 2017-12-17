@@ -30,36 +30,10 @@
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>css-common</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
 		<artifactId>document-common</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>render-common</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-<!-- 
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>parse-common</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>parse-css</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
- -->
  
 	<!-- test dependencies --> 
 	<dependency>
@@ -75,6 +49,7 @@
 		<version>${project.version}</version>
 		<scope>test</scope>
 	</dependency>
+	
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
@@ -100,6 +75,20 @@
 	<dependency>
 		<groupId>${project.groupId}</groupId>
 		<artifactId>document-html-oo</artifactId>
+		<version>${project.version}</version>
+		<scope>test</scope>
+	</dependency>
+
+	<dependency>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>render-html</artifactId>
+		<version>${project.version}</version>
+		<scope>test</scope>
+	</dependency>
+
+	<dependency>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>layout-html</artifactId>
 		<version>${project.version}</version>
 		<scope>test</scope>
 	</dependency>

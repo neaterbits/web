@@ -1,16 +1,16 @@
 package com.test.web.layout.algorithm;
 
-import com.test.web.css.common.CSSDimensions;
-import com.test.web.css.common.CSSLayoutStyles;
-import com.test.web.css.common.enums.CSSDisplay;
-import com.test.web.css.common.enums.CSSJustify;
-import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.layout.common.ILayoutStylesGetters;
+import com.test.web.layout.common.IStyleDimensions;
+import com.test.web.layout.common.enums.Display;
+import com.test.web.layout.common.enums.Justify;
+import com.test.web.layout.common.enums.Unit;
 import com.test.web.types.Pixels;
 
 // related to computing margins, padding and inner and outer bounds of elements
 class LayoutHelperWrappingBounds {
 
-	  static void computeDimensionsFromKnownCSSDims(CSSLayoutStyles layoutStyles,
+	  static void computeDimensionsFromKnownCSSDims(ILayoutStylesGetters layoutStyles,
 			  int containerWidth, int containerHeight,
 			  int containerRemainingWidth, int containerRemainingHeight,
 			  ElementLayout resultingLayout) {
@@ -32,7 +32,7 @@ class LayoutHelperWrappingBounds {
 	  }
 
 	  static void computeDimensionsFromOuter(
-	    		CSSLayoutStyles layoutStyles,
+	    		ILayoutStylesGetters layoutStyles,
 				int containerWidth, int containerHeight,
 	    		int remainingWidth, int remainingHeight,
 	    		ElementLayout resultingLayout) {
@@ -71,10 +71,10 @@ class LayoutHelperWrappingBounds {
 	  }
 
 	  static void computeDimensionsFromOuter(
-	    		CSSDisplay display,
+	    		Display display,
 	    		int remainingWidth, int widthPxFromCSS, boolean hasWidthFromCSS,
 	    		int remainingHeight, int heightPxFromCSS, boolean hasHeightFromCSS,
-	    		CSSDimensions margins, CSSDimensions padding,
+	    		IStyleDimensions margins, IStyleDimensions padding,
 	    		ElementLayout resultingLayout) {
 	    	
 	    	final int topPadding 		= getPaddingSize(padding.getTop(), 		padding.getTopUnit(), 		padding.getTopType(),		remainingHeight);
@@ -142,8 +142,8 @@ class LayoutHelperWrappingBounds {
 	    
 	    // Compute horizontal margins and return result as left << 32 || right
 	    private static long computeHorizontalMargins(
-	    		CSSDimensions margins,
-	    		CSSDisplay display,
+	    		IStyleDimensions margins,
+	    		Display display,
 	    		int remainingWidth, int widthFromCSS, boolean hasWidthFromCSS,
 	    		int leftPadding, int rightPadding) {
 	    	
@@ -153,14 +153,14 @@ class LayoutHelperWrappingBounds {
 	    	// If margin is auto, we have to compute these.
 	    	// - if dusplay:block abd width was specified in CSS and rhere is room for margin, it will be set to remaining
 	    	// - otherwise set to 0
-	    	if (margins.getLeftType() == CSSJustify.AUTO || margins.getRightType() == CSSJustify.AUTO) {
+	    	if (margins.getLeftType() == Justify.AUTO || margins.getRightType() == Justify.AUTO) {
 	    		
 	    		final int paddingWidth = leftPadding + rightPadding;
 	    		
-	    		if (display == CSSDisplay.BLOCK && hasWidthFromCSS) {
+	    		if (display == Display.BLOCK && hasWidthFromCSS) {
 	    			
 	    			// We should compute margin from leftover width, but only if had CSS width that was < specified
-	    			if (margins.getLeftType() == CSSJustify.AUTO && margins.getRightType() == CSSJustify.AUTO) {
+	    			if (margins.getLeftType() == Justify.AUTO && margins.getRightType() == Justify.AUTO) {
 	    				// both left and right margins are auto so split margin size
 
 	    				final int remaining = remainingWidth - (widthFromCSS + paddingWidth);
@@ -170,12 +170,12 @@ class LayoutHelperWrappingBounds {
 	    				leftMargin = remainingHalf + (remaining % 2);
 	    				rightMargin = remainingHalf;
 	    			}
-	    			else if (margins.getLeftType() == CSSJustify.AUTO) {
+	    			else if (margins.getLeftType() == Justify.AUTO) {
 	    				rightMargin = getNonAutoSize(margins.getRight(), margins.getRightUnit(), margins.getRightType(), remainingWidth);
 	    				// left is auto
 	    				leftMargin = Math.max(0, remainingWidth - rightMargin - paddingWidth - widthFromCSS);
 	    			}
-	    			else if (margins.getRightType() == CSSJustify.AUTO) {
+	    			else if (margins.getRightType() == Justify.AUTO) {
 	    				leftMargin = getNonAutoSize(margins.getLeft(), margins.getLeftUnit(), margins.getLeftType(), remainingWidth);
 	    				// right is auto
 	    				rightMargin = Math.max(0, remainingWidth - leftMargin - paddingWidth - widthFromCSS);
@@ -200,16 +200,16 @@ class LayoutHelperWrappingBounds {
 	    }
 	    
 	    
-	    private static int getPaddingSize(int size, CSSUnit unit, CSSJustify type, int curSize) {
+	    private static int getPaddingSize(int size, Unit unit, Justify type, int curSize) {
 	    	return getNonAutoSize(size, unit, type, curSize);
 	    }
 	    
-	    private static int getSizeWithAutoAsZero(int size, CSSUnit unit, CSSJustify type, int curSize) {
-	    	return type == CSSJustify.AUTO ? 0 : getNonAutoSize(size, unit, type, curSize);
+	    private static int getSizeWithAutoAsZero(int size, Unit unit, Justify type, int curSize) {
+	    	return type == Justify.AUTO ? 0 : getNonAutoSize(size, unit, type, curSize);
 	    }
 	    	    
 	    
-	    private static int getNonAutoSize(int size, CSSUnit unit, CSSJustify type, int curSize) {
+	    private static int getNonAutoSize(int size, Unit unit, Justify type, int curSize) {
 	        
 	    	final int ret;
 	    	

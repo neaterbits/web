@@ -5,13 +5,13 @@ import com.test.web.render.html.IDisplayRendererDebugListener;
 import com.test.web.render.html.IRenderDebugListener;
 import com.test.web.render.queue.IRenderQueueDebugListener;
 
-public class DebugListeners {
-	private final ILayoutDebugListener layoutListener;
+public final class DebugListeners<LAYOUT_ELEMENT_TYPE> {
+	private final ILayoutDebugListener<LAYOUT_ELEMENT_TYPE> layoutListener;
 	private final IRenderDebugListener htmlRenderListener;
 	private final IRenderQueueDebugListener renderQueueListener;
 	private final IDisplayRendererDebugListener displayRendererListener;
 	
-	public DebugListeners(ILayoutDebugListener layoutListener, IRenderDebugListener htmlRenderListener,
+	public DebugListeners(ILayoutDebugListener<LAYOUT_ELEMENT_TYPE> layoutListener, IRenderDebugListener htmlRenderListener,
 			IRenderQueueDebugListener renderQueueListener, IDisplayRendererDebugListener displayRendererListener) {
 		this.layoutListener = layoutListener;
 		this.htmlRenderListener = htmlRenderListener;
@@ -19,7 +19,7 @@ public class DebugListeners {
 		this.displayRendererListener = displayRendererListener;
 	}
 
-	public ILayoutDebugListener getLayoutListener() {
+	public ILayoutDebugListener<LAYOUT_ELEMENT_TYPE> getLayoutListener() {
 		return layoutListener;
 	}
 

@@ -1,15 +1,13 @@
 package com.test.web.layout.algorithm;
 
-import com.test.web.css.common.CSSContext;
-import com.test.web.css.common.ICSSDocumentStyles;
-import com.test.web.document.html.common.HTMLElement;
-import com.test.web.document.html.common.HTMLElementListener;
-import com.test.web.document.html.common.IDocument;
+import com.test.web.document.common.IDocumentBase;
+import com.test.web.document.common.IElementListener;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.algorithm.TextUtil.NumberOfChars;
-import com.test.web.layout.common.FontSettings;
 import com.test.web.layout.common.FontStyle;
 import com.test.web.layout.common.IElementRenderLayout;
+import com.test.web.layout.common.IFontSettings;
+import com.test.web.layout.common.ILayoutContext;
 import com.test.web.layout.common.ILayoutDebugListener;
 import com.test.web.layout.common.ViewPort;
 import com.test.web.render.common.IDelayedRendererFactory;
@@ -27,24 +25,30 @@ import com.test.web.types.Pixels;
  * 
  */
 
-public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
-	implements HTMLElementListener<ELEMENT, LayoutState<ELEMENT>> {
+public class LayoutAlgorithm<
+		ELEMENT,
+		ELEMENT_TYPE,
+		DOCUMENT extends IDocumentBase<ELEMENT, ELEMENT_TYPE, DOCUMENT>,
+		TOKENIZER extends Tokenizer>
+
+	implements IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT>> {
 
 	private final ITextExtent textExtent;
 	
 	// For creating renderers, rendering occurs in the same pass (but renderer implenentation might just queue operations for later)
 	private final IDelayedRendererFactory rendererFactory;
-	private final ILayoutDebugListener debugListener;
+	private final ILayoutDebugListener<ELEMENT_TYPE> debugListener;
 	
-	private final FontSettings fontSettings;
+	private final IFontSettings<ELEMENT_TYPE> fontSettings;
 	
 	private final TextUtil textUtil;
 	
 	public LayoutAlgorithm(
 			ITextExtent textExtent,
 			IDelayedRendererFactory rendererFactory,
-			FontSettings fontSettings,
-			ILayoutDebugListener debugListener) {
+			IFontSettings<ELEMENT_TYPE> fontSettings,
+			ILayoutDebugListener<ELEMENT_TYPE> debugListener) {
+
 		this.textExtent = textExtent;
 		this.textUtil = new TextUtil(textExtent);
 		this.fontSettings = fontSettings;
@@ -52,24 +56,29 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		this.debugListener = debugListener;
 	}
 
-	public void layout(IDocument<ELEMENT> document, ViewPort viewPort, CSSContext<ELEMENT> cssContext, PageLayout<ELEMENT> pageLayout, HTMLElementListener<ELEMENT, IElementRenderLayout> listener) {
+	public void layout(
+			DOCUMENT document,
+			ViewPort viewPort,
+			ILayoutContext<ELEMENT, ELEMENT_TYPE, DOCUMENT> layoutContext,
+			PageLayout<ELEMENT> pageLayout,
+			IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT, IElementRenderLayout> listener) {
 		
-		final LayoutState<ELEMENT> state = new LayoutState<>(textExtent, viewPort, cssContext, pageLayout, listener);
+		final LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state = new LayoutState<>(textExtent, viewPort, layoutContext, pageLayout, listener);
 		
 		document.iterate(this, state);
 	}
 	
-	private int getDebugDepth(LayoutState<ELEMENT> state) {
+	private int getDebugDepth(LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state) {
 		// state depth includes outer viewport so has to subtract one
 		return state.getDepth() - 1;
 	}
 
     @Override
-	public void onElementStart(IDocument<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
+	public void onElementStart(DOCUMENT document, ELEMENT element, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state) {
     	
-    	final HTMLElement elementType = document.getType(element);
+    	final ELEMENT_TYPE elementType = document.getType(element);
 
-    	if (!elementType.isLayoutElement()) {
+    	if (!document.isLayoutElement(elementType)) {
     		return;
     	}	
     	
@@ -114,29 +123,29 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		}
 	}
     
-    private void setResultingFont(LayoutState<ELEMENT> state, StackElement sub) {
+    private void setResultingFont(LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, StackElement sub) {
 		final FontSpec spec = sub.layoutStyles.getFont();
 		final IFont font = state.getOrOpenFont(spec, FontStyle.NONE); // TODO: font styles
 		sub.resultingLayout.setFont(font);
     }
     
-    private void setResultingRenderer(LayoutState<ELEMENT> state, StackElement sub) {
+    private void setResultingRenderer(LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, StackElement sub) {
 		final short zIndex = sub.layoutStyles.getZIndex();
 		
 		setResultingRenderer(state, sub, zIndex);
     }
     
-    private void setResultingRenderer(LayoutState<ELEMENT> state, StackElement sub, int zIndex) {
+    private void setResultingRenderer(LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, StackElement sub, int zIndex) {
 		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, rendererFactory);
 		sub.resultingLayout.setRenderer(zIndex, layer.getRenderer());
     }
   
     @Override
-	public void onElementEnd(IDocument<ELEMENT> document, ELEMENT element, LayoutState<ELEMENT> state) {
+	public void onElementEnd(DOCUMENT document, ELEMENT element, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state) {
 	
-    	final HTMLElement elementType = document.getType(element);
+    	final ELEMENT_TYPE elementType = document.getType(element);
     	
-    	if (!elementType.isLayoutElement()) {
+    	if (!document.isLayoutElement(elementType)) {
     		return;
     	}
     	
@@ -179,13 +188,13 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 
 
     @Override
-	public void onText(IDocument<ELEMENT> document, ELEMENT element, String text, LayoutState<ELEMENT> state) {
+	public void onText(DOCUMENT document, ELEMENT element, String text, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state) {
 		// We have a text element, compute text extents according to current mode
 		// TODO: text-align, overflow
 
-    	final HTMLElement elementType = document.getType(element);
+    	final ELEMENT_TYPE elementType = document.getType(element);
 
-    	if (!elementType.isLayoutElement()) {
+    	if (!document.isLayoutElement(elementType)) {
     		return;
     	}
 
@@ -198,7 +207,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		// onTextComputeAndRender(document, element, text, cur, state);
 	}
     
-    private void computeAndAddInlineText_wrapAndRenderAsNecessary(IDocument<ELEMENT> document, ELEMENT element, StackElement cur, String text, LayoutState<ELEMENT> state) {
+    private void computeAndAddInlineText_wrapAndRenderAsNecessary(DOCUMENT document, ELEMENT element, StackElement cur, String text, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state) {
 		final IFont font = cur.resultingLayout.getFont();
 
 		String remainingText = text;
@@ -275,7 +284,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     }
     
     @Deprecated // does not take varying inline element height into account
-    private void onTextComputeAndRender(IDocument<ELEMENT> document, ELEMENT element, String text, StackElement cur, LayoutState<ELEMENT> state) {
+    private void onTextComputeAndRender(DOCUMENT document, ELEMENT element, String text, StackElement cur, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state) {
 		final IFont font = cur.resultingLayout.getFont();
 		
 		final int width = textUtil.getTextLengthOrAvailableWidth(text, cur.getAvailableWidth(), font);
@@ -311,7 +320,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
     }
     
 	
-	private int setBlockBehavingElementWidthIfPresentInCSS(LayoutState<ELEMENT> state, StackElement container, StackElement sub) {
+	private int setBlockBehavingElementWidthIfPresentInCSS(LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, StackElement container, StackElement sub) {
 		
 		int cssWidthPx;
 
@@ -346,7 +355,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
  	}
 
 	@Deprecated
-	private int setBlockBehavingElementHeightIfPresentInCSS(LayoutState<ELEMENT> state, StackElement container, StackElement sub) {
+	private int setBlockBehavingElementHeightIfPresentInCSS(LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, StackElement container, StackElement sub) {
 		// Cache values since may be updated further down
 		int heightPx = Pixels.NONE;
     	final int cssHeighPxt;
@@ -396,7 +405,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 	}
 
 	@Deprecated
-	private boolean tryComputeLayoutOfBlockBehavingElement(LayoutState<ELEMENT> state, StackElement cur, StackElement sub) {
+	private boolean tryComputeLayoutOfBlockBehavingElement(LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, StackElement cur, StackElement sub) {
 		// Adjust sub available width/height if is set
 
 		final int width = setBlockBehavingElementWidthIfPresentInCSS(state, cur, sub);
@@ -425,37 +434,7 @@ public class LayoutAlgorithm<ELEMENT, TOKENIZER extends Tokenizer>
 		return layoutComputed;
 	}
 	
-	private void computeStyles(LayoutState<ELEMENT> state, IDocument<ELEMENT> document, ELEMENT element, HTMLElement elementType, StackElement sub) {
-
-		final FontSpec defaultFont = fontSettings.getFontForElement(elementType);
-    	
-    	if (defaultFont == null) {
-    		throw new IllegalStateException("No default font for element " + elementType);
-    	}
-
-    	// Collect all layout styles from CSS
-    	state.getCSSContext().getCSSLayoutStyles(
-    			elementType.getDefaultDisplay(),
-    			defaultFont,
-				document.getId(element),
-				document.getTag(element),
-				document.getClasses(element),
-				sub.layoutStyles);
-    	
-    	if (debugListener != null) {
-    		debugListener.onElementCSS(getDebugDepth(state), sub.layoutStyles);
-    	}
-
-    	// Also apply style attribute if defined
-		final ICSSDocumentStyles<ELEMENT> styleAttribute = document.getStyles(element);
-
-		if (styleAttribute != null) {
-			// Get CSS document from style-tag of element
-			state.getCSSContext().applyLayoutStyles(styleAttribute, element, sub.layoutStyles);
-
-	    	if (debugListener != null) {
-	    		debugListener.onElementStyleAttribute(getDebugDepth(state), sub.layoutStyles);
-	    	}
-		}
+	private void computeStyles(LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, DOCUMENT document, ELEMENT element, ELEMENT_TYPE elementType, StackElement sub) {
+		state.getLayoutContext().computeLayoutStyles(document, element, fontSettings, sub.layoutStyles, getDebugDepth(state), debugListener);
 	}
 }

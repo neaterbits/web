@@ -1,27 +1,27 @@
 package com.test.web.layout.algorithm;
 
-import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.layout.common.IElementLayout;
+import com.test.web.layout.common.enums.Unit;
 
 class LayoutHelperUnits {
 
-	static int computeWidthPx(int width, CSSUnit widthUnit, IElementLayout containerLayout) {
+	static int computeWidthPx(int width, Unit widthUnit, IElementLayout containerLayout) {
 		return computeWidthPx(width, widthUnit, containerLayout.getOuterBounds().getWidth());
 	}
 
-	static int computeWidthPx(int width, CSSUnit widthUnit, int curWidth) {
+	static int computeWidthPx(int width, Unit widthUnit, int curWidth) {
 		return computeSizePx(width, widthUnit, curWidth);
 	}
 
-	static int computeHeightPx(int width, CSSUnit widthUnit, IElementLayout containerLayout) {
+	static int computeHeightPx(int width, Unit widthUnit, IElementLayout containerLayout) {
 		return computeHeightPx(width, widthUnit, containerLayout.getOuterBounds().getHeight());
 	}
 
-	static int computeHeightPx(int height, CSSUnit heightUnit, int curHeight) {
+	static int computeHeightPx(int height, Unit heightUnit, int curHeight) {
 		return computeSizePx(height, heightUnit, curHeight);
 	}
 
-	static int computeSizePx(int size, CSSUnit sizeUnit, int curSize) {
+	static int computeSizePx(int size, Unit sizeUnit, int curSize) {
 		final int ret;
 		
 		switch (sizeUnit) {

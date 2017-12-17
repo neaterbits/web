@@ -2,8 +2,9 @@ package com.test.web.layout.algorithm;
 
 import java.util.Arrays;
 
-import com.test.web.css.common.CSSLayoutStyles;
-import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.layout.common.ILayoutStylesGetters;
+import com.test.web.layout.common.LayoutStyles;
+import com.test.web.layout.common.enums.Display;
 
 // Stack element on the layout stack, we add information here at time of start tag
 // and then just fetch that information when getting to end tag
@@ -29,7 +30,7 @@ final class StackElement {
 	private int remainingHeight;
 	
 	// Work area for singlethreaded algorithm, storing non threadsafe data here, but should be ok since HTML document parsing happens on one thread
-	final CSSLayoutStyles layoutStyles;
+	final LayoutStyles layoutStyles;
 	
 	// The resulting layout after computation of width and height, this is what rendering sees
 	final ElementLayout resultingLayout;
@@ -71,7 +72,7 @@ final class StackElement {
 	
 	StackElement(int stackIdx) {
 		this.stackIdx = stackIdx;
-		this.layoutStyles = new CSSLayoutStyles();
+		this.layoutStyles = new LayoutStyles();
 		this.resultingLayout = new ElementLayout();
 	}
 
@@ -199,7 +200,7 @@ final class StackElement {
 		this.remainingHeight = remainingHeight;
 	}
 
-	CSSLayoutStyles getLayoutStyles() {
+	ILayoutStylesGetters getLayoutStyles() {
 		return layoutStyles;
 	}
 
@@ -207,7 +208,7 @@ final class StackElement {
 		return resultingLayout;
 	}
 	
-	CSSDisplay getDisplay() {
+	Display getDisplay() {
 		return layoutStyles.getDisplay();
 	}
 

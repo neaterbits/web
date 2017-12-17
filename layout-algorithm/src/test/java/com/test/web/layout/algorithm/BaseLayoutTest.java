@@ -3,17 +3,19 @@ package com.test.web.layout.algorithm;
 import java.io.IOException;
 
 import com.test.web.css.common.CSSContext;
+import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.algorithm.LayoutAlgorithm;
 import com.test.web.layout.algorithm.PageLayer;
 import com.test.web.layout.algorithm.PageLayout;
 import com.test.web.layout.algorithm.PrintlnLayoutDebugListener;
-import com.test.web.layout.common.FontSettings;
+import com.test.web.layout.common.HTMLLayoutContext;
 import com.test.web.layout.common.ViewPort;
 import com.test.web.parse.common.ParserException;
 import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
+import com.test.web.render.html.FontSettings;
 import com.test.web.render.queue.QueueRendererFactory;
 import com.test.web.testdata.TestData;
 
@@ -221,17 +223,17 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 		
 		final ITextExtent textExtent = new MockTextExtent();
 		
-		final LayoutAlgorithm<HTML_ELEMENT, TOKENIZER> layoutAgorithm = new LayoutAlgorithm<>(
+		final LayoutAlgorithm<HTML_ELEMENT, HTMLElement, IDocument<HTML_ELEMENT>, TOKENIZER> layoutAgorithm = new LayoutAlgorithm<>(
 				textExtent,
 				renderFactory,
 				new FontSettings(),
-				new PrintlnLayoutDebugListener(System.out));
+				new PrintlnLayoutDebugListener<>(System.out));
 
 		final CSSContext<HTML_ELEMENT> cssContext = new CSSContext<>();
 		
 		final PageLayout<HTML_ELEMENT> pageLayout = new PageLayout<>();
 		
-		 layoutAgorithm.layout(doc, viewPort, cssContext, pageLayout, null);
+		 layoutAgorithm.layout(doc, viewPort, new HTMLLayoutContext<>(cssContext), pageLayout, null);
 		
 		assertThat(pageLayout.getLayers().size()).isEqualTo(1);
 	

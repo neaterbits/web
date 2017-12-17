@@ -5,32 +5,20 @@
     <artifactId>root</artifactId>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>layout-common</artifactId>
-  <name>Common layout types</name>
+  <artifactId>layout-html</artifactId>
+  <name>HTML specific layout code</name>
   <packaging>jar</packaging>
   <dependencies>
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>types</artifactId>
+		<artifactId>layout-common</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>io-common</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>document-common</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>render-common</artifactId>
+		<artifactId>document-html-common</artifactId>
 		<version>${project.version}</version>
 	</dependency>
  

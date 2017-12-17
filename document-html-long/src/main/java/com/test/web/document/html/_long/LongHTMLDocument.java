@@ -14,9 +14,11 @@ import com.test.web.buffers.LongBuffersIntegerIndex;
 import com.test.web.buffers.DuplicateDetectingStringStorageBuffer;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.document.common.DocumentState;
+import com.test.web.document.common.IElementListener;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.HTMLElementListener;
+import com.test.web.document.html.common.IDocument;
 import com.test.web.document.html.common.enums.HTMLDirection;
 import com.test.web.document.html.common.enums.LinkRelType;
 import com.test.web.io._long.LongTokenizer;
@@ -588,21 +590,19 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		return count;
 	}
 	
-	
-
 	@Override
-	public <PARAM> void iterate(HTMLElementListener<Integer, PARAM> listener, PARAM param) {
+	public <PARAM> void iterate(IElementListener<Integer, HTMLElement, IDocument<Integer>, PARAM> listener, PARAM param) {
 		iterate(INITIAL_ELEMENT, listener, param, INITIAL_ELEMENT,  true);
 	}
 	
 	@Override
-	public <PARAM> void iterateFrom(Integer element, HTMLElementListener<Integer, PARAM> listener, PARAM param) {
+	public <PARAM> void iterateFrom(Integer element, IElementListener<Integer, HTMLElement, IDocument<Integer>, PARAM> listener, PARAM param) {
 		iterate(INITIAL_ELEMENT, listener, param, element, false);
 	}
 	
 	private <PARAM> boolean iterate(
 			int curElement,
-			HTMLElementListener<Integer, PARAM> listener,
+			IElementListener<Integer, HTMLElement, IDocument<Integer>, PARAM> listener,
 			PARAM param,
 			int startCallListenerElement,
 			boolean callListener) {

@@ -1,56 +1,56 @@
-package com.test.web.css.common;
+package com.test.web.layout.common;
 
-import com.test.web.css.common.enums.CSSJustify;
-import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.layout.common.enums.Justify;
+import com.test.web.layout.common.enums.Unit;
 
-public class CSSDimensions {
+public final class StyleDimensions implements IStyleDimensions {
 
 	private int top;
-	private CSSUnit topUnit;
-	private CSSJustify topType;
+	private Unit topUnit;
+	private Justify topType;
 
 	private int right;
-	private CSSUnit rightUnit;
-	private CSSJustify rightType;
+	private Unit rightUnit;
+	private Justify rightType;
 	
 	private int bottom;
-	private CSSUnit bottomUnit;
-	private CSSJustify bottomType;
+	private Unit bottomUnit;
+	private Justify bottomType;
 	
 	private int left;
-	private CSSUnit leftUnit;
-	private CSSJustify leftType;
+	private Unit leftUnit;
+	private Justify leftType;
 	
-	public CSSDimensions() {
-		this.leftType = CSSJustify.NONE;
-		this.topType = CSSJustify.NONE;
-		this.rightType = CSSJustify.NONE;
-		this.bottomType = CSSJustify.NONE;
+	public StyleDimensions() {
+		this.leftType = Justify.NONE;
+		this.topType = Justify.NONE;
+		this.rightType = Justify.NONE;
+		this.bottomType = Justify.NONE;
 	}
 	
 	void clear() {
 		this.top = 0;
 		this.topUnit = null;
-		this.topType = CSSJustify.NONE;
+		this.topType = Justify.NONE;
 		
 		this.right = 0;
 		this.rightUnit = null;
-		this.rightType = CSSJustify.NONE;
+		this.rightType = Justify.NONE;
 
 		this.bottom = 0;
 		this.bottomUnit = null;
-		this.bottomType = CSSJustify.NONE;
+		this.bottomType = Justify.NONE;
 
 		this.right = 0;
 		this.rightUnit = null;
-		this.rightType = CSSJustify.NONE;
+		this.rightType = Justify.NONE;
 	}
 	
-	void merge(
-			int top, CSSUnit topUnit, CSSJustify topType,
-			int right, CSSUnit rightUnit, CSSJustify rightType,
-			int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
-			int left, CSSUnit leftUnit, CSSJustify leftType) {
+	public void merge(
+			int top, Unit topUnit, Justify topType,
+			int right, Unit rightUnit, Justify rightType,
+			int bottom, Unit bottomUnit, Justify bottomType,
+			int left, Unit leftUnit, Justify leftType) {
 		
 		if (isSet(topType)) {
 			this.top = top;
@@ -77,58 +77,68 @@ public class CSSDimensions {
 		}
 	}
 	
-	
-	
+	@Override
 	public int getTop() {
 		return top;
 	}
 
-	public CSSUnit getTopUnit() {
+	@Override
+	public Unit getTopUnit() {
 		return topUnit;
 	}
 
-	public CSSJustify getTopType() {
+	@Override
+	public Justify getTopType() {
 		return topType;
 	}
 
+	@Override
 	public int getRight() {
 		return right;
 	}
 
-	public CSSUnit getRightUnit() {
+	@Override
+	public Unit getRightUnit() {
 		return rightUnit;
 	}
 
-	public CSSJustify getRightType() {
+	@Override
+	public Justify getRightType() {
 		return rightType;
 	}
 
+	@Override
 	public int getBottom() {
 		return bottom;
 	}
 
-	public CSSUnit getBottomUnit() {
+	@Override
+	public Unit getBottomUnit() {
 		return bottomUnit;
 	}
 
-	public CSSJustify getBottomType() {
+	@Override
+	public Justify getBottomType() {
 		return bottomType;
 	}
 
+	@Override
 	public int getLeft() {
 		return left;
 	}
 
-	public CSSUnit getLeftUnit() {
+	@Override
+	public Unit getLeftUnit() {
 		return leftUnit;
 	}
 
-	public CSSJustify getLeftType() {
+	@Override
+	public Justify getLeftType() {
 		return leftType;
 	}
 
-	private static boolean isSet(CSSJustify type) {
-		return type != null && type != CSSJustify.NONE; 
+	private static boolean isSet(Justify type) {
+		return type != null && type != Justify.NONE; 
 	}
 
 	@Override

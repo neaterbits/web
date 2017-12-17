@@ -1,9 +1,9 @@
-package com.test.web.css.common;
+package com.test.web.layout.common;
 
-import com.test.web.css.common.enums.CSSDisplay;
-import com.test.web.css.common.enums.CSSFloat;
-import com.test.web.css.common.enums.CSSPosition;
-import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.layout.common.enums.Display;
+import com.test.web.layout.common.enums.LayoutFloat;
+import com.test.web.layout.common.enums.Position;
+import com.test.web.layout.common.enums.Unit;
 import com.test.web.types.FontSpec;
 
 /*
@@ -11,38 +11,38 @@ import com.test.web.types.FontSpec;
  *  
  */
 
-public final class CSSLayoutStyles {
+public final class LayoutStyles implements ILayoutStylesSetters, ILayoutStylesGetters {
 
-	private CSSDisplay display;
-	private CSSPosition position;
-	private CSSFloat cssFloat;
+	private Display display;
+	private Position position;
+	private LayoutFloat _float;
 	
 	private int width;
-	private CSSUnit widthUnit;
+	private Unit widthUnit;
 	private int height;
-	private CSSUnit heightUnit;
+	private Unit heightUnit;
 	
-	private final CSSDimensions margins;
-	private final CSSDimensions padding;
+	private final StyleDimensions margins;
+	private final StyleDimensions padding;
 	
 	private short zIndex;
 
 	private int positionLeft;
-	private CSSUnit positionLeftUnit;
+	private Unit positionLeftUnit;
 	private int positionTop;
-	private CSSUnit positionTopUnit;
+	private Unit positionTopUnit;
 
 	private FontSpec font;
 	
-	public CSSLayoutStyles() {
-		this.margins = new CSSDimensions();
-		this.padding = new CSSDimensions();
+	public LayoutStyles() {
+		this.margins = new StyleDimensions();
+		this.padding = new StyleDimensions();
 	}
 	
 	public void clear() {
 		this.display = null;
 		this.position = null;
-		this.cssFloat = null;
+		this._float = null;
 		
 		this.width = 0;
 		this.widthUnit = null;
@@ -62,7 +62,8 @@ public final class CSSLayoutStyles {
 		this.font = null;
 	}
 	
-	void setDisplay(CSSDisplay display) {
+	@Override
+	public void setDisplay(Display display) {
 		if (display == null) {
 			throw new IllegalArgumentException("display == null");
 		}
@@ -70,7 +71,8 @@ public final class CSSLayoutStyles {
 		this.display = display;
 	}
 
-	void setFont(FontSpec font) {
+	@Override
+	public void setFont(FontSpec font) {
 		if (font == null) {
 			throw new IllegalArgumentException("font == null");
 		}
@@ -78,12 +80,13 @@ public final class CSSLayoutStyles {
 		this.font = font;
 	}
 	
-	void merge(CSSDisplay display, CSSPosition position, CSSFloat cssFloat,
+	@Override
+	public void merge(Display display, Position position, LayoutFloat _float,
 
 			FontSpec font,
 	
-			int positionLeft, CSSUnit positionLeftUnit, int positionTop, CSSUnit positionTopUnit,
-			int width, CSSUnit widthUnit, int height , CSSUnit heightUnit,
+			int positionLeft, Unit positionLeftUnit, int positionTop, Unit positionTopUnit,
+			int width, Unit widthUnit, int height , Unit heightUnit,
 			short zIndex) {
 
 		if (display != null) {
@@ -94,8 +97,8 @@ public final class CSSLayoutStyles {
 			this.position = position;
 		}
 		
-		if (cssFloat != null) {
-			this.cssFloat = cssFloat;
+		if (_float != null) {
+			this._float = _float;
 		}
 		
 		if (font != null) {
@@ -125,23 +128,23 @@ public final class CSSLayoutStyles {
 		this.zIndex = zIndex;
 	}
 	
-	public CSSDisplay getDisplay() {
+	public Display getDisplay() {
 		return display;
 	}
 
-	public CSSPosition getPosition() {
+	public Position getPosition() {
 		return position;
 	}
 
-	public CSSFloat getFloat() {
-		return cssFloat;
+	public LayoutFloat getFloat() {
+		return _float;
 	}
 	
 	public int getPositionLeft() {
 		return positionLeft;
 	}
 	
-	public CSSUnit getPositionLeftUnit() {
+	public Unit getPositionLeftUnit() {
 		return positionLeftUnit;
 	}
 
@@ -149,7 +152,7 @@ public final class CSSLayoutStyles {
 		return positionTop;
 	}
 
-	public CSSUnit getPositionTopUnit() {
+	public Unit getPositionTopUnit() {
 		return positionTopUnit;
 	}
 
@@ -157,7 +160,7 @@ public final class CSSLayoutStyles {
 		return width;
 	}
 
-	public CSSUnit getWidthUnit() {
+	public Unit getWidthUnit() {
 		return widthUnit;
 	}
 	
@@ -169,7 +172,7 @@ public final class CSSLayoutStyles {
 		return height;
 	}
 
-	public CSSUnit getHeightUnit() {
+	public Unit getHeightUnit() {
 		return heightUnit;
 	}
 	
@@ -177,11 +180,13 @@ public final class CSSLayoutStyles {
 		return getHeightUnit() != null;
 	}
 
-	public CSSDimensions getPadding() {
+	@Override
+	public StyleDimensions getPadding() {
 		return padding;
 	}
 	
-	public CSSDimensions getMargins() {
+	@Override
+	public StyleDimensions getMargins() {
 		return margins;
 	}
 	
@@ -195,7 +200,7 @@ public final class CSSLayoutStyles {
 
 	@Override
 	public String toString() {
-		return "[d=" + display + ", p=" + position + ", f=" + cssFloat + ", w="
+		return "[d=" + display + ", p=" + position + ", f=" + _float + ", w="
 				+ width + ", wu=" + widthUnit + ", h=" + height + ", hu=" + heightUnit
 				+ ", m=" + margins + ", p=" + padding + ", z=" + zIndex + ", posL="
 				+ positionLeft + ", poSLU=" + positionLeftUnit + ", posT=" + positionTop

@@ -1,8 +1,7 @@
 package com.test.web.layout.algorithm;
 
-import com.test.web.css.common.CSSLayoutStyles;
-import com.test.web.css.common.enums.CSSDisplay;
-import com.test.web.document.html.common.HTMLElement;
+import com.test.web.layout.common.ILayoutStylesGetters;
+import com.test.web.layout.common.enums.Display;
 
 class LayoutCases {
 
@@ -28,12 +27,12 @@ class LayoutCases {
 	private static final CaseBlockWithinBlockBehaving_CSSSizeUnknown BLOCK_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN
 				= new CaseBlockWithinBlockBehaving_CSSSizeUnknown();
 
-	static BaseLayoutCase determineLayoutCase(StackElement container, CSSLayoutStyles subLayoutStyles, HTMLElement elementType) {
+	static <ELEMENT_TYPE> BaseLayoutCase determineLayoutCase(StackElement container, ILayoutStylesGetters subLayoutStyles, ELEMENT_TYPE elementType) {
 
 		final BaseLayoutCase ret;
 
 		if (container.isViewPort()) {
-			if (subLayoutStyles.getDisplay() != CSSDisplay.BLOCK) {
+			if (subLayoutStyles.getDisplay() != Display.BLOCK) {
 				throw new UnsupportedOperationException("TODO - support other than block root element");
 			}
 			

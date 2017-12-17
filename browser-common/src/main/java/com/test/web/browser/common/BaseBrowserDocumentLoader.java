@@ -4,13 +4,14 @@ import java.io.IOException;
 import java.net.URL;
 
 import com.test.web.css.common.CSSContext;
+import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.HTMLElementListener;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.io.common.LoadStream;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.algorithm.LayoutAlgorithm;
 import com.test.web.layout.algorithm.PageLayout;
-import com.test.web.layout.common.FontSettings;
+import com.test.web.layout.common.HTMLLayoutContext;
 import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.ViewPort;
 import com.test.web.loadqueue.common.LoadQueue;
@@ -28,6 +29,7 @@ import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.IRenderer;
 import com.test.web.render.common.ITextExtent;
 import com.test.web.render.html.DisplayRenderer;
+import com.test.web.render.html.FontSettings;
 import com.test.web.render.html.HTMLRenderer;
 import com.test.web.render.html.IDToOffsetList;
 import com.test.web.render.html.IRenderDebugListener;
@@ -40,7 +42,7 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 	private final IBufferRendererFactory bufferRenderFactory;
 	private final ITextExtent textExtent;
 
-	private final DebugListeners debugListeners;
+	private final DebugListeners<HTMLElement> debugListeners;
 
 	protected abstract DOCUMENT createDocument();
 	
@@ -50,7 +52,7 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 			LoadStream stream,
 			CSSContext<CSS_ELEMENT>cssContext);
 	
-	public BaseBrowserDocumentLoader(IDelayedRendererFactory rendererFactory, IBufferRendererFactory bufferRendererFactory, ITextExtent textExtent, DebugListeners debugListeners) {
+	public BaseBrowserDocumentLoader(IDelayedRendererFactory rendererFactory, IBufferRendererFactory bufferRendererFactory, ITextExtent textExtent, DebugListeners<HTMLElement> debugListeners) {
 
 		if (rendererFactory == null) {
 			throw new IllegalArgumentException("rendererFactory == null");
@@ -72,7 +74,8 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 
 		final ViewPort viewPort = new ViewPort(viewPortWidth, viewPortHeight);
 		
-		final LayoutAlgorithm<HTML_ELEMENT, TOKENIZER> layoutAgorithm = new LayoutAlgorithm<>(
+		final LayoutAlgorithm<HTML_ELEMENT, HTMLElement, IDocument<HTML_ELEMENT>, TOKENIZER> layoutAgorithm
+			= new LayoutAlgorithm<>(
 				textExtent,
 				renderFactory,
 				new FontSettings(),
@@ -102,7 +105,9 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 		
 		final HTMLRenderer<HTML_ELEMENT> htmlRenderer = new HTMLRenderer<>(renderDebugListener, renderer);
 		
-		layoutAgorithm.layout(document, viewPort, cssContext, pageLayout, htmlRenderer);
+		final HTMLLayoutContext<HTML_ELEMENT> layoutContext = new HTMLLayoutContext<>(cssContext);
+		
+		layoutAgorithm.layout(document, viewPort, layoutContext, pageLayout, htmlRenderer);
 
 		// We should have loaded document now so sync to display. TODO should probably be done elsewhere, ie in loadqueue so that we sync as document loads
 		displayRenderer.sync();
