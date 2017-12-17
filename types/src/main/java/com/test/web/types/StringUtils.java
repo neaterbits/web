@@ -1,5 +1,8 @@
 package com.test.web.types;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class StringUtils {
 	public static boolean equals(String s1, String s2) {
 		final boolean equals;
@@ -57,5 +60,27 @@ public class StringUtils {
 		}
 
 		return integer;
+	}
+	
+	public static String [] split(String s, char c) {
+		final List<String> list = new ArrayList<>();
+		
+		int lastIdx = 0;
+
+		for (int i = 0; i < s.length(); ++ i) {
+			if (s.charAt(i) == c) {
+				list.add(s.substring(lastIdx, i));
+				lastIdx = i + 1;
+			}
+		}
+		
+		if (lastIdx < s.length()) {
+			list.add(s.substring(lastIdx));
+		}
+		else if (lastIdx == s.length()) {
+			list.add("");
+		}
+		
+		return list.toArray(new String[list.size()]);
 	}
 }

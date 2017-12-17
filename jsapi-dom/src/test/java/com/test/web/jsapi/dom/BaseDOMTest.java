@@ -107,27 +107,21 @@ public abstract class BaseDOMTest extends TestCase {
 			numAttributes = 2;
 			attrIdx = 1;
 		}
-
-		final Integer attributesLength = (Integer)jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.length", varMap);
-		assertThat(attributesLength).isNotNull();
-		assertThat(attributesLength).isEqualTo(numAttributes);
-
-		final String attrName 					= (String)jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.item(" + attrIdx + ").name", varMap);
-		final String attrNamespaceURI 	= (String)jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.item(" + attrIdx + ").namespaceURI", varMap);
-		final String attrPrefix 					= (String)jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.item(" + attrIdx + ").prefix", varMap);
-		final String attrLocalName 			= (String)jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.item(" + attrIdx + ").localName", varMap);
-		final String attrValue 					= (String)jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.item(" + attrIdx + ").value", varMap);
-
-		assertThat(attrName).isEqualTo(attribute.getAttributeName());
-		assertThat(attrNamespaceURI).isEqualTo(attribute.getAttributeNamespaceURI());
-		assertThat(attrPrefix).isEqualTo(attribute.getAttributePrefix());
-		assertThat(attrLocalName).isEqualTo(attribute.getAttributeLocalName());
-		assertThat(attrValue).isEqualTo(atc.getAttributeValue());
-
+		
+		checkAttributesLength(jsEngine, varMap, elementId, numAttributes);
+		checkGetAttributeByIdx(jsEngine, varMap, elementId, attrIdx, atc, atc.getAttributeValue());
+		checkGetAttributeByName(jsEngine, varMap, elementId, atc, atc.getAttributeValue());
+		checkGetAttributeByNSAndLocalName(jsEngine, varMap, elementId, atc, atc.getAttributeValue());
+		
+		checkUpdateByAssignment(jsEngine, varMap, elementId, atc, attrIdx, numAttributes);
+	}
+	
+	private void checkUpdateByAssignment(IJSEngine jsEngine, JSVariableMap varMap, String elementId, AttributeTestCase atc, int attrIdx, int numAttributes) throws JSCompileException, JSExecutionException {
 		final String updatedValue = atc.getAttributeTestValues().getUpdate(atc.getAttribute());
-		
 		final String updatedElementId;
-		
+
+		final HTMLAttribute attribute = atc.getAttribute();
+
 		if (attribute == HTMLAttribute.ID) {
 
 			jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.item(" + attrIdx + ").value = \"" + updatedValue + "\"", varMap);
@@ -143,11 +137,46 @@ public abstract class BaseDOMTest extends TestCase {
 		}
 
 		jsEngine.evalJS("document.getElementById(\"" + updatedElementId + "\").attributes.item(" + attrIdx + ").value = \"" + updatedValue + "\"", varMap);
-		final Integer attributesLength2 = (Integer)jsEngine.evalJS("document.getElementById(\"" + updatedElementId + "\").attributes.length", varMap);
-		assertThat(attributesLength2).isNotNull();
+
+		checkAttributesLength(jsEngine, varMap, updatedElementId, numAttributes);
+		checkGetAttributeByIdx(jsEngine, varMap, updatedElementId, attrIdx, atc, updatedValue);
+	}
+	
+	private void checkAttributesLength(IJSEngine jsEngine, JSVariableMap varMap, String elementId, int numAttributes) throws JSCompileException, JSExecutionException {
+
+		final Integer attributesLength = (Integer)jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.length", varMap);
+
+		assertThat(attributesLength).isNotNull();
 		assertThat(attributesLength).isEqualTo(numAttributes);
-		final String attrValue2 = (String)jsEngine.evalJS("document.getElementById(\"" + updatedElementId + "\").attributes.item(" + attrIdx + ").value", varMap);
-		assertThat(attrValue2).isEqualTo(updatedValue);
+	}
+
+	private void checkGetAttributeByIdx(IJSEngine jsEngine, JSVariableMap varMap, String elementId, int attrIdx, AttributeTestCase atc, String attributeValue) throws JSCompileException, JSExecutionException {
+		checkGetAttributeByJS(jsEngine, varMap, "document.getElementById(\"" + elementId + "\").attributes.item(" + attrIdx + ")", atc, attributeValue);
+	}
+
+	private void checkGetAttributeByName(IJSEngine jsEngine, JSVariableMap varMap, String elementId, AttributeTestCase atc, String attributeValue) throws JSCompileException, JSExecutionException {
+		checkGetAttributeByJS(jsEngine, varMap, "document.getElementById(\"" + elementId + "\").attributes.getNamedItem(\"" + atc.getAttribute().getName() + "\")", atc, attributeValue);
+	}
+
+	private void checkGetAttributeByNSAndLocalName(IJSEngine jsEngine, JSVariableMap varMap, String elementId, AttributeTestCase atc, String attributeValue) throws JSCompileException, JSExecutionException {
+		checkGetAttributeByJS(jsEngine, varMap, "document.getElementById(\"" + elementId + "\").attributes.getNamedItemNS(null, \"" + atc.getAttribute().getName() + "\")", atc, attributeValue);
+	}
+
+	private void checkGetAttributeByJS(IJSEngine jsEngine, JSVariableMap varMap, String js, AttributeTestCase atc, String attributeValue) throws JSCompileException, JSExecutionException {
+		
+		final String attrName 					= (String)jsEngine.evalJS(js + ".name", varMap);
+		final String attrNamespaceURI 	= (String)jsEngine.evalJS(js + ".namespaceURI", varMap);
+		final String attrPrefix 					= (String)jsEngine.evalJS(js + ".prefix", varMap);
+		final String attrLocalName 			= (String)jsEngine.evalJS(js + ".localName", varMap);
+		final String attrValue 					= (String)jsEngine.evalJS(js + ".value", varMap);
+
+		final HTMLAttribute attribute = atc.getAttribute();
+
+		assertThat(attrName).isEqualTo(attribute.getAttributeName());
+		assertThat(attrNamespaceURI).isEqualTo(attribute.getAttributeNamespaceURI());
+		assertThat(attrPrefix).isEqualTo(attribute.getAttributePrefix());
+		assertThat(attrLocalName).isEqualTo(attribute.getAttributeLocalName());
+		assertThat(attrValue).isEqualTo(attributeValue);
 	}
 	
 	private JSVariableMap prepareVarMap(String html) throws ParserException {

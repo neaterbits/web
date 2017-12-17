@@ -390,7 +390,48 @@ public abstract class OOTagElement extends OODocumentElement {
 		return num;
 	}
 	
-	final int getIdxOfAttributeWithName(String namespaceURI, String name) {
+	final int getIdxOfAttributeWithName(String name) {
+
+		// Match against standard attributes first
+		int idx;
+		
+		int found = -1;
+		
+		for (idx = 0; idx < numStandardAttributes; ++ idx) {
+			final HTMLAttribute attribute = standardAttributes[idx];
+			
+			if (name.equals(attribute.getAttributeName())) {
+				found = idx;
+				break;
+			}
+		}
+		
+		if (found == -1 && this.customAttributes != null) {
+
+			final String [] parts = StringUtils.split(name, ':');
+
+			for (OOCustomAttribute custom : customAttributes) {
+				if (parts.length == 1 && parts[0].equals(custom.getLocalName())) {
+					found = idx;
+					break;
+				}
+				else if (parts.length == 2 && parts[0].equals(custom.getPrefix()) && parts[1].equals(custom.getLocalName())) {
+					found = idx;
+					break;
+				}
+				else if (parts.length == 2 && parts[0].equals(custom.getNamespaceURI()) && parts[1].equals(custom.getLocalName())) {
+					found = idx;
+					break;
+				}
+
+				++ idx;
+			}
+		}
+
+		return idx;
+	}
+
+	final int getIdxOfAttributeWithNameNS(String namespaceURI, String localName) {
 
 		// Match against standard attributes first
 		int idx;
@@ -401,7 +442,7 @@ public abstract class OOTagElement extends OODocumentElement {
 			final HTMLAttribute attribute = standardAttributes[idx];
 			
 			if (    (namespaceURI == null || namespaceURI.equals(attribute.getAttributeNamespaceURI()))
-				&& name.equals(attribute.getAttributeLocalName())) {
+				&& localName.equals(attribute.getAttributeLocalName())) {
 				found = idx;
 				break;
 			}
@@ -410,7 +451,7 @@ public abstract class OOTagElement extends OODocumentElement {
 		if (found == -1 && this.customAttributes != null) {
 			for (OOCustomAttribute custom : customAttributes) {
 				
-				if (StringUtils.equals(namespaceURI, custom.getNamespaceURI()) && name.equals(custom.getLocalName())) {
+				if (StringUtils.equals(namespaceURI, custom.getNamespaceURI()) && localName.equals(custom.getLocalName())) {
 					found = idx;
 					break;
 				}
@@ -612,7 +653,7 @@ public abstract class OOTagElement extends OODocumentElement {
 	final HTMLAttribute setAttributeValue(String namespaceURI, String name, String value, DocumentState<OOTagElement> state) {
 
 		final HTMLAttribute updated;
-		final int idx = getIdxOfAttributeWithName(namespaceURI, name);
+		final int idx = getIdxOfAttributeWithNameNS(namespaceURI, name);
 
 		if (idx >= 0) {
 			updated = setAttributeValue(idx, value, state);
@@ -803,7 +844,7 @@ public abstract class OOTagElement extends OODocumentElement {
 	}
 
 	final HTMLAttribute removeAttribute(String namespaceURI, String name, DocumentState<OOTagElement> state) {
-		final int idx = getIdxOfAttributeWithName(namespaceURI, name);
+		final int idx = getIdxOfAttributeWithNameNS(namespaceURI, name);
 		
 		final HTMLAttribute removed;
 		

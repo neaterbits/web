@@ -36,10 +36,15 @@ abstract class BaseDocumentContext<ELEMENT> implements IDocument<ELEMENT> {
 	public final ELEMENT getParentElement(ELEMENT element) {
 		return delegate.getParentElement(element);
 	}
+	
+	@Override
+	public int getIdxOfAttributeWithName(ELEMENT element, String name) {
+		return delegate.getIdxOfAttributeWithName(element, name);
+	}
 
 	@Override
-	public final int getIdxOfAttributeWithName(ELEMENT element, String namespaceURI, String name) {
-		return delegate.getIdxOfAttributeWithName(element, namespaceURI, name);
+	public final int getIdxOfAttributeWithNameNS(ELEMENT element, String namespaceURI, String localName) {
+		return delegate.getIdxOfAttributeWithNameNS(element, namespaceURI, localName);
 	}
 
 	@Override

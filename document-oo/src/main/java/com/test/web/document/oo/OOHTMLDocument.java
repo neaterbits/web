@@ -771,10 +771,15 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 	public int getNumAttributes(OOTagElement element) {
 		return element.getNumAttributes();
 	}
+	
+	@Override
+	public int getIdxOfAttributeWithName(OOTagElement element, String name) {
+		return element.getIdxOfAttributeWithName(name);
+	}
 
 	@Override
-	public int getIdxOfAttributeWithName(OOTagElement element, String namespaceURI, String name) {
-		return element.getIdxOfAttributeWithName(namespaceURI, name);
+	public int getIdxOfAttributeWithNameNS(OOTagElement element, String namespaceURI, String localName) {
+		return element.getIdxOfAttributeWithNameNS(namespaceURI, localName);
 	}
 
 	@Override

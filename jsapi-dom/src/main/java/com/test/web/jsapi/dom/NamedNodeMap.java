@@ -21,7 +21,19 @@ public final class NamedNodeMap<ELEMENT, DOCUMENT extends IDocumentContext<ELEME
 	public final int getLength() {
 		return getDocument().getNumAttributes(getElement());
 	}
-	
+
+	public final Attr<ELEMENT, DOCUMENT> getNamedItem(String name) {
+		final int index = getDocument().getIdxOfAttributeWithName(getElement(), name);
+		
+		return index < 0 ? null : new Attr<>(getDocument(), getElement(), index, ownerElement);
+	}
+
+	public final Attr<ELEMENT, DOCUMENT> getNamedItemNS(String namespaceURI, String localName) {
+		final int index = getDocument().getIdxOfAttributeWithNameNS(getElement(), namespaceURI, localName);
+		
+		return index < 0 ? null : new Attr<>(getDocument(), getElement(), index, ownerElement);
+	}
+
 	public final Attr<ELEMENT, DOCUMENT> item(int index) {
 		return index < getArrayLength()
 				? new Attr<>(getDocument(), getElement(), index, ownerElement)
