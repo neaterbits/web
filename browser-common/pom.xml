@@ -12,13 +12,13 @@
   
   	<dependency>
   		<groupId>${project.groupId}</groupId>
-  		<artifactId>document-long</artifactId>
+  		<artifactId>document-html-long</artifactId>
   		<version>${project.version}</version>
   	</dependency>
 
   	<dependency>
   		<groupId>${project.groupId}</groupId>
-  		<artifactId>document-oo</artifactId>
+  		<artifactId>document-html-oo</artifactId>
   		<version>${project.version}</version>
   	</dependency>
 

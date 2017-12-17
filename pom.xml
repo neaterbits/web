@@ -43,9 +43,9 @@
 	    <module>parse-html</module>
 	    <module>document-common</module>
 	    <module>document-html-common</module>
-	    <module>document-long</module>
-	    <module>document-oo</module>
-	    <module>document-test</module>
+	    <module>document-html-long</module>
+	    <module>document-html-oo</module>
+	    <module>document-html-test</module>
 	    <module>loadqueue-common</module>
 	    <module>loadqueue-html</module>
 	    <module>render-common</module>

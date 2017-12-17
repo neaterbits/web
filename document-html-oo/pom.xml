@@ -5,7 +5,7 @@
     <artifactId>root</artifactId>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>document-oo</artifactId>
+  <artifactId>document-html-oo</artifactId>
   <name>OO document object code</name>
   <packaging>jar</packaging>
   <dependencies>
@@ -44,7 +44,7 @@
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>document-test</artifactId>
+		<artifactId>document-html-test</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 

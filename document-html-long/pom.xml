@@ -5,8 +5,8 @@
     <artifactId>root</artifactId>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>document-long</artifactId>
-  <name>Long document object code</name>
+  <artifactId>document-html-long</artifactId>
+  <name>Long HTML document object code</name>
   <packaging>jar</packaging>
   <dependencies>
 
@@ -44,7 +44,7 @@
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>document-test</artifactId>
+		<artifactId>document-html-test</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 

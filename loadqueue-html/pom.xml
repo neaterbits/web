@@ -45,7 +45,7 @@
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>document-long</artifactId>
+		<artifactId>document-html-long</artifactId>
 		<version>${project.version}</version>
 		<scope>test</scope>
 	</dependency>
