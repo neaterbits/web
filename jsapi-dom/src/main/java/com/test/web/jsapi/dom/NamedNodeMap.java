@@ -34,6 +34,14 @@ public final class NamedNodeMap<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentCo
 		return attribute == null ? null : new Attr<>(getDocument(), getElement(), attribute, ownerElement);
 	}
 
+	public final ATTRIBUTE removeNamedItem(String name) {
+		return getDocument().removeAttribute(getElement(), name);
+	}
+
+	public final ATTRIBUTE removeNamedItem(String namespaceURI, String localName) {
+		return getDocument().removeAttribute(getElement(), namespaceURI, localName);
+	}
+
 	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> item(int index) {
 		
 		final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> attr;
@@ -51,6 +59,7 @@ public final class NamedNodeMap<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentCo
 		
 		return attr;
 	}
+
 	
 	@Override
 	public final Object getArrayElem(int index) {

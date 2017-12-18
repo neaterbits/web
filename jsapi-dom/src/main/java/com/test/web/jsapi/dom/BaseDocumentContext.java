@@ -7,7 +7,6 @@ import java.util.List;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.document.common.IElementListener;
 import com.test.web.document.html.common.HTMLElement;
-import com.test.web.document.html.common.HTMLElementListener;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.document.html.common.enums.LinkRelType;
 
@@ -29,13 +28,13 @@ abstract class BaseDocumentContext<ELEMENT, ATTRIBUTE> implements IDocument<ELEM
 	}
 
 	@Override
-	public final void setAttributeValue(ELEMENT element, int idx, String value) {
-		delegate.setAttributeValue(element, idx, value);
+	public final ATTRIBUTE setAttributeValue(ELEMENT element, int idx, String value) {
+		return delegate.setAttributeValue(element, idx, value);
 	}
 
 	@Override
-	public void setAttributeValue(ELEMENT element, ATTRIBUTE attribute, String value) {
-		delegate.setAttributeValue(element, attribute, value);
+	public ATTRIBUTE setAttributeValue(ELEMENT element, ATTRIBUTE attribute, String value) {
+		return delegate.setAttributeValue(element, attribute, value);
 	}
 
 	@Override
@@ -59,18 +58,23 @@ abstract class BaseDocumentContext<ELEMENT, ATTRIBUTE> implements IDocument<ELEM
 	}
 
 	@Override
-	public final void setAttributeValue(ELEMENT element, String namespaceURI, String name, String value) {
-		delegate.setAttributeValue(element, namespaceURI, name, value);
+	public final ATTRIBUTE setAttributeValue(ELEMENT element, String namespaceURI, String name, String value) {
+		return delegate.setAttributeValue(element, namespaceURI, name, value);
 	}
 
 	@Override
 	public final String getAttributeName(ELEMENT element, ATTRIBUTE attribute) {
 		return delegate.getAttributeName(element, attribute);
 	}
+	
+	@Override
+	public ATTRIBUTE removeAttribute(ELEMENT element, String name) {
+		return delegate.removeAttribute(element, name);
+	}
 
 	@Override
-	public final void removeAttribute(ELEMENT element, String namespaceURI, String name) {
-		delegate.removeAttribute(element, namespaceURI, name);
+	public final ATTRIBUTE removeAttribute(ELEMENT element, String namespaceURI, String name) {
+		return delegate.removeAttribute(element, namespaceURI, name);
 	}
 
 	@Override

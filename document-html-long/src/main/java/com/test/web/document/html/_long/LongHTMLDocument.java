@@ -870,31 +870,36 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 
 	@Override
-	public void setAttributeValue(Integer element, int idx, String value) {
+	public Integer setAttributeValue(Integer element, int idx, String value) {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
 
 
 	@Override
-	public void setAttributeValue(Integer element, Integer attribute, String value) {
+	public Integer setAttributeValue(Integer element, Integer attribute, String value) {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
 
 
 	@Override
-	public void setAttributeValue(Integer element, String namespaceURI, String name, String value) {
+	public Integer setAttributeValue(Integer element, String namespaceURI, String name, String value) {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
 
 
 	@Override
-	public void removeAttribute(Integer element, String namespaceURI, String name) {
+	public Integer removeAttribute(Integer element, String name) {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
-	
-	
+
+
+	@Override
+	public Integer removeAttribute(Integer element, String namespaceURI, String localName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -2,13 +2,15 @@ package com.test.web.document.common;
 
 public interface IDocumentAttributeSetters<ELEMENT, ATTRIBUTE> {
 
-	void setAttributeValue(ELEMENT element, int idx, String value);
+	ATTRIBUTE setAttributeValue(ELEMENT element, int idx, String value);
 
-	void setAttributeValue(ELEMENT element, ATTRIBUTE attribute, String value);
+	ATTRIBUTE setAttributeValue(ELEMENT element, ATTRIBUTE attribute, String value);
 
 	// Adds if not present
-	void setAttributeValue(ELEMENT element, String namespaceURI, String name, String value);
+	ATTRIBUTE setAttributeValue(ELEMENT element, String namespaceURI, String name, String value);
 
-	void removeAttribute(ELEMENT element, String namespaceURI, String name);
+	ATTRIBUTE removeAttribute(ELEMENT element, String name);
+
+	ATTRIBUTE removeAttribute(ELEMENT element, String namespaceURI, String localName);
 
 }

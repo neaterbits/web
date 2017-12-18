@@ -815,28 +815,35 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 	}
 
 	@Override
-	public void setAttributeValue(OOTagElement element, int idx, String value) {
-		triggerUIUpdates(element, element.setAttributeValue(idx, value, state));
+	public OOAttribute setAttributeValue(OOTagElement element, int idx, String value) {
+		return triggerUIUpdates(element, element.setAttributeValue(idx, value, state));
 	}
 	
 	@Override
-	public void setAttributeValue(OOTagElement element, OOAttribute attribute, String value) {
-		triggerUIUpdates(element, element.setAttributeValue(attribute, value, state));
+	public OOAttribute setAttributeValue(OOTagElement element, OOAttribute attribute, String value) {
+		return triggerUIUpdates(element, element.setAttributeValue(attribute, value, state));
 	}
 
 	@Override
-	public void setAttributeValue(OOTagElement element, String namespaceURI, String name, String value) {
-		triggerUIUpdates(element, element.setAttributeValue(namespaceURI, name, value, state));
+	public OOAttribute setAttributeValue(OOTagElement element, String namespaceURI, String name, String value) {
+		return triggerUIUpdates(element, element.setAttributeValue(namespaceURI, name, value, state));
 	}
 
 	@Override
-	public void removeAttribute(OOTagElement element, String namespaceURI, String name) {
-		triggerUIUpdates(element, element.removeAttribute(namespaceURI, name, state));
+	public OOAttribute removeAttribute(OOTagElement element, String name) {
+		return triggerUIUpdates(element, element.removeAttribute(name, state));
 	}
 
-	private void triggerUIUpdates(OOTagElement element, HTMLAttribute attribute) {
-		if (listener != null) {
-			listener.onAttributeUpdated(element, attribute);
+	@Override
+	public OOAttribute removeAttribute(OOTagElement element, String namespaceURI, String localName) {
+		return triggerUIUpdates(element, element.removeAttribute(namespaceURI, localName, state));
+	}
+
+	private OOAttribute triggerUIUpdates(OOTagElement element, OOAttribute ooAttribute) {
+		if (listener != null && ooAttribute.getStandard() != null) {
+			listener.onAttributeUpdated(element, ooAttribute.getStandard());
 		}
+		
+		return ooAttribute;
 	}
 }

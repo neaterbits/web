@@ -3,9 +3,7 @@ package com.test.web.document.html.oo;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.List;
 
-import com.test.web.css.oo.OOCSSDocument;
 import com.test.web.css.oo.OOCSSElement;
 import com.test.web.document.common.DocumentState;
 import com.test.web.document.html.common.HTMLAttribute;
@@ -22,7 +20,6 @@ import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser;
 import com.test.web.parse.css.CSSToken;
 import com.test.web.types.IEnum;
-import com.test.web.types.StringUtils;
 
 public abstract class OOTagElement extends OODocumentElement {
 
@@ -735,26 +732,22 @@ public abstract class OOTagElement extends OODocumentElement {
 		return isAttributeSet(attribute) ? textualValue : null; // attribute.getName() : null;
 	}
 
-	final HTMLAttribute setAttributeValue(int idx, String value, DocumentState<OOTagElement> state) {
+	final OOAttribute setAttributeValue(int idx, String value, DocumentState<OOTagElement> state) {
 
 		final OOAttribute ooAttribute = attributes[idx];
 		
-		return setAttributeValue(ooAttribute, value, state);
+		setAttributeValue(ooAttribute, value, state);
+		
+		return ooAttribute;
 	}
 	
-	final HTMLAttribute setAttributeValue(OOAttribute ooAttribute, String value, DocumentState<OOTagElement> state) {
+	final OOAttribute setAttributeValue(OOAttribute ooAttribute, String value, DocumentState<OOTagElement> state) {
 
-		final HTMLAttribute changed;
-			
 		if (ooAttribute.getCustom() != null) {
-			changed = null;
-			
 			ooAttribute.getCustom().setValue(value);
 		}
 		else {
-			changed = ooAttribute.getStandard();
-
-			setStandardAttributeValue(changed, value, state);
+			setStandardAttributeValue(ooAttribute.getStandard(), value, state);
 		}
 		
 		/*
@@ -771,12 +764,12 @@ public abstract class OOTagElement extends OODocumentElement {
 		}
 		*/
 	
-		return changed;
+		return ooAttribute;
 	}
 	
-	final HTMLAttribute setAttributeValue(String namespaceURI, String name, String value, DocumentState<OOTagElement> state) {
+	final OOAttribute setAttributeValue(String namespaceURI, String name, String value, DocumentState<OOTagElement> state) {
 
-		final HTMLAttribute updated;
+		final OOAttribute updated;
 		final int idx = getIdxOfAttributeWithNameNS(namespaceURI, name);
 
 		if (idx >= 0) {
@@ -990,23 +983,30 @@ public abstract class OOTagElement extends OODocumentElement {
 				: attribute.getCustom().getValue();
 	}
 
-	final HTMLAttribute removeAttribute(String namespaceURI, String name, DocumentState<OOTagElement> state) {
-		final int idx = getIdxOfAttributeWithNameNS(namespaceURI, name);
+	final OOAttribute removeAttribute(String name, DocumentState<OOTagElement> state) {
+		final int idx = getIdxOfAttributeWithName(name);
 		
-		final HTMLAttribute removed;
+		return removeAttribute(idx, state);
+	}
+
+	final OOAttribute removeAttribute(String namespaceURI, String localName, DocumentState<OOTagElement> state) {
+		final int idx = getIdxOfAttributeWithNameNS(namespaceURI, localName);
 		
+		return removeAttribute(idx, state);
+	}
+	
+	private OOAttribute removeAttribute(int idx, DocumentState<OOTagElement> state) {
+		
+		final OOAttribute ooAttribute;
+
 		if (idx >= 0) {
-			final OOAttribute ooAttribute = attributes[idx];
+			 ooAttribute = attributes[idx];
 			
 			if (ooAttribute.getStandard() != null) {
-				removed = ooAttribute.getStandard();
-				
-				removeStandardAttribute(removed, state);
+				removeStandardAttribute(ooAttribute.getStandard(), state);
 			}
 			else {
 				removeAttributeAt(idx);
-				
-				removed = null;
 			}
 			/*
 			if (idx < numStandardAttributes) {
@@ -1021,10 +1021,10 @@ public abstract class OOTagElement extends OODocumentElement {
 			*/
 		}
 		else {
-			removed = null;
+			ooAttribute = null;
 		}
 		
-		return removed;
+		return ooAttribute;
 	}
 
 	private void removeStandardAttribute(HTMLAttribute attribute, DocumentState<OOTagElement> state) {
@@ -1057,7 +1057,10 @@ public abstract class OOTagElement extends OODocumentElement {
 		else {
 
 			// set to null-value, which should clear it
-			setAttributeValue(attrIdx, null, state);
+			//setAttributeValue(attrIdx, null, state);
+			
+			// just clear flag since we need to retain value pointed to by Attr
+			clearAttribute(attrIdx, attribute);
 		}
 
 		if (isAttributeSet(attribute)) {

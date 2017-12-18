@@ -113,11 +113,13 @@ public abstract class BaseDOMTest extends TestCase {
 		checkGetAttributeByIdx(jsEngine, varMap, elementId, attrIdx, atc, atc.getAttributeValue());
 		checkGetAttributeByName(jsEngine, varMap, elementId, atc, atc.getAttributeValue());
 		checkGetAttributeByNSAndLocalName(jsEngine, varMap, elementId, atc, atc.getAttributeValue());
-		
-		checkUpdateByAssignment(jsEngine, varMap, elementId, atc, attrIdx, numAttributes);
+
+		final String updatedElementId = checkUpdateByAssignment(jsEngine, varMap, elementId, atc, attrIdx, numAttributes);
+
+		checkRemoveByName(jsEngine, varMap, updatedElementId, atc, numAttributes);
 	}
 	
-	private void checkUpdateByAssignment(IJSEngine jsEngine, JSVariableMap varMap, String elementId, AttributeTestCase atc, int attrIdx, int numAttributes) throws JSCompileException, JSExecutionException {
+	private String checkUpdateByAssignment(IJSEngine jsEngine, JSVariableMap varMap, String elementId, AttributeTestCase atc, int attrIdx, int numAttributes) throws JSCompileException, JSExecutionException {
 		final String updatedValue = atc.getAttributeTestValues().getUpdate(atc.getAttribute());
 		final String updatedElementId;
 
@@ -141,6 +143,43 @@ public abstract class BaseDOMTest extends TestCase {
 
 		checkAttributesLength(jsEngine, varMap, updatedElementId, numAttributes);
 		checkGetAttributeByIdx(jsEngine, varMap, updatedElementId, attrIdx, atc, updatedValue);
+		checkGetAttributeByName(jsEngine, varMap, updatedElementId, atc, updatedValue);
+		checkGetAttributeByNSAndLocalName(jsEngine, varMap, updatedElementId, atc, updatedValue);
+	
+		return updatedElementId;
+	}
+	
+	private void checkRemoveByName(IJSEngine jsEngine, JSVariableMap varMap, String elementId, AttributeTestCase atc, int numAttributes) throws JSCompileException, JSExecutionException {
+		final Object element = jsEngine.evalJS("document.getElementById(\"" + elementId + "\")", varMap);
+		assertThat(element).isNotNull();
+		
+		checkAttributesLength(jsEngine, varMap, elementId, numAttributes);
+		
+		final HTMLAttribute attribute = atc.getAttribute();
+		
+		jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.removeNamedItem(\"" + attribute.getName() + "\")", varMap);
+
+		if (attribute == HTMLAttribute.ID) {
+			// removed ID attribute so cannot look up element
+			final Object obj = jsEngine.evalJS("document.getElementById(\"" + elementId + "\")", varMap);
+			assertThat(obj).isNull();
+			// TODO lookup element via navigation
+		}
+		else {
+			// TODO test cache attr in var, then remove other
+			checkAttributesLength(jsEngine, varMap, elementId, numAttributes - 1);
+	
+			// Attribute should be null now
+			Object attr;
+
+			attr = jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.getNamedItem(\"" + atc.getAttribute().getName() + "\")", varMap);
+			assertThat(attr).isNull();
+
+			attr = jsEngine.evalJS("document.getElementById(\"" + elementId + "\").attributes.getNamedItemNS(null, \"" + atc.getAttribute().getAttributeLocalName() + "\")", varMap);
+			assertThat(attr).isNull();
+
+			// TODO test cache attr in var, then remove attr, fields should still be accessible
+		}
 	}
 	
 	private void checkAttributesLength(IJSEngine jsEngine, JSVariableMap varMap, String elementId, int numAttributes) throws JSCompileException, JSExecutionException {
@@ -160,7 +199,7 @@ public abstract class BaseDOMTest extends TestCase {
 	}
 
 	private void checkGetAttributeByNSAndLocalName(IJSEngine jsEngine, JSVariableMap varMap, String elementId, AttributeTestCase atc, String attributeValue) throws JSCompileException, JSExecutionException {
-		checkGetAttributeByJS(jsEngine, varMap, "document.getElementById(\"" + elementId + "\").attributes.getNamedItemNS(null, \"" + atc.getAttribute().getName() + "\")", atc, attributeValue);
+		checkGetAttributeByJS(jsEngine, varMap, "document.getElementById(\"" + elementId + "\").attributes.getNamedItemNS(null, \"" + atc.getAttribute().getAttributeLocalName() + "\")", atc, attributeValue);
 	}
 
 	private void checkGetAttributeByJS(IJSEngine jsEngine, JSVariableMap varMap, String js, AttributeTestCase atc, String attributeValue) throws JSCompileException, JSExecutionException {
