@@ -5,14 +5,14 @@ import java.util.List;
 
 import com.test.web.ui.common.IUIWindow;
 
-public class BrowserWindow<HTML_ELEMENT, CSS_ELEMENT> {
+public class BrowserWindow<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_ELEMENT> {
 
 	private final IUIWindow uiWindow;
 	
 	// One or more browser tabs, if only one then we will not show tabs in the UI but that is handled elsewhere
-	private final List<BrowserTab<HTML_ELEMENT, CSS_ELEMENT>> tabs;
+	private final List<BrowserTab<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_ELEMENT>> tabs;
 	
-	BrowserWindow(IUIWindow uiWindow, BrowserTab<HTML_ELEMENT, CSS_ELEMENT> initialTab) {
+	BrowserWindow(IUIWindow uiWindow, BrowserTab<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_ELEMENT> initialTab) {
 		
 		if (uiWindow == null) {
 			throw new IllegalArgumentException("uiWindow == null");

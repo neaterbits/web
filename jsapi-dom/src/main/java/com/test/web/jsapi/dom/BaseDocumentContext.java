@@ -11,11 +11,11 @@ import com.test.web.document.html.common.HTMLElementListener;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.document.html.common.enums.LinkRelType;
 
-abstract class BaseDocumentContext<ELEMENT> implements IDocument<ELEMENT> {
+abstract class BaseDocumentContext<ELEMENT, ATTRIBUTE> implements IDocument<ELEMENT, ATTRIBUTE> {
 	
-	final IDocument<ELEMENT> delegate;
+	final IDocument<ELEMENT, ATTRIBUTE> delegate;
 	
-	public BaseDocumentContext(IDocument<ELEMENT> delegate) {
+	public BaseDocumentContext(IDocument<ELEMENT, ATTRIBUTE> delegate) {
 		if (delegate == null) {
 			throw new IllegalArgumentException("delegate == null");
 		}
@@ -34,18 +34,28 @@ abstract class BaseDocumentContext<ELEMENT> implements IDocument<ELEMENT> {
 	}
 
 	@Override
+	public void setAttributeValue(ELEMENT element, ATTRIBUTE attribute, String value) {
+		delegate.setAttributeValue(element, attribute, value);
+	}
+
+	@Override
 	public final ELEMENT getParentElement(ELEMENT element) {
 		return delegate.getParentElement(element);
 	}
 	
 	@Override
-	public int getIdxOfAttributeWithName(ELEMENT element, String name) {
+	public ATTRIBUTE getIdxOfAttributeWithName(ELEMENT element, String name) {
 		return delegate.getIdxOfAttributeWithName(element, name);
 	}
 
 	@Override
-	public final int getIdxOfAttributeWithNameNS(ELEMENT element, String namespaceURI, String localName) {
+	public final ATTRIBUTE getIdxOfAttributeWithNameNS(ELEMENT element, String namespaceURI, String localName) {
 		return delegate.getIdxOfAttributeWithNameNS(element, namespaceURI, localName);
+	}
+
+	@Override
+	public ATTRIBUTE getAttribute(ELEMENT element, int idx) {
+		return delegate.getAttribute(element, idx);
 	}
 
 	@Override
@@ -54,8 +64,8 @@ abstract class BaseDocumentContext<ELEMENT> implements IDocument<ELEMENT> {
 	}
 
 	@Override
-	public final String getAttributeName(ELEMENT element, int idx) {
-		return delegate.getAttributeName(element, idx);
+	public final String getAttributeName(ELEMENT element, ATTRIBUTE attribute) {
+		return delegate.getAttributeName(element, attribute);
 	}
 
 	@Override
@@ -64,23 +74,23 @@ abstract class BaseDocumentContext<ELEMENT> implements IDocument<ELEMENT> {
 	}
 
 	@Override
-	public final String getAttributeNamespaceURI(ELEMENT element, int idx) {
-		return delegate.getAttributeNamespaceURI(element, idx);
+	public final String getAttributeNamespaceURI(ELEMENT element, ATTRIBUTE attribute) {
+		return delegate.getAttributeNamespaceURI(element, attribute);
 	}
 
 	@Override
-	public final String getAttributeLocalName(ELEMENT element, int idx) {
-		return delegate.getAttributeLocalName(element, idx);
+	public final String getAttributeLocalName(ELEMENT element, ATTRIBUTE attribute) {
+		return delegate.getAttributeLocalName(element, attribute);
 	}
 
 	@Override
-	public final String getAttributePrefix(ELEMENT element, int idx) {
-		return delegate.getAttributePrefix(element, idx);
+	public final String getAttributePrefix(ELEMENT element, ATTRIBUTE attribute) {
+		return delegate.getAttributePrefix(element, attribute);
 	}
 
 	@Override
-	public final String getAttributeValue(ELEMENT element, int idx) {
-		return delegate.getAttributeValue(element, idx);
+	public final String getAttributeValue(ELEMENT element, ATTRIBUTE attribute) {
+		return delegate.getAttributeValue(element, attribute);
 	}
 
 	@Override
@@ -164,12 +174,12 @@ abstract class BaseDocumentContext<ELEMENT> implements IDocument<ELEMENT> {
 	}
 
 	@Override
-	public final <PARAM> void iterate(IElementListener<ELEMENT, HTMLElement, IDocument<ELEMENT>, PARAM> listener, PARAM param) {
+	public final <PARAM> void iterate(IElementListener<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>, PARAM> listener, PARAM param) {
 		delegate.iterate(listener, param);
 	}
 
 	@Override
-	public final <PARAM> void iterateFrom(ELEMENT element, IElementListener<ELEMENT, HTMLElement, IDocument<ELEMENT>, PARAM> listener, PARAM param) {
+	public final <PARAM> void iterateFrom(ELEMENT element, IElementListener<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>, PARAM> listener, PARAM param) {
 		delegate.iterateFrom(element, listener, param);
 	}
 

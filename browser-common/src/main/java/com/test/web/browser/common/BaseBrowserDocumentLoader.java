@@ -35,8 +35,15 @@ import com.test.web.render.html.IDToOffsetList;
 import com.test.web.render.html.IRenderDebugListener;
 import com.test.web.render.html.PrintlnRenderDebugListener;
 
-public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends Tokenizer, DOCUMENT extends IDocumentParserListener<HTML_ELEMENT, TOKENIZER>, CSS_ELEMENT, STYLE_DOCUMENT>
-		implements IBrowserDocumentLoader<HTML_ELEMENT, CSS_ELEMENT> {
+public abstract class BaseBrowserDocumentLoader<
+				HTML_ELEMENT,
+				HTML_ATTRIBUTE,
+				TOKENIZER extends Tokenizer,
+				DOCUMENT extends IDocumentParserListener<HTML_ELEMENT, HTML_ATTRIBUTE, TOKENIZER>,
+				CSS_ELEMENT,
+				STYLE_DOCUMENT>
+
+		implements IBrowserDocumentLoader<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_ELEMENT> {
 
 	private final IDelayedRendererFactory renderFactory;
 	private final IBufferRendererFactory bufferRenderFactory;
@@ -70,11 +77,11 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 	}
 
 	@Override
-	public final PageLayout<HTML_ELEMENT> layout(IDocument<HTML_ELEMENT> document, int viewPortWidth, int viewPortHeight, IRenderer displayRenderer) {
+	public final PageLayout<HTML_ELEMENT> layout(IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> document, int viewPortWidth, int viewPortHeight, IRenderer displayRenderer) {
 
 		final ViewPort viewPort = new ViewPort(viewPortWidth, viewPortHeight);
 		
-		final LayoutAlgorithm<HTML_ELEMENT, HTMLElement, IDocument<HTML_ELEMENT>, TOKENIZER> layoutAgorithm
+		final LayoutAlgorithm<HTML_ELEMENT, HTMLElement, IDocument<HTML_ELEMENT, HTML_ATTRIBUTE>, TOKENIZER> layoutAgorithm
 			= new LayoutAlgorithm<>(
 				textExtent,
 				renderFactory,
@@ -95,7 +102,7 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 
 		final PageLayout<HTML_ELEMENT> pageLayout = new PageLayout<>();
 		
-		final DisplayRenderer<HTML_ELEMENT> renderer = new DisplayRenderer<>(
+		final DisplayRenderer<HTML_ELEMENT, HTML_ATTRIBUTE> renderer = new DisplayRenderer<>(
 				viewPort,
 				pageLayout,
 				displayRenderer,
@@ -103,9 +110,9 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 				new IDToOffsetList(), // TODO cache between invocations?
 				debugListeners.getDisplayRendererListener());
 		
-		final HTMLRenderer<HTML_ELEMENT> htmlRenderer = new HTMLRenderer<>(renderDebugListener, renderer);
+		final HTMLRenderer<HTML_ELEMENT, HTML_ATTRIBUTE> htmlRenderer = new HTMLRenderer<>(renderDebugListener, renderer);
 		
-		final HTMLLayoutContext<HTML_ELEMENT> layoutContext = new HTMLLayoutContext<>(cssContext);
+		final HTMLLayoutContext<HTML_ELEMENT, HTML_ATTRIBUTE> layoutContext = new HTMLLayoutContext<>(cssContext);
 		
 		layoutAgorithm.layout(document, viewPort, layoutContext, pageLayout, htmlRenderer);
 
@@ -134,7 +141,7 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 			
 			final PageLayout<HTML_ELEMENT> pageLayout = new PageLayout<>();
 			
-			final DisplayRenderer<HTML_ELEMENT> renderer = new DisplayRenderer<>(
+			final DisplayRenderer<HTML_ELEMENT, HTML_ATTRIBUTE> renderer = new DisplayRenderer<>(
 					viewPort,
 					pageLayout,
 					displayRenderer,
@@ -143,11 +150,11 @@ public abstract class BaseBrowserDocumentLoader<HTML_ELEMENT, TOKENIZER extends 
 					debugListeners.getDisplayRendererListener());
 			
 			// HTML renderer that will render to display
-			final HTMLElementListener<HTML_ELEMENT, IElementRenderLayout> renderListener = new HTMLRenderer<>(new PrintlnRenderDebugListener(System.out), renderer);
+			final HTMLElementListener<HTML_ELEMENT, HTML_ATTRIBUTE, IElementRenderLayout> renderListener = new HTMLRenderer<>(new PrintlnRenderDebugListener(System.out), renderer);
 			
 			// This parser listener will look for external dependencies and add those to the loadqueue,
 			// it will also forward parser events to the DOM and to the layout algorithm
-			final DependencyCollectingParserListener<HTML_ELEMENT, TOKENIZER> parserListener
+			final DependencyCollectingParserListener<HTML_ELEMENT, HTML_ATTRIBUTE, TOKENIZER> parserListener
 				= new DependencyCollectingParserListener<>(
 						url, // TODO handle redirects eg to index.html
 						document,

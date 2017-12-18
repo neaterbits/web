@@ -23,9 +23,9 @@ import junit.framework.TestCase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> extends TestCase {
+public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE, TOKENIZER extends Tokenizer> extends TestCase {
 	
-	protected abstract IDocument<HTML_ELEMENT> parseDocument(String html) throws ParserException;
+	protected abstract IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> parseDocument(String html) throws ParserException;
 	
 	public void testLayout() throws IOException, ParserException {
 		
@@ -35,7 +35,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"</div>\n"
 		);
 	
-		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 		final HTML_ELEMENT div = doc.getElementById("element_id");
@@ -56,7 +56,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"</div>\n"
 		);
 	
-		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -86,7 +86,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"</div>\n"
 		);
 	
-		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -108,7 +108,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"</div>\n"
 		);
 	
-		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -129,7 +129,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"</div>\n"
 		);
 	
-		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -151,7 +151,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"</div>\n"
 		);
 	
-		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -172,7 +172,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"</div>\n"
 		);
 	
-		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -194,7 +194,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 				"</div>\n"
 		);
 	
-		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -210,12 +210,12 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 	
 	private PageLayer<HTML_ELEMENT> layout(String html, int viewPortWidth, int viewPortHeight) throws ParserException {
 
-		final IDocument<HTML_ELEMENT> doc = parseDocument(html);
+		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
 	
 		return layout(doc, viewPortWidth, viewPortHeight);
 	}
 
-	private PageLayer<HTML_ELEMENT> layout(IDocument<HTML_ELEMENT> doc, int viewPortWidth, int viewPortHeight) {
+	private PageLayer<HTML_ELEMENT> layout(IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc, int viewPortWidth, int viewPortHeight) {
 		
 		final IDelayedRendererFactory renderFactory = new QueueRendererFactory(null);
 		
@@ -223,7 +223,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, TOKENIZER extends Tokenizer> 
 		
 		final ITextExtent textExtent = new MockTextExtent();
 		
-		final LayoutAlgorithm<HTML_ELEMENT, HTMLElement, IDocument<HTML_ELEMENT>, TOKENIZER> layoutAgorithm = new LayoutAlgorithm<>(
+		final LayoutAlgorithm<HTML_ELEMENT, HTMLElement, IDocument<HTML_ELEMENT, HTML_ATTRIBUTE>, TOKENIZER> layoutAgorithm = new LayoutAlgorithm<>(
 				textExtent,
 				renderFactory,
 				new FontSettings(),

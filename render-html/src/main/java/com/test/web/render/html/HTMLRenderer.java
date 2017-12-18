@@ -10,17 +10,17 @@ import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IMarkRenderOperations;
 import com.test.web.render.common.IRenderOperations;
 
-public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElementRenderLayout>{
+public class HTMLRenderer<ELEMENT, ATTRIBUTE> implements HTMLElementListener<ELEMENT, ATTRIBUTE, IElementRenderLayout>{
 
 	private final IRenderDebugListener debugListener;
-	private final HTMLElementListener<ELEMENT, IElementLayout> listener; // typically display renderer
+	private final HTMLElementListener<ELEMENT, ATTRIBUTE, IElementLayout> listener; // typically display renderer
 
 	// in case we have to render in onElementEnd()
 	private int [] delayedRenderMarks;
 	
 	private int depth;
 	
-	public HTMLRenderer(IRenderDebugListener debugListener, HTMLElementListener<ELEMENT, IElementLayout> listener) {
+	public HTMLRenderer(IRenderDebugListener debugListener, HTMLElementListener<ELEMENT, ATTRIBUTE, IElementLayout> listener) {
 		this.debugListener = debugListener;
 		this.listener = listener;
 		
@@ -29,7 +29,7 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 	}
 
 	@Override
-	public void onElementStart(IDocument<ELEMENT> document, ELEMENT element, IElementRenderLayout layout) {
+	public void onElementStart(IDocument<ELEMENT, ATTRIBUTE> document, ELEMENT element, IElementRenderLayout layout) {
 		
 		if (debugListener != null) {
 			debugListener.onElementStart(depth, document.getType(element), layout);
@@ -64,7 +64,7 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 	}
 
 	@Override
-	public void onElementEnd(IDocument<ELEMENT> document, ELEMENT element, IElementRenderLayout layout) {
+	public void onElementEnd(IDocument<ELEMENT, ATTRIBUTE> document, ELEMENT element, IElementRenderLayout layout) {
 
 		-- depth;
 
@@ -94,7 +94,7 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 	}
 
 	@Override
-	public void onText(IDocument<ELEMENT> document, ELEMENT element, String text, IElementRenderLayout layout) {
+	public void onText(IDocument<ELEMENT, ATTRIBUTE> document, ELEMENT element, String text, IElementRenderLayout layout) {
 
 		if (debugListener != null) {
 			debugListener.onText(depth, layout, text);
@@ -107,7 +107,7 @@ public class HTMLRenderer<ELEMENT> implements HTMLElementListener<ELEMENT, IElem
 		}
 	}
 	
-	private void renderElement(IDocument<ELEMENT> document, ELEMENT element, IElementRenderLayout layout) {
+	private void renderElement(IDocument<ELEMENT, ATTRIBUTE> document, ELEMENT element, IElementRenderLayout layout) {
 		
 		final IDelayedRenderer renderer = layout.getRenderer();
 		

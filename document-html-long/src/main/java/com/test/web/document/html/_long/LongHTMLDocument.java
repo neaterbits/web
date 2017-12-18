@@ -48,7 +48,7 @@ import com.test.web.types.Debug;
 
 public class LongHTMLDocument extends LongBuffersIntegerIndex
 
-	implements IDocumentParserListener<Integer, LongTokenizer> {
+	implements IDocumentParserListener<Integer, Integer, LongTokenizer> {
 
 	private static final boolean CHECK_OVERWRITE = true;
 	private static final boolean CHECK_IS_CONTAINER = true;
@@ -591,18 +591,18 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 	
 	@Override
-	public <PARAM> void iterate(IElementListener<Integer, HTMLElement, IDocument<Integer>, PARAM> listener, PARAM param) {
+	public <PARAM> void iterate(IElementListener<Integer, HTMLElement, IDocument<Integer, Integer>, PARAM> listener, PARAM param) {
 		iterate(INITIAL_ELEMENT, listener, param, INITIAL_ELEMENT,  true);
 	}
 	
 	@Override
-	public <PARAM> void iterateFrom(Integer element, IElementListener<Integer, HTMLElement, IDocument<Integer>, PARAM> listener, PARAM param) {
+	public <PARAM> void iterateFrom(Integer element, IElementListener<Integer, HTMLElement, IDocument<Integer, Integer>, PARAM> listener, PARAM param) {
 		iterate(INITIAL_ELEMENT, listener, param, element, false);
 	}
 	
 	private <PARAM> boolean iterate(
 			int curElement,
-			IElementListener<Integer, HTMLElement, IDocument<Integer>, PARAM> listener,
+			IElementListener<Integer, HTMLElement, IDocument<Integer, Integer>, PARAM> listener,
 			PARAM param,
 			int startCallListenerElement,
 			boolean callListener) {
@@ -816,47 +816,54 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 	
 	@Override
-	public int getIdxOfAttributeWithName(Integer element, String name) {
+	public Integer getIdxOfAttributeWithName(Integer element, String name) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 
 	@Override
-	public int getIdxOfAttributeWithNameNS(Integer element, String namespaceURI, String localName) {
+	public Integer getIdxOfAttributeWithNameNS(Integer element, String namespaceURI, String localName) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
-
-	@Override
-	public String getAttributeName(Integer element, int idx) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 	@Override
-	public String getAttributeLocalName(Integer element, int idx) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getAttributeNamespaceURI(Integer element, int idx) {
+	public Integer getAttribute(Integer element, int idx) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 
 	@Override
-	public String getAttributePrefix(Integer element, int idx) {
+	public String getAttributeName(Integer element, Integer attribute) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getAttributeLocalName(Integer element, Integer attribute) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getAttributeNamespaceURI(Integer element, Integer attribute) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 
 	@Override
-	public String getAttributeValue(Integer element, int idx) {
+	public String getAttributePrefix(Integer element, Integer attribute) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public String getAttributeValue(Integer element, Integer attribute) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -868,6 +875,12 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		
 	}
 
+
+	@Override
+	public void setAttributeValue(Integer element, Integer attribute, String value) {
+		// TODO Auto-generated method stub
+		
+	}
 
 
 	@Override

@@ -1,22 +1,24 @@
 package com.test.web.document.common;
 
-public interface IDocumentAttributeGetters<ELEMENT> {
+public interface IDocumentAttributeGetters<ELEMENT, ATTRIBUTE> {
 
 	int getNumAttributes(ELEMENT element);
 
 	// -1 if not found
-	int getIdxOfAttributeWithNameNS(ELEMENT element, String namespaceURI, String localName);
+	ATTRIBUTE getIdxOfAttributeWithNameNS(ELEMENT element, String namespaceURI, String localName);
 
-	int getIdxOfAttributeWithName(ELEMENT element, String name);
-
-	String getAttributeName(ELEMENT element, int idx);
+	ATTRIBUTE getIdxOfAttributeWithName(ELEMENT element, String name);
 	
-	String getAttributeNamespaceURI(ELEMENT element, int idx);
+	ATTRIBUTE getAttribute(ELEMENT element, int idx);
 
-	String getAttributeLocalName(ELEMENT element, int idx);
+	String getAttributeName(ELEMENT element, ATTRIBUTE attribute);
+	
+	String getAttributeNamespaceURI(ELEMENT element, ATTRIBUTE attribute);
 
-	String getAttributePrefix(ELEMENT element, int idx);
+	String getAttributeLocalName(ELEMENT element, ATTRIBUTE attribute);
 
-	String getAttributeValue(ELEMENT element, int idx);
+	String getAttributePrefix(ELEMENT element, ATTRIBUTE attribute);
+
+	String getAttributeValue(ELEMENT element, ATTRIBUTE attribute);
 	
 }

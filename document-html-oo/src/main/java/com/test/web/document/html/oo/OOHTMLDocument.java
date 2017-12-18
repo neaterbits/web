@@ -32,7 +32,7 @@ import com.test.web.parse.html.IDocumentParserListener;
 import com.test.web.parse.html.IHTMLParserListener;
 import com.test.web.parse.html.IHTMLStyleParserListener;
 
-public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOTokenizer>{
+public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOAttribute, OOTokenizer>{
 
 	private final IDocumentListener<OOTagElement> listener;
 	private final List<OOTagElement> stack;
@@ -230,19 +230,19 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 	}
 
 	@Override
-	public <PARAM> void iterate(IElementListener<OOTagElement, HTMLElement, IDocument<OOTagElement>, PARAM> listener, PARAM param) {
+	public <PARAM> void iterate(IElementListener<OOTagElement, HTMLElement, IDocument<OOTagElement, OOAttribute>, PARAM> listener, PARAM param) {
 		iterate(null, rootElement, listener, param, rootElement,  true);
 	}
 	
 	@Override
-	public <PARAM> void iterateFrom(OOTagElement element, IElementListener<OOTagElement, HTMLElement, IDocument<OOTagElement>, PARAM> listener, PARAM param) {
+	public <PARAM> void iterateFrom(OOTagElement element, IElementListener<OOTagElement, HTMLElement, IDocument<OOTagElement, OOAttribute>, PARAM> listener, PARAM param) {
 		iterate(null, rootElement, listener, param, element, false);
 	}
 	
 	private <PARAM> boolean iterate(
 			OOTagElement containerElement,
 			OODocumentElement curElement,
-			IElementListener<OOTagElement, HTMLElement, IDocument<OOTagElement>, PARAM> listener,
+			IElementListener<OOTagElement, HTMLElement, IDocument<OOTagElement, OOAttribute>, PARAM> listener,
 			PARAM param,
 			OODocumentElement startCallListenerElement,
 			boolean callListener) {
@@ -775,43 +775,53 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOT
 	}
 	
 	@Override
-	public int getIdxOfAttributeWithName(OOTagElement element, String name) {
-		return element.getIdxOfAttributeWithName(name);
+	public OOAttribute getIdxOfAttributeWithName(OOTagElement element, String name) {
+		return element.getAttributeWithName(name);
 	}
 
 	@Override
-	public int getIdxOfAttributeWithNameNS(OOTagElement element, String namespaceURI, String localName) {
-		return element.getIdxOfAttributeWithNameNS(namespaceURI, localName);
+	public OOAttribute getIdxOfAttributeWithNameNS(OOTagElement element, String namespaceURI, String localName) {
+		return element.getAttributeWithNameNS(namespaceURI, localName);
 	}
 
 	@Override
-	public String getAttributeName(OOTagElement element, int idx) {
-		return element.getAttributeName(idx);
+	public OOAttribute getAttribute(OOTagElement element, int idx) {
+		return element.getAttribute(idx);
 	}
 
 	@Override
-	public String getAttributeNamespaceURI(OOTagElement element, int idx) {
-		return element.getAttributeNamespaceURI(idx);
+	public String getAttributeName(OOTagElement element, OOAttribute attribute) {
+		return attribute.getName();
 	}
 
 	@Override
-	public String getAttributeLocalName(OOTagElement element, int idx) {
-		return element.getAttributeLocalName(idx);
+	public String getAttributeNamespaceURI(OOTagElement element, OOAttribute attribute) {
+		return attribute.getNamespaceURI();
 	}
 
 	@Override
-	public String getAttributePrefix(OOTagElement element, int idx) {
-		return element.getAttributePrefix(idx);
+	public String getAttributeLocalName(OOTagElement element, OOAttribute attribute) {
+		return attribute.getLocalName();
 	}
 
 	@Override
-	public String getAttributeValue(OOTagElement element, int idx) {
-		return element.getAttributeValue(idx);
+	public String getAttributePrefix(OOTagElement element, OOAttribute attribute) {
+		return attribute.getPrefix();
+	}
+
+	@Override
+	public String getAttributeValue(OOTagElement element, OOAttribute attribute) {
+		return element.getAttributeValue(attribute);
 	}
 
 	@Override
 	public void setAttributeValue(OOTagElement element, int idx, String value) {
 		triggerUIUpdates(element, element.setAttributeValue(idx, value, state));
+	}
+	
+	@Override
+	public void setAttributeValue(OOTagElement element, OOAttribute attribute, String value) {
+		triggerUIUpdates(element, element.setAttributeValue(attribute, value, state));
 	}
 
 	@Override

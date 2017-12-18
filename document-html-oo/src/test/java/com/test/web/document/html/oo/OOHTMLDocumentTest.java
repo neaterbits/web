@@ -12,7 +12,7 @@ import com.test.web.document.html.test.DocumentParser;
 import com.test.web.io.common.CharInput;
 import com.test.web.parse.common.ParserException;
 
-public class OOHTMLDocumentTest extends BaseHTMLDocumentTest<OOTagElement, OOHTMLDocument>{
+public class OOHTMLDocumentTest extends BaseHTMLDocumentTest<OOTagElement, OOAttribute, OOHTMLDocument>{
 
 	private OOCSSDocument parseCSS(CharInput charInput, CSSContext<OOCSSElement> cssContext) throws IOException, ParserException {
 		

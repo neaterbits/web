@@ -26,10 +26,15 @@ import com.test.web.types.StringUtils;
 
 public abstract class OOTagElement extends OODocumentElement {
 
+	/*
 	private HTMLAttribute [] standardAttributes;
 	private int numStandardAttributes;
 	private List<OOCustomAttribute> customAttributes;
+	*/
 	
+	// All added attributes
+	private OOAttribute [] attributes;
+	private int numAttributes; // So can reuse elements and not reallocate all the time
 
 	// The standard attributes
 	private String id;
@@ -54,9 +59,11 @@ public abstract class OOTagElement extends OODocumentElement {
 	abstract HTMLElement getType();
 	
 	public OOTagElement() {
+		/*
 		this.standardAttributes = new HTMLAttribute[10]; // sufficient in most cases
 		this.numStandardAttributes = 0;
 		this.customAttributes = null;
+		*/
 	}
 
 	final boolean isAttributeSet(HTMLAttribute attribute) {
@@ -74,8 +81,23 @@ public abstract class OOTagElement extends OODocumentElement {
 		clearAttribute(attrIdx, attribute);
 	}
 
+	private void removeAttributeAt(int attrIdx) {
+		for (int i = attrIdx + 1; i < numAttributes; ++ i) {
+			attributes[i - 1] = attributes[i];
+		}
+
+		-- this.numAttributes;
+	}
+	
 	private void clearAttribute(int attrIdx, HTMLAttribute attribute) {
-		
+		if (attributes[attrIdx].getStandard() != attribute) {
+			throw new IllegalStateException("Not set: " + attribute);
+		}
+
+		// Clear the attribute value by removing from list of non-standard attrs
+		removeAttributeAt(attrIdx);
+
+		/*
 		if (standardAttributes[attrIdx] != attribute) {
 			throw new IllegalStateException("Not set: " + attribute);
 		}
@@ -86,6 +108,7 @@ public abstract class OOTagElement extends OODocumentElement {
 		}
 
 		-- this.numStandardAttributes;
+		*/
 	}
 	
 	final String setOrClearAttribute(HTMLAttribute attribute, String value) {
@@ -178,12 +201,32 @@ public abstract class OOTagElement extends OODocumentElement {
 		if (isAttributeSet(attribute)) {
 			throw new IllegalStateException("attribute " + attribute + " already set");
 		}
+		
+		/*
 
 		if (numStandardAttributes == standardAttributes.length) {
 			this.standardAttributes = Arrays.copyOf(standardAttributes, standardAttributes.length * 2);
 		}
 		
 		standardAttributes[numStandardAttributes ++] = attribute;
+		*/
+		
+		addAttribute(new OOAttribute(attribute));
+	}
+	
+	private void addAttribute(OOAttribute attribute) {
+		if (attribute == null) {
+			throw new IllegalArgumentException("attribute == null");
+		}
+
+		if (attributes == null) {
+			attributes = new OOAttribute[10];
+		}
+		else if (numAttributes == attributes.length) {
+			attributes = Arrays.copyOf(attributes, attributes.length * 2);
+		}
+
+		attributes[numAttributes ++] = attribute;
 	}
 	
 	final String getId() {
@@ -381,6 +424,10 @@ public abstract class OOTagElement extends OODocumentElement {
 
 	
 	final int getNumAttributes() {
+
+		return attributes == null ? 0 : numAttributes;
+
+		/*
 		int num = numStandardAttributes;
 		
 		if (customAttributes != null) {
@@ -388,14 +435,39 @@ public abstract class OOTagElement extends OODocumentElement {
 		}
 		
 		return num;
+		*/
 	}
 	
-	final int getIdxOfAttributeWithName(String name) {
-
-		// Match against standard attributes first
-		int idx;
+	final OOAttribute getAttributeWithName(String name) {
+		final int idx = getIdxOfAttributeWithName(name);
 		
+		return idx < 0 ? null : attributes[idx];
+	}
+
+	final OOAttribute getAttribute(int idx) {
+		return attributes[idx];
+	}
+
+	final OOAttribute getAttributeWithNameNS(String namespaceURI, String localName) {
+		final int idx = getIdxOfAttributeWithNameNS(namespaceURI, localName);
+		
+		return idx < 0 ? null : attributes[idx];
+	}
+
+	private final int getIdxOfAttributeWithName(String name) {
 		int found = -1;
+		
+		if (attributes != null) {
+			for (int i = 0; i < numAttributes; ++ i) {
+				if (attributes[i].matches(name)) {
+					found = i;
+					break;
+				}
+			}
+		}
+	
+		/*
+		int idx;
 		
 		for (idx = 0; idx < numStandardAttributes; ++ idx) {
 			final HTMLAttribute attribute = standardAttributes[idx];
@@ -427,17 +499,27 @@ public abstract class OOTagElement extends OODocumentElement {
 				++ idx;
 			}
 		}
+		*/
 
-		return idx;
+		return found;
 	}
 
-	final int getIdxOfAttributeWithNameNS(String namespaceURI, String localName) {
+	private int getIdxOfAttributeWithNameNS(String namespaceURI, String localName) {
 
-		// Match against standard attributes first
-		int idx;
-		
 		int found = -1;
 		
+		if (attributes != null) {
+			for (int i = 0; i < numAttributes; ++ i) {
+				if (attributes[i].matches(namespaceURI, localName)) {
+					found = i;
+					break;
+				}
+			}
+		}
+		
+		/*
+		int idx;
+
 		for (idx = 0; idx < numStandardAttributes; ++ idx) {
 			final HTMLAttribute attribute = standardAttributes[idx];
 			
@@ -459,11 +541,14 @@ public abstract class OOTagElement extends OODocumentElement {
 				++ idx;
 			}
 		}
+		*/
 
-		return idx;
+		return found;
 	}
 
-	final String getAttributeName(int idx) {
+	private final String getAttributeName(int idx) {
+		return attributes[idx].getName();
+		/*
 		final String name;
 		
 		if (idx >= numStandardAttributes) {
@@ -475,9 +560,12 @@ public abstract class OOTagElement extends OODocumentElement {
 		}
 		
 		return name;
+		*/
 	}
 
 	final String getAttributeLocalName(int idx) {
+		return attributes[idx].getLocalName();
+		/*
 		final String name;
 		
 		if (idx >= numStandardAttributes) {
@@ -489,9 +577,12 @@ public abstract class OOTagElement extends OODocumentElement {
 		}
 		
 		return name;
+		*/
 	}
 
 	final String getAttributeNamespaceURI(int idx) {
+		return attributes[idx].getNamespaceURI();
+		/*
 		final String name;
 		
 		if (idx >= numStandardAttributes) {
@@ -503,10 +594,13 @@ public abstract class OOTagElement extends OODocumentElement {
 		}
 		
 		return name;
+		*/
 	}
 	
 
 	final String getAttributePrefix(int idx) {
+		return attributes[idx].getPrefix();
+		/*
 		final String name;
 		
 		if (idx >= numStandardAttributes) {
@@ -518,9 +612,18 @@ public abstract class OOTagElement extends OODocumentElement {
 		}
 		
 		return name;
+		*/
 	}
 	
 	final String getAttributeValue(int idx) {
+		
+		final OOAttribute ooAttribute = attributes[idx];
+		
+		return ooAttribute.getStandard() != null
+				? getStandardAttributeValue(ooAttribute.getStandard())
+				: ooAttribute.getCustom().getValue();
+		
+		/*
 		final String value;
 		
 		if (idx >= numStandardAttributes) {
@@ -532,6 +635,7 @@ public abstract class OOTagElement extends OODocumentElement {
 		}
 		
 		return value;
+		*/
 	}
 	
 	String getStandardAttributeValue(HTMLAttribute attribute) {
@@ -632,9 +736,28 @@ public abstract class OOTagElement extends OODocumentElement {
 	}
 
 	final HTMLAttribute setAttributeValue(int idx, String value, DocumentState<OOTagElement> state) {
+
+		final OOAttribute ooAttribute = attributes[idx];
 		
+		return setAttributeValue(ooAttribute, value, state);
+	}
+	
+	final HTMLAttribute setAttributeValue(OOAttribute ooAttribute, String value, DocumentState<OOTagElement> state) {
+
 		final HTMLAttribute changed;
+			
+		if (ooAttribute.getCustom() != null) {
+			changed = null;
+			
+			ooAttribute.getCustom().setValue(value);
+		}
+		else {
+			changed = ooAttribute.getStandard();
+
+			setStandardAttributeValue(changed, value, state);
+		}
 		
+		/*
 		if (idx >= numStandardAttributes) {
 			// custom one
 			customAttributes.get(idx).setValue(value);
@@ -646,6 +769,7 @@ public abstract class OOTagElement extends OODocumentElement {
 			
 			setStandardAttributeValue(changed, value, state);
 		}
+		*/
 	
 		return changed;
 	}
@@ -833,14 +957,37 @@ public abstract class OOTagElement extends OODocumentElement {
 		
 		int idx = -1;
 		
+		if (attributes != null) {
+			for (int i = 0; i < numAttributes; ++ i) {
+				final OOAttribute ooAttribute = attributes[i];
+				
+				if (ooAttribute.getStandard() != null && ooAttribute.getStandard() == attribute) {
+					idx = i;
+					break;
+				}
+			}
+		}
+		
+		/*
 		for (int i = 0; i < numStandardAttributes; ++ i) {
 			if (standardAttributes[i] == attribute) {
 				idx = i;
 				break;
 			}
 		}
+		*/
 		
 		return idx;
+	}
+	
+	String getAttributeValue(OOAttribute attribute) {
+		if (attribute == null) {
+			throw new IllegalArgumentException("attribute == null");
+		}
+
+		return attribute.getStandard() != null
+				? getStandardAttributeValue(attribute.getStandard())
+				: attribute.getCustom().getValue();
 	}
 
 	final HTMLAttribute removeAttribute(String namespaceURI, String name, DocumentState<OOTagElement> state) {
@@ -849,6 +996,19 @@ public abstract class OOTagElement extends OODocumentElement {
 		final HTMLAttribute removed;
 		
 		if (idx >= 0) {
+			final OOAttribute ooAttribute = attributes[idx];
+			
+			if (ooAttribute.getStandard() != null) {
+				removed = ooAttribute.getStandard();
+				
+				removeStandardAttribute(removed, state);
+			}
+			else {
+				removeAttributeAt(idx);
+				
+				removed = null;
+			}
+			/*
 			if (idx < numStandardAttributes) {
 				removed = standardAttributes[idx];
 
@@ -858,6 +1018,7 @@ public abstract class OOTagElement extends OODocumentElement {
 				removed = null; // not a standard attribute but remove nonetheless
 				customAttributes.remove(idx - numStandardAttributes);
 			}
+			*/
 		}
 		else {
 			removed = null;

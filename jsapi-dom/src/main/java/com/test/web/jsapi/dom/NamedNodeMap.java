@@ -2,13 +2,13 @@ package com.test.web.jsapi.dom;
 
 import com.test.web.jsengine.common.IJSObjectAsArray;
 
-public final class NamedNodeMap<ELEMENT, DOCUMENT extends IDocumentContext<ELEMENT>>
-	extends DocumentAccess<ELEMENT, DOCUMENT>
+public final class NamedNodeMap<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEMENT, ATTRIBUTE>>
+	extends DocumentAccess<ELEMENT, ATTRIBUTE, DOCUMENT>
 	implements IJSObjectAsArray {
 
-	private final Element<ELEMENT, DOCUMENT> ownerElement;
+	private final Element<ELEMENT, ATTRIBUTE, DOCUMENT> ownerElement;
 
-	NamedNodeMap(DOCUMENT document, ELEMENT element, Element<ELEMENT, DOCUMENT> ownerElement) {
+	NamedNodeMap(DOCUMENT document, ELEMENT element, Element<ELEMENT, ATTRIBUTE, DOCUMENT> ownerElement) {
 		super(document, element);
 		
 		if (ownerElement == null) {
@@ -22,22 +22,34 @@ public final class NamedNodeMap<ELEMENT, DOCUMENT extends IDocumentContext<ELEME
 		return getDocument().getNumAttributes(getElement());
 	}
 
-	public final Attr<ELEMENT, DOCUMENT> getNamedItem(String name) {
-		final int index = getDocument().getIdxOfAttributeWithName(getElement(), name);
+	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> getNamedItem(String name) {
+		final ATTRIBUTE attribute = getDocument().getIdxOfAttributeWithName(getElement(), name);
 		
-		return index < 0 ? null : new Attr<>(getDocument(), getElement(), index, ownerElement);
+		return attribute == null ? null : new Attr<>(getDocument(), getElement(), attribute, ownerElement);
 	}
 
-	public final Attr<ELEMENT, DOCUMENT> getNamedItemNS(String namespaceURI, String localName) {
-		final int index = getDocument().getIdxOfAttributeWithNameNS(getElement(), namespaceURI, localName);
+	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> getNamedItemNS(String namespaceURI, String localName) {
+		final ATTRIBUTE attribute = getDocument().getIdxOfAttributeWithNameNS(getElement(), namespaceURI, localName);
 		
-		return index < 0 ? null : new Attr<>(getDocument(), getElement(), index, ownerElement);
+		return attribute == null ? null : new Attr<>(getDocument(), getElement(), attribute, ownerElement);
 	}
 
-	public final Attr<ELEMENT, DOCUMENT> item(int index) {
-		return index < getArrayLength()
-				? new Attr<>(getDocument(), getElement(), index, ownerElement)
-				: null;
+	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> item(int index) {
+		
+		final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> attr;
+
+		if (index < getArrayLength()) {
+			final ELEMENT element = getElement();
+			
+			final ATTRIBUTE attribute = getDocument().getAttribute(element, index);
+			
+			attr = new Attr<>(getDocument(), element, attribute, ownerElement);
+		}
+		else {
+			attr = null;
+		}
+		
+		return attr;
 	}
 	
 	@Override

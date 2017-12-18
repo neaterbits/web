@@ -6,6 +6,7 @@ import com.test.web.css.common.CSSContext;
 import com.test.web.css.oo.OOCSSDocument;
 import com.test.web.css.oo.OOCSSElement;
 import com.test.web.document.html.common.IDocument;
+import com.test.web.document.html.oo.OOAttribute;
 import com.test.web.document.html.oo.OOHTMLDocument;
 import com.test.web.document.html.oo.OOTagElement;
 import com.test.web.io.common.CharInput;
@@ -20,8 +21,8 @@ import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 
 public class OOBrowserDocumentLoader
-		extends BaseBrowserDocumentLoader<OOTagElement, OOTokenizer, OOHTMLDocument, OOCSSElement, OOCSSDocument>
-		implements IBrowserDocumentLoader<OOTagElement, OOCSSElement> {
+		extends BaseBrowserDocumentLoader<OOTagElement, OOAttribute, OOTokenizer, OOHTMLDocument, OOCSSElement, OOCSSDocument>
+		implements IBrowserDocumentLoader<OOTagElement, OOAttribute, OOCSSElement> {
 	
 	public OOBrowserDocumentLoader(IDelayedRendererFactory rendererFactory, IBufferRendererFactory bufferedRendererFactory, ITextExtent textExtent, DebugListeners debugListeners) {
 		super(rendererFactory, bufferedRendererFactory, textExtent, debugListeners);
@@ -41,7 +42,7 @@ public class OOBrowserDocumentLoader
 	}
 
 	@Override
-	public IDocument<OOTagElement> fromHTML(String html, CSSContext<OOCSSElement> cssContext) throws ParserException {
+	public IDocument<OOTagElement, OOAttribute> fromHTML(String html, CSSContext<OOCSSElement> cssContext) throws ParserException {
 		return OOHTMLDocument.parseHTMLDocument(html, charInput -> parseCSS(charInput, cssContext));
 	}
 

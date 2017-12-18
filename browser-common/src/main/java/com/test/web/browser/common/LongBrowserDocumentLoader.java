@@ -18,8 +18,8 @@ import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 
 public class LongBrowserDocumentLoader
-		extends BaseBrowserDocumentLoader<Integer, LongTokenizer, LongHTMLDocument, Integer, LongCSSDocument>
-		implements IBrowserDocumentLoader<Integer, Integer> {
+		extends BaseBrowserDocumentLoader<Integer, Integer, LongTokenizer, LongHTMLDocument, Integer, LongCSSDocument>
+		implements IBrowserDocumentLoader<Integer, Integer, Integer> {
 
 	public LongBrowserDocumentLoader(IDelayedRendererFactory rendererFactory,  IBufferRendererFactory bufferRendererFactory, ITextExtent textExtent, DebugListeners debugListeners) {
 		super(rendererFactory, bufferRendererFactory, textExtent, debugListeners);
@@ -39,7 +39,7 @@ public class LongBrowserDocumentLoader
 	}
 
 	@Override
-	public IDocument<Integer> fromHTML(String html, CSSContext<Integer> cssContext) throws ParserException {
+	public IDocument<Integer, Integer> fromHTML(String html, CSSContext<Integer> cssContext) throws ParserException {
 		return LongHTMLDocument.parseHTMLDocument(html, charInput -> parseCSS(charInput, cssContext));
 	}
 

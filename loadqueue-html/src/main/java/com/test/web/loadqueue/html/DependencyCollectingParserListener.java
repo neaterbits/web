@@ -35,16 +35,17 @@ import com.test.web.render.common.ITextExtent;
 
 public class DependencyCollectingParserListener<
 				ELEMENT,
+				ATTRIBUTE,
 				TOKENIZER extends Tokenizer>
 			implements IHTMLParserListener<ELEMENT, TOKENIZER> {
 
 	// Base URL of the document we are loading, in order to resolve URLs to externa dependencies
 	private final URL documentURL;
 	
-	private final IDocumentParserListener<ELEMENT, TOKENIZER> delegate;
+	private final IDocumentParserListener<ELEMENT, ATTRIBUTE, TOKENIZER> delegate;
 	private final ILoadQueue loadQueue;
 
-	private final LayoutAlgorithm<ELEMENT, HTMLElement, IDocument<ELEMENT>, TOKENIZER> layoutAlgorithm;
+	private final LayoutAlgorithm<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>, TOKENIZER> layoutAlgorithm;
 
 	private final IFontSettings<HTMLElement> fontSettings;
 	
@@ -61,18 +62,18 @@ public class DependencyCollectingParserListener<
 	
 	private final CSSContext<ELEMENT> cssContext;
 
-	private final LayoutState<ELEMENT, HTMLElement, IDocument<ELEMENT>>layoutState;
+	private final LayoutState<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>>layoutState;
 	
 	public DependencyCollectingParserListener(
 			URL documentURL,
-			IDocumentParserListener<ELEMENT, TOKENIZER> delegate,
+			IDocumentParserListener<ELEMENT, ATTRIBUTE, TOKENIZER> delegate,
 			ILoadQueue loadQueue,
 			ViewPort viewPort,
 			ITextExtent textExtent,
 			IDelayedRendererFactory renderFactory,
 			IFontSettings<HTMLElement> fontSettings,
 			PageLayout<ELEMENT> pageLayout,
-			HTMLElementListener<ELEMENT, IElementRenderLayout> renderListener,
+			HTMLElementListener<ELEMENT, ATTRIBUTE, IElementRenderLayout> renderListener,
 			ILayoutDebugListener<HTMLElement> layoutDebugListener) {
 
 		this.documentURL = documentURL;

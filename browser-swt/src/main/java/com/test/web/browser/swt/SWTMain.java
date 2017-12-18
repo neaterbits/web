@@ -7,6 +7,7 @@ import com.test.web.browser.common.DebugListeners;
 import com.test.web.browser.common.IBrowserDocumentLoader;
 import com.test.web.browser.common.OOBrowserDocumentLoader;
 import com.test.web.css.oo.OOCSSElement;
+import com.test.web.document.html.oo.OOAttribute;
 import com.test.web.document.html.oo.OOTagElement;
 import com.test.web.layout.algorithm.PrintlnLayoutDebugListener;
 import com.test.web.render.common.IBufferRendererFactory;
@@ -38,14 +39,14 @@ public class SWTMain {
 		final IBufferRendererFactory renderFactory = new SWTBufferRenderFactory(display);
 		final ITextExtent textExtent = new SWTTextExtent(display);
 		
-		final IBrowserDocumentLoader<OOTagElement, OOCSSElement> documentLoader
+		final IBrowserDocumentLoader<OOTagElement, OOAttribute, OOCSSElement> documentLoader
 				= new OOBrowserDocumentLoader(
 						new QueueRendererFactory(debugListeners.getRenderQueueListener()),
 						renderFactory,
 						textExtent,
 						debugListeners);
 		
-		final BrowserMain<OOTagElement, OOCSSElement> main = new BrowserMain<>(uiFactory, documentLoader);
+		final BrowserMain<OOTagElement, OOAttribute, OOCSSElement> main = new BrowserMain<>(uiFactory, documentLoader);
 		
 		main.showStartPage();
 		

@@ -3,8 +3,8 @@ package com.test.web.jsapi.dom;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class EventTarget<ELEMENT, DOCUMENT extends IDocumentContext<ELEMENT>>
-		extends DocumentAccess<ELEMENT, DOCUMENT>
+public abstract class EventTarget<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEMENT, ATTRIBUTE>>
+		extends DocumentAccess<ELEMENT, ATTRIBUTE, DOCUMENT>
 		implements IEventTarget {
 
 	private Map<ListenerKey, IEventListener> listeners;

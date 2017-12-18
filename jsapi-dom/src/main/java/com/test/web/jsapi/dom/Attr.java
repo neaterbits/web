@@ -1,43 +1,43 @@
 package com.test.web.jsapi.dom;
 
-public final class Attr<ELEMENT, DOCUMENT extends IDocumentContext<ELEMENT>>
-	extends DocumentAccess<ELEMENT, DOCUMENT> {
+public final class Attr<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEMENT, ATTRIBUTE>>
+	extends DocumentAccess<ELEMENT, ATTRIBUTE, DOCUMENT> {
 	
-	private final int idx;
-	private final Element<ELEMENT, DOCUMENT> ownerElement;
+	private final ATTRIBUTE attribute;
+	private final Element<ELEMENT, ATTRIBUTE, DOCUMENT> ownerElement;
 	
-	Attr(DOCUMENT document, ELEMENT element, int idx, Element<ELEMENT, DOCUMENT> ownerElement) {
+	Attr(DOCUMENT document, ELEMENT element, ATTRIBUTE attribute, Element<ELEMENT, ATTRIBUTE, DOCUMENT> ownerElement) {
 		super(document, element);
 
-		this.idx = idx;
+		this.attribute = attribute;
 		this.ownerElement = ownerElement;
 	}
 
 	public String getName() {
-		return getDocument().getAttributeName(getElement(), idx);
+		return getDocument().getAttributeName(getElement(), attribute);
 	}
 
 	public String getNamespaceURI() {
-		return getDocument().getAttributeNamespaceURI(getElement(), idx);
+		return getDocument().getAttributeNamespaceURI(getElement(), attribute);
 	}
 
 	public String getLocalName() {
-		return getDocument().getAttributeLocalName(getElement(), idx);
+		return getDocument().getAttributeLocalName(getElement(), attribute);
 	}
 
 	public String getPrefix() {
-		return getDocument().getAttributePrefix(getElement(), idx);
+		return getDocument().getAttributePrefix(getElement(), attribute);
 	}
 
 	public String getValue() {
-		return getDocument().getAttributeValue(getElement(), idx);
+		return getDocument().getAttributeValue(getElement(), attribute);
 	}
 
 	public void setValue(String value) {
-		getDocument().setAttributeValue(getElement(), idx, value);
+		getDocument().setAttributeValue(getElement(), attribute, value);
 	}
 
-	public Element<ELEMENT, DOCUMENT> getOwnerElement() {
+	public Element<ELEMENT, ATTRIBUTE, DOCUMENT> getOwnerElement() {
 		return ownerElement;
 	}
 }

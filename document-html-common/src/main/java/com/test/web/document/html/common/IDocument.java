@@ -16,11 +16,11 @@ import com.test.web.document.html.common.enums.LinkRelType;
  * 
  */
 
-public interface IDocument<ELEMENT>
-		extends IDocumentBase<ELEMENT, HTMLElement, IDocument<ELEMENT>>,
+public interface IDocument<ELEMENT, ATTRIBUTE>
+		extends IDocumentBase<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>>,
 					 IDocumentNavigation<ELEMENT>,
-					 IDocumentAttributeGetters<ELEMENT>,
-					 IDocumentAttributeSetters<ELEMENT>{
+					 IDocumentAttributeGetters<ELEMENT, ATTRIBUTE>,
+					 IDocumentAttributeSetters<ELEMENT, ATTRIBUTE>{
 
 	
 	public static final String DEFAULT_NAMESPACE = "http://www.w3.org/1999/xhtml";

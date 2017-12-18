@@ -1,7 +1,7 @@
 package com.test.web.jsapi.dom;
 
-public abstract class Node<ELEMENT, DOCUMENT extends IDocumentContext<ELEMENT>>
-	extends EventTarget<ELEMENT, DOCUMENT>{
+public abstract class Node<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEMENT, ATTRIBUTE>>
+	extends EventTarget<ELEMENT, ATTRIBUTE, DOCUMENT>{
 
 	Node() {
 	}

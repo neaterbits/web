@@ -1,7 +1,7 @@
 package com.test.web.jsapi.dom;
 
-public class Element<ELEMENT, DOCUMENT extends IDocumentContext<ELEMENT>>
-	extends Node<ELEMENT, DOCUMENT>{
+public class Element<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEMENT, ATTRIBUTE>>
+	extends Node<ELEMENT, ATTRIBUTE, DOCUMENT>{
 
 	
 	public Element() {
@@ -12,7 +12,7 @@ public class Element<ELEMENT, DOCUMENT extends IDocumentContext<ELEMENT>>
 		super(document, element);
 	}
 
-	public final NamedNodeMap<ELEMENT, DOCUMENT> getAttributes() {
+	public final NamedNodeMap<ELEMENT, ATTRIBUTE, DOCUMENT> getAttributes() {
 		return new NamedNodeMap<>(getDocument(), getElement(), this);
 	}
 }
