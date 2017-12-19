@@ -775,12 +775,12 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 	}
 	
 	@Override
-	public OOAttribute getIdxOfAttributeWithName(OOTagElement element, String name) {
+	public OOAttribute getAttributeWithName(OOTagElement element, String name) {
 		return element.getAttributeWithName(name);
 	}
 
 	@Override
-	public OOAttribute getIdxOfAttributeWithNameNS(OOTagElement element, String namespaceURI, String localName) {
+	public OOAttribute getAttributeWithNameNS(OOTagElement element, String namespaceURI, String localName) {
 		return element.getAttributeWithNameNS(namespaceURI, localName);
 	}
 
@@ -825,8 +825,13 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 	}
 
 	@Override
-	public OOAttribute setAttributeValue(OOTagElement element, String namespaceURI, String name, String value) {
-		return triggerUIUpdates(element, element.setAttributeValue(namespaceURI, name, value, state));
+	public OOAttribute setAttributeValue(OOTagElement element, String name, String value) {
+		return triggerUIUpdates(element, element.setAttributeValue(name, value, state));
+	}
+
+	@Override
+	public OOAttribute setAttributeValue(OOTagElement element, String namespaceURI, String localName, String value) {
+		return triggerUIUpdates(element, element.setAttributeValue(namespaceURI, localName, value, state));
 	}
 
 	@Override

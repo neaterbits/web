@@ -56,11 +56,9 @@ public final class OOAttribute {
 		final boolean matches;
 		
 		if (standard != null) {
-			matches = (namespaceURI == null || namespaceURI.equals(standard.getAttributeNamespaceURI()))
-							&& localName.equals(standard.getAttributeLocalName());
+			matches = standard.matches(namespaceURI, localName);
 		}
 		else {
-	
 			matches = StringUtils.equals(namespaceURI, custom.getNamespaceURI())
 						&& localName.equals(custom.getLocalName());
 		}

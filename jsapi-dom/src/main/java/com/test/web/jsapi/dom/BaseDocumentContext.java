@@ -43,13 +43,13 @@ abstract class BaseDocumentContext<ELEMENT, ATTRIBUTE> implements IDocument<ELEM
 	}
 	
 	@Override
-	public ATTRIBUTE getIdxOfAttributeWithName(ELEMENT element, String name) {
-		return delegate.getIdxOfAttributeWithName(element, name);
+	public ATTRIBUTE getAttributeWithName(ELEMENT element, String name) {
+		return delegate.getAttributeWithName(element, name);
 	}
 
 	@Override
-	public final ATTRIBUTE getIdxOfAttributeWithNameNS(ELEMENT element, String namespaceURI, String localName) {
-		return delegate.getIdxOfAttributeWithNameNS(element, namespaceURI, localName);
+	public final ATTRIBUTE getAttributeWithNameNS(ELEMENT element, String namespaceURI, String localName) {
+		return delegate.getAttributeWithNameNS(element, namespaceURI, localName);
 	}
 
 	@Override
@@ -58,8 +58,13 @@ abstract class BaseDocumentContext<ELEMENT, ATTRIBUTE> implements IDocument<ELEM
 	}
 
 	@Override
-	public final ATTRIBUTE setAttributeValue(ELEMENT element, String namespaceURI, String name, String value) {
-		return delegate.setAttributeValue(element, namespaceURI, name, value);
+	public ATTRIBUTE setAttributeValue(ELEMENT element, String name, String value) {
+		return delegate.setAttributeValue(element, name, value);
+	}
+
+	@Override
+	public final ATTRIBUTE setAttributeValue(ELEMENT element, String namespaceURI, String localName, String value) {
+		return delegate.setAttributeValue(element, namespaceURI, localName, value);
 	}
 
 	@Override

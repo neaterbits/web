@@ -15,4 +15,8 @@ public class Element<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEME
 	public final NamedNodeMap<ELEMENT, ATTRIBUTE, DOCUMENT> getAttributes() {
 		return new NamedNodeMap<>(getDocument(), getElement(), this);
 	}
+
+	public final void setAttribute(String name, String value) {
+		getDocument().setAttributeValue(getElement(), name, value);
+	}
 }

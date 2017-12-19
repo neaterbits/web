@@ -64,6 +64,15 @@ public abstract class BaseDOMTest extends TestCase {
 		iterateAllAttributesOfAllElements(testHelper, AttributeTest.INITIAL, atc -> checkAttributeInitial(jsEngine, atc));
 	}
 	
+	
+	public void testRemoval() {
+		final AttributeTestHelper testHelper = new AttributeTestHelper(testValues);
+		final IJSEngine jsEngine = getJSEngine();
+
+		iterateAllAttributesOfAllElements(testHelper, AttributeTest.INITIAL, atc -> checkAttributeRemoval(jsEngine, atc));
+		
+	}
+	
 	private void iterateAllAttributesOfAllElements(AttributeTestHelper testHelper, AttributeTest attributeTest, Consumer<AttributeTestCase> testCaseRunner) {
 		// Loop through all elements and their attributes
 		for (HTMLElement element : HTMLElement.values()) {
@@ -181,6 +190,44 @@ public abstract class BaseDOMTest extends TestCase {
 			// TODO test cache attr in var, then remove attr, fields should still be accessible
 		}
 	}
+	
+	private void checkAttributeRemoval(IJSEngine jsEngine, AttributeTestCase atc) {
+		try {
+			checkAttributeRemovalEx(jsEngine, atc);
+		} catch (ParserException | JSCompileException | JSExecutionException ex) {
+			throw new IllegalStateException("Exception while executing", ex);
+		}
+	}
+
+	private void checkAttributeRemovalEx(IJSEngine jsEngine, AttributeTestCase atc) throws ParserException, JSCompileException, JSExecutionException {
+		
+		final HTMLAttribute attribute = atc.getAttribute();
+		final String updatedValue = atc.getAttributeTestValues().getUpdate(attribute);
+		
+		final JSVariableMap varMap = prepareVarMap(atc.getHtml());
+		
+		if (attribute != HTMLAttribute.ID) { // TODO test id attribute as well
+			System.out.println("test " + atc.getHtml());
+		// Cache var and verify value is still set
+		final String js = "var attr = document.getElementById(\"" + atc.getElementId() + "\").attributes.getNamedItem(\"" + attribute.getName() + "\");\n"
+				+ "document.getElementById(\"" + atc.getElementId() + "\").attributes.removeNamedItem(\"" + attribute.getName() + "\");\n"
+				
+				+ "var attr2 = document.getElementById(\"" + atc.getElementId() + "\").attributes.getNamedItem(\"" + attribute.getName() + "\");\n"
+				+ "if (attr2 != null) throw \"Attribute attr2 stil set: \";\n"
+				
+				// attr value should still be set
+				+ "if (attr.value != \"" + atc.getAttributeValue() + "\") throw \"Attribute not set: \" + attr.value;\n"
+				// update attribute and check that attr.value also changes
+				+ "document.getElementById(\"" + atc.getElementId() + "\").setAttribute(\"" + attribute.getName() + "\", \"" + updatedValue + "\");\n"
+				+ "if (attr.value != \"" + updatedValue + "\") throw \"Attribute not set after update: \" + attr.value\n;"
+				;
+		
+		jsEngine.evalJS(js, varMap);
+		}
+	}
+	
+	// TODO test removing custom attribute and then set value
+
 	
 	private void checkAttributesLength(IJSEngine jsEngine, JSVariableMap varMap, String elementId, int numAttributes) throws JSCompileException, JSExecutionException {
 

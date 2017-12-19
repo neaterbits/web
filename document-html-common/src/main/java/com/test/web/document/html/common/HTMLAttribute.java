@@ -191,4 +191,23 @@ public enum HTMLAttribute implements IKeyValue {
 	public HTMLAttributeValueType getValueType() {
 		return valueType;
 	}
+
+	public boolean matches(String name) {
+		return getAttributeName().equals(name);
+	}
+
+	public boolean matches(String namespaceURI, String localName) {
+		return (namespaceURI == null || namespaceURI.equals(getAttributeNamespaceURI()))
+				&& localName.equals(getAttributeLocalName());
+	}
+	
+	public static HTMLAttribute find(String name) {
+		for (HTMLAttribute attribute : values()) {
+			if (attribute.getName().equals(name)) {
+				return attribute;
+			}
+		}
+		
+		return null;
+	}
 }

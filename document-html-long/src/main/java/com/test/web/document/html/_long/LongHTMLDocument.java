@@ -816,14 +816,14 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 	
 	@Override
-	public Integer getIdxOfAttributeWithName(Integer element, String name) {
+	public Integer getAttributeWithName(Integer element, String name) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 
 	@Override
-	public Integer getIdxOfAttributeWithNameNS(Integer element, String namespaceURI, String localName) {
+	public Integer getAttributeWithNameNS(Integer element, String namespaceURI, String localName) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -878,6 +878,13 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 	@Override
 	public Integer setAttributeValue(Integer element, Integer attribute, String value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Integer setAttributeValue(Integer element, String name, String value) {
 		// TODO Auto-generated method stub
 		return null;
 	}

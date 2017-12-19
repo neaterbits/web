@@ -5,9 +5,9 @@ public interface IDocumentAttributeGetters<ELEMENT, ATTRIBUTE> {
 	int getNumAttributes(ELEMENT element);
 
 	// -1 if not found
-	ATTRIBUTE getIdxOfAttributeWithNameNS(ELEMENT element, String namespaceURI, String localName);
+	ATTRIBUTE getAttributeWithNameNS(ELEMENT element, String namespaceURI, String localName);
 
-	ATTRIBUTE getIdxOfAttributeWithName(ELEMENT element, String name);
+	ATTRIBUTE getAttributeWithName(ELEMENT element, String name);
 	
 	ATTRIBUTE getAttribute(ELEMENT element, int idx);
 

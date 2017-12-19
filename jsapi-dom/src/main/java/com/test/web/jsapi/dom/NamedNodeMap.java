@@ -23,13 +23,29 @@ public final class NamedNodeMap<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentCo
 	}
 
 	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> getNamedItem(String name) {
-		final ATTRIBUTE attribute = getDocument().getIdxOfAttributeWithName(getElement(), name);
+		final ATTRIBUTE attribute = getDocument().getAttributeWithName(getElement(), name);
 		
 		return attribute == null ? null : new Attr<>(getDocument(), getElement(), attribute, ownerElement);
 	}
 
 	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> getNamedItemNS(String namespaceURI, String localName) {
-		final ATTRIBUTE attribute = getDocument().getIdxOfAttributeWithNameNS(getElement(), namespaceURI, localName);
+		final ATTRIBUTE attribute = getDocument().getAttributeWithNameNS(getElement(), namespaceURI, localName);
+		
+		return attribute == null ? null : new Attr<>(getDocument(), getElement(), attribute, ownerElement);
+	}
+
+	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> setNamedItem(Attr<ELEMENT, ATTRIBUTE, DOCUMENT> attr) {
+		final ATTRIBUTE existing = getDocument().getAttributeWithName(getElement(), attr.getName());
+		
+		throw new UnsupportedOperationException("TODO");
+	}
+
+	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> setNamedItemNS(Attr<ELEMENT, ATTRIBUTE, DOCUMENT> attr) {
+		throw new UnsupportedOperationException("TODO");
+	}
+
+	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> setNamedItemNS(String namespaceURI, String localName) {
+		final ATTRIBUTE attribute = getDocument().getAttributeWithNameNS(getElement(), namespaceURI, localName);
 		
 		return attribute == null ? null : new Attr<>(getDocument(), getElement(), attribute, ownerElement);
 	}
