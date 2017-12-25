@@ -6,7 +6,6 @@ import com.test.web.css._long.LongCSSDocument;
 import com.test.web.css.common.CSSContext;
 import com.test.web.document.html._long.LongHTMLDocument;
 import com.test.web.document.html.common.IDocument;
-import com.test.web.io._long.LongTokenizer;
 import com.test.web.io.common.CharInput;
 import com.test.web.io.common.LoadStream;
 import com.test.web.parse.common.ParserException;
@@ -18,7 +17,7 @@ import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 
 public class LongBrowserDocumentLoader
-		extends BaseBrowserDocumentLoader<Integer, Integer, LongTokenizer, LongHTMLDocument, Integer, LongCSSDocument>
+		extends BaseBrowserDocumentLoader<Integer, Integer, LongHTMLDocument, Integer, LongCSSDocument>
 		implements IBrowserDocumentLoader<Integer, Integer, Integer> {
 
 	public LongBrowserDocumentLoader(IDelayedRendererFactory rendererFactory,  IBufferRendererFactory bufferRendererFactory, ITextExtent textExtent, DebugListeners debugListeners) {
@@ -28,7 +27,7 @@ public class LongBrowserDocumentLoader
 	private LongCSSDocument parseCSS(CharInput charInput, CSSContext<Integer> cssContext) throws IOException, ParserException {
 		
 		final LongCSSDocument styleDocument = new LongCSSDocument();
-		final CSSParser<LongTokenizer, Void> cssParser = new CSSParser<>(charInput, styleDocument);
+		final CSSParser<Void> cssParser = new CSSParser<>(charInput, styleDocument);
 
 		// Just parse the CSS straight away
 		cssParser.parseCSS();
@@ -49,8 +48,8 @@ public class LongBrowserDocumentLoader
 	}
 
 	@Override
-	protected HTMLParser<Integer, LongTokenizer, LongCSSDocument> createParser(LongHTMLDocument document,
-			IHTMLParserListener<Integer, LongTokenizer> parserListener, LoadStream stream, CSSContext<Integer> cssContext) {
+	protected HTMLParser<Integer, LongCSSDocument> createParser(LongHTMLDocument document,
+			IHTMLParserListener<Integer> parserListener, LoadStream stream, CSSContext<Integer> cssContext) {
 		throw new UnsupportedOperationException("TODO");
 	}
 }

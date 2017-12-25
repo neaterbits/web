@@ -29,14 +29,13 @@ import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
-import com.test.web.io.oo.OOTokenizer;
 import com.test.web.parse.css.CSSParserListener;
 
 // Base class for long-encoded CSS documents
 // This class is inherited from for both CSS documents and for CSS inline styles
 
 public abstract class BaseOOCSSDocument 
-		implements CSSParserListener<OOTokenizer, Void>, ICSSDocumentStyles<OOCSSElement> {
+		implements CSSParserListener<Void>, ICSSDocumentStyles<OOCSSElement> {
 
 	private OOCSSElement curParseElement;
 

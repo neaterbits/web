@@ -17,7 +17,7 @@ import com.test.web.parse.css.CSSParser;
 import com.test.web.types.IIndent;
 import com.test.web.types.Value;
 
-public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUMENT>
+public final class HTMLParser<ELEMENT, STYLE_DOCUMENT>
 	extends BaseParser<HTMLToken, CharInput>
 	implements IIndent {
 	
@@ -26,12 +26,12 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 	
 	private int debugStackLevel;
 	
-	private final TOKENIZER tokenizer;
+	private final Tokenizer tokenizer;
 	private final Lexer<HTMLToken, CharInput> lexer;
-	private final IHTMLParserListener<ELEMENT, TOKENIZER> htmlListener;
+	private final IHTMLParserListener<ELEMENT> htmlListener;
 
-	private final IHTMLStyleParserListener<ELEMENT, TOKENIZER> styleAttributeListener;
-	private final CSSParser<TOKENIZER, Void> styleAttributeParser;
+	private final IHTMLStyleParserListener<ELEMENT> styleAttributeListener;
+	private final CSSParser<Void> styleAttributeParser;
 	
 	private final IParse<STYLE_DOCUMENT> parseStyleDocument;
 	
@@ -41,9 +41,9 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 
 	public HTMLParser(
 			CharInput input,
-			TOKENIZER tokenizer,
-			IHTMLParserListener<ELEMENT, TOKENIZER> htmlListener,
-			IHTMLStyleParserListener<ELEMENT, TOKENIZER> styleAttributeListener,
+			Tokenizer tokenizer,
+			IHTMLParserListener<ELEMENT> htmlListener,
+			IHTMLStyleParserListener<ELEMENT> styleAttributeListener,
 			IParse<STYLE_DOCUMENT> parseStyleDocument) {
 
 		super(createLexer(input), HTMLToken.WS);

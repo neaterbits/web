@@ -7,7 +7,6 @@ import java.util.List;
 import com.test.web.css.common.CSSState;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSStyle;
-import com.test.web.io.oo.OOTokenizer;
 import com.test.web.parse.css.ICSSDocumentParserListener;
 
 /***
@@ -21,7 +20,7 @@ import com.test.web.parse.css.ICSSDocumentParserListener;
 
 public final class OOCSSDocument
 	extends BaseOOCSSDocument
-	implements ICSSDocumentParserListener<OOCSSElement, OOTokenizer, Void> {
+	implements ICSSDocumentParserListener<OOCSSElement, Void> {
 
 	private final CSSState<OOCSSElement> state;
 	

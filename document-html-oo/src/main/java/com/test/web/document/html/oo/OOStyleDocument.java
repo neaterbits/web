@@ -3,11 +3,10 @@ package com.test.web.document.html.oo;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.oo.BaseOOCSSDocument;
 import com.test.web.css.oo.OOCSSElement;
-import com.test.web.io.oo.OOTokenizer;
 import com.test.web.parse.html.IHTMLStyleParserListener;
 
 public class OOStyleDocument extends BaseOOCSSDocument
-	implements IHTMLStyleParserListener<OOTagElement, OOTokenizer> {
+	implements IHTMLStyleParserListener<OOTagElement> {
 
 	public OOStyleDocument() {
 	}

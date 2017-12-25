@@ -8,7 +8,6 @@ import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.HTMLElementListener;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.io.common.LoadStream;
-import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.algorithm.LayoutAlgorithm;
 import com.test.web.layout.algorithm.PageLayout;
 import com.test.web.layout.common.HTMLLayoutContext;
@@ -38,8 +37,7 @@ import com.test.web.render.html.PrintlnRenderDebugListener;
 public abstract class BaseBrowserDocumentLoader<
 				HTML_ELEMENT,
 				HTML_ATTRIBUTE,
-				TOKENIZER extends Tokenizer,
-				DOCUMENT extends IDocumentParserListener<HTML_ELEMENT, HTML_ATTRIBUTE, TOKENIZER>,
+				DOCUMENT extends IDocumentParserListener<HTML_ELEMENT, HTML_ATTRIBUTE>,
 				CSS_ELEMENT,
 				STYLE_DOCUMENT>
 
@@ -53,9 +51,9 @@ public abstract class BaseBrowserDocumentLoader<
 
 	protected abstract DOCUMENT createDocument();
 	
-	protected abstract HTMLParser<HTML_ELEMENT, TOKENIZER, STYLE_DOCUMENT> createParser(
+	protected abstract HTMLParser<HTML_ELEMENT, STYLE_DOCUMENT> createParser(
 			DOCUMENT document,
-			IHTMLParserListener<HTML_ELEMENT, TOKENIZER> parserListener,
+			IHTMLParserListener<HTML_ELEMENT> parserListener,
 			LoadStream stream,
 			CSSContext<CSS_ELEMENT>cssContext);
 	
@@ -81,7 +79,7 @@ public abstract class BaseBrowserDocumentLoader<
 
 		final ViewPort viewPort = new ViewPort(viewPortWidth, viewPortHeight);
 		
-		final LayoutAlgorithm<HTML_ELEMENT, HTMLElement, IDocument<HTML_ELEMENT, HTML_ATTRIBUTE>, TOKENIZER> layoutAgorithm
+		final LayoutAlgorithm<HTML_ELEMENT, HTMLElement, IDocument<HTML_ELEMENT, HTML_ATTRIBUTE>> layoutAgorithm
 			= new LayoutAlgorithm<>(
 				textExtent,
 				renderFactory,
@@ -154,7 +152,7 @@ public abstract class BaseBrowserDocumentLoader<
 			
 			// This parser listener will look for external dependencies and add those to the loadqueue,
 			// it will also forward parser events to the DOM and to the layout algorithm
-			final DependencyCollectingParserListener<HTML_ELEMENT, HTML_ATTRIBUTE, TOKENIZER> parserListener
+			final DependencyCollectingParserListener<HTML_ELEMENT, HTML_ATTRIBUTE> parserListener
 				= new DependencyCollectingParserListener<>(
 						url, // TODO handle redirects eg to index.html
 						document,
@@ -171,7 +169,7 @@ public abstract class BaseBrowserDocumentLoader<
 			final CSSContext<CSS_ELEMENT> cssContext = new CSSContext<>();
 			
 			// Load and parse the document throught the dependency collecting parser listener
-			final HTMLParser<HTML_ELEMENT, TOKENIZER, STYLE_DOCUMENT> htmlParser = createParser(document, parserListener, loadQueueAndStream.getStream(), cssContext);
+			final HTMLParser<HTML_ELEMENT, STYLE_DOCUMENT> htmlParser = createParser(document, parserListener, loadQueueAndStream.getStream(), cssContext);
 	
 			// Start parsing on this thread
 			// TODO perhaps move to new thread since this is the UI thread?

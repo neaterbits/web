@@ -6,12 +6,11 @@ import java.util.Map;
 
 import com.test.web.css._long.BaseLongCSSDocument;
 import com.test.web.css.common.enums.CSSTarget;
-import com.test.web.io._long.LongTokenizer;
 import com.test.web.parse.html.IHTMLStyleParserListener;
 
 // Keeps track of style-attribute contents for all HTML elements within the DOM
 final class LongStyleDocument extends BaseLongCSSDocument
-	implements IHTMLStyleParserListener<Integer, LongTokenizer> {
+	implements IHTMLStyleParserListener<Integer> {
 
 	private final Map<Integer, int[]> htmlToStyleElements;
 	

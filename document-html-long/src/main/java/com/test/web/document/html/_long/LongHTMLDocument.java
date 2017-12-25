@@ -21,9 +21,9 @@ import com.test.web.document.html.common.HTMLElementListener;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.document.html.common.enums.HTMLDirection;
 import com.test.web.document.html.common.enums.LinkRelType;
-import com.test.web.io._long.LongTokenizer;
 import com.test.web.io._long.StringBuffers;
 import com.test.web.io.common.SimpleLoadStream;
+import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.IParse;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.html.HTMLParser;
@@ -48,7 +48,7 @@ import com.test.web.types.Debug;
 
 public class LongHTMLDocument extends LongBuffersIntegerIndex
 
-	implements IDocumentParserListener<Integer, Integer, LongTokenizer> {
+	implements IDocumentParserListener<Integer, Integer> {
 
 	private static final boolean CHECK_OVERWRITE = true;
 	private static final boolean CHECK_IS_CONTAINER = true;
@@ -138,7 +138,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 
 	@Override
-	public Integer onElementStart(LongTokenizer tokenizer, HTMLElement element) {
+	public Integer onElementStart(Tokenizer tokenizer, HTMLElement element) {
 		
 		// Start of an HTML element, add to buffer and
 		
@@ -256,7 +256,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 
 	@Override
-	public Integer onElementEnd(LongTokenizer tokenizer, HTMLElement element) {
+	public Integer onElementEnd(Tokenizer tokenizer, HTMLElement element) {
 		
 		final int cur = getCurElement();
 		
@@ -268,7 +268,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 
 	@Override
-	public void onText(LongTokenizer tokenizer, long stringRef) {
+	public void onText(Tokenizer tokenizer, long stringRef) {
 		final int elementRef = allocate(LongHTML.SIZE_TEXT, "text");
 		
 		final int cur = getCurElement();
@@ -303,7 +303,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 
 	@Override
-	public void onAttributeWithoutValue(LongTokenizer tokenizer, HTMLAttribute attribute) {
+	public void onAttributeWithoutValue(Tokenizer tokenizer, HTMLAttribute attribute) {
 		
 		final int elementRef = getCurElement();
 		final int elementOffset = offset(elementRef);
@@ -323,7 +323,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 
 	@Override
-	public void onAttributeWithValue(LongTokenizer tokenizer, HTMLAttribute attribute, long stringRef, HTMLElement element) {
+	public void onAttributeWithValue(Tokenizer tokenizer, HTMLAttribute attribute, long stringRef, HTMLElement element) {
 		final int elementRef = getCurElement();
 		final int elementOffset = offset(elementRef);
 		final long [] elementBuf = buf(elementRef);
@@ -400,7 +400,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 
 	@Override
-	public void onClassAttributeValue(LongTokenizer tokenizer, long stringRef) {
+	public void onClassAttributeValue(Tokenizer tokenizer, long stringRef) {
 		final int elementRef = getCurElement();
 		final int elementOffset = offset(elementRef);
 		final long [] elementBuf = buf(elementRef);
@@ -443,7 +443,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 
 	@Override
-	public void onStyleAttributeValue(LongTokenizer tokenizer, String key, String value) {
+	public void onStyleAttributeValue(Tokenizer tokenizer, String key, String value) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -754,7 +754,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 	
 	@Override
-	public IHTMLStyleParserListener<Integer, LongTokenizer> getStyleParserListener() {
+	public IHTMLStyleParserListener<Integer> getStyleParserListener() {
 		return styleDocument;
 	}
 	
@@ -776,7 +776,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 		htmlDocument = new LongHTMLDocument(buffers);
 		
-		final HTMLParser<Integer, LongTokenizer, STYLE_DOCUMENT> parser = new HTMLParser<>(
+		final HTMLParser<Integer, STYLE_DOCUMENT> parser = new HTMLParser<>(
 				buffers,
 				buffers,
 				htmlDocument,

@@ -25,7 +25,6 @@ import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.io.common.CharInput;
-import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.BaseParser;
 import com.test.web.parse.common.Lexer;
 import com.test.web.parse.common.LexerMatch;
@@ -40,12 +39,12 @@ import com.test.web.types.Value;
  * @author nhl
  *
  */
-public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput> {
+public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput> {
 	
 	private final Lexer<CSSToken, CharInput> lexer; 
-	private final CSSParserListener<TOKENIZER, LISTENER_CONTEXT> listener;
+	private final CSSParserListener<LISTENER_CONTEXT> listener;
 
-	public CSSParser(Lexer<CSSToken, CharInput> lexer, CSSParserListener<TOKENIZER, LISTENER_CONTEXT> listener) {
+	public CSSParser(Lexer<CSSToken, CharInput> lexer, CSSParserListener<LISTENER_CONTEXT> listener) {
 		super(lexer, CSSToken.WS);
 		
 		this.lexer = getLexer();
@@ -56,7 +55,7 @@ public class CSSParser<TOKENIZER extends Tokenizer, LISTENER_CONTEXT> extends Ba
 		return new Lexer<CSSToken, CharInput>(input, CSSToken.class, CSSToken.NONE, CSSToken.EOF);
 	}
 		
-	public CSSParser(CharInput input, CSSParserListener<TOKENIZER, LISTENER_CONTEXT> listener) {
+	public CSSParser(CharInput input, CSSParserListener<LISTENER_CONTEXT> listener) {
 		this(createLexer(input), listener);
 	}
 	

@@ -31,7 +31,6 @@ import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
-import com.test.web.io._long.LongTokenizer;
 import com.test.web.parse.css.CSSParserListener;
 
 // Base class for long-encoded CSS documents
@@ -39,7 +38,7 @@ import com.test.web.parse.css.CSSParserListener;
 
 public abstract class BaseLongCSSDocument 
 		extends LongBuffersIntegerIndex
-		implements CSSParserListener<LongTokenizer, Void>, ICSSDocumentStyles<Integer> {
+		implements CSSParserListener<Void>, ICSSDocumentStyles<Integer> {
 
 	private DuplicateDetectingStringStorageBuffer fontBuffer;
 

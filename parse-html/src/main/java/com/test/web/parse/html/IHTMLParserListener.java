@@ -11,22 +11,22 @@ import com.test.web.io.common.Tokenizer;
  * @author nhl
  *
  * @param <INPUT>
- * @param <TOKENIZER>
+ * @param <Tokenizer>
  */
 
-public interface IHTMLParserListener<ELEMENT, TOKENIZER extends Tokenizer> {
+public interface IHTMLParserListener<ELEMENT> {
 
-	ELEMENT onElementStart(TOKENIZER tokenizer, HTMLElement element) throws IOException;
+	ELEMENT onElementStart(Tokenizer Tokenizer, HTMLElement element) throws IOException;
 
-	ELEMENT onElementEnd(TOKENIZER tokenizer, HTMLElement element) throws IOException;
+	ELEMENT onElementEnd(Tokenizer Tokenizer, HTMLElement element) throws IOException;
 	
-	void onText(TOKENIZER tokenizer, long stringRef);
+	void onText(Tokenizer Tokenizer, long stringRef);
 	
-	void onAttributeWithoutValue(TOKENIZER tokenizer, HTMLAttribute attribute);
+	void onAttributeWithoutValue(Tokenizer Tokenizer, HTMLAttribute attribute);
 
-	void onAttributeWithValue(TOKENIZER tokenizer, HTMLAttribute attribute, long stringRef, HTMLElement element);
+	void onAttributeWithValue(Tokenizer Tokenizer, HTMLAttribute attribute, long stringRef, HTMLElement element);
 
-	void onClassAttributeValue(TOKENIZER tokenizer, long stringRef);
+	void onClassAttributeValue(Tokenizer Tokenizer, long stringRef);
 
-	void onStyleAttributeValue(TOKENIZER tokenizer, String key, String value);
+	void onStyleAttributeValue(Tokenizer Tokenizer, String key, String value);
 }

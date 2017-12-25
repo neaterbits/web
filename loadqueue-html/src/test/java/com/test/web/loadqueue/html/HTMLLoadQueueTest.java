@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.test.web.document.html._long.LongHTMLDocument;
-import com.test.web.io._long.LongTokenizer;
 import com.test.web.io._long.StringBuffers;
 import com.test.web.layout.algorithm.PageLayout;
 import com.test.web.loadqueue.common.LoadQueue;
@@ -54,10 +53,10 @@ public class HTMLLoadQueueTest extends TestCase {
 
 		final LongHTMLDocument doc = new LongHTMLDocument(buffers);
 		
-		final DependencyCollectingParserListener<Integer, Integer, LongTokenizer> parserListener
+		final DependencyCollectingParserListener<Integer, Integer> parserListener
 			= new DependencyCollectingParserListener<>(null, doc, loadQueue.getQueue(), null, null, null, new FontSettings(), new PageLayout<>(), null, null);
 		
-		final HTMLParser<Integer, LongTokenizer, Void> parser = new HTMLParser<>(
+		final HTMLParser<Integer, Void> parser = new HTMLParser<>(
 				buffers,
 				buffers,
 				parserListener,

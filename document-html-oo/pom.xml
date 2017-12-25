@@ -30,12 +30,6 @@
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>io-oo</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
 		<artifactId>css-oo</artifactId>
 		<version>${project.version}</version>
 	</dependency>

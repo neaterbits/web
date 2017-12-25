@@ -12,7 +12,6 @@ import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.layout.common.StyleDimensions;
 import com.test.web.layout.common.ILayoutStylesSetters;
-import com.test.web.layout.common.LayoutStyles;
 import com.test.web.types.FontSpec;
 
 /*

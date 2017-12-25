@@ -1,13 +1,12 @@
 package com.test.web.css._long;
 
 import com.test.web.css.test.BaseCSSDocumentTest;
-import com.test.web.io._long.LongTokenizer;
 import com.test.web.parse.css.ICSSDocumentParserListener;
 
-public class CSSDocumentTest extends BaseCSSDocumentTest<Integer, LongTokenizer> {
+public class CSSDocumentTest extends BaseCSSDocumentTest<Integer> {
 
 	@Override
-	protected ICSSDocumentParserListener<Integer, LongTokenizer, Void> createDocument() {
+	protected ICSSDocumentParserListener<Integer, Void> createDocument() {
 		return new LongCSSDocument();
 	}
 }

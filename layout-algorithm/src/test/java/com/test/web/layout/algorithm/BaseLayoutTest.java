@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.test.web.css.common.CSSContext;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.IDocument;
-import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.algorithm.LayoutAlgorithm;
 import com.test.web.layout.algorithm.PageLayer;
 import com.test.web.layout.algorithm.PageLayout;
@@ -23,7 +22,7 @@ import junit.framework.TestCase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE, TOKENIZER extends Tokenizer> extends TestCase {
+public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE> extends TestCase {
 	
 	protected abstract IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> parseDocument(String html) throws ParserException;
 	
@@ -223,7 +222,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE, TOKENIZER ext
 		
 		final ITextExtent textExtent = new MockTextExtent();
 		
-		final LayoutAlgorithm<HTML_ELEMENT, HTMLElement, IDocument<HTML_ELEMENT, HTML_ATTRIBUTE>, TOKENIZER> layoutAgorithm = new LayoutAlgorithm<>(
+		final LayoutAlgorithm<HTML_ELEMENT, HTMLElement, IDocument<HTML_ELEMENT, HTML_ATTRIBUTE>> layoutAgorithm = new LayoutAlgorithm<>(
 				textExtent,
 				renderFactory,
 				new FontSettings(),

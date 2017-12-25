@@ -13,7 +13,6 @@ import com.test.web.document.html.common.enums.HTMLDirection;
 import com.test.web.document.html.common.enums.HTMLDropzone;
 import com.test.web.io.common.CharInput;
 import com.test.web.io.common.StringCharInput;
-import com.test.web.io.oo.OOTokenizer;
 import com.test.web.parse.common.Lexer;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser;
@@ -466,7 +465,7 @@ public abstract class OOTagElement extends OOAttributes {
 		}
 
 		final Lexer<CSSToken, CharInput> lexer = CSSParser.createLexer(charInput);
-		final CSSParser<OOTokenizer, Void> cssParser = new CSSParser<>(charInput, listener);
+		final CSSParser<Void> cssParser = new CSSParser<>(charInput, listener);
 		
 		boolean done = false;
 

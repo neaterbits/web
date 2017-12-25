@@ -26,9 +26,8 @@ import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
-import com.test.web.io.common.Tokenizer;
 
-public interface CSSParserListener<TOKENIZER extends Tokenizer, CONTEXT> {
+public interface CSSParserListener<CONTEXT> {
 
 	CONTEXT onBlockStart();
 	

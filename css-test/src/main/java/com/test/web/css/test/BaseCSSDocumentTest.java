@@ -30,7 +30,6 @@ import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.io._long.StringBuffers;
 import com.test.web.io.common.SimpleLoadStream;
-import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser;
 import com.test.web.parse.css.ICSSDocumentParserListener;
@@ -42,16 +41,16 @@ import com.test.web.types.DecimalSize;
 
 import junit.framework.TestCase;
 
-public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> extends TestCase {
+public abstract class BaseCSSDocumentTest<ELEMENT> extends TestCase {
 	
-	protected abstract ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> createDocument();
+	protected abstract ICSSDocumentParserListener<ELEMENT, Void> createDocument();
 
-	private ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> parse(String css) throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = createDocument();
+	private ICSSDocumentParserListener<ELEMENT, Void> parse(String css) throws IOException, ParserException {
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = createDocument();
 		
 		final StringBuffers buffers = new StringBuffers(new SimpleLoadStream(css));
 		
-		final CSSParser<TOKENIZER, Void> parser = new CSSParser<>(buffers, doc);
+		final CSSParser<Void> parser = new CSSParser<>(buffers, doc);
 		
 		parser.parseCSS();
 	
@@ -60,7 +59,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	
 	public void testParser() throws IOException, ParserException {
 		
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS);
 	
 		final ELEMENT h1Ref = doc.get(CSSTarget.TAG, "h1").get(0);
 		
@@ -127,7 +126,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	
 	public void testMargins() throws IOException, ParserException {
 		
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_MARGINS);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_MARGINS);
 	
 		checkMargin(doc, "margin_auto",
 				0, null, CSSJustify.AUTO,
@@ -180,7 +179,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 
 	public void testPadding() throws IOException, ParserException {
 		
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_PADDING);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_PADDING);
 	
 		checkPadding(doc, "padding_initial",
 				0, null, CSSJustify.INITIAL,
@@ -229,7 +228,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 				DecimalSize.of(0), CSSUnit.PX, CSSJustify.SIZE);
 	}
 
-	private void checkMargin(ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc, String id,
+	private void checkMargin(ICSSDocumentParserListener<ELEMENT, Void> doc, String id,
 			int top, CSSUnit topUnit, CSSJustify topJustify,
 			int right, CSSUnit rightUnit, CSSJustify rightJustify,
 			int bottom, CSSUnit bottomUnit, CSSJustify bottomJustify,
@@ -244,7 +243,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 		checkWrapping(margins, top, topUnit, topJustify, right, rightUnit, rightJustify, bottom, bottomUnit, bottomJustify, left, leftUnit, leftJustify);
 	}
 
-	private void checkPadding(ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc, String id,
+	private void checkPadding(ICSSDocumentParserListener<ELEMENT, Void> doc, String id,
 			int top, CSSUnit topUnit, CSSJustify topJustify,
 			int right, CSSUnit rightUnit, CSSJustify rightJustify,
 			int bottom, CSSUnit bottomUnit, CSSJustify bottomJustify,
@@ -300,7 +299,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 
 	public void testClear() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_CLEAR);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_CLEAR);
 
 		final ELEMENT clear = doc.get(CSSTarget.ID, "clear_both").get(0);
 		
@@ -308,7 +307,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 	
 	public void testFontSize() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_FONTSIZE);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_FONTSIZE);
 
 		final ELEMENT medium = doc.get(CSSTarget.ID, "fontsize_medium").get(0);
 		
@@ -324,7 +323,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 	
 	public void testFontWeight() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_FONTWEIGHT);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_FONTWEIGHT);
 
 		final ELEMENT normal = doc.get(CSSTarget.ID, "fontweight_normal").get(0);
 		
@@ -338,7 +337,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 
 	public void testColor() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_COLORS);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_COLORS);
 
 		final ELEMENT rgba1 = doc.get(CSSTarget.ID, "color_rgba1").get(0);
 		
@@ -389,7 +388,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 
 	public void testBgColor() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_COLORS);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_BG_COLORS);
 
 		final ELEMENT rgba1 = doc.get(CSSTarget.ID, "bgcolor_rgba1").get(0);
 		
@@ -440,7 +439,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 
 	public void testBgImage() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_IMAGE);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_BG_IMAGE);
 
 		final ELEMENT pos = doc.get(CSSTarget.ID, "bgimage").get(0);
 		
@@ -455,7 +454,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 
 	public void testBgPosition() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_POSITION);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_BG_POSITION);
 
 		final ELEMENT pos = doc.get(CSSTarget.ID, "bgposition").get(0);
 		
@@ -473,7 +472,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 
 	public void testBgSize() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_SIZE);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_BG_SIZE);
 
 		final ELEMENT pos = doc.get(CSSTarget.ID, "bgsize").get(0);
 		
@@ -491,7 +490,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 
 	public void testBgRepeat() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_REPEAT);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_BG_REPEAT);
 
 		final ELEMENT pos = doc.get(CSSTarget.ID, "bgrepeat").get(0);
 		
@@ -501,7 +500,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 
 	public void testBgAttachment() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_ATTACHMENT);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_BG_ATTACHMENT);
 
 		final ELEMENT pos = doc.get(CSSTarget.ID, "bgattachment").get(0);
 		
@@ -511,7 +510,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 
 	public void testBgOrigin() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_ORIGIN);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_BG_ORIGIN);
 
 		final ELEMENT pos = doc.get(CSSTarget.ID, "bgorigin").get(0);
 		
@@ -521,7 +520,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 
 	public void testBgClip() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_CLIP);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_BG_CLIP);
 
 		final ELEMENT pos = doc.get(CSSTarget.ID, "bgclip").get(0);
 		
@@ -531,7 +530,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 
 	public void testBg() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_BG);
 
 		final ELEMENT bgColorOnly = doc.get(CSSTarget.ID, "bgcoloronly").get(0);
 		
@@ -699,7 +698,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 	
 	private void checkHasNoDistance(
-			ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc,
+			ICSSDocumentParserListener<ELEMENT, Void> doc,
 			ELEMENT ref,
 			int bgLayer,
 			int colorStop) {
@@ -713,7 +712,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 
 	public void testBgBrowserSpecific() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_BROWSER_SPECIFIC);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_BG_BROWSER_SPECIFIC);
 
 		final ELEMENT bg = doc.get(CSSTarget.ID, "bg_browser_specific").get(0);
 
@@ -721,7 +720,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 	
 	public void testBgBrowserSpecificWithNestedFunctions() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_BG_BROWSER_SPECIFIC_WITH_NESTED_FUNCTIONS);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_BG_BROWSER_SPECIFIC_WITH_NESTED_FUNCTIONS);
 
 		final ELEMENT bg = doc.get(CSSTarget.ID, "bg_browser_specific_with_nested_functions").get(0);
 
@@ -729,7 +728,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 
 	public void testTextDecoration() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_TEXT_DECORATION);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_TEXT_DECORATION);
 
 		final ELEMENT td1 = doc.get(CSSTarget.ID, "text_decoration_1").get(0);
 		
@@ -737,7 +736,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 
 	public void testFilterNone() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_FILTER_NONE);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_FILTER_NONE);
 
 		final ELEMENT f = doc.get(CSSTarget.ID, "filter_none").get(0);
 		
@@ -745,7 +744,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 
 	public void testFilter() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_FILTER);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_FILTER);
 
 		final ELEMENT f = doc.get(CSSTarget.ID, "filter").get(0);
 		
@@ -771,7 +770,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT, TOKENIZER extends Tokenizer> 
 	}
 
 	public void testFilter2() throws IOException, ParserException {
-		final ICSSDocumentParserListener<ELEMENT, TOKENIZER, Void> doc = parse(TestData.CSS_FILTER2);
+		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS_FILTER2);
 
 		final ELEMENT f = doc.get(CSSTarget.ID, "filter2").get(0);
 		

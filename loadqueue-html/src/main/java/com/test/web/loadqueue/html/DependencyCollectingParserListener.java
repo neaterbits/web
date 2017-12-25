@@ -5,7 +5,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.test.web.css.common.CSSContext;
-import com.test.web.document.common.IDocumentBase;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.HTMLElementListener;
@@ -14,7 +13,6 @@ import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.algorithm.LayoutAlgorithm;
 import com.test.web.layout.algorithm.LayoutState;
 import com.test.web.layout.algorithm.PageLayout;
-import com.test.web.layout.algorithm.PrintlnLayoutDebugListener;
 import com.test.web.layout.common.LayoutStyles;
 import com.test.web.layout.common.HTMLLayoutContext;
 import com.test.web.layout.common.IElementRenderLayout;
@@ -33,19 +31,16 @@ import com.test.web.render.common.ITextExtent;
  * as soon as this information is available.
  */
 
-public class DependencyCollectingParserListener<
-				ELEMENT,
-				ATTRIBUTE,
-				TOKENIZER extends Tokenizer>
-			implements IHTMLParserListener<ELEMENT, TOKENIZER> {
+public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE>
+			implements IHTMLParserListener<ELEMENT> {
 
 	// Base URL of the document we are loading, in order to resolve URLs to externa dependencies
 	private final URL documentURL;
 	
-	private final IDocumentParserListener<ELEMENT, ATTRIBUTE, TOKENIZER> delegate;
+	private final IDocumentParserListener<ELEMENT, ATTRIBUTE> delegate;
 	private final ILoadQueue loadQueue;
 
-	private final LayoutAlgorithm<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>, TOKENIZER> layoutAlgorithm;
+	private final LayoutAlgorithm<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>> layoutAlgorithm;
 
 	private final IFontSettings<HTMLElement> fontSettings;
 	
@@ -66,7 +61,7 @@ public class DependencyCollectingParserListener<
 	
 	public DependencyCollectingParserListener(
 			URL documentURL,
-			IDocumentParserListener<ELEMENT, ATTRIBUTE, TOKENIZER> delegate,
+			IDocumentParserListener<ELEMENT, ATTRIBUTE> delegate,
 			ILoadQueue loadQueue,
 			ViewPort viewPort,
 			ITextExtent textExtent,
@@ -96,7 +91,7 @@ public class DependencyCollectingParserListener<
 	}
 
 	@Override
-	public ELEMENT onElementStart(TOKENIZER tokenizer, HTMLElement htmlElement) throws IOException {
+	public ELEMENT onElementStart(Tokenizer tokenizer, HTMLElement htmlElement) throws IOException {
 		final ELEMENT element = delegate.onElementStart(tokenizer, htmlElement);
 		
 		switch (htmlElement) {
@@ -119,7 +114,7 @@ public class DependencyCollectingParserListener<
 	}
 
 	@Override
-	public ELEMENT onElementEnd(TOKENIZER tokenizer, HTMLElement htmlElement) throws IOException {
+	public ELEMENT onElementEnd(Tokenizer tokenizer, HTMLElement htmlElement) throws IOException {
 		final ELEMENT elementRef = delegate.onElementEnd(tokenizer, htmlElement);
 		
 		if (curElement != null) {
@@ -248,17 +243,17 @@ public class DependencyCollectingParserListener<
 	}
 
 	@Override
-	public void onText(TOKENIZER tokenizer, long stringRef) {
+	public void onText(Tokenizer tokenizer, long stringRef) {
 		delegate.onText(tokenizer, stringRef);
 	}
 
 	@Override
-	public void onAttributeWithoutValue(TOKENIZER tokenizer, HTMLAttribute attribute) {
+	public void onAttributeWithoutValue(Tokenizer tokenizer, HTMLAttribute attribute) {
 		delegate.onAttributeWithoutValue(tokenizer, attribute);
 	}
 
 	@Override
-	public void onAttributeWithValue(TOKENIZER tokenizer, HTMLAttribute attribute, long stringRef, HTMLElement element) {
+	public void onAttributeWithValue(Tokenizer tokenizer, HTMLAttribute attribute, long stringRef, HTMLElement element) {
 
 		delegate.onAttributeWithValue(tokenizer, attribute, stringRef, element);
 		
@@ -293,12 +288,12 @@ public class DependencyCollectingParserListener<
 	}
 
 	@Override
-	public void onClassAttributeValue(TOKENIZER tokenizer, long stringRef) {
+	public void onClassAttributeValue(Tokenizer tokenizer, long stringRef) {
 		delegate.onClassAttributeValue(tokenizer, stringRef);
 	}
 
 	@Override
-	public void onStyleAttributeValue(TOKENIZER tokenizer, String key, String value) {
+	public void onStyleAttributeValue(Tokenizer tokenizer, String key, String value) {
 		delegate.onStyleAttributeValue(tokenizer, key, value);
 	}
 }

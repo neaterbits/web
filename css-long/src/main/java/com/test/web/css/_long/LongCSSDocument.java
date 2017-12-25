@@ -5,7 +5,6 @@ import java.util.List;
 import com.test.web.css.common.CSSState;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSStyle;
-import com.test.web.io._long.LongTokenizer;
 import com.test.web.parse.css.ICSSDocumentParserListener;
 
 /***
@@ -19,7 +18,7 @@ import com.test.web.parse.css.ICSSDocumentParserListener;
 
 public final class LongCSSDocument
 	extends BaseLongCSSDocument
-	implements ICSSDocumentParserListener<Integer, LongTokenizer, Void> {
+	implements ICSSDocumentParserListener<Integer, Void> {
 
 	private final CSSState<Integer> state;
 

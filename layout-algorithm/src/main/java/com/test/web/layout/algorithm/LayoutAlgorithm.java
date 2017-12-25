@@ -2,7 +2,6 @@ package com.test.web.layout.algorithm;
 
 import com.test.web.document.common.IDocumentBase;
 import com.test.web.document.common.IElementListener;
-import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.algorithm.TextUtil.NumberOfChars;
 import com.test.web.layout.common.FontStyle;
 import com.test.web.layout.common.IElementRenderLayout;
@@ -28,8 +27,7 @@ import com.test.web.types.Pixels;
 public class LayoutAlgorithm<
 		ELEMENT,
 		ELEMENT_TYPE,
-		DOCUMENT extends IDocumentBase<ELEMENT, ELEMENT_TYPE, DOCUMENT>,
-		TOKENIZER extends Tokenizer>
+		DOCUMENT extends IDocumentBase<ELEMENT, ELEMENT_TYPE, DOCUMENT>>
 
 	implements IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT>> {
 

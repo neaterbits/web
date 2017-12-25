@@ -11,7 +11,6 @@ import com.test.web.document.html.oo.OOHTMLDocument;
 import com.test.web.document.html.oo.OOTagElement;
 import com.test.web.io.common.CharInput;
 import com.test.web.io.common.LoadStream;
-import com.test.web.io.oo.OOTokenizer;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser;
 import com.test.web.parse.html.HTMLParser;
@@ -21,7 +20,7 @@ import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 
 public class OOBrowserDocumentLoader
-		extends BaseBrowserDocumentLoader<OOTagElement, OOAttribute, OOTokenizer, OOHTMLDocument, OOCSSElement, OOCSSDocument>
+		extends BaseBrowserDocumentLoader<OOTagElement, OOAttribute, OOHTMLDocument, OOCSSElement, OOCSSDocument>
 		implements IBrowserDocumentLoader<OOTagElement, OOAttribute, OOCSSElement> {
 	
 	public OOBrowserDocumentLoader(IDelayedRendererFactory rendererFactory, IBufferRendererFactory bufferedRendererFactory, ITextExtent textExtent, DebugListeners debugListeners) {
@@ -31,7 +30,7 @@ public class OOBrowserDocumentLoader
 	private OOCSSDocument parseCSS(CharInput charInput, CSSContext<OOCSSElement> cssContext) throws IOException, ParserException {
 		
 		final OOCSSDocument styleDocument = new OOCSSDocument();
-		final CSSParser<OOTokenizer, Void> cssParser = new CSSParser<>(charInput, styleDocument);
+		final CSSParser<Void> cssParser = new CSSParser<>(charInput, styleDocument);
 
 		// Just parse the CSS straight away
 		cssParser.parseCSS();
@@ -52,9 +51,9 @@ public class OOBrowserDocumentLoader
 	}
 
 	@Override
-	protected HTMLParser<OOTagElement, OOTokenizer, OOCSSDocument> createParser(
+	protected HTMLParser<OOTagElement, OOCSSDocument> createParser(
 			OOHTMLDocument document,
-			IHTMLParserListener<OOTagElement, OOTokenizer> parserListener,
+			IHTMLParserListener<OOTagElement> parserListener,
 			LoadStream stream,
 			CSSContext<OOCSSElement> cssContext) {
 		

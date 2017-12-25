@@ -12,7 +12,6 @@ import com.test.web.document.common.DocumentState;
 import com.test.web.document.common.IElementListener;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
-import com.test.web.document.html.common.HTMLElementListener;
 import com.test.web.document.html.common.HTMLStringConversion;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.document.html.common.IDocumentListener;
@@ -20,10 +19,10 @@ import com.test.web.document.html.common.enums.HTMLDirection;
 import com.test.web.document.html.common.enums.HTMLDropzone;
 import com.test.web.document.html.common.enums.LinkRelType;
 import com.test.web.document.html.common.enums.LinkRevType;
+import com.test.web.io._long.StringBuffers;
 import com.test.web.io.common.LoadStream;
 import com.test.web.io.common.SimpleLoadStream;
-import com.test.web.io.oo.OOStringBuffer;
-import com.test.web.io.oo.OOTokenizer;
+import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.IParse;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.html.HTMLParser;
@@ -32,7 +31,7 @@ import com.test.web.parse.html.IDocumentParserListener;
 import com.test.web.parse.html.IHTMLParserListener;
 import com.test.web.parse.html.IHTMLStyleParserListener;
 
-public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOAttribute, OOTokenizer>{
+public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOAttribute>{
 
 	private final IDocumentListener<OOTagElement> listener;
 	private final List<OOTagElement> stack;
@@ -41,15 +40,15 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 
 	private OOTagElement rootElement;
 
-	public static <STYLE_DOCUMENT> HTMLParser<OOTagElement, OOTokenizer, STYLE_DOCUMENT> createParser(
+	public static <STYLE_DOCUMENT> HTMLParser<OOTagElement, STYLE_DOCUMENT> createParser(
 			OOHTMLDocument document,
-			IHTMLParserListener<OOTagElement, OOTokenizer> parserListener,
+			IHTMLParserListener<OOTagElement> parserListener,
 			LoadStream stream,
 			IParse<STYLE_DOCUMENT> parseStyleDocument) {
 
-		final OOStringBuffer input = new OOStringBuffer(stream);
+		final StringBuffers input = new StringBuffers(stream);
 		
-		final HTMLParser<OOTagElement, OOTokenizer, STYLE_DOCUMENT> parser = new HTMLParser<>(
+		final HTMLParser<OOTagElement, STYLE_DOCUMENT> parser = new HTMLParser<>(
 				input,
 				input,
 				parserListener,
@@ -63,7 +62,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 
 		final OOHTMLDocument document = new OOHTMLDocument();
 		
-		final HTMLParser<OOTagElement, OOTokenizer, STYLE_DOCUMENT> parser = createParser(document, document, new SimpleLoadStream(html), parseStyleDocument);
+		final HTMLParser<OOTagElement, STYLE_DOCUMENT> parser = createParser(document, document, new SimpleLoadStream(html), parseStyleDocument);
 		
 		try {
 			parser.parseHTMLFile();
@@ -289,7 +288,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 	}
 
 	@Override
-	public OOTagElement onElementStart(OOTokenizer tokenizer, HTMLElement element) throws IOException {
+	public OOTagElement onElementStart(Tokenizer tokenizer, HTMLElement element) throws IOException {
 
 		final OOTagElement ret;
 		
@@ -378,7 +377,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 	}
 
 	@Override
-	public OOTagElement onElementEnd(OOTokenizer tokenizer, HTMLElement element) throws IOException {
+	public OOTagElement onElementEnd(Tokenizer tokenizer, HTMLElement element) throws IOException {
 
 		final OODocumentElement curElement = getCurElement();
 		
@@ -388,7 +387,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 	}
 
 	@Override
-	public void onText(OOTokenizer tokenizer, long stringRef) {
+	public void onText(Tokenizer tokenizer, long stringRef) {
 		final String text = tokenizer.asString(stringRef);
 		
 		final OOTextElement element = new OOTextElement(text);
@@ -399,7 +398,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 	}
 
 	@Override
-	public void onAttributeWithoutValue(OOTokenizer tokenizer, HTMLAttribute attribute) {
+	public void onAttributeWithoutValue(Tokenizer tokenizer, HTMLAttribute attribute) {
 		switch (attribute) {
 		
 		case CONTENTEDITABLE:
@@ -412,20 +411,20 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 		}
 	}
 	
-	private static boolean booleanValue(OOTokenizer tokenizer, long stringRef) {
+	private static boolean booleanValue(Tokenizer tokenizer, long stringRef) {
 		return HTMLStringConversion.booleanValue(tokenizer.asString(stringRef));
 	}
 
-	private static String booleanMinimizable(OOTokenizer tokenizer, long stringRef) {
+	private static String booleanMinimizable(Tokenizer tokenizer, long stringRef) {
 		return tokenizer.asString(stringRef);
 	}
 
-	private static boolean yesNoValue(OOTokenizer tokenizer, long stringRef) {
+	private static boolean yesNoValue(Tokenizer tokenizer, long stringRef) {
 		return HTMLStringConversion.yesNoValue(tokenizer.asString(stringRef));
 	}
 
 	@Override
-	public void onAttributeWithValue (OOTokenizer tokenizer, HTMLAttribute attribute, long stringRef, HTMLElement element) {
+	public void onAttributeWithValue (Tokenizer tokenizer, HTMLAttribute attribute, long stringRef, HTMLElement element) {
 		final OOTagElement ref = getCurElement();
 
 		if (element != ref.getType()) {
@@ -733,7 +732,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 	}
 
 	@Override
-	public void onClassAttributeValue(OOTokenizer tokenizer, long stringRef) {
+	public void onClassAttributeValue(Tokenizer tokenizer, long stringRef) {
 		
 		final String classString = tokenizer.asString(stringRef);
 		
@@ -743,7 +742,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 	}
 
 	@Override
-	public void onStyleAttributeValue(OOTokenizer tokenizer, String key, String value) {
+	public void onStyleAttributeValue(Tokenizer tokenizer, String key, String value) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -756,7 +755,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 	private final OOStyleDocument styleParserListener = new OOStyleDocument();
 	
 	@Override
-	public IHTMLStyleParserListener<OOTagElement, OOTokenizer> getStyleParserListener() {
+	public IHTMLStyleParserListener<OOTagElement> getStyleParserListener() {
 		return styleParserListener;
 	}
 

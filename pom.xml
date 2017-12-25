@@ -30,7 +30,6 @@
 	    <module>css-test</module>
 	    <module>io-common</module>
 	    <module>io-long</module>
-	    <module>io-oo</module>
 	    <module>jsapi-common</module>
 	    <module>jsapi-dom</module>
 	    <module>jsapi-file</module>
