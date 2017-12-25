@@ -26,4 +26,6 @@ public interface Tokenizer {
 	int asDecimalSize(long stringRef);
 
 	BigDecimal asBigDecimal(long stringRef);
+	
+	String asString(long startOffset, long endOffset);
 }

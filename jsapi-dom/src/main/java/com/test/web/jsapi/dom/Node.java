@@ -1,16 +1,18 @@
 package com.test.web.jsapi.dom;
 
+import com.test.web.jsapi.common.dom.IDocumentContext;
+
 public abstract class Node<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEMENT, ATTRIBUTE>>
 	extends EventTarget<ELEMENT, ATTRIBUTE, DOCUMENT>{
 
-	Node() {
+	protected Node() {
 	}
 
-	Node(DOCUMENT document) {
+	protected Node(DOCUMENT document) {
 		super(document);
 	}
 
-	Node(DOCUMENT document, ELEMENT element) {
+	protected Node(DOCUMENT document, ELEMENT element) {
 		super(document, element);
 	}
 }

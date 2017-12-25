@@ -1,6 +1,7 @@
 package com.test.web.css.common.enums;
 
 import com.test.web.types.IKeyValueList;
+import com.test.web.types.StringMap;
 import com.test.web.types.ValueArity;
 
 /**
@@ -67,12 +68,26 @@ public enum CSStyle implements IKeyValueList {
 	FILTER("filter", ValueArity.ONE)
 	;
 	
+	private static final StringMap<CSStyle> byName;
+	
+	static {
+		byName = new StringMap<>();
+		
+		for (CSStyle style : CSStyle.values()) {
+			byName.add(style.getName(), style);
+		}
+	}
+	
 	private final String name;
 	private final ValueArity valueType;
 
 	private CSStyle(String name, ValueArity valueType) {
 		this.name = name;
 		this.valueType = valueType;
+	}
+
+	public static CSStyle fromPropertyName(String propertyName) {
+		return byName.get(propertyName);
 	}
 
 	@Override

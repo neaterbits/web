@@ -21,10 +21,12 @@ import com.test.web.css.common.enums.CSSForeground;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSPositionComponent;
+import com.test.web.css.common.enums.CSSRuleType;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.io.common.CharInput;
+import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.BaseParser;
 import com.test.web.parse.common.Lexer;
 import com.test.web.parse.common.LexerMatch;
@@ -41,13 +43,15 @@ import com.test.web.types.Value;
  */
 public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput> {
 	
-	private final Lexer<CSSToken, CharInput> lexer; 
+	private final Lexer<CSSToken, CharInput> lexer;
+	private final Tokenizer tokenizer;
 	private final CSSParserListener<LISTENER_CONTEXT> listener;
 
-	public CSSParser(Lexer<CSSToken, CharInput> lexer, CSSParserListener<LISTENER_CONTEXT> listener) {
+	public CSSParser(Lexer<CSSToken, CharInput> lexer, Tokenizer tokenizer, CSSParserListener<LISTENER_CONTEXT> listener) {
 		super(lexer, CSSToken.WS);
 		
 		this.lexer = getLexer();
+		this.tokenizer = tokenizer;
 		this.listener = listener;
 	}
 	
@@ -55,8 +59,8 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		return new Lexer<CSSToken, CharInput>(input, CSSToken.class, CSSToken.NONE, CSSToken.EOF);
 	}
 		
-	public CSSParser(CharInput input, CSSParserListener<LISTENER_CONTEXT> listener) {
-		this(createLexer(input), listener);
+	public CSSParser(CharInput input, Tokenizer tokenizer, CSSParserListener<LISTENER_CONTEXT> listener) {
+		this(createLexer(input), tokenizer, listener);
 	}
 	
 	@SafeVarargs
@@ -75,9 +79,10 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			case ID_MARKER:
 			case CLASS_MARKER:
 			case TAG:
-				final LISTENER_CONTEXT context = listener.onBlockStart();
-				parseMarkedBlock(token, context);
-				listener.onBlockEnd(context);
+				final LISTENER_CONTEXT context = listener.onBlockStart(CSSRuleType.STYLE);
+				final long startPos = parseMarkedBlock(token, context);
+
+				listener.onBlockEnd(context, tokenizer, startPos, lexer.getInputReadPos());
 				break;
 				
 			case WS:
@@ -96,7 +101,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		} while (!done);
 	}
 	
-	private void parseMarkedBlock(CSSToken initialMarker, LISTENER_CONTEXT context) throws IOException, ParserException {
+	private long parseMarkedBlock(CSSToken initialMarker, LISTENER_CONTEXT context) throws IOException, ParserException {
 		// First read the initial marker
 		parseSelector(initialMarker, context);
 		
@@ -135,8 +140,12 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			
 		} while (!done);
 
+		long blockStartOffset = lexer.getInputReadPos();
+
 		// Done, parse block
 		parseBlockContents(context);
+		
+		return blockStartOffset;
 	}
 	
 	private void parseSelector(CSSToken marker, LISTENER_CONTEXT context) throws IOException, ParserException {

@@ -3,7 +3,8 @@ package com.test.web.document.html.oo;
 import java.io.IOException;
 import java.util.Arrays;
 
-import com.test.web.css.oo.OOCSSElement;
+import com.test.web.css.common.enums.CSSRuleType;
+import com.test.web.css.oo.OOCSSRule;
 import com.test.web.document.common.DocumentState;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLAttributeValueType;
@@ -38,7 +39,7 @@ public abstract class OOTagElement extends OOAttributes {
 	private int tabindex;
 	private String hidden;
 	
-	private OOCSSElement styleElement;
+	private OOCSSRule styleElement;
 	private String style; // store style as plain text as well as parsed CSS
 	
 	abstract HTMLElement getType();
@@ -217,7 +218,7 @@ public abstract class OOTagElement extends OOAttributes {
 		this.tabindex = setOrClearAttribute(HTMLAttribute.TABINDEX, tabindex);
 	}
 
-	final OOCSSElement getStyleElement() {
+	final OOCSSRule getStyleElement() {
 		return styleElement;
 	}
 	
@@ -225,7 +226,7 @@ public abstract class OOTagElement extends OOAttributes {
 		return style;
 	}
 
-	final void setStyle(OOCSSElement styleElement, String style) {
+	final void setStyle(OOCSSRule styleElement, String style) {
 		
 		if (styleElement == null && style != null) {
 			throw new IllegalArgumentException("styleElement == null && style != null");
@@ -455,17 +456,17 @@ public abstract class OOTagElement extends OOAttributes {
 		
 		final OOStyleDocument listener = new OOStyleDocument();
 		
-		OOCSSElement cssElement = getStyleElement();
+		OOCSSRule cssElement = getStyleElement();
 		
 		if (cssElement == null) {
-			cssElement = listener.allocateCurParseElement();
+			cssElement = listener.allocateCurParseElement(CSSRuleType.STYLE);
 		}
 		else{
 			listener.setCurParseElement(cssElement);
 		}
 
 		final Lexer<CSSToken, CharInput> lexer = CSSParser.createLexer(charInput);
-		final CSSParser<Void> cssParser = new CSSParser<>(charInput, listener);
+		final CSSParser<Void> cssParser = new CSSParser<>(charInput, null, listener);
 		
 		boolean done = false;
 

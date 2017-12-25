@@ -53,7 +53,7 @@ public final class HTMLParser<ELEMENT, STYLE_DOCUMENT>
 		this.htmlListener = htmlListener;
 		
 		this.styleAttributeListener = styleAttributeListener;
-		this.styleAttributeParser = new CSSParser<>(input, styleAttributeListener);
+		this.styleAttributeParser = new CSSParser<>(input, tokenizer, styleAttributeListener);
 		
 		this.parseStyleDocument = parseStyleDocument;
 	}
@@ -581,10 +581,11 @@ public final class HTMLParser<ELEMENT, STYLE_DOCUMENT>
 			styleDocument = null;
 		}
 		else {
-			final CharInput charInput = new StringCharInput(text);
+			final StringCharInput charInput = new StringCharInput(text);
 			
-			styleDocument = parseStyleDocument.parse(charInput);
-		}	
+			styleDocument = parseStyleDocument.parse(charInput, null);
+		}
+
 		return styleDocument;
 	}
 

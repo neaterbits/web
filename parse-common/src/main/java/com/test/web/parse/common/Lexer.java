@@ -482,6 +482,10 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		return 0;
 	}
   
+	public final long getInputReadPos() {
+		return input.getReadPos();
+	}
+
 	private void debug(String s) {
 		System.out.println(PREFIX + " " + lineNo + ": " + s);
 	}

@@ -32,6 +32,7 @@
 	    <module>io-long</module>
 	    <module>jsapi-common</module>
 	    <module>jsapi-dom</module>
+	    <module>jsapi-cssom</module>
 	    <module>jsapi-file</module>
 	    <module>jsengine-common</module>
 	    <module>jsengine-test</module>

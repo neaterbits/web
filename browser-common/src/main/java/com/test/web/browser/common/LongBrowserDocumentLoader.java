@@ -8,6 +8,7 @@ import com.test.web.document.html._long.LongHTMLDocument;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.io.common.CharInput;
 import com.test.web.io.common.LoadStream;
+import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser;
 import com.test.web.parse.html.HTMLParser;
@@ -24,10 +25,10 @@ public class LongBrowserDocumentLoader
 		super(rendererFactory, bufferRendererFactory, textExtent, debugListeners);
 	}
 
-	private LongCSSDocument parseCSS(CharInput charInput, CSSContext<Integer> cssContext) throws IOException, ParserException {
+	private LongCSSDocument parseCSS(CharInput charInput, Tokenizer tokenizer, CSSContext<Integer> cssContext) throws IOException, ParserException {
 		
 		final LongCSSDocument styleDocument = new LongCSSDocument();
-		final CSSParser<Void> cssParser = new CSSParser<>(charInput, styleDocument);
+		final CSSParser<Void> cssParser = new CSSParser<>(charInput, tokenizer, styleDocument);
 
 		// Just parse the CSS straight away
 		cssParser.parseCSS();
@@ -39,7 +40,7 @@ public class LongBrowserDocumentLoader
 
 	@Override
 	public IDocument<Integer, Integer> fromHTML(String html, CSSContext<Integer> cssContext) throws ParserException {
-		return LongHTMLDocument.parseHTMLDocument(html, charInput -> parseCSS(charInput, cssContext));
+		return LongHTMLDocument.parseHTMLDocument(html, (charInput, tokenizer) -> parseCSS(charInput, tokenizer, cssContext));
 	}
 
 	@Override

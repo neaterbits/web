@@ -22,19 +22,24 @@ import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSPositionComponent;
+import com.test.web.css.common.enums.CSSRuleType;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.io.common.Tokenizer;
 
 public interface CSSParserListener<CONTEXT> {
 
-	CONTEXT onBlockStart();
-	
+	CONTEXT onBlockStart(CSSRuleType ruleType);
+
 	void onEntityMap(CONTEXT context, CSSTarget entity, String id);
-	
-	void onBlockEnd(CONTEXT context);
-	
+
+	void onStylePropertyText(CONTEXT context, Tokenizer tokenizer, long propertyStartPos, long propertyEndPos);
+
+	// block post is without brackets
+	void onBlockEnd(CONTEXT context, Tokenizer tokenizer, long blockStartPos, long blockEndPos);
+
 	void onLeft(CONTEXT context, int left, CSSUnit unit);
 	
 	void onTop(CONTEXT context, int top, CSSUnit unit);

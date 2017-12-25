@@ -28,7 +28,7 @@ import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
-import com.test.web.css.oo.OOCSSElement;
+import com.test.web.css.oo.OOCSSRule;
 import com.test.web.types.Angle;
 import com.test.web.types.ColorAlpha;
 import com.test.web.types.ColorRGB;
@@ -40,7 +40,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	public boolean isSet(OOTagElement ref, CSStyle style) {
 
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? false
@@ -48,7 +48,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	public int getLeft(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? 0
@@ -56,7 +56,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	public CSSUnit getLeftUnit(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -64,7 +64,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	public int getTop(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? 0
@@ -72,7 +72,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	public CSSUnit getTopUnit(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -80,7 +80,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	public int getWidth(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? 0
@@ -88,7 +88,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	public CSSUnit getWidthUnit(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -96,7 +96,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	public int getHeight(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? 0
@@ -104,7 +104,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	public CSSUnit getHeightUnit(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -112,7 +112,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	public <PARAM> void getMargins(OOTagElement ref, ICSSJustify<PARAM> setter, PARAM param) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 
 		if (styleElement != null) {
 			delegate.getMargins(styleElement, setter, param);
@@ -120,7 +120,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	public <PARAM> void getPadding(OOTagElement ref, ICSSJustify<PARAM> setter, PARAM param) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 
 		if (styleElement != null) {
 			delegate.getPadding(styleElement, setter, param);
@@ -128,7 +128,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	public CSSDisplay getDisplay(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -136,7 +136,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	public CSSPosition getPosition(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -144,7 +144,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	public CSSFloat getFloat(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -153,7 +153,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	
 	@Override
 	public CSSClear getClear(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -161,7 +161,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	public CSSTextAlign getTextAlign(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -169,7 +169,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	}
 
 	public CSSOverflow getOverflow(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -178,7 +178,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	
 	@Override
 	public CSSTextDecoration getTextDecoration(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -187,7 +187,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getColorR(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? ColorRGB.NONE
@@ -196,7 +196,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getColorG(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? ColorRGB.NONE
@@ -205,7 +205,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getColorB(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? ColorRGB.NONE
@@ -214,7 +214,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getColorA(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? ColorAlpha.NONE
@@ -223,7 +223,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	
 	@Override
 	public CSSForeground getColorType(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -232,7 +232,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getNumBgLayers(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? 0
@@ -241,7 +241,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public boolean isBgSet(OOTagElement ref, int bgLayer, CSStyle style) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? false
@@ -250,7 +250,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public String getBgImageURL(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -259,7 +259,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSBackgroundImage getBgImage(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -269,7 +269,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	
 	@Override
 	public CSSGradientDirectionType getGradientDirectionType(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -278,7 +278,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getGradientAngle(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? Angle.NONE
@@ -287,7 +287,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSPositionComponent getGradientPos1(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -296,7 +296,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSPositionComponent getGradientPos2(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -305,7 +305,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSGradientColorStop[] getGradientColorStops(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -314,7 +314,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getBgPositionLeft(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? DecimalSize.NONE
@@ -323,7 +323,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSUnit getBgPositionLeftUnit(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -332,7 +332,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getBgPositionTop(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? DecimalSize.NONE
@@ -341,7 +341,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSUnit getBgPositionTopUnit(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -350,7 +350,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSBackgroundPosition getBgPosition(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -359,7 +359,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getBgWidth(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? DecimalSize.NONE
@@ -368,7 +368,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSUnit getBgWidthUnit(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -377,7 +377,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getBgHeight(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? DecimalSize.NONE
@@ -386,7 +386,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSUnit getBgHeightUnit(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -395,7 +395,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSBackgroundSize getBgSize(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -404,7 +404,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSBackgroundRepeat getBgRepeat(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -413,7 +413,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSBackgroundAttachment getBgAttachment(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -422,7 +422,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSBackgroundOrigin getBgOrigin(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -431,7 +431,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSBackgroundOrigin getBgClip(OOTagElement ref, int bgLayer) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -487,7 +487,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getBgColorR(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? ColorRGB.NONE
@@ -496,7 +496,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getBgColorG(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? ColorRGB.NONE
@@ -505,7 +505,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getBgColorB(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? ColorRGB.NONE
@@ -514,7 +514,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getBgColorA(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? ColorAlpha.NONE
@@ -523,7 +523,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSBackgroundColor getBgColorType(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -572,7 +572,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getMinWidth(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -581,7 +581,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSUnit getMinWidthUnit(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -590,7 +590,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSMin getMinWidthType(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -599,7 +599,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getMinHeight(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -608,7 +608,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSUnit getMinHeightUnit(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -617,7 +617,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSMin getMinHeightType(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -626,7 +626,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getMaxWidth(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -635,7 +635,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSUnit getMaxWidthUnit(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -644,7 +644,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSMax getMaxWidthType(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -653,7 +653,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getMaxHeight(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -662,7 +662,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSUnit getMaxHeightUnit(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -671,7 +671,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSMax getMaxHeightType(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -680,7 +680,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 	
 	@Override
 	public CSSFilter getFilter(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -689,7 +689,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getBlur(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? -1
@@ -698,7 +698,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getBrightness(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? DecimalSize.NONE
@@ -707,7 +707,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getContrast(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? DecimalSize.NONE
@@ -716,7 +716,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getGrayscale(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? DecimalSize.NONE
@@ -725,7 +725,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public boolean hasDropShadow(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? false
@@ -734,7 +734,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getDropShadowH(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? DecimalSize.NONE
@@ -743,7 +743,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSUnit getDropShadowHUnit(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -752,7 +752,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getDropShadowV(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? DecimalSize.NONE
@@ -761,7 +761,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSUnit getDropShadowVUnit(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -770,7 +770,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getDropShadowBlur(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? -1
@@ -779,7 +779,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getDropShadowSpread(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? -1
@@ -788,7 +788,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getDropShadowR(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? ColorRGB.NONE
@@ -797,7 +797,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getDropShadowG(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? ColorRGB.NONE
@@ -806,7 +806,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getDropShadowB(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? ColorRGB.NONE
@@ -815,7 +815,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getDropShadowA(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? ColorAlpha.NONE
@@ -824,7 +824,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public CSSColor getDropShadowColor(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null
@@ -833,7 +833,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getHueRotate(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? DecimalSize.NONE
@@ -842,7 +842,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getInvert(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? DecimalSize.NONE
@@ -851,7 +851,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getOpacity(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? DecimalSize.NONE
@@ -860,7 +860,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getSaturate(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? DecimalSize.NONE
@@ -869,7 +869,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public int getSepia(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? DecimalSize.NONE
@@ -878,7 +878,7 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 
 	@Override
 	public String getFilterURL(OOTagElement ref) {
-		final OOCSSElement styleElement = ref.getStyleElement();
+		final OOCSSRule styleElement = ref.getStyleElement();
 		
 		return styleElement == null
 				? null

@@ -1,5 +1,7 @@
 package com.test.web.jsapi.dom;
 
+import com.test.web.jsapi.common.dom.IDocumentContext;
+
 public class Element<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEMENT, ATTRIBUTE>>
 	extends Node<ELEMENT, ATTRIBUTE, DOCUMENT>{
 

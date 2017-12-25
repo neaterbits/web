@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.test.web.css._long.BaseLongCSSDocument;
+import com.test.web.css.common.enums.CSSRuleType;
 import com.test.web.css.common.enums.CSSTarget;
+import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.html.IHTMLStyleParserListener;
 
 // Keeps track of style-attribute contents for all HTML elements within the DOM
@@ -19,7 +21,7 @@ final class LongStyleDocument extends BaseLongCSSDocument
 	}
 	
 	@Override
-	public Void onBlockStart() {
+	public Void onBlockStart(CSSRuleType ruleType) {
 		throw new UnsupportedOperationException("Not required for styles elements");
 	}
 
@@ -29,7 +31,12 @@ final class LongStyleDocument extends BaseLongCSSDocument
 	}
 
 	@Override
-	public void onBlockEnd(Void context) {
+	public void onStylePropertyText(Void context, Tokenizer tokenizer, long propertyStartPos, long propertyEndPos) {
+		throw new UnsupportedOperationException("Not required for styles elements");
+	}
+
+	@Override
+	public void onBlockEnd(Void context, Tokenizer tokenizer, long blockStartPos, long blockEndPos) {
 		throw new UnsupportedOperationException("Not required for styles elements");
 	}
 	

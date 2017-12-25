@@ -1,5 +1,7 @@
 package com.test.web.jsapi.dom;
 
+import com.test.web.jsapi.dom.Element;
+
 public class Event {
 	
 	// TODO perhaps use bitflags for fewer memwrites

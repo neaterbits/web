@@ -61,7 +61,7 @@ public class HTMLLoadQueueTest extends TestCase {
 				buffers,
 				parserListener,
 				doc.getStyleParserListener(),
-				charInput -> null);
+				(charInput, tokenizer) -> null);
 		
 		parser.parseHTMLFile();
 	}

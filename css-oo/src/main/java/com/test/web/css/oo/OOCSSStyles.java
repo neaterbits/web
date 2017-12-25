@@ -24,7 +24,10 @@ import com.test.web.types.ColorAlpha;
 import com.test.web.types.ColorRGB;
 import com.test.web.types.DecimalSize;
 
-public final class OOCSSElement extends OOStylesBase {
+public final class OOCSSStyles extends OOStylesText {
+
+	private CSSValue [] values;
+	private int numValues;
 	
 	private int left;
 	private CSSUnit leftUnit;
@@ -92,7 +95,7 @@ public final class OOCSSElement extends OOStylesBase {
 	// filters
 	private OOCSSFilter filter;
 	
-	public OOCSSElement() {
+	public OOCSSStyles() {
 		this.margins = new OOWrapping();
 		this.padding = new OOWrapping();
 
@@ -820,5 +823,108 @@ public final class OOCSSElement extends OOStylesBase {
 	void setUrl(String url) {
 		assureFilter().setUrl(url);
 	}
-}
+	
+	private int getPropertyIdx(String propertyName) {
+		int idx = -1;
+		
+		for (int i = 0; i < numValues; ++ i) {
+			if (propertyName.equals(values[i].name)) {
+				idx = i;
+				break;
+			}
+		}
 
+		return idx;
+	}
+
+	int getLength() {
+		return numValues;
+	}
+
+	String getStyleItem(int idx) {
+		
+		return idx < numValues ? values[idx].value : null;
+	}
+
+	String getPropertyValue(String propertyName) {
+		
+		final int idx = getPropertyIdx(propertyName);
+		
+		return idx >= 0 ? values[idx].value : null;
+	}
+
+	String getPropertyPriority(String propertyName) {
+		
+		final int idx = getPropertyIdx(propertyName);
+		
+		return idx >= 0 ? values[idx].priority : null;
+	}
+	
+	String removeProperty(String propertyName) {
+		final int idx = getPropertyIdx(propertyName);
+		
+		final String existing;
+		
+		if (idx >= 0) {
+			existing = values[idx].value;
+			
+			if (idx == numValues - 1) {
+				values[numValues - 1] = null;
+			}
+			else {
+				System.arraycopy(values, idx + 1, values, idx, numValues - idx - 1);
+			}
+			
+			-- numValues;
+		}
+		else {
+			existing = null;
+		}
+
+		return existing;
+	}
+
+	void setProperty(String propertyName, String value, String priority) {
+		if (values == null) {
+			this.values = new CSSValue[20];
+
+			this.values[0] = new CSSValue(propertyName, value, priority);
+			this.numValues = 1;
+		}
+		else {
+			final int idx = getPropertyIdx(propertyName);
+
+			if (idx >= 0) {
+				values[idx] = new CSSValue(propertyName, value, priority);
+			}
+			else {
+				// Add
+				if (numValues == values.length) {
+					this.values = Arrays.copyOf(values, values.length * 2);
+				}
+
+				this.values[numValues ++] = new CSSValue(propertyName, value, priority);
+			}
+		}
+	}
+
+	private static class CSSValue {
+		private final String name;
+		private final String value;
+		private final String priority;
+		
+		CSSValue(String name, String value, String priority) {
+			if (name == null) {
+				throw new IllegalArgumentException("name == null");
+			}
+
+			if (value == null) {
+				throw new IllegalArgumentException("name == null");
+			}
+		
+			this.name = name;
+			this.value = value;
+			this.priority = priority;
+		}
+	}
+}

@@ -50,7 +50,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT> extends TestCase {
 		
 		final StringBuffers buffers = new StringBuffers(new SimpleLoadStream(css));
 		
-		final CSSParser<Void> parser = new CSSParser<>(buffers, doc);
+		final CSSParser<Void> parser = new CSSParser<>(buffers, buffers, doc);
 		
 		parser.parseCSS();
 	

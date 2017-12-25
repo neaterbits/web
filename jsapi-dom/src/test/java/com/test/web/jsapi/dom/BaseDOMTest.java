@@ -2,7 +2,7 @@ package com.test.web.jsapi.dom;
 
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.oo.OOCSSDocument;
-import com.test.web.css.oo.OOCSSElement;
+import com.test.web.css.oo.OOCSSRule;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLAttributeValueType;
 import com.test.web.document.html.common.HTMLElement;
@@ -267,11 +267,11 @@ public abstract class BaseDOMTest extends TestCase {
 	}
 	
 	private JSVariableMap prepareVarMap(String html) throws ParserException {
-		final CSSContext<OOCSSElement> cssContext = new CSSContext<>();
+		final CSSContext<OOCSSRule> cssContext = new CSSContext<>();
 		
 		final OOHTMLDocument document = OOHTMLDocument.parseHTMLDocument(
 				html,
-				charInput -> DocumentParser.parseCSS(charInput, cssContext, new OOCSSDocument()));
+				(charInput, tokenizer) -> DocumentParser.parseCSS(charInput, tokenizer, cssContext, new OOCSSDocument()));
 
 		// Now run some JS tests
 		final JSVariableMap varMap = new JSVariableMap();

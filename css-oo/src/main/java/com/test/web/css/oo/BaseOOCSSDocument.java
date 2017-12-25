@@ -25,6 +25,7 @@ import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSPositionComponent;
+import com.test.web.css.common.enums.CSSRuleType;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
@@ -35,55 +36,59 @@ import com.test.web.parse.css.CSSParserListener;
 // This class is inherited from for both CSS documents and for CSS inline styles
 
 public abstract class BaseOOCSSDocument 
-		implements CSSParserListener<Void>, ICSSDocumentStyles<OOCSSElement> {
+		implements CSSParserListener<Void>, ICSSDocumentStyles<OOCSSRule> {
 
-	private OOCSSElement curParseElement;
+	private OOCSSRule curParseElement;
 
 	/***************************************************** Access interface *****************************************************/ 
 	
-	@Override
-	public boolean isSet(OOCSSElement ref, CSStyle style) {
-		return ref.hasStyle(style);
+	static OOCSSStyles styles(OOCSSRule rule) {
+		return ((OOCSSBaseStylesRule)rule).getStyles();
 	}
 	
 	@Override
-	public int getLeft(OOCSSElement ref) {
-		return ref.getLeft();
+	public final boolean isSet(OOCSSRule ref, CSStyle style) {
+		return styles(ref).hasStyle(style);
+	}
+	
+	@Override
+	public final int getLeft(OOCSSRule ref) {
+		return styles(ref).getLeft();
 	}
 
 	@Override
-	public CSSUnit getLeftUnit(OOCSSElement ref) {
-		return ref.getLeftUnit();
+	public final CSSUnit getLeftUnit(OOCSSRule ref) {
+		return styles(ref).getLeftUnit();
 	}
 
 	@Override
-	public int getTop(OOCSSElement ref) {
-		return ref.getTop();
+	public final int getTop(OOCSSRule ref) {
+		return styles(ref).getTop();
 	}
 
 	@Override
-	public CSSUnit getTopUnit(OOCSSElement ref) {
-		return ref.getTopUnit();
+	public final CSSUnit getTopUnit(OOCSSRule ref) {
+		return styles(ref).getTopUnit();
 	}
 
 	@Override
-	public int getWidth(OOCSSElement ref) {
-		return ref.getWidth();
+	public final int getWidth(OOCSSRule ref) {
+		return styles(ref).getWidth();
 	}
 
 	@Override
-	public CSSUnit getWidthUnit(OOCSSElement ref) {
-		return ref.getWidthUnit();
+	public final CSSUnit getWidthUnit(OOCSSRule ref) {
+		return styles(ref).getWidthUnit();
 	}
 
 	@Override
-	public int getHeight(OOCSSElement ref) {
-		return ref.getHeight();
+	public final int getHeight(OOCSSRule ref) {
+		return styles(ref).getHeight();
 	}
 
 	@Override
-	public CSSUnit getHeightUnit(OOCSSElement ref) {
-		return ref.getHeightUnit();
+	public final CSSUnit getHeightUnit(OOCSSRule ref) {
+		return styles(ref).getHeightUnit();
 	}
 	
 	private <PARAM> void set(OOWrapping ref, ICSSJustify<PARAM> setter, PARAM param) {
@@ -97,188 +102,188 @@ public abstract class BaseOOCSSDocument
 	}
 
 	@Override
-	public <PARAM> void getMargins(OOCSSElement ref, ICSSJustify<PARAM> setter, PARAM param) {
-		set(ref.getMargins(), setter, param);
+	public final <PARAM> void getMargins(OOCSSRule ref, ICSSJustify<PARAM> setter, PARAM param) {
+		set(styles(ref).getMargins(), setter, param);
 	}
 
 	@Override
-	public <PARAM> void getPadding(OOCSSElement ref, ICSSJustify<PARAM> setter, PARAM param) {
-		set(ref.getPadding(), setter, param);
+	public final <PARAM> void getPadding(OOCSSRule ref, ICSSJustify<PARAM> setter, PARAM param) {
+		set(styles(ref).getPadding(), setter, param);
 	}
 
 	@Override
-	public CSSDisplay getDisplay(OOCSSElement ref) {
-		return ref.getDisplay();
+	public final CSSDisplay getDisplay(OOCSSRule ref) {
+		return styles(ref).getDisplay();
 	}
 
 	@Override
-	public CSSPosition getPosition(OOCSSElement ref) {
-		return ref.getPosition();
+	public final CSSPosition getPosition(OOCSSRule ref) {
+		return styles(ref).getPosition();
 	}
 
 	@Override
-	public CSSFloat getFloat(OOCSSElement ref) {
-		return ref.getFloat();
+	public final CSSFloat getFloat(OOCSSRule ref) {
+		return styles(ref).getFloat();
 	}
 
 	@Override
-	public CSSClear getClear(OOCSSElement ref) {
-		return ref.getClear();
+	public final CSSClear getClear(OOCSSRule ref) {
+		return styles(ref).getClear();
 	}
 
 	@Override
-	public CSSTextAlign getTextAlign(OOCSSElement ref) {
-		return ref.getTextAlign();
+	public final CSSTextAlign getTextAlign(OOCSSRule ref) {
+		return styles(ref).getTextAlign();
 	}
 
 	@Override
-	public CSSOverflow getOverflow(OOCSSElement ref) {
-		return ref.getOverflow();
+	public final CSSOverflow getOverflow(OOCSSRule ref) {
+		return styles(ref).getOverflow();
 	}
 
 	@Override
-	public CSSTextDecoration getTextDecoration(OOCSSElement ref) {
-		return ref.getTextDecoration();
+	public final CSSTextDecoration getTextDecoration(OOCSSRule ref) {
+		return styles(ref).getTextDecoration();
 	}
 
 	@Override
-	public int getColorR(OOCSSElement ref) {
-		return ref.getColorR();
+	public final int getColorR(OOCSSRule ref) {
+		return styles(ref).getColorR();
 	}
 
 	@Override
-	public int getColorG(OOCSSElement ref) {
-		return ref.getColorG();
+	public final int getColorG(OOCSSRule ref) {
+		return styles(ref).getColorG();
 	}
 
 	@Override
-	public int getColorB(OOCSSElement ref) {
-		return ref.getColorB();
+	public final int getColorB(OOCSSRule ref) {
+		return styles(ref).getColorB();
 	}
 
 	@Override
-	public int getColorA(OOCSSElement ref) {
-		return ref.getColorA();
+	public final int getColorA(OOCSSRule ref) {
+		return styles(ref).getColorA();
 	}
 	
 	@Override
-	public CSSForeground getColorType(OOCSSElement ref) {
-		return ref.getColorType();
+	public final CSSForeground getColorType(OOCSSRule ref) {
+		return styles(ref).getColorType();
 	}
 	
 	@Override
-	public int getNumBgLayers(OOCSSElement ref) {
-		return ref.getNumBgLayers();
+	public final int getNumBgLayers(OOCSSRule ref) {
+		return styles(ref).getNumBgLayers();
 	}
 	
 	@Override
-	public boolean isBgSet(OOCSSElement ref, int bgLayer, CSStyle style) {
-		return ref.getBgLayer(bgLayer).hasStyle(style);
+	public final boolean isBgSet(OOCSSRule ref, int bgLayer, CSStyle style) {
+		return styles(ref).getBgLayer(bgLayer).hasStyle(style);
 	}
 
 	@Override
-	public String getBgImageURL(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getImageUrl();
+	public final String getBgImageURL(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getImageUrl();
 	}
 
 	@Override
-	public CSSBackgroundImage getBgImage(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getImage();
+	public final CSSBackgroundImage getBgImage(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getImage();
 	}
 
 	@Override
-	public CSSGradientDirectionType getGradientDirectionType(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getGradientDirectionType();
+	public final CSSGradientDirectionType getGradientDirectionType(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getGradientDirectionType();
 	}
 
 	@Override
-	public int getGradientAngle(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getGradientAngle();
+	public final int getGradientAngle(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getGradientAngle();
 	}
 
 	@Override
-	public CSSPositionComponent getGradientPos1(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getGradientPos1();
+	public final CSSPositionComponent getGradientPos1(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getGradientPos1();
 	}
 
 	@Override
-	public CSSPositionComponent getGradientPos2(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getGradientPos2();
+	public final CSSPositionComponent getGradientPos2(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getGradientPos2();
 	}
 
 	@Override
-	public CSSGradientColorStop[] getGradientColorStops(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getGradientColorStops();
+	public final CSSGradientColorStop[] getGradientColorStops(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getGradientColorStops();
 	}
 
 	@Override
-	public int getBgPositionLeft(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getPositionLeft();
+	public final int getBgPositionLeft(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getPositionLeft();
 	}
 
 	@Override
-	public CSSUnit getBgPositionLeftUnit(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getPositionLeftUnit();
+	public final CSSUnit getBgPositionLeftUnit(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getPositionLeftUnit();
 	}
 
 	@Override
-	public int getBgPositionTop(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getPositionTop();
+	public final int getBgPositionTop(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getPositionTop();
 	}
 
 	@Override
-	public CSSUnit getBgPositionTopUnit(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getPositionTopUnit();
+	public final CSSUnit getBgPositionTopUnit(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getPositionTopUnit();
 	}
 
 	@Override
-	public CSSBackgroundPosition getBgPosition(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getPosition();
+	public final CSSBackgroundPosition getBgPosition(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getPosition();
 	}
 
 	@Override
-	public int getBgWidth(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getSizeWidth();
+	public final int getBgWidth(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getSizeWidth();
 	}
 
 	@Override
-	public CSSUnit getBgWidthUnit(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getSizeWidthUnit();
+	public final CSSUnit getBgWidthUnit(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getSizeWidthUnit();
 	}
 
 	@Override
-	public int getBgHeight(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getSizeHeight();
+	public final int getBgHeight(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getSizeHeight();
 	}
 
 	@Override
-	public CSSUnit getBgHeightUnit(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getSizeHeightUnit();
+	public final CSSUnit getBgHeightUnit(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getSizeHeightUnit();
 	}
 
 	@Override
-	public CSSBackgroundSize getBgSize(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getSize();
+	public final CSSBackgroundSize getBgSize(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getSize();
 	}
 
 	@Override
-	public CSSBackgroundRepeat getBgRepeat(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getRepeat();
+	public final CSSBackgroundRepeat getBgRepeat(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getRepeat();
 	}
 
 	@Override
-	public CSSBackgroundAttachment getBgAttachment(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getAttachment();
+	public final CSSBackgroundAttachment getBgAttachment(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getAttachment();
 	}
 
 	@Override
-	public CSSBackgroundOrigin getBgOrigin(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getOrigin();
+	public final CSSBackgroundOrigin getBgOrigin(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getOrigin();
 	}
 
 	@Override
-	public CSSBackgroundOrigin getBgClip(OOCSSElement ref, int bgLayer) {
-		return ref.getBgLayer(bgLayer).getClip();
+	public final CSSBackgroundOrigin getBgClip(OOCSSRule ref, int bgLayer) {
+		return styles(ref).getBgLayer(bgLayer).getClip();
 	}
 
 	/*
@@ -309,229 +314,232 @@ public abstract class BaseOOCSSDocument
 	*/
 
 	@Override
-	public int getBgColorR(OOCSSElement ref) {
-		return ref.getBgColorR();
+	public final int getBgColorR(OOCSSRule ref) {
+		return styles(ref).getBgColorR();
 	}
 
 	@Override
-	public int getBgColorG(OOCSSElement ref) {
-		return ref.getBgColorG();
+	public final int getBgColorG(OOCSSRule ref) {
+		return styles(ref).getBgColorG();
 	}
 
 	@Override
-	public int getBgColorB(OOCSSElement ref) {
-		return ref.getBgColorB();
+	public final int getBgColorB(OOCSSRule ref) {
+		return styles(ref).getBgColorB();
 	}
 
 	@Override
-	public int getBgColorA(OOCSSElement ref) {
-		return ref.getBgColorA();
+	public final int getBgColorA(OOCSSRule ref) {
+		return styles(ref).getBgColorA();
 	}
 
 	@Override
-	public CSSBackgroundColor getBgColorType(OOCSSElement ref) {
-		return ref.getBgColorType();
+	public final CSSBackgroundColor getBgColorType(OOCSSRule ref) {
+		return styles(ref).getBgColorType();
 	}
 
 	@Override
-	public int getMinWidth(OOCSSElement ref) {
-		return ref.getMinWidth();
+	public final int getMinWidth(OOCSSRule ref) {
+		return styles(ref).getMinWidth();
 	}
 
 	@Override
-	public CSSUnit getMinWidthUnit(OOCSSElement ref) {
-		return ref.getMinWidthUnit();
+	public final CSSUnit getMinWidthUnit(OOCSSRule ref) {
+		return styles(ref).getMinWidthUnit();
 	}
 
 	@Override
-	public CSSMin getMinWidthType(OOCSSElement ref) {
-		return ref.getMinWidthType();
+	public final CSSMin getMinWidthType(OOCSSRule ref) {
+		return styles(ref).getMinWidthType();
 	}
 
 	@Override
-	public int getMinHeight(OOCSSElement ref) {
-		return ref.getMinHeight();
+	public final int getMinHeight(OOCSSRule ref) {
+		return styles(ref).getMinHeight();
 	}
 
 	@Override
-	public CSSUnit getMinHeightUnit(OOCSSElement ref) {
-		return ref.getMinHeightUnit();
+	public final CSSUnit getMinHeightUnit(OOCSSRule ref) {
+		return styles(ref).getMinHeightUnit();
 	}
 
 	@Override
-	public CSSMin getMinHeightType(OOCSSElement ref) {
-		return ref.getMinHeightType();
+	public final CSSMin getMinHeightType(OOCSSRule ref) {
+		return styles(ref).getMinHeightType();
 	}
 
 	@Override
-	public int getMaxWidth(OOCSSElement ref) {
-		return ref.getMaxWidth();
+	public final int getMaxWidth(OOCSSRule ref) {
+		return styles(ref).getMaxWidth();
 	}
 
 	@Override
-	public CSSUnit getMaxWidthUnit(OOCSSElement ref) {
-		return ref.getMaxWidthUnit();
+	public final CSSUnit getMaxWidthUnit(OOCSSRule ref) {
+		return styles(ref).getMaxWidthUnit();
 	}
 
 	@Override
-	public CSSMax getMaxWidthType(OOCSSElement ref) {
-		return ref.getMaxWidthType();
+	public final CSSMax getMaxWidthType(OOCSSRule ref) {
+		return styles(ref).getMaxWidthType();
 	}
 
 	@Override
-	public int getMaxHeight(OOCSSElement ref) {
-		return ref.getMaxHeight();
+	public final int getMaxHeight(OOCSSRule ref) {
+		return styles(ref).getMaxHeight();
 	}
 
 	@Override
-	public CSSUnit getMaxHeightUnit(OOCSSElement ref) {
-		return ref.getMaxHeightUnit();
+	public final CSSUnit getMaxHeightUnit(OOCSSRule ref) {
+		return styles(ref).getMaxHeightUnit();
 	}
 
 	@Override
-	public CSSMax getMaxHeightType(OOCSSElement ref) {
-		return ref.getMaxHeightType();
+	public final CSSMax getMaxHeightType(OOCSSRule ref) {
+		return styles(ref).getMaxHeightType();
 	}
 	
 	@Override
-	public CSSFilter getFilter(OOCSSElement ref) {
-		return ref.getFilter();
+	public final CSSFilter getFilter(OOCSSRule ref) {
+		return styles(ref).getFilter();
 	}
 
 	@Override
-	public int getBlur(OOCSSElement ref) {
-		return ref.getBlur();
+	public final int getBlur(OOCSSRule ref) {
+		return styles(ref).getBlur();
 	}
 
 	@Override
-	public int getBrightness(OOCSSElement ref) {
-		return ref.getBrightness();
+	public final int getBrightness(OOCSSRule ref) {
+		return styles(ref).getBrightness();
 	}
 
 	@Override
-	public int getContrast(OOCSSElement ref) {
-		return ref.getContrast();
+	public final int getContrast(OOCSSRule ref) {
+		return styles(ref).getContrast();
 	}
 
 	@Override
-	public int getGrayscale(OOCSSElement ref) {
-		return ref.getGrayscale();
+	public final int getGrayscale(OOCSSRule ref) {
+		return styles(ref).getGrayscale();
 	}
 	@Override
-	public boolean hasDropShadow(OOCSSElement ref) {
-		return ref.hasDropShadow();
-	}
-
-	@Override
-	public int getDropShadowH(OOCSSElement ref) {
-		return ref.getDropShadowH();
+	public final boolean hasDropShadow(OOCSSRule ref) {
+		return styles(ref).hasDropShadow();
 	}
 
 	@Override
-	public CSSUnit getDropShadowHUnit(OOCSSElement ref) {
-		return ref.getDropShadowHUnit();
+	public final int getDropShadowH(OOCSSRule ref) {
+		return styles(ref).getDropShadowH();
 	}
 
 	@Override
-	public int getDropShadowV(OOCSSElement ref) {
-		return ref.getDropShadowV();
+	public final CSSUnit getDropShadowHUnit(OOCSSRule ref) {
+		return styles(ref).getDropShadowHUnit();
 	}
 
 	@Override
-	public CSSUnit getDropShadowVUnit(OOCSSElement ref) {
-		return ref.getDropShadowVUnit();
+	public final int getDropShadowV(OOCSSRule ref) {
+		return styles(ref).getDropShadowV();
 	}
 
 	@Override
-	public int getDropShadowBlur(OOCSSElement ref) {
-		return ref.getDropShadowBlur();
+	public final CSSUnit getDropShadowVUnit(OOCSSRule ref) {
+		return styles(ref).getDropShadowVUnit();
 	}
 
 	@Override
-	public int getDropShadowSpread(OOCSSElement ref) {
-		return ref.getDropShadowSpread();
+	public final int getDropShadowBlur(OOCSSRule ref) {
+		return styles(ref).getDropShadowBlur();
 	}
 
 	@Override
-	public int getDropShadowR(OOCSSElement ref) {
-		return ref.getDropShadowR();
+	public final int getDropShadowSpread(OOCSSRule ref) {
+		return styles(ref).getDropShadowSpread();
 	}
 
 	@Override
-	public int getDropShadowG(OOCSSElement ref) {
-		return ref.getDropShadowG();
+	public final int getDropShadowR(OOCSSRule ref) {
+		return styles(ref).getDropShadowR();
 	}
 
 	@Override
-	public int getDropShadowB(OOCSSElement ref) {
-		return ref.getDropShadowB();
+	public final int getDropShadowG(OOCSSRule ref) {
+		return styles(ref).getDropShadowG();
 	}
 
 	@Override
-	public int getDropShadowA(OOCSSElement ref) {
-		return ref().getDropShadowA();
+	public final int getDropShadowB(OOCSSRule ref) {
+		return styles(ref).getDropShadowB();
 	}
 
 	@Override
-	public CSSColor getDropShadowColor(OOCSSElement ref) {
-		return ref.getDropShadowColor();
+	public final int getDropShadowA(OOCSSRule ref) {
+		return stylesRef().getDropShadowA();
 	}
 
 	@Override
-	public int getHueRotate(OOCSSElement ref) {
-		return ref.getHueRotate();
+	public final CSSColor getDropShadowColor(OOCSSRule ref) {
+		return styles(ref).getDropShadowColor();
 	}
 
 	@Override
-	public int getInvert(OOCSSElement ref) {
-		return ref.getInvert();
+	public final int getHueRotate(OOCSSRule ref) {
+		return styles(ref).getHueRotate();
 	}
 
 	@Override
-	public int getOpacity(OOCSSElement ref) {
-		return ref.getOpacity();
+	public final int getInvert(OOCSSRule ref) {
+		return styles(ref).getInvert();
 	}
 
 	@Override
-	public int getSaturate(OOCSSElement ref) {
-		return ref.getSaturate();
+	public final int getOpacity(OOCSSRule ref) {
+		return styles(ref).getOpacity();
 	}
 
 	@Override
-	public int getSepia(OOCSSElement ref) {
-		return ref.getSepia();
+	public final int getSaturate(OOCSSRule ref) {
+		return styles(ref).getSaturate();
 	}
 
 	@Override
-	public String getFilterURL(OOCSSElement ref) {
-		return ref().getUrl();
+	public final int getSepia(OOCSSRule ref) {
+		return styles(ref).getSepia();
+	}
+
+	@Override
+	public final String getFilterURL(OOCSSRule ref) {
+		return styles(ref).getUrl();
 	}
 
 	/***************************************************** Parse listener *****************************************************/ 
 	
-	final OOCSSElement ref() {
-		return curParseElement;
+	final OOCSSStyles stylesRef() {
+		return ((OOCSSBaseStylesRule)curParseElement).getStyles();
 	}
 	
+	final OOCSSRule rule() {
+		return curParseElement;
+	}
 
 	@Override
 	public void onLeft(Void context, int left, CSSUnit unit) {
-		ref().addLeft(left, unit);
+		stylesRef().addLeft(left, unit);
 	}
 
 	@Override
 	public void onTop(Void context, int top, CSSUnit unit) {
-		ref().addTop(top, unit);
+		stylesRef().addTop(top, unit);
 	}
 
 	@Override
 	public void onWidth(Void context, int width, CSSUnit unit) {
-		ref().addWidth(width, unit);
+		stylesRef().addWidth(width, unit);
 	}
 
 	@Override
 	public void onHeight(Void context, int height, CSSUnit unit) {
-		ref().addHeight(height, unit);
+		stylesRef().addHeight(height, unit);
 	}
 
 	
@@ -542,7 +550,7 @@ public abstract class BaseOOCSSDocument
 			int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
 			int left, CSSUnit leftUnit, CSSJustify leftType) {
 		
-		ref().setMargins(top, topUnit, topType, right, rightUnit, rightType, bottom, bottomUnit, bottomType, left, leftUnit, leftType);
+		stylesRef().setMargins(top, topUnit, topType, right, rightUnit, rightType, bottom, bottomUnit, bottomType, left, leftUnit, leftType);
 	}
 
 	@Override
@@ -552,182 +560,182 @@ public abstract class BaseOOCSSDocument
 			int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
 			int left, CSSUnit leftUnit, CSSJustify leftType) {
 		
-		ref().setPadding(top, topUnit, topType, right, rightUnit, rightType, bottom, bottomUnit, bottomType, left, leftUnit, leftType);
+		stylesRef().setPadding(top, topUnit, topType, right, rightUnit, rightType, bottom, bottomUnit, bottomType, left, leftUnit, leftType);
 	}
 	
 	@Override
 	public void onColor(Void context, int r, int g, int b, int a) {
-		ref().setColorRGB(r, g, b, a);
+		stylesRef().setColorRGB(r, g, b, a);
 	}
 
 	@Override
 	public void onColor(Void context, CSSColor color) {
-		ref().setColorCSS(color);
+		stylesRef().setColorCSS(color);
 	}
 	
 	@Override
 	public void onColor(Void context, CSSForeground foreground) {
-		ref().setColorType(foreground);
+		stylesRef().setColorType(foreground);
 	}
 	
 	@Override
 	public void onBgImageURL(Void context, int bgLayer, String url) {
-		ref().getOrAddBgLayer(bgLayer).setImageURL(url);
+		stylesRef().getOrAddBgLayer(bgLayer).setImageURL(url);
 	}
 
 	@Override
 	public void onBgImage(Void context, int bgLayer, CSSBackgroundImage image) {
-		ref().getOrAddBgLayer(bgLayer).setImage(image);
+		stylesRef().getOrAddBgLayer(bgLayer).setImage(image);
 	}
 
 	@Override
 	public void onBgGradient(Void context, int bgLayer, int angle, CSSGradientColorStop[] colorStops) {
-		ref().getOrAddBgLayer(bgLayer).setGradient(angle, colorStops);
+		stylesRef().getOrAddBgLayer(bgLayer).setGradient(angle, colorStops);
 	}
 
 	@Override
 	public void onBgGradient(Void context, int bgLayer, CSSPositionComponent pos1, CSSPositionComponent pos2, CSSGradientColorStop[] colorStops) {
-		ref().getOrAddBgLayer(bgLayer).setGradient(pos1, pos2, colorStops);
+		stylesRef().getOrAddBgLayer(bgLayer).setGradient(pos1, pos2, colorStops);
 	}
 
 	@Override
 	public void onBgGradient(Void context, int bgLayer, CSSGradientColorStop[] colorStops) {
-		ref().getOrAddBgLayer(bgLayer).setGradient(colorStops);
+		stylesRef().getOrAddBgLayer(bgLayer).setGradient(colorStops);
 	}
 
 	@Override
 	public void onBgPosition(Void context, int bgLayer, int left, CSSUnit leftUnit, int top, CSSUnit topUnit) {
-		ref().getOrAddBgLayer(bgLayer).setPosition(left, leftUnit, top, topUnit);
+		stylesRef().getOrAddBgLayer(bgLayer).setPosition(left, leftUnit, top, topUnit);
 	}
 
 	@Override
 	public void onBgPosition(Void context, int bgLayer, CSSBackgroundPosition position) {
-		ref().getOrAddBgLayer(bgLayer).setPosition(position);
+		stylesRef().getOrAddBgLayer(bgLayer).setPosition(position);
 	}
 
 	@Override
 	public void onBgSize(Void context, int bgLayer, int width, CSSUnit widthUnit, int height, CSSUnit heightUnit) {
-		ref().getOrAddBgLayer(bgLayer).setSize(width, widthUnit, height, heightUnit);
+		stylesRef().getOrAddBgLayer(bgLayer).setSize(width, widthUnit, height, heightUnit);
 	}
 
 	@Override
 	public void onBgSize(Void context, int bgLayer, CSSBackgroundSize size) {
-		ref().getOrAddBgLayer(bgLayer).setSize(size);
+		stylesRef().getOrAddBgLayer(bgLayer).setSize(size);
 	}
 
 	@Override
 	public void onBgRepeat(Void context, int bgLayer, CSSBackgroundRepeat repeat) {
-		ref().getOrAddBgLayer(bgLayer).setRepeat(repeat);
+		stylesRef().getOrAddBgLayer(bgLayer).setRepeat(repeat);
 	}
 
 	@Override
 	public void onBgAttachment(Void context, int bgLayer, CSSBackgroundAttachment attachment) {
-		ref().getOrAddBgLayer(bgLayer).setAttachment(attachment);
+		stylesRef().getOrAddBgLayer(bgLayer).setAttachment(attachment);
 	}
 
 	@Override
 	public void onBgOrigin(Void context, int bgLayer, CSSBackgroundOrigin origin) {
-		ref().getOrAddBgLayer(bgLayer).setOrigin(origin);
+		stylesRef().getOrAddBgLayer(bgLayer).setOrigin(origin);
 	}
 
 	@Override
 	public void onBgClip(Void context, int bgLayer, CSSBackgroundOrigin clip) {
-		ref().getOrAddBgLayer(bgLayer).setClip(clip);
+		stylesRef().getOrAddBgLayer(bgLayer).setClip(clip);
 	}
 
 	@Override
 	public void onBgColor(Void context, int r, int g, int b, int a) {
-		ref().setBgColorRGB(r, g, b, a);
+		stylesRef().setBgColorRGB(r, g, b, a);
 	}
 
 	@Override
 	public void onBgColor(Void context, CSSColor color) {
-		ref().setBgColorCSS(color);
+		stylesRef().setBgColorCSS(color);
 	}
 
 	@Override
 	public void onBgColor(Void context, CSSBackgroundColor background) {
-		ref().setBgColorType(background);
+		stylesRef().setBgColorType(background);
 	}
 
 	@Override
 	public void onTextAlign(Void context, CSSTextAlign textAlign) {
-		ref().setTextAlign(textAlign);
+		stylesRef().setTextAlign(textAlign);
 		
 	}
 	@Override
 	public void onDisplay(Void context, CSSDisplay display) {
-		ref().setDisplay(display);
+		stylesRef().setDisplay(display);
 	}
 
 	@Override
 	public void onPosition(Void context, CSSPosition position) {
-		ref().setPosition(position);
+		stylesRef().setPosition(position);
 	}
 
 	@Override
 	public void onFloat(Void context, CSSFloat _float) {
-		ref().setFloat(_float);
+		stylesRef().setFloat(_float);
 	}
 
 	@Override
 	public void onClear(Void context, CSSClear clear) {
-		ref().setClear(clear);
+		stylesRef().setClear(clear);
 	}
 
 	@Override
 	public void onOverflow(Void context, CSSOverflow overflow) {
-		ref().setOverflow(overflow);
+		stylesRef().setOverflow(overflow);
 	}
 
 	@Override
 	public void onTextDecoration(Void context, CSSTextDecoration textDecoration) {
-		ref().setTextDecoration(textDecoration);
+		stylesRef().setTextDecoration(textDecoration);
 	}
 
 	@Override
 	public void onMaxWidth(Void context, int width, CSSUnit unit, CSSMax type) {
-		ref().setMaxWidth(width, unit, type);
+		stylesRef().setMaxWidth(width, unit, type);
 	}
 
 	@Override
 	public void onMaxHeight(Void context, int height, CSSUnit unit, CSSMax type) {
-		ref().setMaxHeight(height, unit, type);
+		stylesRef().setMaxHeight(height, unit, type);
 	}
 
 	@Override
 	public void onMinWidth(Void context, int width, CSSUnit unit, CSSMin type) {
-		ref().setMinWidth(width, unit, type);
+		stylesRef().setMinWidth(width, unit, type);
 	}
 
 	@Override
 	public void onMinHeight(Void context, int height, CSSUnit unit, CSSMin type) {
-		ref().setMinHeight(height, unit, type);
+		stylesRef().setMinHeight(height, unit, type);
 	}
 	
 	@Override
 	public void onFilter(Void context, CSSFilter filter) {
-		ref().setFilter(filter);
+		stylesRef().setFilter(filter);
 	}
 
 	@Override
 	public void onBlur(Void context, int blur) {
-		ref().setBlur(blur);
+		stylesRef().setBlur(blur);
 	}
 
 	@Override
 	public void onBrightness(Void context, int brightness) {
-		ref().setBrightness(brightness);
+		stylesRef().setBrightness(brightness);
 	}
 
 	@Override
 	public void onContrast(Void context, int contrast) {
-		ref().setContrast(contrast);
+		stylesRef().setContrast(contrast);
 	}
 
 	@Override
 	public void onGrayscale(Void context, int grayscale) {
-		ref().setGrayscale(grayscale);
+		stylesRef().setGrayscale(grayscale);
 	}
 
 	@Override
@@ -735,103 +743,115 @@ public abstract class BaseOOCSSDocument
 			CSSUnit dropShadowVUnit, int dropShadowBlur, int dropShadowSpread, int dropShadowR, int dropShadowG,
 			int dropShadowB, int dropShadowA) {
 
-		ref().setDropShadow(dropShadowH, dropShadowHUnit, dropShadowV, dropShadowVUnit, dropShadowBlur, dropShadowSpread, dropShadowR, dropShadowG, dropShadowB, dropShadowA);
+		stylesRef().setDropShadow(dropShadowH, dropShadowHUnit, dropShadowV, dropShadowVUnit, dropShadowBlur, dropShadowSpread, dropShadowR, dropShadowG, dropShadowB, dropShadowA);
 	}
 
 	@Override
 	public void onDropShadow(Void context, int dropShadowH, CSSUnit dropShadowHUnit, int dropShadowV,
 			CSSUnit dropShadowVUnit, int dropShadowBlur, int dropShadowSpread, CSSColor dropShadowColor) {
 
-		ref().setDropShadow(dropShadowH, dropShadowHUnit, dropShadowV, dropShadowVUnit, dropShadowBlur, dropShadowSpread, dropShadowColor);
+		stylesRef().setDropShadow(dropShadowH, dropShadowHUnit, dropShadowV, dropShadowVUnit, dropShadowBlur, dropShadowSpread, dropShadowColor);
 	}
 
 	@Override
 	public void onHueRotate(Void context, int hueRotate) {
-		ref().setHueRotate(hueRotate);
+		stylesRef().setHueRotate(hueRotate);
 	}
 
 	@Override
 	public void onInvert(Void context, int invert) {
-		ref().setInvert(invert);
+		stylesRef().setInvert(invert);
 	}
 
 	@Override
 	public void onOpacity(Void context, int opacity) {
-		ref().setOpacity(opacity);
+		stylesRef().setOpacity(opacity);
 	}
 
 	@Override
 	public void onSaturate(Void context, int saturate) {
-		ref().setSaturate(saturate);
+		stylesRef().setSaturate(saturate);
 	}
 
 	@Override
 	public void onSepia(Void context, int sepia) {
-		ref().setSepia(sepia);
+		stylesRef().setSepia(sepia);
 	}
 
 	@Override
 	public void onUrl(Void context, String url) {
-		ref().setUrl(url);
+		stylesRef().setUrl(url);
 	}
 
 	@Override
 	public void onFontSize(Void context, int fontSize, CSSUnit fontSizeUnit, CSSFontSize fontSizeEnum) {
-		ref().setFontSize(fontSize, fontSizeUnit, fontSizeEnum);
+		stylesRef().setFontSize(fontSize, fontSizeUnit, fontSizeEnum);
 	}
 	
 	@Override
 	public void onFontWeight(Void context, int fontWeightNumber, CSSFontWeight fontWeightEnum) {
-		ref().setFontWeight(fontWeightNumber, fontWeightEnum);
+		stylesRef().setFontWeight(fontWeightNumber, fontWeightEnum);
 	}
 
 	@Override
-	public short getZIndex(OOCSSElement ref) {
-		return ref.getZIndex();
+	public short getZIndex(OOCSSRule ref) {
+		return styles(ref).getZIndex();
 	}
 
 	@Override
-	public String getFontFamily(OOCSSElement ref) {
-		return ref.getFontFamily();
+	public String getFontFamily(OOCSSRule ref) {
+		return styles(ref).getFontFamily();
 	}
 
 	@Override
-	public String getFontName(OOCSSElement ref) {
-		return ref.getFontName();
+	public String getFontName(OOCSSRule ref) {
+		return styles(ref).getFontName();
 	}
 
 	@Override
-	public int getFontSize(OOCSSElement ref) {
-		return ref.getFontSize();
+	public int getFontSize(OOCSSRule ref) {
+		return styles(ref).getFontSize();
 	}
 	
 	@Override
-	public CSSUnit getFontSizeUnit(OOCSSElement ref) {
-		return ref.getFontSizeUnit();
+	public CSSUnit getFontSizeUnit(OOCSSRule ref) {
+		return styles(ref).getFontSizeUnit();
 	}
 
 	@Override
-	public CSSFontSize getFontSizeEnum(OOCSSElement ref) {
-		return ref.getFontSizeEnum();
+	public CSSFontSize getFontSizeEnum(OOCSSRule ref) {
+		return styles(ref).getFontSizeEnum();
 	}
 
 	@Override
-	public int getFontWeightNumber(OOCSSElement ref) {
-		return ref.getFontWeightNumber();
+	public int getFontWeightNumber(OOCSSRule ref) {
+		return styles(ref).getFontWeightNumber();
 	}
 
 	@Override
-	public CSSFontWeight getFontWeightEnum(OOCSSElement ref) {
-		return ref.getFontWeightEnum();
+	public CSSFontWeight getFontWeightEnum(OOCSSRule ref) {
+		return styles(ref).getFontWeightEnum();
 	}
 
-	public final OOCSSElement allocateCurParseElement() {
-		this.curParseElement = new OOCSSElement();
+	public final OOCSSRule allocateCurParseElement(CSSRuleType ruleType) {
+		
+		final OOCSSRule rule;
+		
+		switch (ruleType) {
+		case STYLE:
+			rule = new OOCSSStylesRule();
+			break;
+			
+		default:
+			throw new UnsupportedOperationException("Unknown rule type " + ruleType);
+		}
+		
+		this.curParseElement = rule;
 		
 		return this.curParseElement;
 	}
 
-	public final void setCurParseElement(OOCSSElement element) {
+	public final void setCurParseElement(OOCSSRule element) {
 		if (element == null) {
 			throw new IllegalArgumentException("element == null");
 		}

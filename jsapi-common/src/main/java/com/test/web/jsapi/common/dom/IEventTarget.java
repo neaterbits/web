@@ -1,4 +1,4 @@
-package com.test.web.jsapi.dom;
+package com.test.web.jsapi.common.dom;
 
 public interface IEventTarget {
 
@@ -14,7 +14,7 @@ public interface IEventTarget {
 	
 	void removeEventListener(String type, IEventListener listener, boolean useCapture);
 
-	boolean dispatchEvent(Event event);
+	boolean dispatchEvent(IEvent event);
 
 	public static class Options {
 		private Boolean capture;

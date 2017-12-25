@@ -1,0 +1,21 @@
+package com.test.web.css.common.enums;
+
+public enum CSSRuleType {
+	STYLE,
+	IMPORT,
+	MEDIA,
+	FONT_FACE,
+	PAGE,
+	KEYFRAMES,
+	KEYFRAME,
+	
+	NAMESPACE,
+	COUNTER_STYLE,
+	SUPPORTS,
+	DOCUMENT,
+	FONT_FEATURE_VALUES,
+	VIEWPORT,
+	REGION_STYLE,
+	UNKNOWN,
+	CHARSET;
+}

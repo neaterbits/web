@@ -3,8 +3,12 @@ package com.test.web.css._long;
 import java.util.List;
 
 import com.test.web.css.common.CSSState;
+import com.test.web.css.common.CSSValueType;
+import com.test.web.css.common.ICSSStyleSheet;
+import com.test.web.css.common.enums.CSSRuleType;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSStyle;
+import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.css.ICSSDocumentParserListener;
 
 /***
@@ -60,7 +64,7 @@ public final class LongCSSDocument
 	/***************************************************** Parse listener *****************************************************/ 
 
 	@Override
-	public Void onBlockStart() {
+	public Void onBlockStart(CSSRuleType ruleType) {
 		allocateCurParseElement();
 		
 		return null;
@@ -75,9 +79,519 @@ public final class LongCSSDocument
 		state.add(target, targetName, ref());
 	}
 
+	@Override
+	public void onStylePropertyText(Void context, Tokenizer tokenizer, long propertyStartPos, long propertyEndPos) {
+		
+	}
 
 	@Override
-	public void onBlockEnd(Void context) {
+	public void onBlockEnd(Void context, Tokenizer tokenizer, long blockStartPos, long blockEndPos) {
 		// Nothing to do as write pos in buffer was already advanced
+	}
+
+	/***************************************************** ICSSStyleSheet *****************************************************/ 
+
+	@Override
+	public CSSRuleType getRuleType(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getStyleSelectorText(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setStyleSelectorText(Integer rule, String selectorText) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getStyleLength(Integer rule) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSValueType getStylePropertyCSSValueType(Integer rule, String propertyName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getStyleCSSText(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setStyleCSSText(Integer rule, String cssText) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getStylePropertyPriority(Integer rule, String propertyName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getStylePropertyValue(Integer rule, String propertyName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getStyleItem(Integer rule, int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String removeStyleProperty(Integer rule, String propertyName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setStyleProperty(Integer rule, String propertyName, String value, String priority) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getCharsetEncoding(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCharsetEncoding(Integer rule, String encoding) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getCounterStyleName(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCounterStyleName(Integer rule, String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getCounterStyleSystem(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCounterStyleSystem(Integer rule, String system) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getCounterStyleSymbols(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCounterStyleSymbols(Integer rule, String symbols) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getCounterStyleAdditiveSymbols(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCounterStyleAdditiveSymbols(Integer rule, String additiveSymbols) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getCounterStyleNegative(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCounterStyleNegative(Integer rule, String negative) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getCounterStylePrefix(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCounterStylePrefix(Integer rule, String prefix) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getCounterStyleSuffix(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCounterStyleSuffix(Integer rule, String suffix) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getCounterStyleRange(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCounterStyleRange(Integer rule, String range) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getCounterStylePad(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCounterStylePad(Integer rule, String pad) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getCounterStyleSpeakAs(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCounterStyleSpeakAs(Integer rule, String speakAs) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getCounterStyleFallback(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCounterStyleFallback(Integer rule) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getDocumentUrl(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setDocumentUrl(Integer rule, String url) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getDocumentUrlPrefix(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setDocumentUrlPrefix(Integer rule, String prefix) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getDocumentDomain(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setDocumentDomain(Integer rule, String domain) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getDocumentRegexp(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setDocumentRegexp(Integer rule, String regexp) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getImportHref(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void appendImportMedium(Integer rule, String newMedium) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteImportMedium(Integer rule, String oldMedium) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getImportMediaLength(Integer rule) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getImportMediaText(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getImportMediaItem(Integer rule, int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setImportMediaText(Integer rule, String mediaText) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ICSSStyleSheet<Integer> getImportStyleSheet(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getKeyframesCSSRulesLength(Integer rule) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Integer getKeyframesCSSRulesItem(Integer rule, int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getKeyframesName(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setKeyframesName(Integer rule, String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void appendKeyframesRule(Integer rule, String keyframeRule) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteKeyframesRule(Integer rule, String key) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Integer findKeyframesRule(Integer rule, String key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void insertKeyframesRule(Integer rule, String keyframeRule) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getKeyframeKeyText(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setKeyframeKeyText(Integer rule, String keyText) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getMediaCSSRulesLength(Integer rule) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Integer getMediaCSSRulesItem(Integer rule, int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void appendMediaMedium(Integer rule, String newMedium) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteMediaMedium(Integer rule, String oldMedium) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getMediaLength(Integer rule) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getMediaText(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getMediaItem(Integer rule, int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setMediaText(Integer rule, String mediaText) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteMediaCSSRule(Integer rule, long index) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public long insertMediaCSSRule(Integer rule, String mediaRule, long index) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getMediaConditionText(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setMediaConditionText(Integer rule, String conditionText) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getNamespaceURI(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getNamespacePrefix(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getPageSelectorText(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setPageSelectorText(Integer rule) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getSupportsCSSRulesLength(Integer rule) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Integer getSupportsCSSRulesItem(Integer rule, int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteSupportsCSSRule(Integer rule, long index) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public long insertSupportsCSSRule(Integer rule, String supportsRule, long index) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getSupportsConditionText(Integer rule) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setSupportsConditionText(Integer rule, String conditionText) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -12,7 +12,7 @@ import com.test.web.css.common.enums.CSStyle;
  *
  */
 
-public interface ICSSDocument<TARGET> extends ICSSDocumentStyles<TARGET> {
+public interface ICSSDocument<TARGET> extends ICSSDocumentStyles<TARGET>, ICSSStyleSheet<TARGET> {
 
 	/**
 	 * Check whether a particular style is set for a target in this document

@@ -3,6 +3,12 @@ package com.test.web.jsapi.dom;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.test.web.jsapi.common.dom.IDocumentContext;
+import com.test.web.jsapi.common.dom.IEvent;
+import com.test.web.jsapi.common.dom.IEventListener;
+import com.test.web.jsapi.common.dom.IEventTarget;
+import com.test.web.jsapi.dom.DocumentAccess;
+
 public abstract class EventTarget<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEMENT, ATTRIBUTE>>
 		extends DocumentAccess<ELEMENT, ATTRIBUTE, DOCUMENT>
 		implements IEventTarget {
@@ -93,7 +99,7 @@ public abstract class EventTarget<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument
 	}
 
 	@Override
-	public final boolean dispatchEvent(Event event) {
+	public final boolean dispatchEvent(IEvent event) {
 		// TODO Bubble events upwards
 		throw new UnsupportedOperationException("TODO");
 	}

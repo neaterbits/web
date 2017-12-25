@@ -1,5 +1,7 @@
 package com.test.web.jsapi.dom;
 
+import com.test.web.jsapi.common.dom.IDocumentContext;
+
 public abstract class DocumentAccess<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEMENT, ATTRIBUTE>> {
 
 	private DOCUMENT document;

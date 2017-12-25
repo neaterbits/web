@@ -524,6 +524,38 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 		
 		return BigDecimalConversion.fromString(s);
 	}
+	
+	
+
+	@Override
+	public String asString(long startOffset, long endOffset) {
+		final int bufNo = bufNo(startOffset);
+		final int bufOffset = bufOffset(startOffset);
+		
+		
+		final int endBufNo = bufNo(endOffset);
+		final int endBufOffset = bufOffset(endOffset);
+		
+		int length;
+		
+		if (endBufNo < bufNo) {
+			throw new IllegalArgumentException("endBufNo < bufNo");
+		}
+		else if (endBufNo == bufNo) {
+			if (endBufOffset < bufOffset) {
+				throw new IllegalArgumentException("endBufOffset < bufOffset");
+			}
+			
+			length = endBufOffset- bufOffset;
+		}
+		else {
+			length = BUFFER_SIZE - bufOffset + (BUFFER_SIZE * (endBufNo - bufNo - 1)) + endBufOffset;
+		}
+
+		final long stringRef = stringRef(bufNo, bufOffset, length);
+		
+		return getString(stringRef);
+	}
 
 	@Override
 	public String toString() {

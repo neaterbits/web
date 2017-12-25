@@ -1,5 +1,6 @@
 package com.test.web.jsapi.dom;
 
+import com.test.web.jsapi.common.dom.IDocumentContext;
 import com.test.web.jsengine.common.IJSObjectAsArray;
 
 public final class NamedNodeMap<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEMENT, ATTRIBUTE>>

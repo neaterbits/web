@@ -4,13 +4,14 @@ import java.io.IOException;
 
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.oo.OOCSSDocument;
-import com.test.web.css.oo.OOCSSElement;
+import com.test.web.css.oo.OOCSSRule;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.document.html.oo.OOAttribute;
 import com.test.web.document.html.oo.OOHTMLDocument;
 import com.test.web.document.html.oo.OOTagElement;
 import com.test.web.io.common.CharInput;
 import com.test.web.io.common.LoadStream;
+import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser;
 import com.test.web.parse.html.HTMLParser;
@@ -20,17 +21,17 @@ import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 
 public class OOBrowserDocumentLoader
-		extends BaseBrowserDocumentLoader<OOTagElement, OOAttribute, OOHTMLDocument, OOCSSElement, OOCSSDocument>
-		implements IBrowserDocumentLoader<OOTagElement, OOAttribute, OOCSSElement> {
+		extends BaseBrowserDocumentLoader<OOTagElement, OOAttribute, OOHTMLDocument, OOCSSRule, OOCSSDocument>
+		implements IBrowserDocumentLoader<OOTagElement, OOAttribute, OOCSSRule> {
 	
 	public OOBrowserDocumentLoader(IDelayedRendererFactory rendererFactory, IBufferRendererFactory bufferedRendererFactory, ITextExtent textExtent, DebugListeners debugListeners) {
 		super(rendererFactory, bufferedRendererFactory, textExtent, debugListeners);
 	}
 	
-	private OOCSSDocument parseCSS(CharInput charInput, CSSContext<OOCSSElement> cssContext) throws IOException, ParserException {
+	private OOCSSDocument parseCSS(CharInput charInput, Tokenizer tokenizer, CSSContext<OOCSSRule> cssContext) throws IOException, ParserException {
 		
 		final OOCSSDocument styleDocument = new OOCSSDocument();
-		final CSSParser<Void> cssParser = new CSSParser<>(charInput, styleDocument);
+		final CSSParser<Void> cssParser = new CSSParser<>(charInput, tokenizer, styleDocument);
 
 		// Just parse the CSS straight away
 		cssParser.parseCSS();
@@ -41,8 +42,8 @@ public class OOBrowserDocumentLoader
 	}
 
 	@Override
-	public IDocument<OOTagElement, OOAttribute> fromHTML(String html, CSSContext<OOCSSElement> cssContext) throws ParserException {
-		return OOHTMLDocument.parseHTMLDocument(html, charInput -> parseCSS(charInput, cssContext));
+	public IDocument<OOTagElement, OOAttribute> fromHTML(String html, CSSContext<OOCSSRule> cssContext) throws ParserException {
+		return OOHTMLDocument.parseHTMLDocument(html, (charInput, tokenizer) -> parseCSS(charInput, tokenizer, cssContext));
 	}
 
 	@Override
@@ -55,8 +56,8 @@ public class OOBrowserDocumentLoader
 			OOHTMLDocument document,
 			IHTMLParserListener<OOTagElement> parserListener,
 			LoadStream stream,
-			CSSContext<OOCSSElement> cssContext) {
+			CSSContext<OOCSSRule> cssContext) {
 		
-		return OOHTMLDocument.createParser(document, parserListener, stream, charInput -> parseCSS(charInput, cssContext));
+		return OOHTMLDocument.createParser(document, parserListener, stream, (charInput, tokenizer) -> parseCSS(charInput, tokenizer, cssContext));
 	}
 }
