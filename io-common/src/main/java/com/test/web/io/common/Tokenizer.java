@@ -5,24 +5,25 @@ import java.math.BigDecimal;
 import com.test.web.types.IEnum;
 
 /**
- * Marker interface for tokenizer that allows to read tokens
+ * Marker interface for tokenizer that allows to read tokens. All strings are longs
  * @author nhl
+ * 
  *
  */
 
 public interface Tokenizer {
 	
-	<E extends Enum<E> & IEnum> E asEnum(Class<E> enumClass, int startOffset, int endSkip, boolean caseSensitive);
+	<E extends Enum<E> & IEnum> E asEnum(Class<E> enumClass, long stringRef, boolean caseSensitive);
 	
-	boolean equalsIgnoreCase(String s, int startOffset, int endSkip);
+	boolean equalsIgnoreCase(String s, long stringRef);
 	
-	int addToBuffer(DuplicateDetectingStringStorageBuffer buffer, int startOffset, int endSkip);
+	int addToBuffer(DuplicateDetectingStringStorageBuffer buffer, long stringRef);
 	
-	String asString(int startOffset, int endSkip);
+	String asString(long stringRef);
 
-	Integer asInteger(int startOffset, int endSkip);
+	Integer asInteger(long stringRef);
 
-	int asDecimalSize(int startOffset, int endSkip);
+	int asDecimalSize(long stringRef);
 
-	BigDecimal asBigDecimal(int startOffset, int endSkip);
+	BigDecimal asBigDecimal(long stringRef);
 }

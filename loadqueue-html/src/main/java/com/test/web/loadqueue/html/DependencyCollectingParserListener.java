@@ -247,17 +247,20 @@ public class DependencyCollectingParserListener<
 		return ! (loadQueue.hasStyleSheet() || loadQueue.hasImageLoadingForDimensions());
 	}
 
-	public void onText(TOKENIZER tokenizer, int startOffset, int endSkip) {
-		delegate.onText(tokenizer, startOffset, endSkip);
+	@Override
+	public void onText(TOKENIZER tokenizer, long stringRef) {
+		delegate.onText(tokenizer, stringRef);
 	}
 
+	@Override
 	public void onAttributeWithoutValue(TOKENIZER tokenizer, HTMLAttribute attribute) {
 		delegate.onAttributeWithoutValue(tokenizer, attribute);
 	}
 
-	public void onAttributeWithValue(TOKENIZER tokenizer, HTMLAttribute attribute, int startOffset, int endSkip, HTMLElement element) {
+	@Override
+	public void onAttributeWithValue(TOKENIZER tokenizer, HTMLAttribute attribute, long stringRef, HTMLElement element) {
 
-		delegate.onAttributeWithValue(tokenizer, attribute, startOffset, endSkip, element);
+		delegate.onAttributeWithValue(tokenizer, attribute, stringRef, element);
 		
 		if (curElement != null) {
 			switch (curElement) {
@@ -265,15 +268,15 @@ public class DependencyCollectingParserListener<
 				// Must add to load queue
 				switch (attribute) {
 				case REL:
-					this.linkRel = tokenizer.asString(startOffset, endSkip);
+					this.linkRel = tokenizer.asString(stringRef);
 					break;
 					
 				case TYPE:
-					this.linkType = tokenizer.asString(startOffset, endSkip);
+					this.linkType = tokenizer.asString(stringRef);
 					break;
 					
 				case HREF:
-					this.linkHRef = tokenizer.asString(startOffset, endSkip);
+					this.linkHRef = tokenizer.asString(stringRef);
 					break;
 					
 				default:
@@ -289,10 +292,12 @@ public class DependencyCollectingParserListener<
 		
 	}
 
-	public void onClassAttributeValue(TOKENIZER tokenizer, int startOffset, int endSkip) {
-		delegate.onClassAttributeValue(tokenizer, startOffset, endSkip);
+	@Override
+	public void onClassAttributeValue(TOKENIZER tokenizer, long stringRef) {
+		delegate.onClassAttributeValue(tokenizer, stringRef);
 	}
 
+	@Override
 	public void onStyleAttributeValue(TOKENIZER tokenizer, String key, String value) {
 		delegate.onStyleAttributeValue(tokenizer, key, value);
 	}

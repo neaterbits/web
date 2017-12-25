@@ -28,14 +28,32 @@ public class StringCharInput implements CharInput {
 		return next;
 	}
 
+	
 	@Override
-	public boolean markSupported() {
-		return false;
+	public long getReadPos() {
+		return pos;
 	}
 
 	@Override
-	public void mark() {
-		throw new UnsupportedOperationException();
+	public long getStringRef(long startPos, long endPos, int startOffset, int endSkip) {
+		
+		if (startPos > endPos) {
+			throw new IllegalArgumentException("startPos > endPos");
+		}
+		
+		final long length = endPos - startPos - startOffset - endSkip;
+		
+		if (length < 0L) {
+			throw new IllegalStateException("length < 0");
+		}
+		
+		final long pos = startPos + startOffset;
+		
+		if (pos + length > this.pos) {
+			throw new IllegalStateException("pos + length > this.pos");
+		}
+
+		return pos << 32 | length;
 	}
 
 	@Override

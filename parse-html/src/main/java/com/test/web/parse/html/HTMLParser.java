@@ -210,7 +210,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 	private void debugText() {
 		if (DEBUG) {
 			indent(debugStackLevel, DEBUG_OUT);
-			DEBUG_OUT.append("Text: \"").append(tokenizer.asString(0, lexer.getEndSkip())).println("\"");
+			DEBUG_OUT.append("Text: \"").append(tokenizer.asString(lexer.getStringRef(0, lexer.getEndSkip()))).println("\"");
 		}
 	}
 
@@ -449,7 +449,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 				break;
 
 			case TEXT:
-				htmlListener.onText(tokenizer, 0, lexer.getEndSkip());
+				htmlListener.onText(tokenizer, lexer.getStringRef(0, lexer.getEndSkip()));
 				break;
 				
 			case TAG_END:
@@ -527,7 +527,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 		switch (lexer.lex(HTMLToken.TEXT, HTMLToken.TAG_LESS_THAN)) {
 		case TEXT:
 			debugText();
-			htmlListener.onText(tokenizer, 0, lexer.getEndSkip());
+			htmlListener.onText(tokenizer, lexer.getStringRef(0, lexer.getEndSkip()));
 			checkTagEnd(elementToken);
 			break;
 
@@ -554,7 +554,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 			case TEXT:
 				debugText();
 				
-				final String styleText = tokenizer.asString(0, lexer.getEndSkip());
+				final String styleText = tokenizer.asString(lexer.getStringRef(0, lexer.getEndSkip()));
 				sb.append(styleText);
 				
 			
@@ -627,7 +627,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 		switch (token) {
 		case QUOTED_STRING:
 			// Read until end of quote or whitespace
-			htmlListener.onAttributeWithValue(tokenizer, attributeToken.getAttribute(), 1, 1, element);
+			htmlListener.onAttributeWithValue(tokenizer, attributeToken.getAttribute(), lexer.getStringRef(1, 1), element);
 			break;
 			
 		default:
@@ -656,7 +656,7 @@ public final class HTMLParser<ELEMENT, TOKENIZER extends Tokenizer, STYLE_DOCUME
 				
 			case CLASS_NAME:
 				// TODO: must skip 1 at end since lexer has read one past, find more elegant solution
-				htmlListener.onClassAttributeValue(tokenizer, 0, lexer.getEndSkip());
+				htmlListener.onClassAttributeValue(tokenizer, lexer.getStringRef(0, lexer.getEndSkip()));
 				break;
 				
 			case QUOTE:

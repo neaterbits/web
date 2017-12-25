@@ -20,13 +20,13 @@ public interface IHTMLParserListener<ELEMENT, TOKENIZER extends Tokenizer> {
 
 	ELEMENT onElementEnd(TOKENIZER tokenizer, HTMLElement element) throws IOException;
 	
-	void onText(TOKENIZER tokenizer, int startOffset, int endSkip);
+	void onText(TOKENIZER tokenizer, long stringRef);
 	
 	void onAttributeWithoutValue(TOKENIZER tokenizer, HTMLAttribute attribute);
 
-	void onAttributeWithValue(TOKENIZER tokenizer, HTMLAttribute attribute, int startOffset, int endSkip, HTMLElement element);
+	void onAttributeWithValue(TOKENIZER tokenizer, HTMLAttribute attribute, long stringRef, HTMLElement element);
 
-	void onClassAttributeValue(TOKENIZER tokenizer, int startOffset, int endSkip);
+	void onClassAttributeValue(TOKENIZER tokenizer, long stringRef);
 
 	void onStyleAttributeValue(TOKENIZER tokenizer, String key, String value);
 }

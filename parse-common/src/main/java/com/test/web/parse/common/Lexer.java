@@ -27,6 +27,8 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 	
 	private int lineNo;
 	
+	private long tokenizerPos;
+	
 	// For debug
 	private TOKEN lastToken;
 	
@@ -52,7 +54,15 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		this.cur = new StringBuilder();
 		this.lineNo = 1;
 	}
-	
+
+	private void mark() {
+		this.tokenizerPos = input.getReadPos();
+	}
+
+	public long getStringRef(int startPos, int endSkip) {
+		return input.getStringRef(tokenizerPos, input.getReadPos(), startPos, endSkip);
+	}
+
 	@SuppressWarnings("unchecked")
 	private TOKEN [] createTokenArray(Class<TOKEN> tokenClass) {
 		return (TOKEN[])Array.newInstance(tokenClass, tokenClass.getEnumConstants().length);
@@ -107,11 +117,9 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 		
 		cur.setLength(0);
 		
-		if (input.markSupported()) {
 			// Mark so that tokenizer may know starting point of string
 
-			input.mark();
-		}
+		mark();
 		
 		// Scan all tokens for input from reader and check whether any tokens match 
 		

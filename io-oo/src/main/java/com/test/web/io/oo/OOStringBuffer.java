@@ -8,9 +8,4 @@ public class OOStringBuffer extends StringBuffers implements OOTokenizer {
 	public OOStringBuffer(LoadStream inputStream) {
 		super(inputStream);
 	}
-
-	@Override
-	public String getString(int startOffset, int endSkip) {
-		return super.asString(startOffset, endSkip);
-	}
 }

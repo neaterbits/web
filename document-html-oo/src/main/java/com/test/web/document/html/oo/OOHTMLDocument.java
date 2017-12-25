@@ -388,8 +388,8 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 	}
 
 	@Override
-	public void onText(OOTokenizer tokenizer, int startOffset, int endSkip) {
-		final String text = tokenizer.asString(startOffset, endSkip);
+	public void onText(OOTokenizer tokenizer, long stringRef) {
+		final String text = tokenizer.asString(stringRef);
 		
 		final OOTextElement element = new OOTextElement(text);
 		
@@ -412,20 +412,20 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 		}
 	}
 	
-	private static boolean booleanValue(OOTokenizer tokenizer, int startOffset, int endSkip) {
-		return HTMLStringConversion.booleanValue(tokenizer.getString(startOffset, endSkip));
+	private static boolean booleanValue(OOTokenizer tokenizer, long stringRef) {
+		return HTMLStringConversion.booleanValue(tokenizer.asString(stringRef));
 	}
 
-	private static String booleanMinimizable(OOTokenizer tokenizer, int startOffset, int endSkip) {
-		return tokenizer.getString(startOffset, endSkip);
+	private static String booleanMinimizable(OOTokenizer tokenizer, long stringRef) {
+		return tokenizer.asString(stringRef);
 	}
 
-	private static boolean yesNoValue(OOTokenizer tokenizer, int startOffset, int endSkip) {
-		return HTMLStringConversion.yesNoValue(tokenizer.asString(startOffset, endSkip));
+	private static boolean yesNoValue(OOTokenizer tokenizer, long stringRef) {
+		return HTMLStringConversion.yesNoValue(tokenizer.asString(stringRef));
 	}
 
 	@Override
-	public void onAttributeWithValue (OOTokenizer tokenizer, HTMLAttribute attribute, int startOffset, int endSkip, HTMLElement element) {
+	public void onAttributeWithValue (OOTokenizer tokenizer, HTMLAttribute attribute, long stringRef, HTMLElement element) {
 		final OOTagElement ref = getCurElement();
 
 		if (element != ref.getType()) {
@@ -435,57 +435,57 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 		switch (attribute) {
 		
 		case ID:
-			final String idString = tokenizer.asString(startOffset, endSkip);
+			final String idString = tokenizer.asString(stringRef);
 			
 			ref.setId(idString, state);
 			break;
 		
 		case ACCESSKEY:
-			ref.setAccessKey(tokenizer.asString(startOffset, endSkip));
+			ref.setAccessKey(tokenizer.asString(stringRef));
 			break;
 			
 		case CONTENTEDITABLE:
-			ref.setContentEditable(booleanValue(tokenizer, startOffset, endSkip));
+			ref.setContentEditable(booleanValue(tokenizer, stringRef));
 			break;
 			
 		case CONTEXTMENU:
-			ref.setContextMenu(tokenizer.asString(startOffset, endSkip));
+			ref.setContextMenu(tokenizer.asString(stringRef));
 			break;
 			
 		case DIRECTION:
-			ref.setDirection(tokenizer.asEnum(HTMLDirection.class, startOffset, endSkip, false));
+			ref.setDirection(tokenizer.asEnum(HTMLDirection.class, stringRef, false));
 			break;
 			
 		case TITLE:
-			ref.setTitleAttribute(tokenizer.asString(startOffset, endSkip));
+			ref.setTitleAttribute(tokenizer.asString(stringRef));
 			break;
 
 		case TRANSLATE:
-			ref.setTranslate(yesNoValue(tokenizer, startOffset, endSkip));
+			ref.setTranslate(yesNoValue(tokenizer, stringRef));
 			break;
 
 		case SPELLCHECK:
-			ref.setSpellcheck(booleanValue(tokenizer, startOffset, endSkip));
+			ref.setSpellcheck(booleanValue(tokenizer, stringRef));
 			break;
 			
 		case HIDDEN:
-			ref.setHidden(booleanMinimizable(tokenizer, startOffset, endSkip));
+			ref.setHidden(booleanMinimizable(tokenizer, stringRef));
 			break;
 
 		case DRAGGABLE:
-			ref.setDraggable(booleanValue(tokenizer, startOffset, endSkip));
+			ref.setDraggable(booleanValue(tokenizer, stringRef));
 			break;
 			
 		case DROPZONE:
-			ref.setDropzone(tokenizer.asEnum(HTMLDropzone.class, startOffset, endSkip, false));
+			ref.setDropzone(tokenizer.asEnum(HTMLDropzone.class, stringRef, false));
 			break;
 			
 		case TABINDEX:
-			ref.setTabindex(tokenizer.asInteger(startOffset, endSkip));
+			ref.setTabindex(tokenizer.asInteger(stringRef));
 			break;
 
 		case REL:
-			final LinkRelType linkRelType = tokenizer.asEnum(LinkRelType.class, startOffset, endSkip, false);
+			final LinkRelType linkRelType = tokenizer.asEnum(LinkRelType.class, stringRef, false);
 			
 			switch (element) {
 			case LINK:
@@ -507,7 +507,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 			
 		// script type as string
 		case TYPE:
-			final String mediaType = tokenizer.asString(startOffset, endSkip);
+			final String mediaType = tokenizer.asString(stringRef);
 			
 			switch (element) {
 			case SCRIPT:
@@ -536,7 +536,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 			break;
 			
 		case HREF:
-			final String href = tokenizer.asString(startOffset, endSkip);
+			final String href = tokenizer.asString(stringRef);
 			
 			switch (element) {
 			case LINK:
@@ -557,7 +557,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 			break;
 			
 		case HREFLANG:
-			final String hrefLang = tokenizer.asString(startOffset, endSkip);
+			final String hrefLang = tokenizer.asString(stringRef);
 
 			switch (element) {
 			case LINK:
@@ -578,7 +578,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 			break;
 
 		case MEDIA:
-			final String media = tokenizer.asString(startOffset, endSkip);
+			final String media = tokenizer.asString(stringRef);
 
 			switch (element) {
 			case LINK:
@@ -605,7 +605,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 		case SCOPED:
 			switch (element) {
 			case STYLE:
-				((OOStyleElement)ref).setScoped(booleanMinimizable(tokenizer, startOffset, endSkip));
+				((OOStyleElement)ref).setScoped(booleanMinimizable(tokenizer, stringRef));
 				break;
 			
 			default:
@@ -614,7 +614,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 			break;
 
 		case REV:
-			final LinkRevType linkRevType = tokenizer.asEnum(LinkRevType.class, startOffset, endSkip, false);
+			final LinkRevType linkRevType = tokenizer.asEnum(LinkRevType.class, stringRef, false);
 
 			switch (element) {
 			case LINK:
@@ -631,13 +631,13 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 			break;
 
 		case LANG:
-			ref.setLang(tokenizer.asString(startOffset, endSkip));
+			ref.setLang(tokenizer.asString(stringRef));
 			break;
 			
 		case XMLNS:
 			switch (element) {
 			case HTML:
-				((OOHTMLRootElement)ref).setXMLNS(tokenizer.asString(startOffset, endSkip));
+				((OOHTMLRootElement)ref).setXMLNS(tokenizer.asString(stringRef));
 				break;
 
 			default:
@@ -652,7 +652,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 		case CHARSET:
 			switch (element) {
 			case META:
-				((OOMetaTagElement)ref).setCharset(tokenizer.asString(startOffset, endSkip));
+				((OOMetaTagElement)ref).setCharset(tokenizer.asString(stringRef));
 				break;
 
 			default:
@@ -663,7 +663,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 		case CONTENT:
 			switch (element) {
 			case META:
-				((OOMetaTagElement)ref).setContent(tokenizer.asString(startOffset, endSkip));
+				((OOMetaTagElement)ref).setContent(tokenizer.asString(stringRef));
 				break;
 
 			default:
@@ -674,7 +674,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 		case HTTP_EQUIV:
 			switch (element) {
 			case META:
-				((OOMetaTagElement)ref).setHttpEquiv(tokenizer.asString(startOffset, endSkip));
+				((OOMetaTagElement)ref).setHttpEquiv(tokenizer.asString(stringRef));
 				break;
 
 			default:
@@ -685,7 +685,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 		case NAME:
 			switch (element) {
 			case META:
-				((OOMetaTagElement)ref).setName(tokenizer.asString(startOffset, endSkip));
+				((OOMetaTagElement)ref).setName(tokenizer.asString(stringRef));
 				break;
 
 			default:
@@ -696,7 +696,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 		case SCHEME:
 			switch (element) {
 			case META:
-				((OOMetaTagElement)ref).setScheme(tokenizer.asString(startOffset, endSkip));
+				((OOMetaTagElement)ref).setScheme(tokenizer.asString(stringRef));
 				break;
 
 			default:
@@ -708,7 +708,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 		case MAX:
 			switch (element) {
 			case PROGRESS:
-				((OOProgressElement)ref).setMax(tokenizer.asBigDecimal(startOffset, endSkip));
+				((OOProgressElement)ref).setMax(tokenizer.asBigDecimal(stringRef));
 				break;
 				
 			default:
@@ -719,7 +719,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 		case VALUE:
 			switch (element) {
 			case PROGRESS:
-				((OOProgressElement)ref).setValue(tokenizer.asBigDecimal(startOffset, endSkip));
+				((OOProgressElement)ref).setValue(tokenizer.asBigDecimal(stringRef));
 				break;
 				
 			default:
@@ -733,9 +733,9 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 	}
 
 	@Override
-	public void onClassAttributeValue(OOTokenizer tokenizer, int startOffset, int endSkip) {
+	public void onClassAttributeValue(OOTokenizer tokenizer, long stringRef) {
 		
-		final String classString = tokenizer.asString(startOffset, endSkip);
+		final String classString = tokenizer.asString(stringRef);
 		
 		final OOTagElement element = getCurElement();
 		

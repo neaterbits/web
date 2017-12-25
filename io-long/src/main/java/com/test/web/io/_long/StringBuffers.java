@@ -55,7 +55,6 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 
 	private long curWritePos;
 	private long curReadPos;
-	private long tokenizerPos;
 	
 	
 	public StringBuffers(LoadStream inputStream) {
@@ -218,6 +217,59 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 
 		return status;
 	}
+	
+	@Override
+	public long getReadPos() {
+		return curReadPos;
+	}
+	
+	@Override
+	public long getStringRef(long startPos, long endPos, int startOffset, int endSkip) {
+
+		final long pos = startPos;
+
+		int bufNo = bufNo(pos);
+		int bufOffset = bufOffset(pos);
+		
+		if (bufOffset >= BUFFER_SIZE) {
+			throw new IllegalArgumentException("buf offset beyond buffer");
+		}
+		
+		int length = getTokenLength(bufNo, bufOffset);
+
+		if (startOffset > 0) {
+			length -= startOffset;
+		
+			while (startOffset > 0) {
+				if (startOffset > BUFFER_SIZE) {
+					++ bufNo;
+					startOffset -= BUFFER_SIZE;
+				}
+				else {
+					if (startOffset + bufOffset >= BUFFER_SIZE) {
+						// within next buffer
+						++ bufNo;
+						bufOffset = BUFFER_SIZE - startOffset;
+					}
+					else {
+						// within current buffer
+						bufOffset += startOffset;
+					}
+
+					startOffset = 0;
+				}
+			}
+			
+			if (bufOffset == BUFFER_SIZE - 1) {
+				++ bufNo;
+				bufOffset = 0;
+			}	
+		}
+		
+		length -= endSkip;
+		
+		return stringRef(bufNo, bufOffset, length);
+	}
 
 	public long getPos() {
 		
@@ -228,16 +280,6 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 		return bufNo == 0 ? bufOffset : (bufNo - 1) * (long)BUFFER_SIZE;
 	}
 	
-	@Override
-	public boolean markSupported() {
-		return true;
-	}
-
-	@Override
-	public void mark() {
-		this.tokenizerPos = curReadPos;
-	}
-
 	@Override
 	public void rewindOneCharacter(int val) {
 		
@@ -315,11 +357,11 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 	}
 
 	@Override
-	public <E extends Enum<E> & IEnum> E asEnum(Class<E> enumClass, int startOffset, int endSkip, boolean caseSensitive) {
+	public <E extends Enum<E> & IEnum> E asEnum(Class<E> enumClass, long stringRef, boolean caseSensitive) {
 		final E [] values = enumClass.getEnumConstants();
 		
 		for (E e : values) {
-			if (equals(e.getName(), startOffset, endSkip, caseSensitive)) {
+			if (equals(e.getName(), stringRef, caseSensitive)) {
 				return e;
 			}
 		}
@@ -328,12 +370,11 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 	}
 
 	@Override
-	public boolean equalsIgnoreCase(String s, int startOffset, int endSkip) {
-		return equals(s, startOffset, endSkip, false);
+	public boolean equalsIgnoreCase(String s, long stringRef) {
+		return equals(s, stringRef, false);
 	}
 	
-	private boolean equals(String s, int startOffset, int endSkip, boolean caseSensitive) {
-		final long pos = get(startOffset, endSkip);
+	private boolean equals(String s, long pos, boolean caseSensitive) {
 
 		boolean equals = true;
 		
@@ -404,29 +445,13 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 	}
 	
 	@Override
-	public int addToBuffer(DuplicateDetectingStringStorageBuffer buffer, int startOffset, int endSkip) {
-		final long pos = tokenizerPos;
+	public int addToBuffer(DuplicateDetectingStringStorageBuffer buffer, long pos) {
 
 		int bufNo = bufNo(pos);
 		int bufOffset = bufOffset(pos);
-		
-		int length = getTokenLength(bufNo, bufOffset);
+		int length = length(pos);
 
 		char [] buf = buffers[bufNo];
-		
-		if (startOffset > 0) {
-			length -= startOffset;
-			
-			++ bufOffset;
-			
-			if (bufOffset == BUFFER_SIZE - 1) {
-				++ bufNo;
-				bufOffset = 0;
-				buf = buffers[bufNo];
-			}	
-		}
-		
-		length -= endSkip;
 		
 		if (length < 0) {
 			throw new IllegalStateException("length < 0");
@@ -457,31 +482,6 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 		
 		return tmp;
 	}
-
-	@Override
-	public long get(int startOffset, int endSkip) {
-		final long pos = tokenizerPos + startOffset;
-
-		int bufNo = bufNo(pos);
-		int bufOffset = bufOffset(pos);
-		
-		int length = getTokenLength(bufNo, bufOffset);
-
-		if (startOffset > 0) {
-			length -= startOffset;
-			
-			++ bufOffset;
-			
-			if (bufOffset == BUFFER_SIZE - 1) {
-				++ bufNo;
-				bufOffset = 0;
-			}	
-		}
-		
-		length -= endSkip;
-		
-		return stringRef(bufNo, bufOffset, length);
-	}
 	
 	private char characterAt(long ref) {
 		int bufNo = bufNo(ref);
@@ -500,33 +500,33 @@ public class StringBuffers extends BaseBuffers<char[][], char[]> implements Char
 	}
 
 	@Override
-	public String asString(int startOffset, int endSkip) {
-		return getString(get(startOffset, endSkip));
+	public String asString(long stringRef) {
+		return getString(stringRef);
 	}
 
 	@Override
-	public Integer asInteger(int startOffset, int endSkip) {
-		return StringUtils.asIntegerOrNull(getString(get(startOffset, endSkip)));
+	public Integer asInteger(long stringRef) {
+		// TODO in-buffer
+		return StringUtils.asIntegerOrNull(getString(stringRef));
 	}
 
 	@Override
-	public int asDecimalSize(int startOffset, int endSkip) {
-		final String s = asString(startOffset, endSkip);
+	public int asDecimalSize(long stringRef) {
+		final String s = asString(stringRef);
 		
 		return DecimalSize.encodeFromString(s);
 	}
 	
 	@Override
-	public BigDecimal asBigDecimal(int startOffset, int endSkip) {
-		final String s = asString(startOffset, endSkip);
+	public BigDecimal asBigDecimal(long stringRef) {
+		final String s = asString(stringRef);
 		
 		return BigDecimalConversion.fromString(s);
 	}
 
 	@Override
 	public String toString() {
-		return "StringBuffers [curWritePos=" + posString(curWritePos) + ", curReadPos=" + posString(curReadPos) + ", tokenizerPos="
-				+ posString(tokenizerPos) + "]";
+		return "StringBuffers [curWritePos=" + posString(curWritePos) + ", curReadPos=" + posString(curReadPos) +  "]";
 	}
 	
 	private static String posString(long ref) {

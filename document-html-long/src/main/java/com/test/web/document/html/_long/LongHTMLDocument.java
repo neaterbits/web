@@ -268,7 +268,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 
 	@Override
-	public void onText(LongTokenizer tokenizer, int startOffset, int endSkip) {
+	public void onText(LongTokenizer tokenizer, long stringRef) {
 		final int elementRef = allocate(LongHTML.SIZE_TEXT, "text");
 		
 		final int cur = getCurElement();
@@ -299,7 +299,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 		LongHTML.setAsText(elementBuf, elementOffset);
 		
-		LongHTML.setText(elementBuf, elementOffset, tokenizer.get(startOffset, endSkip));
+		LongHTML.setText(elementBuf, elementOffset, stringRef);
 	}
 
 	@Override
@@ -323,7 +323,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 
 	@Override
-	public void onAttributeWithValue(LongTokenizer tokenizer, HTMLAttribute attribute, int startOffset, int endSkip, HTMLElement element) {
+	public void onAttributeWithValue(LongTokenizer tokenizer, HTMLAttribute attribute, long stringRef, HTMLElement element) {
 		final int elementRef = getCurElement();
 		final int elementOffset = offset(elementRef);
 		final long [] elementBuf = buf(elementRef);
@@ -331,7 +331,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		switch (attribute) {
 		
 		case ID:
-			final int idStringRef = tokenizer.addToBuffer(idBuffer, startOffset, endSkip);
+			final int idStringRef = tokenizer.addToBuffer(idBuffer, stringRef);
 			final String idString = idBuffer.getString(idStringRef);
 			
 			state.addElement(idString, getCurElement());
@@ -340,25 +340,25 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 			break;
 		
 		case ACCESSKEY:
-			LongHTML.setAccessKey(elementBuf, elementOffset, tokenizer.addToBuffer(accessKeyBuffer, startOffset, endSkip));
+			LongHTML.setAccessKey(elementBuf, elementOffset, tokenizer.addToBuffer(accessKeyBuffer, stringRef));
 			break;
 			
 		case CONTENTEDITABLE:
-			LongHTML.setContentEditable(elementBuf, elementOffset, tokenizer.equalsIgnoreCase("true", startOffset, endSkip));
+			LongHTML.setContentEditable(elementBuf, elementOffset, tokenizer.equalsIgnoreCase("true", stringRef));
 			break;
 			
 		case CONTEXTMENU:
-			LongHTML.setContextMenu(elementBuf, elementOffset, tokenizer.addToBuffer(contextMenuBuffer, startOffset, endSkip));
+			LongHTML.setContextMenu(elementBuf, elementOffset, tokenizer.addToBuffer(contextMenuBuffer, stringRef));
 			break;
 			
 		case DIRECTION:
-			LongHTML.setDirection(elementBuf, elementOffset, tokenizer.asEnum(HTMLDirection.class, startOffset, endSkip, false));
+			LongHTML.setDirection(elementBuf, elementOffset, tokenizer.asEnum(HTMLDirection.class, stringRef, false));
 			break;
 			
 		case REL:
 			switch (element) {
 			case LINK:
-				LongHTML.setLinkRel(elementBuf, elementOffset, tokenizer.addToBuffer(relBuffer, startOffset, endSkip));
+				LongHTML.setLinkRel(elementBuf, elementOffset, tokenizer.addToBuffer(relBuffer, stringRef));
 				break;
 				
 			default:
@@ -370,11 +370,11 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		case TYPE:
 			switch (element) {
 			case SCRIPT:
-				LongHTML.setScriptType(elementBuf, elementOffset, tokenizer.addToBuffer(typeBuffer, startOffset, endSkip));
+				LongHTML.setScriptType(elementBuf, elementOffset, tokenizer.addToBuffer(typeBuffer, stringRef));
 				break;
 
 			case LINK:
-				LongHTML.setLinkType(elementBuf, elementOffset, tokenizer.addToBuffer(typeBuffer, startOffset, endSkip));
+				LongHTML.setLinkType(elementBuf, elementOffset, tokenizer.addToBuffer(typeBuffer, stringRef));
 				break;
 
 			default:
@@ -386,7 +386,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		case HREF:
 			switch (element) {
 			case LINK:
-				LongHTML.setLinkHRef(elementBuf, elementOffset, tokenizer.addToBuffer(hrefBuffer, startOffset, endSkip));
+				LongHTML.setLinkHRef(elementBuf, elementOffset, tokenizer.addToBuffer(hrefBuffer, stringRef));
 				break;
 				
 			default:
@@ -400,12 +400,12 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 
 	@Override
-	public void onClassAttributeValue(LongTokenizer tokenizer, int startOffset, int endSkip) {
+	public void onClassAttributeValue(LongTokenizer tokenizer, long stringRef) {
 		final int elementRef = getCurElement();
 		final int elementOffset = offset(elementRef);
 		final long [] elementBuf = buf(elementRef);
 
-		final int classStringRef = tokenizer.addToBuffer(classBuffer, startOffset, endSkip);
+		final int classStringRef = tokenizer.addToBuffer(classBuffer, stringRef);
 		
 		final String classString = classBuffer.getString(classStringRef);
 		

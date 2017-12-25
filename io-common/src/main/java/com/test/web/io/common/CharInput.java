@@ -6,10 +6,10 @@ public interface CharInput {
 
 	int readNext() throws IOException;
 
-	// for tokenizer
-	boolean markSupported();
+	// Current read pos, may be encoded so cannot do arithmetics on this
+	long getReadPos();
 	
-	void mark();
+	long getStringRef(long startPos, long endPos, int startOffset, int endSkip);
 	
 	// when reading one char extra in lexer so that tokenizer position in buffer reflects
 	// where the lexer is at, so that the next mark() is correct
