@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.test.web.css.common.CSSState;
+import com.test.web.css.common.CSSStyleBuilder;
 import com.test.web.css.common.CSSValueType;
 import com.test.web.css.common.ICSSStyleSheet;
 import com.test.web.css.common.enums.CSSRuleType;
@@ -94,7 +95,7 @@ public final class OOCSSDocument
 
 	@Override
 	public void onBlockEnd(Void context, Tokenizer tokenizer, long blockStartPos, long blockEndPos) {
-		stylesRef().setCSSText(tokenizer.asString(blockStartPos, blockEndPos));
+		stylesRef().setOriginalCSSText(tokenizer.asString(blockStartPos, blockEndPos));
 	}
 
 	/***************************************************** ICSSStyleSheet *****************************************************/ 
@@ -122,19 +123,36 @@ public final class OOCSSDocument
 	}
 
 	@Override
+	public CSStyle getStyleType(OOCSSRule rule, int index) {
+		return styles(rule).getPropertyStyleType(index);
+	}
+	
+	@Override
+	public String getStyleCustomPropertyName(OOCSSRule rule, int index) {
+		return styles(rule).getStyleItem(index);
+	}
+
+	@Override
+	public String getStyleCustomPropertyValue(OOCSSRule rule, int index) {
+		return styles(rule).getPropertyValue(this, rule, index);
+	}
+
+	@Override
 	public CSSValueType getStylePropertyCSSValueType(OOCSSRule rule, String propertyName) {
 		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
 	public String getStyleCSSText(OOCSSRule rule) {
-		return styles(rule).getCSSText();
+		return CSSStyleBuilder.getCSSText(this, rule);
 	}
 
 	@Override
 	public void setStyleCSSText(OOCSSRule rule, String cssText) {
 		// TODO parse
-		styles(rule).setCSSText(cssText);
+		styles(rule).setOriginalCSSText(cssText);
+		throw new UnsupportedOperationException("TODO");
+		//styles(rule).setCSSText(cssText);
 	}
 
 	@Override
@@ -144,7 +162,7 @@ public final class OOCSSDocument
 
 	@Override
 	public String getStylePropertyValue(OOCSSRule rule, String propertyName) {
-		return styles(rule).getPropertyValue(propertyName);
+		return styles(rule).getPropertyValue(this, rule, propertyName);
 	}
 
 	@Override
@@ -154,7 +172,7 @@ public final class OOCSSDocument
 
 	@Override
 	public String removeStyleProperty(OOCSSRule rule, String propertyName) {
-		return styles(rule).removeProperty(propertyName);
+		return styles(rule).removeProperty(this, rule, propertyName);
 	}
 
 	@Override

@@ -17,7 +17,7 @@ abstract class OOStylesBase {
 		return (styles & (1L << style.ordinal())) != 0L;
 	}
 	
-	final void set(CSStyle style) {
+	void set(CSStyle style) {
 		styles |= 1L << style.ordinal();
 	}
 

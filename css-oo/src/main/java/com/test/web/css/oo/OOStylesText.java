@@ -2,14 +2,14 @@ package com.test.web.css.oo;
 
 abstract class OOStylesText extends OOStylesBase {
 
-	private String cssText;
+	private String originalCSSText;
 
-	final String getCSSText() {
-		return cssText;
+	final String getOriginalCSSText() {
+		return originalCSSText;
 	}
 
-	final void setCSSText(String cssText) {
+	final void setOriginalCSSText(String originalCSSText) {
 		// TODO parse
-		this.cssText = cssText;
+		this.originalCSSText = originalCSSText;
 	}
 }

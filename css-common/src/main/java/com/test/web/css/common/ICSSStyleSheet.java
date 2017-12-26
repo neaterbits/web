@@ -1,6 +1,7 @@
 package com.test.web.css.common;
 
 import com.test.web.css.common.enums.CSSRuleType;
+import com.test.web.css.common.enums.CSStyle;
 
 // Generic interface to stylesheet
 public interface ICSSStyleSheet<RULE> {
@@ -15,6 +16,12 @@ public interface ICSSStyleSheet<RULE> {
 	void setStyleSelectorText(RULE rule, String selectorText);
 	
 	int getStyleLength(RULE rule);
+
+	String getStyleCustomPropertyName(RULE rule, int index);
+
+	String getStyleCustomPropertyValue(RULE rule, int index);
+	
+	CSStyle getStyleType(RULE rule, int index);
 	
 	CSSValueType getStylePropertyCSSValueType(RULE rule, String propertyName);
 

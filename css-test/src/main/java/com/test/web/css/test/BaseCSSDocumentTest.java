@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.ICSSJustify;
+import com.test.web.css.common.WrappingHolder;
 import com.test.web.css.common.enums.CSSBackgroundColor;
 import com.test.web.css.common.enums.CSSBackgroundImage;
 import com.test.web.css.common.enums.CSSBackgroundAttachment;
@@ -47,16 +48,16 @@ public abstract class BaseCSSDocumentTest<ELEMENT> extends TestCase {
 
 	private ICSSDocumentParserListener<ELEMENT, Void> parse(String css) throws IOException, ParserException {
 		final ICSSDocumentParserListener<ELEMENT, Void> doc = createDocument();
-		
+
 		final StringBuffers buffers = new StringBuffers(new SimpleLoadStream(css));
-		
+
 		final CSSParser<Void> parser = new CSSParser<>(buffers, buffers, doc);
-		
+
 		parser.parseCSS();
-	
+
 		return doc;
 	}
-	
+
 	public void testParser() throws IOException, ParserException {
 		
 		final ICSSDocumentParserListener<ELEMENT, Void> doc = parse(TestData.CSS);
@@ -75,6 +76,14 @@ public abstract class BaseCSSDocumentTest<ELEMENT> extends TestCase {
 		assertThat(doc.getWidthUnit(h1Ref)).isEqualTo(CSSUnit.PCT);
 		assertThat(DecimalSize.decodeToInt(doc.getWidth(h1Ref))).isEqualTo(20);
 		
+		
+		assertThat(doc.getStyleCSSText(h1Ref)).isEqualTo("width: 20%; height: 100px; background-color: rgb(170, 187, 204);");
+		assertThat(doc.getStyleLength(h1Ref)).isEqualTo(3);
+		assertThat(doc.getStylePropertyValue(h1Ref, "width")).isEqualTo("20%");
+		assertThat(doc.getStylePropertyValue(h1Ref, "Width")).isEqualTo("20%");
+		assertThat(doc.getStylePropertyValue(h1Ref, "height")).isEqualTo("100px");
+		assertThat(doc.getStylePropertyValue(h1Ref, "background-color")).isEqualTo("rgb(170, 187, 204)");
+		
 		final ELEMENT idRef = doc.get(CSSTarget.ID, "an_element").get(0);
 
 		assertThat(doc.isSet(idRef, CSStyle.MARGIN_LEFT)).isTrue();
@@ -91,13 +100,13 @@ public abstract class BaseCSSDocumentTest<ELEMENT> extends TestCase {
 		
 		System.out.println("Margins: " + margins);
 		
-		assertThat(DecimalSize.decodeToInt(margins.left)).isEqualTo(10);
-		assertThat(margins.leftUnit).isEqualTo(CSSUnit.PX);
-		assertThat(margins.leftType).isEqualTo(CSSJustify.SIZE);
+		assertThat(DecimalSize.decodeToInt(margins.getLeft())).isEqualTo(10);
+		assertThat(margins.getLeftUnit()).isEqualTo(CSSUnit.PX);
+		assertThat(margins.getLeftType()).isEqualTo(CSSJustify.SIZE);
 		
-		assertThat(margins.rightType).isEqualTo(CSSJustify.AUTO);
-		assertThat(margins.topType).isEqualTo(CSSJustify.NONE);
-		assertThat(margins.bottomType).isEqualTo(CSSJustify.NONE);
+		assertThat(margins.getRightType()).isEqualTo(CSSJustify.AUTO);
+		assertThat(margins.getTopType()).isEqualTo(CSSJustify.NONE);
+		assertThat(margins.getBottomType()).isEqualTo(CSSJustify.NONE);
 
 		final ELEMENT classRef = doc.get(CSSTarget.CLASS, "a_class").get(0);
 		checkThirdBlock(doc, classRef);
@@ -119,9 +128,9 @@ public abstract class BaseCSSDocumentTest<ELEMENT> extends TestCase {
 		
 		System.out.println("Padding: " + padding);
 
-		assertThat(DecimalSize.decodeToInt(padding.top)).isEqualTo(30);
-		assertThat(padding.topUnit).isEqualTo(CSSUnit.PX);
-		assertThat(padding.topType).isEqualTo(CSSJustify.SIZE);
+		assertThat(DecimalSize.decodeToInt(padding.getTop())).isEqualTo(30);
+		assertThat(padding.getTopUnit()).isEqualTo(CSSUnit.PX);
+		assertThat(padding.getTopType()).isEqualTo(CSSJustify.SIZE);
 	}
 	
 	public void testMargins() throws IOException, ParserException {
@@ -264,18 +273,18 @@ public abstract class BaseCSSDocumentTest<ELEMENT> extends TestCase {
 			int bottom, CSSUnit bottomUnit, CSSJustify bottomJustify,
 			int left, CSSUnit leftUnit, CSSJustify leftJustify) {
 		
-		assertThat(DecimalSize.decodeToInt(wrapping.top)).isEqualTo(top);
-		assertThat(wrapping.topUnit).isEqualTo(topUnit);
-		assertThat(wrapping.topType).isEqualTo(topJustify);
-		assertThat(DecimalSize.decodeToInt(wrapping.right)).isEqualTo(right);
-		assertThat(wrapping.rightUnit).isEqualTo(rightUnit);
-		assertThat(wrapping.rightType).isEqualTo(rightJustify);
-		assertThat(DecimalSize.decodeToInt(wrapping.bottom)).isEqualTo(bottom);
-		assertThat(wrapping.bottomUnit).isEqualTo(bottomUnit);
-		assertThat(wrapping.bottomType).isEqualTo(bottomJustify);
-		assertThat(DecimalSize.decodeToInt(wrapping.left)).isEqualTo(left);
-		assertThat(wrapping.leftUnit).isEqualTo(leftUnit);
-		assertThat(wrapping.leftType).isEqualTo(leftJustify);
+		assertThat(DecimalSize.decodeToInt(wrapping.getTop())).isEqualTo(top);
+		assertThat(wrapping.getTopUnit()).isEqualTo(topUnit);
+		assertThat(wrapping.getTopType()).isEqualTo(topJustify);
+		assertThat(DecimalSize.decodeToInt(wrapping.getRight())).isEqualTo(right);
+		assertThat(wrapping.getRightUnit()).isEqualTo(rightUnit);
+		assertThat(wrapping.getRightType()).isEqualTo(rightJustify);
+		assertThat(DecimalSize.decodeToInt(wrapping.getBottom())).isEqualTo(bottom);
+		assertThat(wrapping.getBottomUnit()).isEqualTo(bottomUnit);
+		assertThat(wrapping.getBottomType()).isEqualTo(bottomJustify);
+		assertThat(DecimalSize.decodeToInt(wrapping.getLeft())).isEqualTo(left);
+		assertThat(wrapping.getLeftUnit()).isEqualTo(leftUnit);
+		assertThat(wrapping.getLeftType()).isEqualTo(leftJustify);
 	}
 	
 	private void checkWrapping(TestCSSJustify wrapping,
@@ -284,18 +293,18 @@ public abstract class BaseCSSDocumentTest<ELEMENT> extends TestCase {
 			DecimalSize bottom, CSSUnit bottomUnit, CSSJustify bottomJustify,
 			DecimalSize left, CSSUnit leftUnit, CSSJustify leftJustify) {
 		
-		assertThat(DecimalSize.decode(wrapping.top)).isEqualTo(top);
-		assertThat(wrapping.topUnit).isEqualTo(topUnit);
-		assertThat(wrapping.topType).isEqualTo(topJustify);
-		assertThat(DecimalSize.decode(wrapping.right)).isEqualTo(right);
-		assertThat(wrapping.rightUnit).isEqualTo(rightUnit);
-		assertThat(wrapping.rightType).isEqualTo(rightJustify);
-		assertThat(DecimalSize.decode(wrapping.bottom)).isEqualTo(bottom);
-		assertThat(wrapping.bottomUnit).isEqualTo(bottomUnit);
-		assertThat(wrapping.bottomType).isEqualTo(bottomJustify);
-		assertThat(DecimalSize.decode(wrapping.left)).isEqualTo(left);
-		assertThat(wrapping.leftUnit).isEqualTo(leftUnit);
-		assertThat(wrapping.leftType).isEqualTo(leftJustify);
+		assertThat(DecimalSize.decode(wrapping.getTop())).isEqualTo(top);
+		assertThat(wrapping.getTopUnit()).isEqualTo(topUnit);
+		assertThat(wrapping.getTopType()).isEqualTo(topJustify);
+		assertThat(DecimalSize.decode(wrapping.getRight())).isEqualTo(right);
+		assertThat(wrapping.getRightUnit()).isEqualTo(rightUnit);
+		assertThat(wrapping.getRightType()).isEqualTo(rightJustify);
+		assertThat(DecimalSize.decode(wrapping.getBottom())).isEqualTo(bottom);
+		assertThat(wrapping.getBottomUnit()).isEqualTo(bottomUnit);
+		assertThat(wrapping.getBottomType()).isEqualTo(bottomJustify);
+		assertThat(DecimalSize.decode(wrapping.getLeft())).isEqualTo(left);
+		assertThat(wrapping.getLeftUnit()).isEqualTo(leftUnit);
+		assertThat(wrapping.getLeftType()).isEqualTo(leftJustify);
 	}
 
 	public void testClear() throws IOException, ParserException {
@@ -787,54 +796,7 @@ public abstract class BaseCSSDocumentTest<ELEMENT> extends TestCase {
 		assertThat(doc.getDropShadowB(f)).isEqualTo(0xCC);
 	}
 
-	private static class TestCSSJustify implements ICSSJustify<Void> {
-
-		int top;
-		CSSUnit topUnit;
-		CSSJustify topType;
+	private static class TestCSSJustify extends WrappingHolder {
 		
-		int right;
-		CSSUnit rightUnit;
-		CSSJustify rightType;
-		
-		int bottom;
-		CSSUnit bottomUnit;
-		CSSJustify bottomType;
-		
-		int left;
-		CSSUnit leftUnit;
-		CSSJustify leftType;
-		
-		@Override
-		public void set(Void param,
-				int top, CSSUnit topUnit, CSSJustify topType,
-				int right, CSSUnit rightUnit, CSSJustify rightType,
-				int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
-				int left, CSSUnit leftUnit, CSSJustify leftType) {
-			
-			this.top = top;
-			this.topUnit = topUnit;
-			this.topType = topType;
-			
-			this.right = right;
-			this.rightUnit = rightUnit;
-			this.rightType = rightType;
-			
-			this.bottom = bottom;
-			this.bottomUnit = bottomUnit;
-			this.bottomType = bottomType;
-
-			this.left = left;
-			this.leftUnit = leftUnit;
-			this.leftType = leftType;
-		}
-
-		@Override
-		public String toString() {
-			return "TestCSSJustify [top=" + top + ", topUnit=" + topUnit + ", topType=" + topType + ", right=" + right
-					+ ", rightUnit=" + rightUnit + ", rightType=" + rightType + ", bottom=" + bottom + ", bottomUnit="
-					+ bottomUnit + ", bottomType=" + bottomType + ", left=" + left + ", leftUnit=" + leftUnit
-					+ ", leftType=" + leftType + "]";
-		}
 	}
 }

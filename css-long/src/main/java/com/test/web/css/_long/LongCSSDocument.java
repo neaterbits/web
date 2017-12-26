@@ -116,6 +116,24 @@ public final class LongCSSDocument
 	}
 
 	@Override
+	public CSStyle getStyleType(Integer rule, int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getStyleCustomPropertyName(Integer rule, int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getStyleCustomPropertyValue(Integer rule, int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public CSSValueType getStylePropertyCSSValueType(Integer rule, String propertyName) {
 		// TODO Auto-generated method stub
 		return null;

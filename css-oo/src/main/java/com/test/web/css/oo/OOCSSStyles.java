@@ -2,6 +2,8 @@ package com.test.web.css.oo;
 
 import java.util.Arrays;
 
+import com.test.web.css.common.CSSStyleBuilder;
+import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.enums.CSSBackgroundColor;
 import com.test.web.css.common.enums.CSSClear;
 import com.test.web.css.common.enums.CSSColor;
@@ -399,6 +401,8 @@ public final class OOCSSStyles extends OOStylesText {
 		this.colorAlpha = a;
 		this.colorCSS = null;
 		this.colorType = null;
+		
+		set(CSStyle.COLOR);
 	}
 
 	CSSColor getColorCSS() {
@@ -410,6 +414,8 @@ public final class OOCSSStyles extends OOStylesText {
 		this.colorRGB = ColorRGB.NONE;
 		this.colorAlpha = DecimalSize.NONE;
 		this.colorType = null;
+		
+		set(CSStyle.COLOR);
 	}
 	
 	void setColorType(CSSForeground colorType) {
@@ -417,6 +423,8 @@ public final class OOCSSStyles extends OOStylesText {
 		this.colorRGB = ColorRGB.NONE;
 		this.colorAlpha = DecimalSize.NONE;
 		this.colorType = colorType;
+
+		set(CSStyle.COLOR);
 	}
 	
 	int getColorR() {
@@ -479,6 +487,8 @@ public final class OOCSSStyles extends OOStylesText {
 		this.bgColorAlpha = a;
 		this.bgColorCSS = null;
 		this.bgColorType = null;
+
+		set(CSStyle.BACKGROUND_COLOR);
 	}
 
 	CSSColor getBgColorCSS() {
@@ -490,6 +500,8 @@ public final class OOCSSStyles extends OOStylesText {
 		this.bgColorRGB = ColorRGB.NONE;
 		this.bgColorAlpha = DecimalSize.NONE;
 		this.bgColorType = null;
+		
+		set(CSStyle.BACKGROUND_COLOR);
 	}
 	
 	void setBgColorType(CSSBackgroundColor colorType) {
@@ -497,6 +509,8 @@ public final class OOCSSStyles extends OOStylesText {
 		this.bgColorRGB = ColorRGB.NONE;
 		this.bgColorAlpha = DecimalSize.NONE;
 		this.bgColorType = colorType;
+		
+		set(CSStyle.BACKGROUND_COLOR);
 	}
 	
 	int getBgColorR() {
@@ -519,13 +533,14 @@ public final class OOCSSStyles extends OOStylesText {
 		return bgColorType;
 	}
 
-
 	short getZIndex() {
 		return zIndex;
 	}
 
 	void setZIndex(short zIndex) {
 		this.zIndex = zIndex;
+		
+		set(CSStyle.Z_INDEX);
 	}
 
 	String getFontFamily() {
@@ -534,6 +549,8 @@ public final class OOCSSStyles extends OOStylesText {
 
 	void setFontFamily(String fontFamily) {
 		this.fontFamily = fontFamily;
+		
+		set(CSStyle.FONT_FAMILY);
 	}
 
 	String getFontName() {
@@ -542,6 +559,8 @@ public final class OOCSSStyles extends OOStylesText {
 
 	void setFontName(String fontName) {
 		this.fontName = fontName;
+		
+		set(CSStyle.FONT_NAME);
 	}
 
 	int getFontSize() {
@@ -560,6 +579,8 @@ public final class OOCSSStyles extends OOStylesText {
 		this.fontSize = fontSize;
 		this.fontSizeUnit = fontSizeUnit;
 		this.fontSizeEnum = fontSizeEnum;
+		
+		set(CSStyle.FONT_SIZE);
 	}
 
 	int getMinWidth() {
@@ -585,12 +606,16 @@ public final class OOCSSStyles extends OOStylesText {
 	void setFontWeight(int fontWeightNumber, CSSFontWeight fontWeightEnum) {
 		this.fontWeightNumber = fontWeightNumber;
 		this.fontWeightEnum = fontWeightEnum;
+		
+		set(CSStyle.FONT_WEIGHT);
 	}
 
 	void setMinWidth(int minWidth, CSSUnit unit, CSSMin type) {
 		this.minWidth = minWidth;
 		this.minWidthUnit = unit;
 		this.minWidthType = type;
+
+		set(CSStyle.MIN_WIDTH);
 	}
 
 	int getMinHeight() {
@@ -609,6 +634,8 @@ public final class OOCSSStyles extends OOStylesText {
 		this.minHeight = minHeight;
 		this.minHeightUnit = unit;
 		this.minHeightType = type;
+		
+		set(CSStyle.MIN_HEIGHT);
 	}
 
 	int getMaxWidth() {
@@ -627,6 +654,8 @@ public final class OOCSSStyles extends OOStylesText {
 		this.maxWidth = maxWidth;
 		this.maxWidthUnit = unit;
 		this.maxWidthType = type;
+		
+		set(CSStyle.MAX_WIDTH);
 	}
 
 	int getMaxHeight() {
@@ -646,6 +675,8 @@ public final class OOCSSStyles extends OOStylesText {
 		this.maxHeight = maxHeight;
 		this.maxHeightUnit = unit;
 		this.maxHeightType = type;
+		
+		set(CSStyle.MAX_HEIGHT);
 	}
 	
 	private OOCSSFilter assureFilter() {
@@ -662,6 +693,8 @@ public final class OOCSSStyles extends OOStylesText {
 	
 	void setFilter(CSSFilter filter) {
 		assureFilter().setFilter(filter);
+		
+		set(CSStyle.FILTER);
 	}
 	
 	int getBlur() {
@@ -828,7 +861,7 @@ public final class OOCSSStyles extends OOStylesText {
 		int idx = -1;
 		
 		for (int i = 0; i < numValues; ++ i) {
-			if (propertyName.equals(values[i].name)) {
+			if (values[i].hasPropertyName(propertyName)) {
 				idx = i;
 				break;
 			}
@@ -840,33 +873,44 @@ public final class OOCSSStyles extends OOStylesText {
 	int getLength() {
 		return numValues;
 	}
+	
+	CSStyle getPropertyStyleType(int idx) {
+		return idx < numValues ? values[idx].getType() : null;
+	}
 
 	String getStyleItem(int idx) {
 		
-		return idx < numValues ? values[idx].value : null;
+		return idx < numValues ? values[idx].getName() : null;
 	}
 
-	String getPropertyValue(String propertyName) {
+	<RULE> String getPropertyValue(ICSSDocument<RULE> styles, RULE rule, int idx) {
+		
+		return idx < numValues ? values[idx].getValue(styles, rule) : null;
+	}
+
+	<RULE> String getPropertyValue(ICSSDocument<RULE> styles, RULE rule, String propertyName) {
 		
 		final int idx = getPropertyIdx(propertyName);
 		
-		return idx >= 0 ? values[idx].value : null;
+		return idx >= 0 ? values[idx].getValue(styles, rule) : null;
 	}
 
 	String getPropertyPriority(String propertyName) {
 		
 		final int idx = getPropertyIdx(propertyName);
 		
-		return idx >= 0 ? values[idx].priority : null;
+		final String priority = idx >= 0 ? values[idx].priority : null;
+
+		return priority;
 	}
 	
-	String removeProperty(String propertyName) {
+	<RULE> String removeProperty(ICSSDocument<RULE> styles, RULE rule, String propertyName) {
 		final int idx = getPropertyIdx(propertyName);
 		
 		final String existing;
 		
 		if (idx >= 0) {
-			existing = values[idx].value;
+			existing = values[idx].getValue(styles, rule);
 			
 			if (idx == numValues - 1) {
 				values[numValues - 1] = null;
@@ -885,17 +929,28 @@ public final class OOCSSStyles extends OOStylesText {
 	}
 
 	void setProperty(String propertyName, String value, String priority) {
+
+		final CSStyle type = CSStyle.fromPropertyName(propertyName);
+		
+		final CSSValue cssValue = type != null
+				? new StandardCSSValue(type, priority)
+				: new CustomCSSValue(propertyName, value, priority);
+
+		setProperty(cssValue);
+	}
+
+	private void setProperty(CSSValue cssValue) {
 		if (values == null) {
 			this.values = new CSSValue[20];
 
-			this.values[0] = new CSSValue(propertyName, value, priority);
+			this.values[0] = cssValue;
 			this.numValues = 1;
 		}
 		else {
-			final int idx = getPropertyIdx(propertyName);
+			final int idx = getPropertyIdx(cssValue.getName());
 
 			if (idx >= 0) {
-				values[idx] = new CSSValue(propertyName, value, priority);
+				values[idx] = cssValue;
 			}
 			else {
 				// Add
@@ -903,17 +958,77 @@ public final class OOCSSStyles extends OOStylesText {
 					this.values = Arrays.copyOf(values, values.length * 2);
 				}
 
-				this.values[numValues ++] = new CSSValue(propertyName, value, priority);
+				this.values[numValues ++] = cssValue;
 			}
 		}
 	}
+	
+	
 
-	private static class CSSValue {
+	@Override
+	void set(CSStyle style) {
+		super.set(style);
+
+		setProperty(new StandardCSSValue(style, null));
+	}
+
+	private static abstract class CSSValue {
+		private final String priority;
+
+		abstract boolean hasPropertyName(String propertyName);
+		
+		abstract CSStyle getType();
+		
+		abstract String getName();
+		
+		abstract <RULE> String getValue(ICSSDocument<RULE> styles, RULE rule);
+		
+		CSSValue(String priority) {
+			this.priority = priority;
+		}
+	}
+	
+	private class StandardCSSValue extends CSSValue {
+		private final CSStyle type;
+		
+		StandardCSSValue(CSStyle type, String priority) {
+			super(priority);
+			
+			if (type == null) {
+				throw new IllegalArgumentException("type == null");
+			}
+
+			this.type = type;
+		}
+
+		@Override
+		boolean hasPropertyName(String propertyName) {
+			return type.getName().equalsIgnoreCase(propertyName);
+		}
+
+		@Override
+		CSStyle getType() {
+			return type;
+		}
+
+		@Override
+		String getName() {
+			return type.getName();
+		}
+
+		@Override
+		<RULE> String getValue(ICSSDocument<RULE> styles, RULE rule) {
+			return CSSStyleBuilder.getCSSPropertyValue(styles, rule, type);
+		}
+	}
+	
+	private static class CustomCSSValue extends CSSValue {
 		private final String name;
 		private final String value;
-		private final String priority;
 		
-		CSSValue(String name, String value, String priority) {
+		CustomCSSValue(String name, String value, String priority) {
+			super(priority);
+			
 			if (name == null) {
 				throw new IllegalArgumentException("name == null");
 			}
@@ -921,10 +1036,29 @@ public final class OOCSSStyles extends OOStylesText {
 			if (value == null) {
 				throw new IllegalArgumentException("name == null");
 			}
-		
+
 			this.name = name;
 			this.value = value;
-			this.priority = priority;
+		}
+
+		@Override
+		boolean hasPropertyName(String propertyName) {
+			return name.equalsIgnoreCase(propertyName);
+		}
+
+		@Override
+		CSStyle getType() {
+			return null;
+		}
+
+		@Override
+		String getName() {
+			return name;
+		}
+
+		@Override
+		<RULE> String getValue(ICSSDocument<RULE> styles, RULE rule) {
+			return value;
 		}
 	}
 }
