@@ -17,51 +17,44 @@ class CSSParserHelperMargin {
 	private static final CSSToken [] autoOrInitialOrInheritTokens = new CSSToken[] { CSSToken.INTEGER, CSSToken.AUTO, CSSToken.INITIAL, CSSToken.INHERIT, CSSToken.DOT };
 	private static final CSSToken [] initialOrInheritTokens 			   = new CSSToken[] { CSSToken.INTEGER, CSSToken.INITIAL, CSSToken.INHERIT, CSSToken.DOT };
 
-	static boolean parseSizeOrAutoOrInitialOrInherit(Lexer<CSSToken, CharInput> lexer, IJustifyFunction toCall) throws IOException, ParserException {
-		return parseSizeOrAutoOrInitialOrInherit(lexer, toCall, autoOrInitialOrInheritTokens);
+	static void parseSizeOrAutoOrInitialOrInherit(Lexer<CSSToken, CharInput> lexer, IJustifyFunction toCall) throws IOException, ParserException {
+		parseSizeOrAutoOrInitialOrInherit(lexer, toCall, autoOrInitialOrInheritTokens);
 	}
 
-	static boolean parseSizeOrInitialOrInherit(Lexer<CSSToken, CharInput> lexer, IJustifyFunction toCall) throws IOException, ParserException {
-		return parseSizeOrAutoOrInitialOrInherit(lexer, toCall, initialOrInheritTokens);
+	static void parseSizeOrInitialOrInherit(Lexer<CSSToken, CharInput> lexer, IJustifyFunction toCall) throws IOException, ParserException {
+		parseSizeOrAutoOrInitialOrInherit(lexer, toCall, initialOrInheritTokens);
 	}
 	
-	private static boolean parseSizeOrAutoOrInitialOrInherit(Lexer<CSSToken, CharInput> lexer, IJustifyFunction toCall, CSSToken [] tokens) throws IOException, ParserException {
+	private static void parseSizeOrAutoOrInitialOrInherit(Lexer<CSSToken, CharInput> lexer, IJustifyFunction toCall, CSSToken [] tokens) throws IOException, ParserException {
 		CSSToken token = CSSParserHelperWS.lexSkipWSAndComment(lexer, tokens);
-		
-		final boolean semiColonRead;
 		
 		final BiConsumer<Integer, CSSUnit> sizeCallback = (size, unit) -> toCall.onJustify(size, unit, CSSJustify.SIZE);
 		
 		switch (token) {
 		case INTEGER:
 			final int intValue = Integer.parseInt(lexer.get());
-			semiColonRead = CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(lexer, marginOrPaddingDefaultUnit, intValue, sizeCallback);
+			CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(lexer, marginOrPaddingDefaultUnit, intValue, sizeCallback);
 			break;
 			
 		case AUTO:
 			toCall.onJustify(DecimalSize.encodeAsInt(0), null, CSSJustify.AUTO);
-			semiColonRead = false;
 			break;
 
 		case INITIAL:
 			toCall.onJustify(DecimalSize.encodeAsInt(0), null, CSSJustify.INITIAL);
-			semiColonRead = false;
 			break;
 			
 		case INHERIT:
 			toCall.onJustify(DecimalSize.encodeAsInt(0), null, CSSJustify.INHERIT);
-			semiColonRead = false;
 			break;
 
 		case DOT:
-			semiColonRead = CSSParserHelperSizeToSemicolon.parseDecimalAfterDot(lexer, marginOrPaddingDefaultUnit, 0, sizeCallback);
+			CSSParserHelperSizeToSemicolon.parseDecimalAfterDot(lexer, marginOrPaddingDefaultUnit, 0, sizeCallback);
 			break;
 			
 		default:
 			throw lexer.unexpectedToken();
 		}
-
-		return semiColonRead;
 	}
 
 	private static class MarginPart {
@@ -78,14 +71,14 @@ class CSSParserHelperMargin {
 		}
 	}
 
-	static <LISTENER_CONTEXT>boolean parseMarginOrPadding(Lexer<CSSToken, CharInput> lexer, LISTENER_CONTEXT context, IWrapping<LISTENER_CONTEXT> callback, InitialMarginOrPaddingParser parseInitial) throws IOException, ParserException {
+	static <LISTENER_CONTEXT>void parseMarginOrPadding(Lexer<CSSToken, CharInput> lexer, LISTENER_CONTEXT context, IWrapping<LISTENER_CONTEXT> callback, InitialMarginOrPaddingParser parseInitial) throws IOException, ParserException {
 		
 		// TODO perhaps cache if parser is singlethreaded
 		final MarginPart part1 = new MarginPart();
 		
 		// first parse one size or auto
 		//boolean semiColonRead = parseSizeOrAuto((size, unit, justify) -> part1.init(size, unit, justify));
-		boolean semiColonRead = parseInitial.parse(lexer, (size, unit, justify) -> part1.init(size, unit, justify));
+		parseInitial.parse(lexer, (size, unit, justify) -> part1.init(size, unit, justify));
 		
 		if (part1.justify != CSSJustify.NONE && part1.justify != CSSJustify.SIZE) {
 			// margin: auto which is special-case
@@ -104,15 +97,13 @@ class CSSParserHelperMargin {
 			final MarginPart part3 = new MarginPart();
 			final MarginPart part4 = new MarginPart();
 			
-			if (!semiColonRead) {
-				semiColonRead = CSSParserHelperSizeToSemicolon.parsePossiblyDecimalSizeValue(lexer, marginOrPaddingDefaultUnit, (size, unit) -> part2.init(size, unit, CSSJustify.SIZE));
-				if (part2.initialized && !semiColonRead) {
-					// read a value, try part3
-					semiColonRead = CSSParserHelperSizeToSemicolon.parsePossiblyDecimalSizeValue(lexer, marginOrPaddingDefaultUnit, (size, unit) -> part3.init(size, unit, CSSJustify.SIZE));
-					
-					if (part3.initialized && !semiColonRead) {
-						semiColonRead = CSSParserHelperSizeToSemicolon.parsePossiblyDecimalSizeValue(lexer, marginOrPaddingDefaultUnit, (size, unit) -> part4.init(size, unit, CSSJustify.SIZE));
-					}
+			CSSParserHelperSizeToSemicolon.parsePossiblyDecimalSizeValue(lexer, marginOrPaddingDefaultUnit, (size, unit) -> part2.init(size, unit, CSSJustify.SIZE));
+			if (part2.initialized) {
+				// read a value, try part3
+				CSSParserHelperSizeToSemicolon.parsePossiblyDecimalSizeValue(lexer, marginOrPaddingDefaultUnit, (size, unit) -> part3.init(size, unit, CSSJustify.SIZE));
+				
+				if (part3.initialized) {
+					CSSParserHelperSizeToSemicolon.parsePossiblyDecimalSizeValue(lexer, marginOrPaddingDefaultUnit, (size, unit) -> part4.init(size, unit, CSSJustify.SIZE));
 				}
 			}
 			
@@ -149,7 +140,5 @@ class CSSParserHelperMargin {
 				throw new IllegalStateException("Should have at least one margin part");
 			}
 		}
-			
-		return semiColonRead;
 	}
 }
