@@ -50,12 +50,12 @@ public class CSSParserHelperSize {
 				break;
 				
 			case NONE:
-				throw lexer.unexpectedToken();
-				
-			default:
 				// eg. semicolon, comma or other character after size
 				done = true;
 				break;
+				
+			default:
+				throw lexer.unexpectedToken();
 			}
 		} while (!done);
 		
@@ -105,7 +105,9 @@ public class CSSParserHelperSize {
 			break;
 			
 		case NONE:
-			throw lexer.unexpectedToken();
+			// semicolon probably
+			endTokenRead = token;
+			break;
 			
 		default:
 			// Unit token
@@ -113,7 +115,7 @@ public class CSSParserHelperSize {
 				unit = token.getUnit();
 			}
 			else {
-				endTokenRead = token;
+				throw lexer.unexpectedToken();
 			}
 			break;
 		}
@@ -152,7 +154,8 @@ public class CSSParserHelperSize {
 		switch (token) {
 
 		case NONE:
-			throw lexer.unexpectedToken();
+			endTokenRead = token;
+			break;
 			
 		default:
 			// Unit token
@@ -160,7 +163,7 @@ public class CSSParserHelperSize {
 				unit = token.getUnit();
 			}
 			else {
-				endTokenRead = token;
+				throw lexer.unexpectedToken();
 			}
 			break;
 		}

@@ -67,7 +67,6 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	public void parseCSS() throws IOException, ParserException {
 		
 		boolean done = false;
-		
 		do {
 			CSSToken token = lexer.lex(CSSToken.WS, CSSToken.ID_MARKER, CSSToken.CLASS_MARKER, CSSToken.TAG, CSSToken.COMMENT, CSSToken.EOF);
 			
@@ -240,7 +239,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		} while (!done);
 	}
 
-	public boolean parseElement(LISTENER_CONTEXT context) throws IOException, ParserException {
+	public void parseElement(LISTENER_CONTEXT context) throws IOException, ParserException {
 		
 		final CSSToken token = lexSkipWS(STYLE_TOKENS);
 		
@@ -248,22 +247,17 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			throw new ParserException("No CSS style token found");
 		}
 		
-		final boolean semiColonRead;
-		
 		if (token == CSSToken.BROWSER_SPECIFIC_ATTRIBUTE) {
 			// starts with '-'
-			semiColonRead = true;
 		}
 		else {
-			semiColonRead = parseElementWithoutCheckingForSemiColon(context, token.getElement());
+			parseElementWithoutCheckingForSemiColon(context, token.getElement());
 		}
-		
-		return semiColonRead;
 	}
 	
 	private static final CSSUnit defaultWidthHeightUnit = CSSUnit.PX;
 	
-	private boolean parseElementWithoutCheckingForSemiColon(LISTENER_CONTEXT context, CSStyle element) throws IOException, ParserException {
+	private void parseElementWithoutCheckingForSemiColon(LISTENER_CONTEXT context, CSStyle element) throws IOException, ParserException {
 		CSSToken token;
 		
 		for (;;) {
@@ -281,258 +275,236 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		CSSParserHelperWS.skipAnyWS(lexer);
 
 		// Now read value, this depends on input style
-		final boolean semiColonRead;
-		
+
 		switch (element) {
 		case WIDTH:
-			semiColonRead = CSSParserHelperSizeToSemicolon.parsePossiblyDecimalSizeValue(lexer, defaultWidthHeightUnit, (size, unit) -> listener.onWidth(context, size, unit));
+			CSSParserHelperSizeToSemicolon.parsePossiblyDecimalSizeValue(lexer, defaultWidthHeightUnit, (size, unit) -> listener.onWidth(context, size, unit));
 			break;
 			
 		case HEIGHT:
-			semiColonRead = CSSParserHelperSizeToSemicolon.parsePossiblyDecimalSizeValue(lexer, defaultWidthHeightUnit, (size, unit) -> listener.onHeight(context, size, unit));
+			CSSParserHelperSizeToSemicolon.parsePossiblyDecimalSizeValue(lexer, defaultWidthHeightUnit, (size, unit) -> listener.onHeight(context, size, unit));
 			break;
 
 		case COLOR:
-			semiColonRead = parseFgColor(
+			parseFgColor(
 					(r, g, b, a) -> listener.onColor(context, r, g, b, a),
 					cssColor -> listener.onColor(context, cssColor),
 					type -> listener.onColor(context, type));
 			break;
 			
 		case BACKGROUND_COLOR:
-			semiColonRead = parseBgColor(
+			parseBgColor(
 					(r, g, b, a) -> listener.onBgColor(context, r, g, b, a),
 					cssColor -> listener.onBgColor(context, cssColor),
 					type -> listener.onBgColor(context, type));
 			break;
 			
 		case BACKGROUND_IMAGE:
-			semiColonRead = parseBgImage(context);
+			parseBgImage(context);
 			break;
 
 		case BACKGROUND_POSITION:
-			semiColonRead = parseBgPosition(context);
+			parseBgPosition(context);
 			break;
 			
 		case BACKGROUND_SIZE:
-			semiColonRead = parseBgSize(context);
+			parseBgSize(context);
 			break;
 
 		case BACKGROUND_REPEAT:
-			semiColonRead = parseBgRepeat(context);
+			parseBgRepeat(context);
 			break;
 
 		case BACKGROUND_ATTACHMENT:
-			semiColonRead = parseBgAttachment(context);
+			parseBgAttachment(context);
 			break;
 
 		case BACKGROUND_ORIGIN:
-			semiColonRead = parseBgOrigin(context);
+			parseBgOrigin(context);
 			break;
 
 		case BACKGROUND_CLIP:
-			semiColonRead = parseBgClip(context);
+			parseBgClip(context);
 			break;
 			
 		case BACKGROUND:
-			semiColonRead = parseBackground(context);
+			parseBackground(context);
 			break;
 
 		case MARGIN_LEFT:
-			semiColonRead = CSSParserHelperMargin.parseSizeOrAutoOrInitialOrInherit(lexer, (size, unit, justify) -> listener.onMarginLeft(context, size, unit, justify));
+			CSSParserHelperMargin.parseSizeOrAutoOrInitialOrInherit(lexer, (size, unit, justify) -> listener.onMarginLeft(context, size, unit, justify));
 			break;
 			
 		case MARGIN_RIGHT:
-			semiColonRead = CSSParserHelperMargin.parseSizeOrAutoOrInitialOrInherit(lexer, (size, unit, justify) -> listener.onMarginRight(context, size, unit, justify));
+			CSSParserHelperMargin.parseSizeOrAutoOrInitialOrInherit(lexer, (size, unit, justify) -> listener.onMarginRight(context, size, unit, justify));
 			break;
 
 		case MARGIN_TOP:
-			semiColonRead = CSSParserHelperMargin.parseSizeOrAutoOrInitialOrInherit(lexer, (size, unit, justify) -> listener.onMarginTop(context, size, unit, justify));
+			CSSParserHelperMargin.parseSizeOrAutoOrInitialOrInherit(lexer, (size, unit, justify) -> listener.onMarginTop(context, size, unit, justify));
 			break;
 
 		case MARGIN_BOTTOM:
-			semiColonRead = CSSParserHelperMargin.parseSizeOrAutoOrInitialOrInherit(lexer, (size, unit, justify) -> listener.onMarginBottom(context, size, unit, justify));
+			CSSParserHelperMargin.parseSizeOrAutoOrInitialOrInherit(lexer, (size, unit, justify) -> listener.onMarginBottom(context, size, unit, justify));
 			break;
 			
 		case MARGIN:
-			semiColonRead = parseMargin(context);
+			parseMargin(context);
 			break;
 			
 		case PADDING_LEFT:
-			semiColonRead = CSSParserHelperMargin.parseSizeOrInitialOrInherit(lexer, (size, unit, justify) -> listener.onPaddingLeft(context, size, unit, justify));
+			CSSParserHelperMargin.parseSizeOrInitialOrInherit(lexer, (size, unit, justify) -> listener.onPaddingLeft(context, size, unit, justify));
 			break;
 			
 		case PADDING_RIGHT:
-			semiColonRead = CSSParserHelperMargin.parseSizeOrInitialOrInherit(lexer, (size, unit, justify) -> listener.onPaddingRight(context, size, unit, justify));
+			CSSParserHelperMargin.parseSizeOrInitialOrInherit(lexer, (size, unit, justify) -> listener.onPaddingRight(context, size, unit, justify));
 			break;
 
 		case PADDING_TOP:
-			semiColonRead = CSSParserHelperMargin.parseSizeOrInitialOrInherit(lexer, (size, unit, justify) -> listener.onPaddingTop(context, size, unit, justify));
+			CSSParserHelperMargin.parseSizeOrInitialOrInherit(lexer, (size, unit, justify) -> listener.onPaddingTop(context, size, unit, justify));
 			break;
 
 		case PADDING_BOTTOM:
-			semiColonRead = CSSParserHelperMargin.parseSizeOrInitialOrInherit(lexer, (size, unit, justify) -> listener.onPaddingBottom(context, size, unit, justify));
+			CSSParserHelperMargin.parseSizeOrInitialOrInherit(lexer, (size, unit, justify) -> listener.onPaddingBottom(context, size, unit, justify));
 			break;
 			
 		case PADDING:
-			semiColonRead = parsePadding(context);
+			parsePadding(context);
 			break;
 
 		case FLOAT:
-			semiColonRead = parseFloat(context);
+			parseFloat(context);
 			break;
 	
 		case CLEAR:
-			semiColonRead = parseClear(context);
+			parseClear(context);
 			break;
 			
 		case POSITION:
-			semiColonRead = parsePosition(context);
+			parsePosition(context);
 			break;
 			
 		case TEXT_ALIGN:
-			semiColonRead = parseTextAlign(context);
+			parseTextAlign(context);
 			break;
 			
 		case MAX_WIDTH:
-			semiColonRead = parseMax((size, unit, type) -> listener.onMaxWidth(context, size, unit, type));
+			parseMax((size, unit, type) -> listener.onMaxWidth(context, size, unit, type));
 			break;
 			
 		case MAX_HEIGHT:
-			semiColonRead = parseMax((size, unit, type) -> listener.onMaxHeight(context, size, unit, type));
+			parseMax((size, unit, type) -> listener.onMaxHeight(context, size, unit, type));
 			break;
 			
 		case MIN_WIDTH:
-			semiColonRead = parseMin((size, unit, type) -> listener.onMinWidth(context, size, unit, type));
+			parseMin((size, unit, type) -> listener.onMinWidth(context, size, unit, type));
 			break;
 			
 		case MIN_HEIGHT:
-			semiColonRead = parseMin((size, unit, type) -> listener.onMinHeight(context, size, unit, type));
+			parseMin((size, unit, type) -> listener.onMinHeight(context, size, unit, type));
 			break;
 			
 		case FONT_SIZE:
-			semiColonRead = parseFontSize(context);
+			parseFontSize(context);
 			break;
 			
 		case FONT_WEIGHT:
-			semiColonRead = parseFontWeight(context);
+			parseFontWeight(context);
 			break;
 			
 		case TEXT_DECORATION:
-			semiColonRead = parseTextDecoration(context);
+			parseTextDecoration(context);
 			break;
 
 		case FILTER:
-			semiColonRead = parseFilter(context);
+			parseFilter(context);
 			break;
 		
 		default:
 			throw new UnsupportedOperationException("Unknown element " + element);
 		}
-		
-		return semiColonRead;
 	}
 
 	private void parseElement(LISTENER_CONTEXT context, CSStyle element) throws IOException, ParserException {
 
-		final boolean semiColonRead = parseElementWithoutCheckingForSemiColon(context, element);
-
-		if (!semiColonRead) {
-			final CSSToken token = lexer.lex(CSSToken.SEMICOLON);
-
-			if (token != CSSToken.SEMICOLON) {
-				throw lexer.unexpectedToken();
-			}
-		}
+		parseElementWithoutCheckingForSemiColon(context, element);
+		
+		assureTokenSkipWSAndComment(CSSToken.SEMICOLON);
 	}
 	
 	@FunctionalInterface
 	interface InitialMarginOrPaddingParser {
-		boolean parse(Lexer<CSSToken, CharInput> lexer, IJustifyFunction justifyFunction) throws IOException, ParserException;
+		void parse(Lexer<CSSToken, CharInput> lexer, IJustifyFunction justifyFunction) throws IOException, ParserException;
 	}
 	
-	private boolean parseMargin(LISTENER_CONTEXT context) throws IOException, ParserException {
-		return CSSParserHelperMargin.parseMarginOrPadding(lexer, context, listener::onMargin, CSSParserHelperMargin::parseSizeOrAutoOrInitialOrInherit);
+	private void parseMargin(LISTENER_CONTEXT context) throws IOException, ParserException {
+		CSSParserHelperMargin.parseMarginOrPadding(lexer, context, listener::onMargin, CSSParserHelperMargin::parseSizeOrAutoOrInitialOrInherit);
 	}
 
-	private boolean parsePadding(LISTENER_CONTEXT context) throws IOException, ParserException {
-		return CSSParserHelperMargin.parseMarginOrPadding(lexer,context, listener::onPadding, CSSParserHelperMargin::parseSizeOrInitialOrInherit);
+	private void parsePadding(LISTENER_CONTEXT context) throws IOException, ParserException {
+		CSSParserHelperMargin.parseMarginOrPadding(lexer,context, listener::onPadding, CSSParserHelperMargin::parseSizeOrInitialOrInherit);
 	}
 
 
 	private static final CSSUnit minMaxDefaultUnit = CSSUnit.PX;
 
-	private boolean parseMax(IMaxFunction toCall) throws IOException, ParserException {
+	private void parseMax(IMaxFunction toCall) throws IOException, ParserException {
 		CSSToken token = lexSkipWSAndComment(CSSToken.INTEGER, CSSToken.CSS_NONE, CSSToken.INITIAL, CSSToken.INHERIT, CSSToken.DOT);
-		
-		final boolean semiColonRead;
 		
 		final BiConsumer<Integer, CSSUnit> sizeCallback = (size, unit) -> toCall.onMax(size, unit, CSSMax.SIZE);
 		
 		switch (token) {
 		case INTEGER:
 			final int intValue = Integer.parseInt(lexer.get());
-			semiColonRead = CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(lexer, minMaxDefaultUnit, intValue, sizeCallback);
+			CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(lexer, minMaxDefaultUnit, intValue, sizeCallback);
 			break;
 			
 		case NONE:
 			toCall.onMax(0, null, CSSMax.NONE);
-			semiColonRead = false;
 			break;
 	
 		case INITIAL:
 			toCall.onMax(0, null, CSSMax.INITIAL);
-			semiColonRead = false;
 			break;
 			
 		case INHERIT:
 			toCall.onMax(0, null, CSSMax.INHERIT);
-			semiColonRead = false;
 			break;
 			
 		case DOT:
-			semiColonRead = CSSParserHelperSizeToSemicolon.parseDecimalAfterDot(lexer, minMaxDefaultUnit, 0, sizeCallback);
+			CSSParserHelperSizeToSemicolon.parseDecimalAfterDot(lexer, minMaxDefaultUnit, 0, sizeCallback);
 			break;
 			
 		default:
 			throw lexer.unexpectedToken();
 		}
-
-		return semiColonRead;
 	}
 
-	private boolean parseMin(IMinFunction toCall) throws IOException, ParserException {
+	private void parseMin(IMinFunction toCall) throws IOException, ParserException {
 		CSSToken token = lexSkipWSAndComment(CSSToken.INTEGER, CSSToken.INITIAL, CSSToken.INHERIT, CSSToken.DOT);
-		
-		final boolean semiColonRead;
 		
 		final BiConsumer<Integer, CSSUnit> sizeCallback = (size, unit) -> toCall.onMin(size, unit, CSSMin.SIZE);
 		
 		switch (token) {
 		case INTEGER:
 			final int intValue = Integer.parseInt(lexer.get());
-			semiColonRead = CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(lexer, minMaxDefaultUnit, intValue, sizeCallback);
+			CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(lexer, minMaxDefaultUnit, intValue, sizeCallback);
 			break;
 			
 		case INITIAL:
 			toCall.onMin(0, null, CSSMin.INITIAL);
-			semiColonRead = false;
 			break;
 			
 		case INHERIT:
 			toCall.onMin(0, null, CSSMin.INHERIT);
-			semiColonRead = false;
 			break;
 			
 		case DOT:
-			semiColonRead = CSSParserHelperSizeToSemicolon.parseDecimalAfterDot(lexer, minMaxDefaultUnit, 0, sizeCallback);
+			CSSParserHelperSizeToSemicolon.parseDecimalAfterDot(lexer, minMaxDefaultUnit, 0, sizeCallback);
 			break;
 			
 		default:
 			throw lexer.unexpectedToken();
 		}
-
-		return semiColonRead;
 	}
 	
 	private static CSSToken [] copyTokens(Predicate<CSSToken> test, CSSToken ... extra) {
@@ -545,25 +517,21 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 
 	private static final CSSToken [] BG_COLOR_TOKENS = copyTokens(token -> token.getBackground() != null, COLOR_TOKENS);
 
-	private boolean parseFgColor(IColorRGBFunction rgbColor, ICSSColorFunction cssColor, Consumer<CSSForeground> colorType) throws IOException, ParserException {
+	private void parseFgColor(IColorRGBFunction rgbColor, ICSSColorFunction cssColor, Consumer<CSSForeground> colorType) throws IOException, ParserException {
 		final CSSToken token = CSSParserHelperColor.parseColor(lexer, rgbColor, cssColor, FG_COLOR_TOKENS);
 		
 		if (token.getForeground() != null) {
 			colorType.accept(token.getForeground());
 		}
-		
-		return false;
 	}
 
-	private boolean parseBgColor(IColorRGBFunction rgbColor, ICSSColorFunction cssColor, Consumer<CSSBackgroundColor> colorType) throws IOException, ParserException {
+	private void parseBgColor(IColorRGBFunction rgbColor, ICSSColorFunction cssColor, Consumer<CSSBackgroundColor> colorType) throws IOException, ParserException {
 		final CSSToken token = CSSParserHelperColor.parseColor(lexer, rgbColor, cssColor, BG_COLOR_TOKENS);
 		
 		if (token.getBackground() != null) {
 			// special type, call callback
 			colorType.accept(token.getBackground());
 		}
-		
-		return false;
 	}
 
 	private static final CSSToken [] BG_IMAGE_TOKENS = copyTokens(token -> token.getBgImage() != null,
@@ -571,10 +539,10 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 				CSSToken.FUNCTION_LINEAR_GRADIENT,
 				CSSToken.BROWSER_SPECIFIC_FUNCTION); // eg -moz-linear-gradient
 	
-	private boolean parseBgImage(LISTENER_CONTEXT context) throws IOException, ParserException {
+	private void parseBgImage(LISTENER_CONTEXT context) throws IOException, ParserException {
 	
 		int bgLayer = 0;
-		boolean semiColonRead = false;
+		boolean commaRead = false;
 		
 		do {
 			CSSToken token = lexSkipWSAndComment(BG_IMAGE_TOKENS);
@@ -586,13 +554,13 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 				
 				listener.onBgImageURL(context, bgLayer, url);
 				
-				semiColonRead = readCommaOrSemiColon();
+				commaRead = readComma();
 				break;
 
 			case FUNCTION_LINEAR_GRADIENT:
 				parseLinearGradient(context, bgLayer);
 
-				semiColonRead = readCommaOrSemiColon();
+				commaRead = readComma();
 				break;
 				
 			case NONE:
@@ -604,15 +572,13 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 				}
 				listener.onBgImage(context, bgLayer,  token.getBgImage());
 
-				semiColonRead = readCommaOrSemiColon();
+				commaRead = readComma();
 				break;
 			}
 			
 			++ bgLayer;
 			
-		} while (!semiColonRead);
-	
-		return semiColonRead;
+		} while (commaRead);
 	}
 	
 	private String parseImageURL() throws IOException, ParserException {
@@ -827,8 +793,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 
 	private static final CSSToken [] BG_SECOND_POSITION_COMPONENT_TOKENS
 		= copyTokens(token -> token.getPositionComponent() != null,
-					CSSToken.COMMA,
-					CSSToken.SEMICOLON);
+					CSSToken.COMMA);
 
 	private void parseBgPositionAfterInt(LISTENER_CONTEXT context, int bgLayer, CachedSize cachedSize) throws IOException, ParserException {
 		
@@ -842,10 +807,10 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 
 	private static final CSSUnit posAndSizeDefaultUnit = CSSUnit.PX;
 	
-	private boolean parseBgPosition(LISTENER_CONTEXT context) throws IOException, ParserException {
+	private void parseBgPosition(LISTENER_CONTEXT context) throws IOException, ParserException {
 		
 		int bgLayer = 0;
-		boolean semiColonRead = false;
+		boolean commaRead = false;
 		
 		final CachedSize cachedSize = new CachedSize();
 		
@@ -857,7 +822,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 				parseBgPositionAfterInt(context, bgLayer, cachedSize);
 				
 				// next should be comma for new layer or a semicolon
-				semiColonRead = readCommaOrSemiColon();
+				commaRead = readComma();
 				break;
 				
 			case INITIAL:
@@ -865,7 +830,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 				listener.onBgPosition(context, bgLayer, tokenToPosition(token));
 				
 				// next should be comma for new layer or a semicolon
-				semiColonRead = readCommaOrSemiColon();
+				commaRead = readComma();
 				break;
 				
 			case NONE:
@@ -885,15 +850,13 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 				case COMMA:
 					// Just continues to next
 					notifyPosition(context, bgLayer, token.getPositionComponent());
-					break;
-					
-				case SEMICOLON:
-					notifyPosition(context, bgLayer, token.getPositionComponent());
-					semiColonRead = true;
+					commaRead = true;
 					break;
 					
 				case NONE:
-					throw lexer.unexpectedToken();
+					notifyPosition(context, bgLayer, token.getPositionComponent());
+					break;
+					
 					
 				default:
 					// Position component
@@ -902,7 +865,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 					}
 					notifyPosition(context, bgLayer, token.getPositionComponent(), secondPosToken.getPositionComponent());
 					
-					semiColonRead = readCommaOrSemiColon();
+					commaRead = readComma();
 					break;
 				}
 				break;
@@ -910,35 +873,31 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			
 			++ bgLayer;
 			
-		} while (!semiColonRead);
-		
-		return semiColonRead;
+		} while (commaRead);
 	}
 
 	private static final CSSToken [] BG_SIZE_TOKENS = copyTokens(token -> token.getBgSize() != null, CSSToken.INTEGER);
 
-	private boolean parseBgSize(LISTENER_CONTEXT context) throws IOException, ParserException {
+	private void parseBgSize(LISTENER_CONTEXT context) throws IOException, ParserException {
 		
 		int bgLayer = 0;
-		boolean semiColonRead = false;
+		boolean commaRead = false;
 		
 		final CachedSize cachedSize = new CachedSize();
 		
 		do {
 			
-			semiColonRead = parseBgSize(context, bgLayer, cachedSize, true);
+			commaRead = parseBgSize(context, bgLayer, cachedSize, true);
 		
 			++ bgLayer;
 			
-		} while (!semiColonRead);
-	
-		return semiColonRead;
+		} while (commaRead);
 	}
 	
-	private boolean parseBgSize(LISTENER_CONTEXT context, int bgLayer, CachedSize cachedSize, boolean readCommaOrSemiColons) throws IOException, ParserException  {
+	private boolean parseBgSize(LISTENER_CONTEXT context, int bgLayer, CachedSize cachedSize, boolean readComma) throws IOException, ParserException  {
 		CSSToken token = lexSkipWSAndComment(BG_SIZE_TOKENS);
 		
-		boolean semiColonRead = false;
+		boolean commaRead = false;
 		
 		switch (token) {
 		case INTEGER:
@@ -949,9 +908,9 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			// Now should be another size value
 			CSSParserHelperSizeToSemicolon.parsePossiblyDecimalSizeValue(lexer, posAndSizeDefaultUnit, (value, unit) -> listener.onBgSize(context, bgl, cachedSize.getValue(), cachedSize.getUnit(), value, unit));
 			
-			if (readCommaOrSemiColons) {
+			if (readComma) {
 				// next should be comma for new layer or a semicolon
-				semiColonRead = readCommaOrSemiColon();
+				commaRead = readComma();
 			}
 			break;
 			
@@ -965,35 +924,35 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			}
 			listener.onBgSize(context, bgLayer, token.getBgSize());
 			
-			if (readCommaOrSemiColons) {
-				semiColonRead = readCommaOrSemiColon();
+			if (readComma) {
+				commaRead = readComma();
 			}
 			break;
 		}
 		
-		return semiColonRead;
+		return commaRead;
 	}
 	
 	private static final CSSToken [] BG_REPEAT_TOKENS = copyTokens(token -> token.getBgRepeat() != null);
 
-	private boolean parseBgRepeat(LISTENER_CONTEXT context) throws IOException, ParserException {
-		return parseBgEnum(context, BG_REPEAT_TOKENS, CSSToken::getBgRepeat, listener::onBgRepeat);
+	private void parseBgRepeat(LISTENER_CONTEXT context) throws IOException, ParserException {
+		parseBgEnum(context, BG_REPEAT_TOKENS, CSSToken::getBgRepeat, listener::onBgRepeat);
 	}
 
 	private static final CSSToken [] BG_ATTACHMENT_TOKENS = copyTokens(token -> token.getBgAttachment() != null);
 
-	private boolean parseBgAttachment(LISTENER_CONTEXT context) throws IOException, ParserException {
-		return parseBgEnum(context, BG_ATTACHMENT_TOKENS, CSSToken::getBgAttachment, listener::onBgAttachment);
+	private void parseBgAttachment(LISTENER_CONTEXT context) throws IOException, ParserException {
+		parseBgEnum(context, BG_ATTACHMENT_TOKENS, CSSToken::getBgAttachment, listener::onBgAttachment);
 	}
 
 	private static final CSSToken [] BG_ORIGIN_TOKENS = copyTokens(token -> token.getBgOrigin() != null);
 
-	private boolean parseBgOrigin(LISTENER_CONTEXT context) throws IOException, ParserException {
-		return parseBgEnum(context, BG_ORIGIN_TOKENS, CSSToken::getBgOrigin, listener::onBgOrigin);
+	private void parseBgOrigin(LISTENER_CONTEXT context) throws IOException, ParserException {
+		parseBgEnum(context, BG_ORIGIN_TOKENS, CSSToken::getBgOrigin, listener::onBgOrigin);
 	}
 
-	private boolean parseBgClip(LISTENER_CONTEXT context) throws IOException, ParserException {
-		return parseBgEnum(context, BG_ORIGIN_TOKENS, CSSToken::getBgOrigin, listener::onBgClip);
+	private void parseBgClip(LISTENER_CONTEXT context) throws IOException, ParserException {
+		parseBgEnum(context, BG_ORIGIN_TOKENS, CSSToken::getBgOrigin, listener::onBgClip);
 	}
 
 	@FunctionalInterface
@@ -1001,14 +960,14 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		void onResult(CONTEXT context, int bgLayer, E value);
 	}
 	
-	private <E extends Enum<E>> boolean parseBgEnum(
+	private <E extends Enum<E>> void parseBgEnum(
 			LISTENER_CONTEXT context,
 			CSSToken [] tokens,
 			Function<CSSToken, E> getValue,
 			ParseBgEnumResult<LISTENER_CONTEXT, E> processResult) throws IOException, ParserException {
 	
 		int bgLayer = 0;
-		boolean semiColonRead = false;
+		boolean commaRead = false;
 		
 		do {
 			CSSToken token = lexSkipWSAndComment(tokens);
@@ -1020,13 +979,11 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			}
 			
 			processResult.onResult(context, bgLayer, value);
-			semiColonRead = readCommaOrSemiColon();
+			commaRead = readComma();
 			
 			++ bgLayer;
 			
-		} while (!semiColonRead);
-	
-		return semiColonRead;
+		} while (commaRead);
 	}
 	
 	private static final Map<CSStyle, CSSToken[]> BG_INITIAL_TOKENS;
@@ -1043,20 +1000,17 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	}
 	
 	// Must pass a combination of many tokens since order may vary
-	private boolean parseBackground(LISTENER_CONTEXT context) throws IOException, ParserException {
+	private void parseBackground(LISTENER_CONTEXT context) throws IOException, ParserException {
 		
 		
 		int bgLayer = 0;
-		boolean semiColonRead = false;
+		boolean commaRead = false;
 		
 		do {
-			semiColonRead = parseOneLayer(context, bgLayer);
+			commaRead = parseOneLayer(context, bgLayer);
 		
 			++ bgLayer;
-		} while (!semiColonRead);
-	
-		return semiColonRead;
-
+		} while (commaRead);
 	}
 	
 	private boolean parseOneLayer(LISTENER_CONTEXT context, int bgLayer) throws IOException, ParserException {
@@ -1065,7 +1019,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		final Map<CSStyle, CSSToken[]> tokenMap = new HashMap<>(BG_INITIAL_TOKENS);
 
 		boolean layerDone = false;
-		boolean semiColonRead = false;
+		boolean commaRead = false;
 		
 		final Value<Integer> numOrigin = new Value<>(0);
 		
@@ -1074,27 +1028,24 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			final CSSToken lastToken = parseOneLayerIteration(context, bgLayer, tokenMap, numOrigin);
 			
 			if (lastToken == CSSToken.COMMA) {
+				commaRead = true;
 				layerDone = true;
 			}
-			else if (lastToken == CSSToken.SEMICOLON) {
+			else if (lastToken == CSSToken.NONE) {
 				layerDone = true;
-				semiColonRead = true;
 			}
 			
 		} while (!layerDone);
 		
-		return semiColonRead;
+		return commaRead;
 	}
 	
 	private CSSToken parseOneLayerIteration(LISTENER_CONTEXT context, int bgLayer, Map<CSStyle, CSSToken[]> tokenMap, Value<Integer> numOrigin) throws IOException, ParserException {
 		
-		final CSSToken [] tokens = TokenMergeHelper.merge(tokenMap.values(), CSSToken.COMMA, CSSToken.SEMICOLON);
+		final CSSToken [] tokens = TokenMergeHelper.merge(tokenMap.values(), CSSToken.COMMA);
 		
 		CSSToken token = lexSkipWSAndComment(tokens);
 		
-		if (token == CSSToken.NONE) {
-			throw lexer.unexpectedToken();
-		}
 		
 		final String text = lexer.get();
 		
@@ -1125,7 +1076,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 					CSSBackgroundOrigin.INHERIT,
 					CSSBackgroundColor.INHERIT);
 		}
-		else if (token == CSSToken.COMMA || token == CSSToken.SEMICOLON) {
+		else if (token == CSSToken.COMMA) {
 			// return token so that we can start new layer, or exit in case of semicolon
 		}
 		// None of "initial" or "inherit", figure out the token
@@ -1224,6 +1175,9 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 
 			tokenMap.remove(CSStyle.BACKGROUND_COLOR);
 		}
+		else if (token == CSSToken.NONE) {
+			// probably semicolon
+		}
 		else {
 			throw lexer.unexpectedToken();
 		}
@@ -1313,16 +1267,16 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	}
 
 
-	private boolean readCommaOrSemiColon() throws IOException, ParserException {
-		boolean semiColonRead = false;
+	private boolean readComma() throws IOException, ParserException {
+		boolean commaRead = false;
 		
-		switch(lexSkipWSAndComment(CSSToken.COMMA, CSSToken.SEMICOLON)) {
-		case COMMA: break; // continue next iteration
-		case SEMICOLON: semiColonRead = true; break;
+		switch(lexSkipWSAndComment(CSSToken.COMMA)) {
+		case COMMA: commaRead = true; break; // continue next iteration
+		case NONE: break;
 		default: throw lexer.unexpectedToken();
 		}
 
-		return semiColonRead;
+		return commaRead;
 	}
 	
 	private static CSSBackgroundPosition tokenToPosition(CSSToken token) {
@@ -1373,15 +1327,13 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	
 	private static final CSSToken [] FONTSIZE_TOKENS = copyTokens(token -> token.getFontSize() != null, CSSToken.INTEGER);
 	
-	private boolean parseFontSize(LISTENER_CONTEXT context) throws NumberFormatException, IOException, ParserException {
+	private void parseFontSize(LISTENER_CONTEXT context) throws NumberFormatException, IOException, ParserException {
 		CSSToken token = lexSkipWSAndComment(FONTSIZE_TOKENS);
-		
-		final boolean semiColonRead;
 		
 		switch (token) {
 		case INTEGER:
 			// parse as size
-			semiColonRead = CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(lexer, null, Integer.parseInt(lexer.get()), (value, unit) -> listener.onFontSize(context, value, unit, null));
+			CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(lexer, null, Integer.parseInt(lexer.get()), (value, unit) -> listener.onFontSize(context, value, unit, null));
 			break;
 			
 		case NONE:
@@ -1389,26 +1341,20 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			
 		default:
 			listener.onFontSize(context, 0, null, token.getFontSize());
-			semiColonRead = false;
 			break;
 		}
-		
-		return semiColonRead;
 	}
 
 	private static final CSSToken [] FONTWEIGHT_TOKENS = copyTokens(token -> token.getFontWeight() != null, CSSToken.INTEGER);
 	
-	private boolean parseFontWeight(LISTENER_CONTEXT context) throws NumberFormatException, IOException, ParserException {
+	private void parseFontWeight(LISTENER_CONTEXT context) throws NumberFormatException, IOException, ParserException {
 		CSSToken token = lexSkipWSAndComment(FONTWEIGHT_TOKENS);
-		
-		final boolean semiColonRead;
 		
 		switch (token) {
 		case INTEGER:
 			// parse as size
 			final int value = Integer.parseInt(lexer.get());
 			listener.onFontWeight(context, value, null);
-			semiColonRead = false;
 			break;
 			
 		case NONE:
@@ -1416,41 +1362,38 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			
 		default:
 			listener.onFontWeight(context, 0, token.getFontWeight());
-			semiColonRead = false;
 			break;
 		}
-		
-		return semiColonRead;
 	}
 
 	private static final CSSToken [] POSITION_TOKENS = copyTokens(token -> token.getPosition() != null);
 
-	private boolean parsePosition(LISTENER_CONTEXT context) throws IOException, ParserException {
-		return parseEnum(POSITION_TOKENS, token -> listener.onPosition(context, token.getPosition()));
+	private void parsePosition(LISTENER_CONTEXT context) throws IOException, ParserException {
+		parseEnum(POSITION_TOKENS, token -> listener.onPosition(context, token.getPosition()));
 	}
 
 	private static final CSSToken [] FLOAT_TOKENS = copyTokens(token -> token.getFloat() != null);
 
-	private boolean parseFloat(LISTENER_CONTEXT context) throws IOException, ParserException {
-		return parseEnum(FLOAT_TOKENS, token -> listener.onFloat(context, token.getFloat()));
+	private void parseFloat(LISTENER_CONTEXT context) throws IOException, ParserException {
+		parseEnum(FLOAT_TOKENS, token -> listener.onFloat(context, token.getFloat()));
 	}
 
 	private static final CSSToken [] CLEAR_TOKENS = copyTokens(token -> token.getClear() != null);
 
-	private boolean parseClear(LISTENER_CONTEXT context) throws IOException, ParserException {
-		return parseEnum(CLEAR_TOKENS, token -> listener.onClear(context, token.getClear()));
+	private void parseClear(LISTENER_CONTEXT context) throws IOException, ParserException {
+		parseEnum(CLEAR_TOKENS, token -> listener.onClear(context, token.getClear()));
 	}
 
 	private static final CSSToken [] TEXT_ALIGN_TOKENS = copyTokens(token -> token.getTextAlign() != null);
 
-	private boolean parseTextAlign(LISTENER_CONTEXT context) throws IOException, ParserException {
-		return parseEnum(TEXT_ALIGN_TOKENS, token -> listener.onTextAlign(context, token.getTextAlign()));
+	private void parseTextAlign(LISTENER_CONTEXT context) throws IOException, ParserException {
+		parseEnum(TEXT_ALIGN_TOKENS, token -> listener.onTextAlign(context, token.getTextAlign()));
 	}
 
 	private static final CSSToken [] TEXT_DECORATION_TOKENS = copyTokens(token -> token.getTextDecoration() != null);
 
-	private boolean parseTextDecoration(LISTENER_CONTEXT context) throws IOException, ParserException {
-		return parseEnum(TEXT_DECORATION_TOKENS, token -> listener.onTextDecoration(context, token.getTextDecoration()));
+	private void parseTextDecoration(LISTENER_CONTEXT context) throws IOException, ParserException {
+		parseEnum(TEXT_DECORATION_TOKENS, token -> listener.onTextDecoration(context, token.getTextDecoration()));
 	}
 
 	private static final CSSToken [] FILTER_TOKENS = copyTokens(token -> token.getFilter() != null,
@@ -1460,10 +1403,8 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			
 			CSSToken.MS_PROGID_FUNCTION); // MS specific
 
-	private boolean parseFilter(LISTENER_CONTEXT context) throws IOException, ParserException {
+	private void parseFilter(LISTENER_CONTEXT context) throws IOException, ParserException {
 		CSSToken token;
-		
-		boolean semiColonRead = false;
 		
 		boolean done = false;
 		
@@ -1477,9 +1418,6 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 				case MS_PROGID_FUNCTION:
 					// Skip MS specific function
 					skipFunctionParamsAfterParenthesis();
-					
-					assureTokenSkipWSAndComment(CSSToken.SEMICOLON);
-					semiColonRead = true;
 					done = true;
 					break;
 			
@@ -1538,14 +1476,9 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 					gotFilterEnum = false;
 					break;
 			}
-			
-			if (semiColonRead) {
-				if (!done) {
-					throw new IllegalStateException("should be done after having read semicolon");
-				}
-			}
-			else {
-				token = lexSkipWSAndComment(CSSToken.COMMA, CSSToken.SEMICOLON);
+
+			if (!done) {
+				token = lexSkipWSAndComment(CSSToken.COMMA);
 				
 				switch (token) {
 				case COMMA:
@@ -1553,9 +1486,9 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 						throw new ParserException("filter enum followed by comma");
 					}
 					break;
-					
-				case SEMICOLON:
-					semiColonRead = true;
+				
+				case NONE:
+					// end of list
 					done = true;
 					break;
 					
@@ -1565,8 +1498,6 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			}
 		}
 		while (!done);
-		
-		return semiColonRead;
 	}
 	
 	private int parsePxFunction() throws IOException, ParserException {
@@ -1797,7 +1728,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		return parenthesisRead;
 	}
 	
-	private boolean parseEnum(CSSToken [] tokens, Consumer<CSSToken> onToken) throws IOException, ParserException {
+	private void parseEnum(CSSToken [] tokens, Consumer<CSSToken> onToken) throws IOException, ParserException {
 		
 		CSSToken token = lexSkipWSAndComment(tokens);
 		
@@ -1806,7 +1737,5 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		}
 		
 		onToken.accept(token);
-		
-		return false;
 	}
 }

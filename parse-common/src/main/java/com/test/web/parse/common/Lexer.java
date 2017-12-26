@@ -327,6 +327,22 @@ public final class Lexer<TOKEN extends Enum<TOKEN> & IToken, INPUT extends CharI
 				match = false;
 			}
 			break;
+
+		case FROM_CHAR_UPTO_CHAR: {
+			if (cur.charAt(0) != token.getFromCharacter()) {
+				match = false;
+				possibleMatch = false;
+			}
+			else if (cur.length() >= 1 && ((char)input.peek()) == token.getToCharacter() ){
+				match = true;
+				possibleMatch = true;
+			}
+			else {
+				possibleMatch = true;
+				match = false;
+			}
+			break;
+		}
 			
 		case FROM_STRING_TO_STRING:
 			if (cur.length() <= token.getFromLiteral().length()) {

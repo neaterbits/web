@@ -708,17 +708,12 @@ public final class HTMLParser<ELEMENT, STYLE_DOCUMENT>
 			styleAttributeListener.startParseStyleElement(documentElement, styleText.get());
 			
 			// Call CSS parser to parse element
-			final boolean semiColonRead = styleAttributeParser.parseElement(null);
+			styleAttributeParser.parseElement(null);
 			
 			final HTMLToken [] tokens;
 			
 			// TOO maybe move allocation outside loop
-			if (semiColonRead) {
-				tokens = new HTMLToken [] { token };
-			}
-			else {
-				tokens = new HTMLToken [] { token, HTMLToken.SEMICOLON };
-			}
+			tokens = new HTMLToken [] { token, HTMLToken.SEMICOLON };
 			
 			// Now expect end quote or semicolon
 			final HTMLToken t = lexSkipWS(tokens);

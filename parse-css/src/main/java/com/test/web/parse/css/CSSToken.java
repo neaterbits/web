@@ -37,7 +37,7 @@ public enum CSSToken implements IToken {
 	
 	QUOTED_STRING('"', '"'),
 
-	BROWSER_SPECIFIC_ATTRIBUTE('-', ';'),
+	BROWSER_SPECIFIC_ATTRIBUTE('-', ';', false),
 
 	BROWSER_SPECIFIC_FUNCTION('-', '('),
 
@@ -548,7 +548,11 @@ public enum CSSToken implements IToken {
 	}
 
 	private CSSToken(char fromCharacter, char toCharacter) {
-		this.tokenType = TokenType.FROM_CHAR_TO_CHAR;
+		this(fromCharacter, toCharacter, true);
+	}
+
+	private CSSToken(char fromCharacter, char toCharacter, boolean include) {
+		this.tokenType = include ? TokenType.FROM_CHAR_TO_CHAR : TokenType.FROM_CHAR_UPTO_CHAR;
 		this.character = fromCharacter;
 		this.toCharacter = toCharacter;
 		this.literal = null;
@@ -577,6 +581,7 @@ public enum CSSToken implements IToken {
 		this.background = null;
 		this.filter = null;
 	}
+	
 
 	private CSSToken(char toCharacter, boolean include) {
 		

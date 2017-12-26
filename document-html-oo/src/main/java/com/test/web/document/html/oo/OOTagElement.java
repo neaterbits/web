@@ -470,36 +470,34 @@ public abstract class OOTagElement extends OOAttributes {
 		boolean done = false;
 
 		do {
-			boolean semiColonRead = cssParser.parseElement(null);
+		
+			cssParser.parseElement(null);
 			
-			if (semiColonRead) {
-				// just skip to next
-			}
-			else {
-				// this was the last element?
-				do {
-					final CSSToken token = lexer.lex(CSSToken.WS, CSSToken.SEMICOLON, CSSToken.EOF);
+			// this was the last element?
+			boolean semiColonRead = false;
+			
+			do {
+
+				final CSSToken token = lexer.lex(CSSToken.WS, CSSToken.SEMICOLON, CSSToken.EOF);
+				
+				switch (token) {
+				
+				case WS:
+					// skip
+					break;
 					
-					switch (token) {
+				case SEMICOLON:
+					semiColonRead = true;
+					break;
 					
-					case WS:
-						// skip
-						break;
-						
-					case SEMICOLON:
-						semiColonRead = true;
-						break;
-						
-					case EOF: // end of string probably
-						done = true;
-						break;
-						
-					default:
-						throw lexer.unexpectedToken();
-					}
+				case EOF: // end of string probably
+					done = true;
+					break;
 					
-				} while (!done && !semiColonRead);
-			}
+				default:
+					throw lexer.unexpectedToken();
+				}
+			} while (!done && !semiColonRead);
 		} while (!done);
 	
 		setStyle(cssElement, value);
