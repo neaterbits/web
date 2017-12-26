@@ -27,6 +27,7 @@ import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSPositionComponent;
+import com.test.web.css.common.enums.CSSPriority;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
@@ -376,22 +377,22 @@ public abstract class BaseLongCSSDocument
 	
 
 	@Override
-	public void onLeft(Void context, int left, CSSUnit unit) {
+	public void onLeft(Void context, int left, CSSUnit unit, CSSPriority priority) {
 		LongCSS.addLeft(buf(curParseElement), offset(curParseElement), left, unit);
 	}
 
 	@Override
-	public void onTop(Void context, int top, CSSUnit unit) {
+	public void onTop(Void context, int top, CSSUnit unit, CSSPriority priority) {
 		LongCSS.addTop(buf(curParseElement), offset(curParseElement), top, unit);
 	}
 
 	@Override
-	public void onWidth(Void context, int width, CSSUnit unit) {
+	public void onWidth(Void context, int width, CSSUnit unit, CSSPriority priority) {
 		LongCSS.addWidth(buf(curParseElement), offset(curParseElement), width, unit);
 	}
 
 	@Override
-	public void onHeight(Void context, int height, CSSUnit unit) {
+	public void onHeight(Void context, int height, CSSUnit unit, CSSPriority priority) {
 		LongCSS.addHeight(buf(curParseElement), offset(curParseElement), height, unit);
 	}
 
@@ -416,19 +417,19 @@ public abstract class BaseLongCSSDocument
 	}
 
 	@Override
-	public void onColor(Void context, int r, int g, int b, int a) {
+	public void onColor(Void context, int r, int g, int b, int a, CSSPriority priority) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onColor(Void context, CSSColor color) {
+	public void onColor(Void context, CSSColor colo, CSSPriority priorityr) {
 		// TODO Auto-generated method stub
 		
 	}
 	
 	@Override
-	public void onColor(Void context, CSSForeground foreground) {
+	public void onColor(Void context, CSSForeground foreground, CSSPriority priority) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -513,80 +514,80 @@ public abstract class BaseLongCSSDocument
 	}
 
 	@Override
-	public void onBgColor(Void context, int r, int g, int b, int a) {
+	public void onBgColor(Void context, int r, int g, int b, int a, CSSPriority priority) {
 		// TODO Auto-generated method stub
 		
 	}
 	
 	@Override
-	public void onBgColor(Void context, CSSColor color) {
+	public void onBgColor(Void context, CSSColor color, CSSPriority priority) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onBgColor(Void context, CSSBackgroundColor background) {
+	public void onBgColor(Void context, CSSBackgroundColor background, CSSPriority priority) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onTextAlign(Void context, CSSTextAlign textAlign) {
+	public void onTextAlign(Void context, CSSTextAlign textAlign, CSSPriority priority) {
 		LongCSS.setTextAlign(buf(curParseElement), offset(curParseElement), textAlign);
 		
 	}
 	@Override
-	public void onDisplay(Void context, CSSDisplay display) {
+	public void onDisplay(Void context, CSSDisplay display, CSSPriority priority) {
 		LongCSS.setDisplay(buf(curParseElement), offset(curParseElement), display);
 	}
 
 	@Override
-	public void onPosition(Void context, CSSPosition position) {
+	public void onPosition(Void context, CSSPosition position, CSSPriority priority) {
 		LongCSS.setPosition(buf(curParseElement), offset(curParseElement), position);
 	}
 
 	@Override
-	public void onFloat(Void context, CSSFloat _float) {
+	public void onFloat(Void context, CSSFloat _float, CSSPriority priority) {
 		LongCSS.setFloat(buf(curParseElement), offset(curParseElement), _float);
 	}
 
 	@Override
-	public void onClear(Void context, CSSClear clear) {
+	public void onClear(Void context, CSSClear clear, CSSPriority priority) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onOverflow(Void context, CSSOverflow overflow) {
+	public void onOverflow(Void context, CSSOverflow overflow, CSSPriority priority) {
 		LongCSS.setOverflow(buf(curParseElement), offset(curParseElement), overflow);
 	}
 	
 	@Override
-	public void onTextDecoration(Void context, CSSTextDecoration textDecoration) {
+	public void onTextDecoration(Void context, CSSTextDecoration textDecoration, CSSPriority priority) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onMaxWidth(Void context, int width, CSSUnit unit, CSSMax type) {
+	public void onMaxWidth(Void context, int width, CSSUnit unit, CSSMax type, CSSPriority priority) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onMaxHeight(Void context, int height, CSSUnit unit, CSSMax type) {
+	public void onMaxHeight(Void context, int height, CSSUnit unit, CSSMax type, CSSPriority priority) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onMinWidth(Void context, int width, CSSUnit unit, CSSMin type) {
+	public void onMinWidth(Void context, int width, CSSUnit unit, CSSMin type, CSSPriority priority) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onMinHeight(Void context, int height, CSSUnit unit, CSSMin type) {
+	public void onMinHeight(Void context, int height, CSSUnit unit, CSSMin type, CSSPriority priority) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -673,13 +674,13 @@ public abstract class BaseLongCSSDocument
 	}
 
 	@Override
-	public void onFontSize(Void context, int fontSize, CSSUnit fontSizeUnit, CSSFontSize fontSizeEnum) {
+	public void onFontSize(Void context, int fontSize, CSSUnit fontSizeUnit, CSSFontSize fontSizeEnum, CSSPriority priority) {
 		// TODO Auto-generated method stub
 		
 	}
 	
 	@Override
-	public void onFontWeight(Void context, int fontWeightNumber, CSSFontWeight fontWeightEnum) {
+	public void onFontWeight(Void context, int fontWeightNumber, CSSFontWeight fontWeightEnum, CSSPriority priority) {
 		// TODO Auto-generated method stub
 		
 	}

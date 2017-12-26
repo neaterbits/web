@@ -22,6 +22,7 @@ import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSPositionComponent;
+import com.test.web.css.common.enums.CSSPriority;
 import com.test.web.css.common.enums.CSSRuleType;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSTextAlign;
@@ -40,19 +41,19 @@ public interface CSSParserListener<CONTEXT> {
 	// block post is without brackets
 	void onBlockEnd(CONTEXT context, Tokenizer tokenizer, long blockStartPos, long blockEndPos);
 
-	void onLeft(CONTEXT context, int left, CSSUnit unit);
+	void onLeft(CONTEXT context, int left, CSSUnit unit, CSSPriority priority);
 	
-	void onTop(CONTEXT context, int top, CSSUnit unit);
+	void onTop(CONTEXT context, int top, CSSUnit unit, CSSPriority priority);
 	
-	void onWidth(CONTEXT context, int width, CSSUnit unit);
+	void onWidth(CONTEXT context, int width, CSSUnit unit, CSSPriority priority);
 	
-	void onHeight(CONTEXT context, int width, CSSUnit unit);
+	void onHeight(CONTEXT context, int width, CSSUnit unit, CSSPriority priority);
 
-	void onColor(CONTEXT context, int r, int g, int b, int a); // -1 for a if no value, otherwise decimal encoded
+	void onColor(CONTEXT context, int r, int g, int b, int a, CSSPriority priority); // -1 for a if no value, otherwise decimal encoded
 
-	void onColor(CONTEXT context, CSSColor color);
+	void onColor(CONTEXT context, CSSColor color, CSSPriority priority);
 
-	void onColor(CONTEXT context, CSSForeground foreground);
+	void onColor(CONTEXT context, CSSForeground foreground, CSSPriority priority);
 	
 	void onBgImageURL(CONTEXT context, int bgLayer, String url);
 
@@ -80,37 +81,37 @@ public interface CSSParserListener<CONTEXT> {
 	
 	void onBgClip(CONTEXT context, int bgLayer, CSSBackgroundOrigin clip);
 
-	void onBgColor(CONTEXT context, int r, int g, int b, int a); // -1 for a if no value, otherwise decimal encoded
+	void onBgColor(CONTEXT context, int r, int g, int b, int a, CSSPriority priority); // -1 for a if no value, otherwise decimal encoded
 
-	void onBgColor(CONTEXT context, CSSColor color);
+	void onBgColor(CONTEXT context, CSSColor color, CSSPriority priority);
 
-	void onBgColor(CONTEXT context, CSSBackgroundColor background);
+	void onBgColor(CONTEXT context, CSSBackgroundColor background, CSSPriority priority);
 
-	void onTextAlign(CONTEXT context, CSSTextAlign textAlign);
+	void onTextAlign(CONTEXT context, CSSTextAlign textAlign, CSSPriority priority);
 
-	void onDisplay(CONTEXT context, CSSDisplay display);
+	void onDisplay(CONTEXT context, CSSDisplay display, CSSPriority priority);
 
-	void onPosition(CONTEXT context, CSSPosition position);
+	void onPosition(CONTEXT context, CSSPosition position, CSSPriority priority);
 
-	void onFloat(CONTEXT context, CSSFloat _float);
+	void onFloat(CONTEXT context, CSSFloat _float, CSSPriority priority);
 
-	void onClear(CONTEXT context, CSSClear clear);
+	void onClear(CONTEXT context, CSSClear clear, CSSPriority priority);
 	
-	void onOverflow(CONTEXT context, CSSOverflow overflow);
+	void onOverflow(CONTEXT context, CSSOverflow overflow, CSSPriority priority);
 
-	void onTextDecoration(CONTEXT context, CSSTextDecoration textDecoration);
+	void onTextDecoration(CONTEXT context, CSSTextDecoration textDecoration, CSSPriority priority);
 	
-	void onMaxWidth(CONTEXT context, int width, CSSUnit unit, CSSMax type);
+	void onMaxWidth(CONTEXT context, int width, CSSUnit unit, CSSMax type, CSSPriority priority);
 	
-	void onMaxHeight(CONTEXT context, int height, CSSUnit unit, CSSMax type);
+	void onMaxHeight(CONTEXT context, int height, CSSUnit unit, CSSMax type, CSSPriority priority);
 	
-	void onMinWidth(CONTEXT context, int width, CSSUnit unit, CSSMin type);
+	void onMinWidth(CONTEXT context, int width, CSSUnit unit, CSSMin type, CSSPriority priority);
 	
-	void onMinHeight(CONTEXT context, int height, CSSUnit unit, CSSMin type);
+	void onMinHeight(CONTEXT context, int height, CSSUnit unit, CSSMin type, CSSPriority priority);
 	
-	void onFontSize(CONTEXT context, int fontSize, CSSUnit fontSizeUnit, CSSFontSize fontSizeEnum);
+	void onFontSize(CONTEXT context, int fontSize, CSSUnit fontSizeUnit, CSSFontSize fontSizeEnum, CSSPriority priority);
 	
-	void onFontWeight(CONTEXT context, int fontWeightNumber, CSSFontWeight fontWeightEnum);
+	void onFontWeight(CONTEXT context, int fontWeightNumber, CSSFontWeight fontWeightEnum, CSSPriority priority);
 
 	// Filter
 	void onFilter(CONTEXT context, CSSFilter filter);
