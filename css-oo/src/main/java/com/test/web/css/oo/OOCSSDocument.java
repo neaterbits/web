@@ -159,6 +159,11 @@ public final class OOCSSDocument
 	public String getStylePropertyPriority(OOCSSRule rule, String propertyName) {
 		return styles(rule).getPropertyPriority(propertyName);
 	}
+	
+	@Override
+	public String getStylePropertyPriority(OOCSSRule rule, int index) {
+		return styles(rule).getPropertyPriority(index);
+	}
 
 	@Override
 	public String getStylePropertyValue(OOCSSRule rule, String propertyName) {

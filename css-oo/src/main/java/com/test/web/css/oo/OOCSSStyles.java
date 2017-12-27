@@ -18,6 +18,7 @@ import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
+import com.test.web.css.common.enums.CSSPriority;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
@@ -25,6 +26,7 @@ import com.test.web.css.common.enums.CSStyle;
 import com.test.web.types.ColorAlpha;
 import com.test.web.types.ColorRGB;
 import com.test.web.types.DecimalSize;
+import com.test.web.types.IEnum;
 
 public final class OOCSSStyles extends OOStylesText {
 
@@ -106,6 +108,10 @@ public final class OOCSSStyles extends OOStylesText {
 
 		this.bgColorRGB = ColorRGB.NONE;
 		this.bgColorAlpha = DecimalSize.NONE;
+	}
+	
+	void setPriority(int propertyIndex, CSSPriority priority) {
+		values[propertyIndex].setPriority(priority);
 	}
 
 	int getLeft() {
@@ -899,11 +905,18 @@ public final class OOCSSStyles extends OOStylesText {
 		
 		final int idx = getPropertyIdx(propertyName);
 		
-		final String priority = idx >= 0 ? values[idx].priority : null;
+		final String priority = idx >= 0 ? getPropertyPriority(idx) : null;
 
 		return priority;
 	}
-	
+
+	String getPropertyPriority(int idx) {
+		
+		final CSSPriority priority = idx >= 0 && idx < values.length ? values[idx].getPriority() : null;
+
+		return priority != null ? priority.getName() : null;
+	}
+
 	<RULE> String removeProperty(ICSSDocument<RULE> styles, RULE rule, String propertyName) {
 		final int idx = getPropertyIdx(propertyName);
 		
@@ -932,9 +945,11 @@ public final class OOCSSStyles extends OOStylesText {
 
 		final CSStyle type = CSStyle.fromPropertyName(propertyName);
 		
+		final CSSPriority priorityEnum = IEnum.asEnum(CSSPriority.class, priority, false);
+		
 		final CSSValue cssValue = type != null
-				? new StandardCSSValue(type, priority)
-				: new CustomCSSValue(propertyName, value, priority);
+				? new StandardCSSValue(type, priorityEnum)
+				: new CustomCSSValue(propertyName, value, priorityEnum);
 
 		setProperty(cssValue);
 	}
@@ -973,7 +988,7 @@ public final class OOCSSStyles extends OOStylesText {
 	}
 
 	private static abstract class CSSValue {
-		private final String priority;
+		private CSSPriority priority;
 
 		abstract boolean hasPropertyName(String propertyName);
 		
@@ -983,7 +998,15 @@ public final class OOCSSStyles extends OOStylesText {
 		
 		abstract <RULE> String getValue(ICSSDocument<RULE> styles, RULE rule);
 		
-		CSSValue(String priority) {
+		CSSValue(CSSPriority priority) {
+			this.priority = priority;
+		}
+
+		final CSSPriority getPriority() {
+			return priority;
+		}
+
+		final void setPriority(CSSPriority priority) {
 			this.priority = priority;
 		}
 	}
@@ -991,7 +1014,7 @@ public final class OOCSSStyles extends OOStylesText {
 	private class StandardCSSValue extends CSSValue {
 		private final CSStyle type;
 		
-		StandardCSSValue(CSStyle type, String priority) {
+		StandardCSSValue(CSStyle type, CSSPriority priority) {
 			super(priority);
 			
 			if (type == null) {
@@ -1026,7 +1049,7 @@ public final class OOCSSStyles extends OOStylesText {
 		private final String name;
 		private final String value;
 		
-		CustomCSSValue(String name, String value, String priority) {
+		CustomCSSValue(String name, String value, CSSPriority priority) {
 			super(priority);
 			
 			if (name == null) {

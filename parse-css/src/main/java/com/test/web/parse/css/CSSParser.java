@@ -267,7 +267,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	
 	private static final CSSUnit defaultWidthHeightUnit = CSSUnit.PX;
 	
-	private void parseElementWithoutCheckingForSemiColon(LISTENER_CONTEXT context, CSStyle element) throws IOException, ParserException {
+	private int parseElementWithoutCheckingForSemiColon(LISTENER_CONTEXT context, CSStyle element) throws IOException, ParserException {
 		CSSToken token;
 		
 		for (;;) {
@@ -282,31 +282,33 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			}
 		}
 		
+		final int propertyIndex = listener.onStylePropertyStart(element);
+		
 		CSSParserHelperWS.skipAnyWS(lexer);
 
 		// Now read value, this depends on input style
 
 		switch (element) {
 		case WIDTH:
-			CSSParserHelperSizeToSemicolon.parsePossiblyDecimalSizeValue(lexer, defaultWidthHeightUnit, (size, unit) -> listener.onWidth(context, size, unit, parsePriority()));
+			CSSParserHelperSizeToSemicolon.parsePossiblyDecimalSizeValue(lexer, defaultWidthHeightUnit, (size, unit) -> listener.onWidth(context, size, unit));
 			break;
 			
 		case HEIGHT:
-			CSSParserHelperSizeToSemicolon.parsePossiblyDecimalSizeValue(lexer, defaultWidthHeightUnit, (size, unit) -> listener.onHeight(context, size, unit, parsePriority()));
+			CSSParserHelperSizeToSemicolon.parsePossiblyDecimalSizeValue(lexer, defaultWidthHeightUnit, (size, unit) -> listener.onHeight(context, size, unit));
 			break;
 
 		case COLOR:
 			parseFgColor(
-					(r, g, b, a) -> listener.onColor(context, r, g, b, a, parsePriority()),
-					cssColor -> listener.onColor(context, cssColor, parsePriority()),
-					type -> listener.onColor(context, type, parsePriority()));
+					(r, g, b, a) -> listener.onColor(context, r, g, b, a),
+					cssColor -> listener.onColor(context, cssColor),
+					type -> listener.onColor(context, type));
 			break;
 			
 		case BACKGROUND_COLOR:
 			parseBgColor(
-					(r, g, b, a) -> listener.onBgColor(context, r, g, b, a, parsePriority()),
-					cssColor -> listener.onBgColor(context, cssColor, parsePriority()),
-					type -> listener.onBgColor(context, type, parsePriority()));
+					(r, g, b, a) -> listener.onBgColor(context, r, g, b, a),
+					cssColor -> listener.onBgColor(context, cssColor),
+					type -> listener.onBgColor(context, type));
 			break;
 			
 		case BACKGROUND_IMAGE:
@@ -398,19 +400,19 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			break;
 			
 		case MAX_WIDTH:
-			parseMax((size, unit, type) -> listener.onMaxWidth(context, size, unit, type, parsePriority()));
+			parseMax((size, unit, type) -> listener.onMaxWidth(context, size, unit, type));
 			break;
 			
 		case MAX_HEIGHT:
-			parseMax((size, unit, type) -> listener.onMaxHeight(context, size, unit, type, parsePriority()));
+			parseMax((size, unit, type) -> listener.onMaxHeight(context, size, unit, type));
 			break;
 			
 		case MIN_WIDTH:
-			parseMin((size, unit, type) -> listener.onMinWidth(context, size, unit, type, parsePriority()));
+			parseMin((size, unit, type) -> listener.onMinWidth(context, size, unit, type));
 			break;
 			
 		case MIN_HEIGHT:
-			parseMin((size, unit, type) -> listener.onMinHeight(context, size, unit, type, parsePriority()));
+			parseMin((size, unit, type) -> listener.onMinHeight(context, size, unit, type));
 			break;
 			
 		case FONT_SIZE:
@@ -432,13 +434,31 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		default:
 			throw new UnsupportedOperationException("Unknown element " + element);
 		}
+		
+		return propertyIndex;
 	}
 
 	private void parseElement(LISTENER_CONTEXT context, CSStyle element) throws IOException, ParserException {
 
-		parseElementWithoutCheckingForSemiColon(context, element);
+		final int propertyIndex = parseElementWithoutCheckingForSemiColon(context, element);
 		
-		assureTokenSkipWSAndComment(CSSToken.SEMICOLON);
+		final CSSToken token = lexSkipWSAndComment(CSSToken.SEMICOLON, CSSToken.PRIORITY_MARKER);
+		
+		switch (token) {
+		case SEMICOLON:
+			break;
+			
+		case PRIORITY_MARKER:
+			assureTokenSkipWSAndComment(CSSToken.PRIORITY_IMPORTANT);
+			
+			listener.onStylePriority(propertyIndex, CSSPriority.IMPORTANT);
+			
+			assureTokenSkipWSAndComment(CSSToken.SEMICOLON);
+			break;
+			
+		default:
+			throw lexer.unexpectedToken();
+		}
 	}
 	
 	@FunctionalInterface
@@ -1157,31 +1177,31 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		}
 		else if (token == CSSToken.COLOR_MARKER) {
 
-			token = CSSParserHelperColor.parseHexColor(lexer, (r, g, b, a) -> listener.onBgColor(context, r, g, b, a, parsePriority()));
+			token = CSSParserHelperColor.parseHexColor(lexer, (r, g, b, a) -> listener.onBgColor(context, r, g, b, a));
 			
 			tokenMap.remove(CSStyle.BACKGROUND_COLOR);
 		}
 		else if (token.getBackground() != null) {
 			
-			listener.onBgColor(context, token.getBackground(), parsePriority());
+			listener.onBgColor(context, token.getBackground());
 
 			tokenMap.remove(CSStyle.BACKGROUND_COLOR);
 		}
 		else if (token.getColor() != null) {
 			
-			listener.onBgColor(context, token.getColor(), parsePriority());
+			listener.onBgColor(context, token.getColor());
 			
 			tokenMap.remove(CSStyle.BACKGROUND_COLOR);
 		}
 		else if (token == CSSToken.FUNCTION_RGB) {
 			
-			CSSParserHelperColor.parseRGBFunction(lexer, (r, g, b, a) -> listener.onBgColor(context, r, g, b, a, parsePriority()));
+			CSSParserHelperColor.parseRGBFunction(lexer, (r, g, b, a) -> listener.onBgColor(context, r, g, b, a));
 			
 			tokenMap.remove(CSStyle.BACKGROUND_COLOR);
 		}
 		else if (token == CSSToken.FUNCTION_RGBA) {
 
-			CSSParserHelperColor.parseRGBAFunction(lexer, (r, g, b, a) -> listener.onBgColor(context, r, g, b, a, parsePriority()));
+			CSSParserHelperColor.parseRGBAFunction(lexer, (r, g, b, a) -> listener.onBgColor(context, r, g, b, a));
 
 			tokenMap.remove(CSStyle.BACKGROUND_COLOR);
 		}
@@ -1343,14 +1363,14 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		switch (token) {
 		case INTEGER:
 			// parse as size
-			CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(lexer, null, Integer.parseInt(lexer.get()), (value, unit) -> listener.onFontSize(context, value, unit, null, parsePriority()));
+			CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(lexer, null, Integer.parseInt(lexer.get()), (value, unit) -> listener.onFontSize(context, value, unit, null));
 			break;
 			
 		case NONE:
 			throw lexer.unexpectedToken();
 			
 		default:
-			listener.onFontSize(context, 0, null, token.getFontSize(), parsePriority());
+			listener.onFontSize(context, 0, null, token.getFontSize());
 			break;
 		}
 	}
@@ -1364,14 +1384,14 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		case INTEGER:
 			// parse as size
 			final int value = Integer.parseInt(lexer.get());
-			listener.onFontWeight(context, value, null, parsePriority());
+			listener.onFontWeight(context, value, null);
 			break;
 			
 		case NONE:
 			throw lexer.unexpectedToken();
 			
 		default:
-			listener.onFontWeight(context, 0, token.getFontWeight(), parsePriority());
+			listener.onFontWeight(context, 0, token.getFontWeight());
 			break;
 		}
 	}
@@ -1379,31 +1399,31 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	private static final CSSToken [] POSITION_TOKENS = copyTokens(token -> token.getPosition() != null);
 
 	private void parsePosition(LISTENER_CONTEXT context) throws IOException, ParserException {
-		parseEnum(POSITION_TOKENS, token -> listener.onPosition(context, token.getPosition(), parsePriority()));
+		parseEnum(POSITION_TOKENS, token -> listener.onPosition(context, token.getPosition()));
 	}
 
 	private static final CSSToken [] FLOAT_TOKENS = copyTokens(token -> token.getFloat() != null);
 
 	private void parseFloat(LISTENER_CONTEXT context) throws IOException, ParserException {
-		parseEnum(FLOAT_TOKENS, token -> listener.onFloat(context, token.getFloat(), parsePriority()));
+		parseEnum(FLOAT_TOKENS, token -> listener.onFloat(context, token.getFloat()));
 	}
 
 	private static final CSSToken [] CLEAR_TOKENS = copyTokens(token -> token.getClear() != null);
 
 	private void parseClear(LISTENER_CONTEXT context) throws IOException, ParserException {
-		parseEnum(CLEAR_TOKENS, token -> listener.onClear(context, token.getClear(), parsePriority()));
+		parseEnum(CLEAR_TOKENS, token -> listener.onClear(context, token.getClear()));
 	}
 
 	private static final CSSToken [] TEXT_ALIGN_TOKENS = copyTokens(token -> token.getTextAlign() != null);
 
 	private void parseTextAlign(LISTENER_CONTEXT context) throws IOException, ParserException {
-		parseEnum(TEXT_ALIGN_TOKENS, token -> listener.onTextAlign(context, token.getTextAlign(), parsePriority()));
+		parseEnum(TEXT_ALIGN_TOKENS, token -> listener.onTextAlign(context, token.getTextAlign()));
 	}
 
 	private static final CSSToken [] TEXT_DECORATION_TOKENS = copyTokens(token -> token.getTextDecoration() != null);
 
 	private void parseTextDecoration(LISTENER_CONTEXT context) throws IOException, ParserException {
-		parseEnum(TEXT_DECORATION_TOKENS, token -> listener.onTextDecoration(context, token.getTextDecoration(), parsePriority()));
+		parseEnum(TEXT_DECORATION_TOKENS, token -> listener.onTextDecoration(context, token.getTextDecoration()));
 	}
 
 	private static final CSSToken [] FILTER_TOKENS = copyTokens(token -> token.getFilter() != null,
@@ -1747,9 +1767,5 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		}
 		
 		onToken.accept(token);
-	}
-	
-	private CSSPriority parsePriority() {
-		throw new UnsupportedOperationException("TODO");
 	}
 }

@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 
 import com.test.web.css.common.ICSSDocument;
-import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.WrappingHolder;
 import com.test.web.css.common.enums.CSSBackgroundColor;
 import com.test.web.css.common.enums.CSSBackgroundImage;
@@ -77,11 +76,12 @@ public abstract class BaseCSSDocumentTest<ELEMENT> extends TestCase {
 		assertThat(DecimalSize.decodeToInt(doc.getWidth(h1Ref))).isEqualTo(20);
 		
 		
-		assertThat(doc.getStyleCSSText(h1Ref)).isEqualTo("width: 20%; height: 100px; background-color: rgb(170, 187, 204);");
+		assertThat(doc.getStyleCSSText(h1Ref)).isEqualTo("width: 20%; height: 100px !important; background-color: rgb(170, 187, 204);");
 		assertThat(doc.getStyleLength(h1Ref)).isEqualTo(3);
 		assertThat(doc.getStylePropertyValue(h1Ref, "width")).isEqualTo("20%");
 		assertThat(doc.getStylePropertyValue(h1Ref, "Width")).isEqualTo("20%");
 		assertThat(doc.getStylePropertyValue(h1Ref, "height")).isEqualTo("100px");
+		assertThat(doc.getStylePropertyPriority(h1Ref, "height")).isEqualTo("important");
 		assertThat(doc.getStylePropertyValue(h1Ref, "background-color")).isEqualTo("rgb(170, 187, 204)");
 		
 		final ELEMENT idRef = doc.get(CSSTarget.ID, "an_element").get(0);

@@ -5,7 +5,7 @@ public class TestData {
 	public static final String CSS =
 		"h1 {\n" +
 		" /* comment */ /* another comment */ width : 20%;\n" +
-		"  height /* comment */ /* another comment */ : 100px;\n" +
+		"  height /* comment */ /* another comment */ : 100px ! Important;\n" +
 		"  background-color : /* comment */ /* another comment */ #AABBCC;\n" +
 		"}\n" +
 		

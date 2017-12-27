@@ -156,6 +156,12 @@ public final class LongCSSDocument
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public String getStylePropertyPriority(Integer rule, int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public String getStylePropertyValue(Integer rule, String propertyName) {

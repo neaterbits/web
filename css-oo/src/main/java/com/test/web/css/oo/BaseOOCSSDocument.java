@@ -25,6 +25,7 @@ import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSOverflow;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSPositionComponent;
+import com.test.web.css.common.enums.CSSPriority;
 import com.test.web.css.common.enums.CSSRuleType;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
@@ -521,6 +522,18 @@ public abstract class BaseOOCSSDocument
 	final OOCSSRule rule() {
 		return curParseElement;
 	}
+
+	@Override
+	public int onStylePropertyStart(CSStyle property) {
+		// return next index so that sets priority on tight instance
+		return stylesRef().getLength();
+	}
+
+	@Override
+	public void onStylePriority(int propertyIndex, CSSPriority priority) {
+		stylesRef().setPriority(propertyIndex, priority);
+	}
+
 
 	@Override
 	public void onLeft(Void context, int left, CSSUnit unit) {

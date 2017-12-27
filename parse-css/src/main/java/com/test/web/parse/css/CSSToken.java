@@ -78,6 +78,11 @@ public enum CSSToken implements IToken {
 	
 	COLOR_MARKER('#'),
 	
+	PRIORITY_MARKER('!'),
+	
+	PRIORITY_IMPORTANT("important"),
+	
+	
 	FUNCTION_RGB("rgb"),
 	FUNCTION_RGBA("rgba"),
 	
@@ -636,7 +641,7 @@ public enum CSSToken implements IToken {
 			CSSColor color, CSSForeground foreground, CSSBackgroundColor background,
 			CSSFilter filter) {
 		
-		this.tokenType = TokenType.CS_LITERAL;
+		this.tokenType = TokenType.CI_LITERAL;
 		this.character = 0;
 		this.toCharacter = 0;
 		this.literal = literal;

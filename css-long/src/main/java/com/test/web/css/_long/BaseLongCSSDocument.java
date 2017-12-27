@@ -32,6 +32,7 @@ import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
+import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.css.CSSParserListener;
 
 // Base class for long-encoded CSS documents
@@ -375,24 +376,44 @@ public abstract class BaseLongCSSDocument
 
 	/***************************************************** Parse listener *****************************************************/ 
 	
+	
 
 	@Override
-	public void onLeft(Void context, int left, CSSUnit unit, CSSPriority priority) {
-		LongCSS.addLeft(buf(curParseElement), offset(curParseElement), left, unit);
+	public void onStylePropertyText(Void context, Tokenizer tokenizer, long propertyStartPos, long propertyEndPos) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public void onTop(Void context, int top, CSSUnit unit, CSSPriority priority) {
+	public void onLeft(Void context, int left, CSSUnit unit) {
+		LongCSS.addLeft(buf(curParseElement), offset(curParseElement), left, unit);
+	}
+	
+
+	@Override
+	public int onStylePropertyStart(CSStyle property) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void onStylePriority(int propertyIndex, CSSPriority priority) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onTop(Void context, int top, CSSUnit unit) {
 		LongCSS.addTop(buf(curParseElement), offset(curParseElement), top, unit);
 	}
 
 	@Override
-	public void onWidth(Void context, int width, CSSUnit unit, CSSPriority priority) {
+	public void onWidth(Void context, int width, CSSUnit unit) {
 		LongCSS.addWidth(buf(curParseElement), offset(curParseElement), width, unit);
 	}
 
 	@Override
-	public void onHeight(Void context, int height, CSSUnit unit, CSSPriority priority) {
+	public void onHeight(Void context, int height, CSSUnit unit) {
 		LongCSS.addHeight(buf(curParseElement), offset(curParseElement), height, unit);
 	}
 
@@ -417,19 +438,19 @@ public abstract class BaseLongCSSDocument
 	}
 
 	@Override
-	public void onColor(Void context, int r, int g, int b, int a, CSSPriority priority) {
+	public void onColor(Void context, int r, int g, int b, int a) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onColor(Void context, CSSColor colo, CSSPriority priorityr) {
+	public void onColor(Void context, CSSColor color) {
 		// TODO Auto-generated method stub
 		
 	}
 	
 	@Override
-	public void onColor(Void context, CSSForeground foreground, CSSPriority priority) {
+	public void onColor(Void context, CSSForeground foreground) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -514,80 +535,80 @@ public abstract class BaseLongCSSDocument
 	}
 
 	@Override
-	public void onBgColor(Void context, int r, int g, int b, int a, CSSPriority priority) {
+	public void onBgColor(Void context, int r, int g, int b, int a) {
 		// TODO Auto-generated method stub
 		
 	}
 	
 	@Override
-	public void onBgColor(Void context, CSSColor color, CSSPriority priority) {
+	public void onBgColor(Void context, CSSColor color) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onBgColor(Void context, CSSBackgroundColor background, CSSPriority priority) {
+	public void onBgColor(Void context, CSSBackgroundColor background) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onTextAlign(Void context, CSSTextAlign textAlign, CSSPriority priority) {
+	public void onTextAlign(Void context, CSSTextAlign textAlign) {
 		LongCSS.setTextAlign(buf(curParseElement), offset(curParseElement), textAlign);
 		
 	}
 	@Override
-	public void onDisplay(Void context, CSSDisplay display, CSSPriority priority) {
+	public void onDisplay(Void context, CSSDisplay display) {
 		LongCSS.setDisplay(buf(curParseElement), offset(curParseElement), display);
 	}
 
 	@Override
-	public void onPosition(Void context, CSSPosition position, CSSPriority priority) {
+	public void onPosition(Void context, CSSPosition position) {
 		LongCSS.setPosition(buf(curParseElement), offset(curParseElement), position);
 	}
 
 	@Override
-	public void onFloat(Void context, CSSFloat _float, CSSPriority priority) {
+	public void onFloat(Void context, CSSFloat _float) {
 		LongCSS.setFloat(buf(curParseElement), offset(curParseElement), _float);
 	}
 
 	@Override
-	public void onClear(Void context, CSSClear clear, CSSPriority priority) {
+	public void onClear(Void context, CSSClear clear) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onOverflow(Void context, CSSOverflow overflow, CSSPriority priority) {
+	public void onOverflow(Void context, CSSOverflow overflow) {
 		LongCSS.setOverflow(buf(curParseElement), offset(curParseElement), overflow);
 	}
 	
 	@Override
-	public void onTextDecoration(Void context, CSSTextDecoration textDecoration, CSSPriority priority) {
+	public void onTextDecoration(Void context, CSSTextDecoration textDecoration) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onMaxWidth(Void context, int width, CSSUnit unit, CSSMax type, CSSPriority priority) {
+	public void onMaxWidth(Void context, int width, CSSUnit unit, CSSMax type) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onMaxHeight(Void context, int height, CSSUnit unit, CSSMax type, CSSPriority priority) {
+	public void onMaxHeight(Void context, int height, CSSUnit unit, CSSMax type) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onMinWidth(Void context, int width, CSSUnit unit, CSSMin type, CSSPriority priority) {
+	public void onMinWidth(Void context, int width, CSSUnit unit, CSSMin type) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onMinHeight(Void context, int height, CSSUnit unit, CSSMin type, CSSPriority priority) {
+	public void onMinHeight(Void context, int height, CSSUnit unit, CSSMin type) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -674,13 +695,13 @@ public abstract class BaseLongCSSDocument
 	}
 
 	@Override
-	public void onFontSize(Void context, int fontSize, CSSUnit fontSizeUnit, CSSFontSize fontSizeEnum, CSSPriority priority) {
+	public void onFontSize(Void context, int fontSize, CSSUnit fontSizeUnit, CSSFontSize fontSizeEnum) {
 		// TODO Auto-generated method stub
 		
 	}
 	
 	@Override
-	public void onFontWeight(Void context, int fontWeightNumber, CSSFontWeight fontWeightEnum, CSSPriority priority) {
+	public void onFontWeight(Void context, int fontWeightNumber, CSSFontWeight fontWeightEnum) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -1,5 +1,6 @@
 package com.test.web.css.common;
 
+import com.test.web.css.common.enums.CSSPriority;
 import com.test.web.css.common.enums.CSSRuleType;
 import com.test.web.css.common.enums.CSStyle;
 
@@ -30,7 +31,9 @@ public interface ICSSStyleSheet<RULE> {
 	void setStyleCSSText(RULE rule, String cssText);
 	
 	String getStylePropertyPriority(RULE rule, String propertyName);
-	
+
+	String getStylePropertyPriority(RULE rule, int index);
+
 	String getStylePropertyValue(RULE rule, String propertyName);
 	
 	String getStyleItem(RULE rule, int index);

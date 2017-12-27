@@ -3,6 +3,7 @@ package com.test.web.css.common;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSMax;
 import com.test.web.css.common.enums.CSSMin;
+import com.test.web.css.common.enums.CSSPriority;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.types.ColorAlpha;
@@ -37,6 +38,11 @@ public class CSSStyleBuilder {
 				sb.append(styles.getStyleCustomPropertyName(rule, i));
 				sb.append(": ");
 				sb.append(styles.getStyleCustomPropertyValue(rule, i));
+			}
+			
+			final String priority = styles.getStylePropertyPriority(rule, i);
+			if (priority != null) {
+				sb.append(" !").append(priority);
 			}
 
 			sb.append(';');
