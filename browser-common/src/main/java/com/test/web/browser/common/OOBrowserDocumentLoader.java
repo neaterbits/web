@@ -3,6 +3,7 @@ package com.test.web.browser.common;
 import java.io.IOException;
 
 import com.test.web.css.common.CSSContext;
+import com.test.web.css.oo.OOCSSBase;
 import com.test.web.css.oo.OOCSSDocument;
 import com.test.web.css.oo.OOCSSRule;
 import com.test.web.document.html.common.IDocument;
@@ -21,7 +22,7 @@ import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 
 public class OOBrowserDocumentLoader
-		extends BaseBrowserDocumentLoader<OOTagElement, OOAttribute, OOHTMLDocument, OOCSSRule, OOCSSDocument>
+		extends BaseBrowserDocumentLoader<OOTagElement, OOAttribute, OOCSSBase, OOHTMLDocument, OOCSSRule, OOCSSDocument>
 		implements IBrowserDocumentLoader<OOTagElement, OOAttribute, OOCSSRule> {
 	
 	public OOBrowserDocumentLoader(IDelayedRendererFactory rendererFactory, IBufferRendererFactory bufferedRendererFactory, ITextExtent textExtent, DebugListeners debugListeners) {
@@ -31,7 +32,7 @@ public class OOBrowserDocumentLoader
 	private OOCSSDocument parseCSS(CharInput charInput, Tokenizer tokenizer, CSSContext<OOCSSRule> cssContext) throws IOException, ParserException {
 		
 		final OOCSSDocument styleDocument = new OOCSSDocument();
-		final CSSParser<Void> cssParser = new CSSParser<>(charInput, tokenizer, styleDocument);
+		final CSSParser<OOCSSBase> cssParser = new CSSParser<>(charInput, tokenizer, styleDocument);
 
 		// Just parse the CSS straight away
 		cssParser.parseCSS();
@@ -52,7 +53,7 @@ public class OOBrowserDocumentLoader
 	}
 
 	@Override
-	protected HTMLParser<OOTagElement, OOCSSDocument> createParser(
+	protected HTMLParser<OOTagElement, OOCSSDocument, OOCSSBase> createParser(
 			OOHTMLDocument document,
 			IHTMLParserListener<OOTagElement> parserListener,
 			LoadStream stream,

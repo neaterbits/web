@@ -5,8 +5,22 @@ import java.util.List;
 import com.test.web.css.common.CSSState;
 import com.test.web.css.common.CSSValueType;
 import com.test.web.css.common.ICSSStyleSheet;
+import com.test.web.css.common.enums.CSSColorGamut;
+import com.test.web.css.common.enums.CSSDisplayMode;
+import com.test.web.css.common.enums.CSSHover;
+import com.test.web.css.common.enums.CSSInvertedColors;
+import com.test.web.css.common.enums.CSSLightLevel;
+import com.test.web.css.common.enums.CSSMediaFeature;
+import com.test.web.css.common.enums.CSSMediaType;
+import com.test.web.css.common.enums.CSSOrientation;
+import com.test.web.css.common.enums.CSSOverflowBlock;
+import com.test.web.css.common.enums.CSSOverflowInline;
+import com.test.web.css.common.enums.CSSPointer;
 import com.test.web.css.common.enums.CSSRuleType;
+import com.test.web.css.common.enums.CSSScan;
+import com.test.web.css.common.enums.CSSScripting;
 import com.test.web.css.common.enums.CSSTarget;
+import com.test.web.css.common.enums.CSSUpdate;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.css.ICSSDocumentParserListener;
@@ -615,6 +629,212 @@ public final class LongCSSDocument
 
 	@Override
 	public void setSupportsConditionText(Integer rule, String conditionText) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	// Generic rule access
+	@Override
+	public int getNumRules() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSRuleType getRuleType(int ruleIdx) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	// Iimports
+	@Override
+	public String getImportUrl(int ruleIdx) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getImportFile(int ruleIdx) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getNumMediaQueries(int ruleIdx) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean isMediaQueryNegated(int ruleIdx, int mediaQueryIdx) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public CSSMediaType getMediaType(int ruleIdx, int mediaQueryIdx) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getNumMediaFeatures(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public CSSMediaFeature getMediaFeature(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void getWidth(int ruleIdx, int mediaQueryIdx, int[] nesting, GetDimension getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void getHeight(int ruleIdx, int mediaQueryIdx, int[] nesting, GetDimension getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void getAspectRatio(int ruleIdx, int mediaQueryIdx, int[] nesting, GetAspectRatio getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public CSSOrientation getOrientation(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void getResolution(int ruleIdx, int mediaQueryIdx, int[] nesting, GetIntegerValue getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public CSSScan getScan(int ruleIdx, int mediaQueryIdx, int[] nesting, GetIntegerValue getter) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean getGrid(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public CSSUpdate getUpdate(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSOverflowBlock getOverflowBlock(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSOverflowInline getOverflowInline(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void getColor(int ruleIdx, int mediaQueryIdx, int[] nesting, GetIntegerValue getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public CSSColorGamut getColorGamut(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void getColorIndex(int ruleIdx, int mediaQueryIdx, int[] nesting, GetIntegerValue getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public CSSDisplayMode getDisplayMode(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void getMonocrome(int ruleIdx, int mediaQueryIdx, int[] nesting, GetIntegerValue getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public CSSInvertedColors getInvertedColors(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSPointer getPointer(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSHover getHover(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSPointer getAnyPointer(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSHover getAnyHover(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSLightLevel getLightLevel(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSScripting getScripting(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void getDeviceWidth(int ruleIdx, int mediaQueryIdx, int[] nesting, GetDimension getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void getDeviceHeight(int ruleIdx, int mediaQueryIdx, int[] nesting, GetDimension getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void getDeviceAspectRatio(int ruleIdx, int mediaQueryIdx, int[] nesting, GetAspectRatio getter) {
 		// TODO Auto-generated method stub
 		
 	}

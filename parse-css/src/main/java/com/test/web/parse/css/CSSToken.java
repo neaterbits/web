@@ -8,19 +8,35 @@ import com.test.web.css.common.enums.CSSBackgroundRepeat;
 import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSClear;
 import com.test.web.css.common.enums.CSSColor;
+import com.test.web.css.common.enums.CSSColorGamut;
 import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.css.common.enums.CSSDisplayMode;
 import com.test.web.css.common.enums.CSSFilter;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSForeground;
+import com.test.web.css.common.enums.CSSHover;
+import com.test.web.css.common.enums.CSSInvertedColors;
+import com.test.web.css.common.enums.CSSLightLevel;
+import com.test.web.css.common.enums.CSSLogicalOperator;
+import com.test.web.css.common.enums.CSSMediaFeature;
+import com.test.web.css.common.enums.CSSMediaType;
+import com.test.web.css.common.enums.CSSOrientation;
 import com.test.web.css.common.enums.CSSOverflow;
+import com.test.web.css.common.enums.CSSOverflowBlock;
+import com.test.web.css.common.enums.CSSOverflowInline;
+import com.test.web.css.common.enums.CSSPointer;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSPositionComponent;
 import com.test.web.css.common.enums.CSSRadix;
+import com.test.web.css.common.enums.CSSRange;
+import com.test.web.css.common.enums.CSSScan;
+import com.test.web.css.common.enums.CSSScripting;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.css.common.enums.CSSUpdate;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.parse.common.CharType;
 import com.test.web.parse.common.CharTypeHexDigit;
@@ -36,6 +52,7 @@ public enum CSSToken implements IToken {
 	COMMENT("/*", "*/"),
 	
 	QUOTED_STRING('"', '"'),
+	SINGLE_QUOTED_STRING('\'', '\''),
 
 	BROWSER_SPECIFIC_ATTRIBUTE('-', ';', false),
 
@@ -50,7 +67,8 @@ public enum CSSToken implements IToken {
 
 	CLASS_MARKER('.'),
 	ID_MARKER('#'),
-	
+	AT('@'),
+
 	ID(CharTypeHTMLElementId.INSTANCE),
 	CLASS(CharTypeHTMLElementClass.INSTANCE),
 
@@ -81,8 +99,9 @@ public enum CSSToken implements IToken {
 	PRIORITY_MARKER('!'),
 	
 	PRIORITY_IMPORTANT("important"),
-	
-	
+
+	AT_RULE_IMPORT("import"),
+
 	FUNCTION_RGB("rgb"),
 	FUNCTION_RGBA("rgba"),
 	
@@ -292,7 +311,109 @@ public enum CSSToken implements IToken {
 	FILTER_NONE(CSSFilter.NONE),
 	FILTER_INITIAL(CSSFilter.INITIAL),
 	FILTER_INHERIT(CSSFilter.INHERIT),
+	
+	// Media types and media features
+	MT_ALL(CSSMediaType.ALL),
+	MT_PRINT(CSSMediaType.PRINT),
+	MT_SCREEN(CSSMediaType.SCREEN),
+	MT_SPEECH(CSSMediaType.SPEECH),
 
+	MF_WIDTH(CSSMediaFeature.WIDTH, CSSRange.NONE),
+	MF_MIN_WIDTH(CSSMediaFeature.WIDTH, CSSRange.MIN),
+	MF_MAX_WIDTH(CSSMediaFeature.WIDTH, CSSRange.MAX),
+	MF_HEIGHT(CSSMediaFeature.HEIGHT, CSSRange.NONE),
+	MF_MIN_HEIGHT(CSSMediaFeature.HEIGHT, CSSRange.MIN),
+	MF_MAX_HEIGHT(CSSMediaFeature.HEIGHT, CSSRange.MAX),
+	MF_ASPECT_RATIO(CSSMediaFeature.ASPECT_RATIO, CSSRange.NONE),
+	MF_MIN_ASPECT_RATIO(CSSMediaFeature.ASPECT_RATIO, CSSRange.MIN),
+	MF_MAX_ASPECT_RATIO(CSSMediaFeature.ASPECT_RATIO, CSSRange.MAX),
+	MF_ORIENTATION(CSSMediaFeature.ORIENTATION),
+	MF_RESOLUTION(CSSMediaFeature.RESOLUTION, CSSRange.NONE),
+	MF_MIN_RESOLUTION(CSSMediaFeature.RESOLUTION, CSSRange.MIN),
+	MF_MAX_RESOLUTION(CSSMediaFeature.RESOLUTION, CSSRange.MAX),
+	MF_SCAN(CSSMediaFeature.SCAN),
+	MF_GRID(CSSMediaFeature.GRID),
+	MF_UPDATE(CSSMediaFeature.UPDATE),
+	MF_OVERFLOW_BLOCK(CSSMediaFeature.OVERFLOW_BLOCK),
+	MF_OVERFLOW_INLINE(CSSMediaFeature.OVERFLOW_INLINE),
+	MF_COLOR(CSSMediaFeature.COLOR, CSSRange.NONE),
+	MF_MIN_COLOR(CSSMediaFeature.COLOR, CSSRange.MIN),
+	MF_MAX_COLOR(CSSMediaFeature.COLOR, CSSRange.MAX),
+	MF_COLOR_GAMUT(CSSMediaFeature.COLOR_GAMUT),
+	MF_COLOR_INDEX(CSSMediaFeature.COLOR_INDEX, CSSRange.NONE),
+	MF_MIN_COLOR_INDEX(CSSMediaFeature.COLOR_INDEX, CSSRange.MIN),
+	MF_MAX_COLOR_INDEX(CSSMediaFeature.COLOR_INDEX, CSSRange.MAX),
+	MF_DISPLAY_MODE(CSSMediaFeature.DISPLAY_MODE),
+	MF_MONOCHROME(CSSMediaFeature.MONOCHROME, CSSRange.NONE),
+	MF_MIN_MONOCHROME(CSSMediaFeature.MONOCHROME, CSSRange.MIN),
+	MF_MAX_MONOCHROME(CSSMediaFeature.MONOCHROME, CSSRange.MAX),
+	MF_INVERTED_COLORS(CSSMediaFeature.INVERTED_COLORS),
+	MF_POINTER(CSSMediaFeature.POINTER),
+	MF_HOVER(CSSMediaFeature.HOVER),
+	MF_ANY_POINTER(CSSMediaFeature.ANY_POINTER),
+	MF_ANY_HOVER(CSSMediaFeature.ANY_HOVER),
+	MF_LIGHT_LEVEL(CSSMediaFeature.LIGHT_LEVEL),
+	MF_SCRIPTING(CSSMediaFeature.SCRIPTING),
+	MF_DEVICE_WIDTH(CSSMediaFeature.DEVICE_WIDTH, CSSRange.NONE),
+	MF_MIN_DEVICE_WIDTH(CSSMediaFeature.DEVICE_WIDTH, CSSRange.MIN),
+	MF_MAX_DEVICE_WIDTH(CSSMediaFeature.DEVICE_WIDTH, CSSRange.MAX),
+	MF_DEVICE_HEIGHT(CSSMediaFeature.DEVICE_HEIGHT, CSSRange.NONE),
+	MF_MIN_DEVICE_HEIGHT(CSSMediaFeature.DEVICE_HEIGHT, CSSRange.MIN),
+	MF_MAX_DEVICE_HEIGHT(CSSMediaFeature.DEVICE_HEIGHT, CSSRange.MAX),
+	MF_DEVICE_ASPECT_RATIO(CSSMediaFeature.DEVICE_ASPECT_RATIO, CSSRange.NONE),
+	MF_MIN_DEVICE_ASPECT_RATIO(CSSMediaFeature.DEVICE_ASPECT_RATIO, CSSRange.MIN),
+	MF_MAX_DEVICE_ASPECT_RATIO(CSSMediaFeature.DEVICE_ASPECT_RATIO, CSSRange.MAX),
+
+	MF_LOGICAL_OPERATOR_AND(CSSLogicalOperator.AND),
+	MF_LOGICAL_OPERATOR_OR(CSSLogicalOperator.OR),
+	MF_LOGICAL_OPERATOR_NOT(CSSLogicalOperator.NOT),
+	
+	MF_ORIENTATION_PORTRAIT(CSSOrientation.PORTRAIT),
+	MF_ORIENTATION_LANDSCAPE(CSSOrientation.LANDSCAPE),
+
+	MF_SCAN_INTERLACE(CSSScan.INTERLACE),
+	MF_SCAN_PROGRESSIVE(CSSScan.PROGRESSIVE),
+
+	MF_UPDATE_NONE(CSSUpdate.NONE),
+	MF_UPDATE_SLOW(CSSUpdate.SLOW),
+	MF_UPDATE_FAST(CSSUpdate.FAST),
+	
+	MF_OVERFLOW_BLOCK_NONE(CSSOverflowBlock.NONE),
+	MF_OVERFLOW_BLOCK_SCROLL(CSSOverflowBlock.SCROLL),
+	MF_OVERFLOW_BLOCK_OPTIONAL_PAGED(CSSOverflowBlock.OPTIONAL_PAGED),
+	MF_OVERFLOW_BLOCK_PAGED(CSSOverflowBlock.PAGED),
+
+	MF_OVERFLOW_INLINE_NONE(CSSOverflowInline.NONE),
+	MF_OVERFLOW_INLINE_SCROLL(CSSOverflowInline.SCROLL),
+	
+	MF_COLOR_GAMUT_SRGB(CSSColorGamut.SRGB),
+	MF_COLOR_GAMUT_P3(CSSColorGamut.P3),
+	MF_COLOR_GAMUT_REC2020(CSSColorGamut.REC2020),
+	
+	MF_DISPLAY_MODE_BROWSER(CSSDisplayMode.BROWSER),
+	MF_DISPLAY_MODE_MINIMAL_UI(CSSDisplayMode.MINIMAL_UI),
+	MF_DISPLAY_MODE_STANDALONE(CSSDisplayMode.STANDALONE),
+	MF_DISPLAY_MODE_FULLSCREEN(CSSDisplayMode.FULLSCREEN),
+
+	MF_INVERTED_COLORS_NONE("none"),
+	MF_INVERTED_COLORS_INVERTED("inverted"),
+	
+	MF_POINTER_NONE(CSSPointer.NONE),
+	MF_POINTER_COARSE(CSSPointer.COARSE),
+	MF_POINTER_FINE(CSSPointer.FINE),
+
+	MF_HOVER_NONE(CSSHover.NONE),
+	MF_HOVER_HOVER(CSSHover.HOVER),
+
+	MF_LIGHT_LEVEL_DIM(CSSLightLevel.DIM),
+	MF_LIGHT_LEVEL_NORMAL(CSSLightLevel.NORMAL),
+	MF_LIGHT_LEVEL_WASHED(CSSLightLevel.WASHED),
+	
+	MF_SCRIPTING_NONE(CSSScripting.NONE),
+	MF_SCRIPTING_INITIAL_ONLY(CSSScripting.INITIAL_ONLY),
+	MF_SCRIPTING_ENABLED(CSSScripting.ENABLED),
+
+	// Standard colors
 	CSSCOLOR_CSSCOLOR_ALICE_BLUE(CSSColor.ALICE_BLUE),
 	CSSCOLOR_ANTIQUE_WHITE(CSSColor.ANTIQUE_WHITE),
 	CSSCOLOR_AQUA(CSSColor.AQUA),
@@ -484,6 +605,25 @@ public enum CSSToken implements IToken {
 	private final CSSForeground foreground;
 	private final CSSBackgroundColor background;
 	private final CSSFilter filter;
+	
+	// Media queries
+	private final CSSMediaType mediaType;
+	private final CSSMediaFeature mediaFeature;
+	private final CSSRange mediaFeatureRange;
+	
+	private final CSSLogicalOperator mediaFeatureLogicalOperator;
+	private final CSSOrientation mediaFeatureOrientation;
+	private final CSSScan mediaFeatureScan;
+	private final CSSUpdate mediaFeatureUpdate;
+	private final CSSOverflowBlock mediaFeatureOverflowBlock;
+	private final CSSOverflowInline mediaFeatureOverflowInline;
+	private final CSSColorGamut mediaFeatureColorGamut;
+	private final CSSDisplayMode mediaFeatureDisplayMode;
+	private final CSSInvertedColors mediaFeatureInvertedColors;
+	private final CSSPointer mediaFeaturePointer;
+	private final CSSHover mediaFeatureHover;
+	private final CSSLightLevel mediaFeatureLightLevel;
+	private final CSSScripting mediaFeatureScripting;
 
 	private CSSToken(TokenType tokenType) {
 		
@@ -519,6 +659,23 @@ public enum CSSToken implements IToken {
 		this.foreground = null;
 		this.background = null;
 		this.filter = null;
+
+		this.mediaType = null;
+		this.mediaFeature = null;
+		this.mediaFeatureRange = null;
+		this.mediaFeatureLogicalOperator = null;
+		this.mediaFeatureOrientation = null;
+		this.mediaFeatureScan = null;
+		this.mediaFeatureUpdate = null;
+		this.mediaFeatureOverflowBlock = null;
+		this.mediaFeatureOverflowInline= null;
+		this.mediaFeatureColorGamut = null;
+		this.mediaFeatureDisplayMode = null;
+		this.mediaFeatureInvertedColors = null;
+		this.mediaFeaturePointer = null;
+		this.mediaFeatureHover = null;
+		this.mediaFeatureLightLevel = null;
+		this.mediaFeatureScripting = null;
 	}
 	
 	private CSSToken(char character) {
@@ -550,6 +707,23 @@ public enum CSSToken implements IToken {
 		this.foreground = null;
 		this.background = null;
 		this.filter = null;
+
+		this.mediaType = null;
+		this.mediaFeature = null;
+		this.mediaFeatureRange = null;
+		this.mediaFeatureLogicalOperator = null;
+		this.mediaFeatureOrientation = null;
+		this.mediaFeatureScan = null;
+		this.mediaFeatureUpdate = null;
+		this.mediaFeatureOverflowBlock = null;
+		this.mediaFeatureOverflowInline= null;
+		this.mediaFeatureColorGamut = null;
+		this.mediaFeatureDisplayMode = null;
+		this.mediaFeatureInvertedColors = null;
+		this.mediaFeaturePointer = null;
+		this.mediaFeatureHover = null;
+		this.mediaFeatureLightLevel = null;
+		this.mediaFeatureScripting = null;
 	}
 
 	private CSSToken(char fromCharacter, char toCharacter) {
@@ -585,6 +759,23 @@ public enum CSSToken implements IToken {
 		this.foreground = null;
 		this.background = null;
 		this.filter = null;
+
+		this.mediaType = null;
+		this.mediaFeature = null;
+		this.mediaFeatureRange = null;
+		this.mediaFeatureLogicalOperator = null;
+		this.mediaFeatureOrientation = null;
+		this.mediaFeatureScan = null;
+		this.mediaFeatureUpdate = null;
+		this.mediaFeatureOverflowBlock = null;
+		this.mediaFeatureOverflowInline= null;
+		this.mediaFeatureColorGamut = null;
+		this.mediaFeatureDisplayMode = null;
+		this.mediaFeatureInvertedColors = null;
+		this.mediaFeaturePointer = null;
+		this.mediaFeatureHover = null;
+		this.mediaFeatureLightLevel = null;
+		this.mediaFeatureScripting = null;
 	}
 	
 
@@ -627,6 +818,23 @@ public enum CSSToken implements IToken {
 		this.foreground = null;
 		this.background = null;
 		this.filter = null;
+
+		this.mediaType = null;
+		this.mediaFeature = null;
+		this.mediaFeatureRange = null;
+		this.mediaFeatureLogicalOperator = null;
+		this.mediaFeatureOrientation = null;
+		this.mediaFeatureScan = null;
+		this.mediaFeatureUpdate = null;
+		this.mediaFeatureOverflowBlock = null;
+		this.mediaFeatureOverflowInline= null;
+		this.mediaFeatureColorGamut = null;
+		this.mediaFeatureDisplayMode = null;
+		this.mediaFeatureInvertedColors = null;
+		this.mediaFeaturePointer = null;
+		this.mediaFeatureHover = null;
+		this.mediaFeatureLightLevel = null;
+		this.mediaFeatureScripting = null;
 	}
 
 	private CSSToken(
@@ -639,7 +847,26 @@ public enum CSSToken implements IToken {
 
 			CSSFontSize fontSize, CSSFontWeight fontWeight,
 			CSSColor color, CSSForeground foreground, CSSBackgroundColor background,
-			CSSFilter filter) {
+			CSSFilter filter,
+
+			CSSMediaType mediaType,
+			CSSMediaFeature mediaFeature,
+			CSSRange mediaFeatureRange,
+			CSSLogicalOperator mediaFeatureLogicalOperator,
+			CSSOrientation mediaFeatureOrientation,
+			CSSScan mediaFeatureScan,
+			CSSUpdate mediaFeatureUpdate,
+			CSSOverflowBlock mediaFeatureOverflowBlock,
+			CSSOverflowInline mediaFeatureOverflowInline,
+			CSSColorGamut mediaFeatureColorGamut,
+			CSSDisplayMode mediaFeatureDisplayMode,
+			CSSInvertedColors mediaFeatureInvertedColors,
+			CSSPointer mediaFeaturePointer,
+			CSSHover mediaFeatureHover,
+			CSSLightLevel mediaFeatureLightLevel,
+			CSSScripting mediaFeatureScripting
+
+			) {
 		
 		this.tokenType = TokenType.CI_LITERAL;
 		this.character = 0;
@@ -669,14 +896,35 @@ public enum CSSToken implements IToken {
 		this.foreground = foreground;
 		this.background = background;
 		this.filter = filter;
+
+		this.mediaType = mediaType;
+		this.mediaFeature = mediaFeature;
+		this.mediaFeatureRange = mediaFeatureRange;
+		this.mediaFeatureLogicalOperator = mediaFeatureLogicalOperator;
+		this.mediaFeatureOrientation = mediaFeatureOrientation;
+		this.mediaFeatureScan = mediaFeatureScan;
+		this.mediaFeatureUpdate = mediaFeatureUpdate;
+		this.mediaFeatureOverflowBlock = mediaFeatureOverflowBlock;
+		this.mediaFeatureOverflowInline= mediaFeatureOverflowInline;
+		this.mediaFeatureColorGamut = mediaFeatureColorGamut;
+		this.mediaFeatureDisplayMode = mediaFeatureDisplayMode;
+		this.mediaFeatureInvertedColors = mediaFeatureInvertedColors;
+		this.mediaFeaturePointer = mediaFeaturePointer;
+		this.mediaFeatureHover = mediaFeatureHover;
+		this.mediaFeatureLightLevel = mediaFeatureLightLevel;
+		this.mediaFeatureScripting = mediaFeatureScripting;
 	}
 
 	private CSSToken(CSStyle element) {
-		this(element.getName(), element, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+		this(element.getName(), element, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(String literal) {
-		this(literal, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+		this(literal, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(String fromLiteral, String toLiteral) {
@@ -708,90 +956,273 @@ public enum CSSToken implements IToken {
 		this.foreground = null;
 		this.background = null;
 		this.filter = null;
+
+		this.mediaType = null;
+		this.mediaFeature = null;
+		this.mediaFeatureRange = null;
+		this.mediaFeatureLogicalOperator = null;
+		this.mediaFeatureOrientation = null;
+		this.mediaFeatureScan = null;
+		this.mediaFeatureUpdate = null;
+		this.mediaFeatureOverflowBlock = null;
+		this.mediaFeatureOverflowInline= null;
+		this.mediaFeatureColorGamut = null;
+		this.mediaFeatureDisplayMode = null;
+		this.mediaFeatureInvertedColors = null;
+		this.mediaFeaturePointer = null;
+		this.mediaFeatureHover = null;
+		this.mediaFeatureLightLevel = null;
+		this.mediaFeatureScripting = null;
 	}
 
 	private CSSToken(String literal, CSSUnit unit) {
-		this(literal, null, unit, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+		this(literal, null, unit, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(String literal, CSSRadix radix) {
-		this(literal, null, null, radix, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+		this(literal, null, null, radix, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSDisplay display) {
-		this(display.getName(), null, null, null, display, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+		this(display.getName(), null, null, null, display, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSPosition position) {
-		this(position.getName(), null, null, null, null, position, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+		this(position.getName(), null, null, null, null, position, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSFloat _float) {
-		this(_float.getName(), null, null, null, null, null, _float, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+		this(_float.getName(), null, null, null, null, null, _float, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSClear clear) {
-		this(clear.getName(), null, null, null, null, null, null, clear, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+		this(clear.getName(), null, null, null, null, null, null, clear, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSTextAlign textAlign) {
-		this(textAlign.getName(), null, null, null, null, null, null, null, textAlign, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+		this(textAlign.getName(), null, null, null, null, null, null, null, textAlign, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSOverflow overflow) {
-		this(overflow.getName(), null, null, null, null, null, null, null, null, overflow, null, null, null, null, null, null, null, null, null, null, null, null, null);
+		this(overflow.getName(), null, null, null, null, null, null, null, null, overflow, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSTextDecoration textDecoration) {
-		this(textDecoration.getName(), null, null, null, null, null, null, null, null, null, textDecoration, null, null, null, null, null, null, null, null, null, null, null, null);
+		this(textDecoration.getName(), null, null, null, null, null, null, null, null, null, textDecoration, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSPositionComponent positionComponent) {
-		this(positionComponent.getName(), null, null, null, null, null, null, null, null, null, null, positionComponent, null, null, null, null, null, null, null, null, null, null, null);
+		this(positionComponent.getName(), null, null, null, null, null, null, null, null, null, null, positionComponent, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSBackgroundImage bgImage) {
-		this(bgImage.getName(), null, null, null, null, null, null, null, null, null, null, null, bgImage, null, null, null, null, null, null, null, null, null, null);
+		this(bgImage.getName(), null, null, null, null, null, null, null, null, null, null, null, bgImage, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSBackgroundSize bgSize) {
-		this(bgSize.getName(), null, null, null, null, null, null, null, null, null, null, null, null, bgSize, null, null, null, null, null, null, null, null, null);
+		this(bgSize.getName(), null, null, null, null, null, null, null, null, null, null, null, null, bgSize, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSBackgroundRepeat bgRepeat) {
-		this(bgRepeat.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, bgRepeat, null, null, null, null, null, null, null, null);
+		this(bgRepeat.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, bgRepeat, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSBackgroundAttachment bgAttachment) {
-		this(bgAttachment.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, bgAttachment, null, null, null, null, null, null, null);
+		this(bgAttachment.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, bgAttachment, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSBackgroundOrigin bgOrigin) {
-		this(bgOrigin.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, bgOrigin, null, null, null, null, null, null);
+		this(bgOrigin.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, bgOrigin, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSFontSize fontSize) {
-		this(fontSize.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, fontSize, null, null, null, null, null);
+		this(fontSize.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, fontSize, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSFontWeight fontWeight) {
-		this(fontWeight.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, fontWeight, null, null, null, null);
+		this(fontWeight.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, fontWeight, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSColor color) {
-		this(color.getLowerCaseName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, color, null, null, null);
+		this(color.getLowerCaseName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, color, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSForeground foreground) {
-		this(foreground.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, foreground, null, null);
+		this(foreground.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, foreground, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSBackgroundColor background) {
-		this(background.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, background, null);
+		this(background.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, background, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 	private CSSToken(CSSFilter filter) {
-		this(filter.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, filter);
+		this(filter.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, filter,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+	}
+
+	private CSSToken(CSSMediaType mediaType) {
+		this(mediaType.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				mediaType, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+	}
+
+	private CSSToken(CSSMediaFeature mediaFeature) {
+		this(mediaFeature.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, mediaFeature, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+		
+		if (mediaFeature.getType().isRangeType()) {
+			throw new IllegalArgumentException("must specify range");
+		}
+	}
+
+	private static String getName(CSSMediaFeature mediaFeature, CSSRange range) {
+		final String name;
+		
+		switch (range) {
+		case NONE:
+			name = mediaFeature.getName();
+			break;
+			
+		case MIN:
+			name = "min-" + mediaFeature.getName();
+			break;
+			
+		case MAX:
+			name = "max" + mediaFeature.getName();
+			break;
+			
+		default:
+			throw new IllegalArgumentException("Unknown range " + range);
+		}
+
+		return name;
+	}
+	
+	private CSSToken(CSSMediaFeature mediaFeature, CSSRange range) {
+		this(getName(mediaFeature, range), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, mediaFeature, range, null, null, null, null, null, null, null, null, null, null, null, null, null);
+	}
+
+	private CSSToken(CSSLogicalOperator mediaFeatureLogicalOperator) {
+		this(mediaFeatureLogicalOperator.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, mediaFeatureLogicalOperator, null, null, null, null, null, null, null, null, null, null, null, null);
+	}
+	
+	
+	private CSSToken(CSSOrientation mediaFeatureOrientation) {
+		this(mediaFeatureOrientation.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, mediaFeatureOrientation, null, null, null, null, null, null, null, null, null, null, null);
+	}
+
+	private CSSToken(CSSScan mediaFeatureScan) {
+		this(mediaFeatureScan.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, mediaFeatureScan, null, null, null, null, null, null, null, null, null, null);
+	}
+
+	private CSSToken(CSSUpdate mediaFeatureUpdate) {
+		this(mediaFeatureUpdate.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, mediaFeatureUpdate, null, null, null, null, null, null, null, null, null);
+	}
+
+	private CSSToken(CSSOverflowBlock mediaFeatureOverflowBlock) {
+		this(mediaFeatureOverflowBlock.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, mediaFeatureOverflowBlock, null, null, null, null, null, null, null, null);
+	}
+
+	private CSSToken(CSSOverflowInline mediaFeatureOverflowInline) {
+		this(mediaFeatureOverflowInline.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, mediaFeatureOverflowInline, null, null, null, null, null, null, null);
+	}
+
+	private CSSToken(CSSColorGamut mediaFeatureColorGamut) {
+		this(mediaFeatureColorGamut.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, mediaFeatureColorGamut, null, null, null, null, null, null);
+	}
+
+	private CSSToken(CSSDisplayMode mediaFeatureDisplayMode) {
+		this(mediaFeatureDisplayMode.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, mediaFeatureDisplayMode, null, null, null, null, null);
+	}
+
+	private CSSToken(CSSInvertedColors mediaFeatureInvertedColors) {
+		this(mediaFeatureInvertedColors.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, mediaFeatureInvertedColors, null, null, null, null);
+	}
+
+	private CSSToken(CSSPointer mediaFeaturePointer) {
+		this(mediaFeaturePointer.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, mediaFeaturePointer, null, null, null);
+	}
+
+	private CSSToken(CSSHover mediaFeatureHover) {
+		this(mediaFeatureHover.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, mediaFeatureHover, null, null);
+	}
+
+	private CSSToken(CSSLightLevel mediaFeatureLightLevel) {
+		this(mediaFeatureLightLevel.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, mediaFeatureLightLevel, null);
+	}
+
+	private CSSToken(CSSScripting mediaFeatureScripting) {
+		this(mediaFeatureScripting.getName(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+				
+				null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, mediaFeatureScripting);
 	}
 
 	private CSSToken(CharType charType) {
@@ -823,6 +1254,23 @@ public enum CSSToken implements IToken {
 		this.foreground = null;
 		this.background = null;
 		this.filter = null;
+
+		this.mediaType = null;
+		this.mediaFeature = null;
+		this.mediaFeatureRange = null;
+		this.mediaFeatureLogicalOperator = null;
+		this.mediaFeatureOrientation = null;
+		this.mediaFeatureScan = null;
+		this.mediaFeatureUpdate = null;
+		this.mediaFeatureOverflowBlock = null;
+		this.mediaFeatureOverflowInline= null;
+		this.mediaFeatureColorGamut = null;
+		this.mediaFeatureDisplayMode = null;
+		this.mediaFeatureInvertedColors = null;
+		this.mediaFeaturePointer = null;
+		this.mediaFeatureHover = null;
+		this.mediaFeatureLightLevel = null;
+		this.mediaFeatureScripting = null;
 	}
 
 	@Override
@@ -947,5 +1395,73 @@ public enum CSSToken implements IToken {
 
 	public CSSFilter getFilter() {
 		return filter;
+	}
+
+	public CSSRadix getRadix() {
+		return radix;
+	}
+
+	public CSSMediaType getMediaType() {
+		return mediaType;
+	}
+
+	public CSSMediaFeature getMediaFeature() {
+		return mediaFeature;
+	}
+
+	public CSSRange getMediaFeatureRange() {
+		return mediaFeatureRange;
+	}
+
+	public CSSLogicalOperator getMediaFeatureLogicalOperator() {
+		return mediaFeatureLogicalOperator;
+	}
+
+	public CSSOrientation getMediaFeatureOrientation() {
+		return mediaFeatureOrientation;
+	}
+
+	public CSSScan getMediaFeatureScan() {
+		return mediaFeatureScan;
+	}
+
+	public CSSUpdate getMediaFeatureUpdate() {
+		return mediaFeatureUpdate;
+	}
+
+	public CSSOverflowBlock getMediaFeatureOverflowBlock() {
+		return mediaFeatureOverflowBlock;
+	}
+
+	public CSSOverflowInline getMediaFeatureOverflowInline() {
+		return mediaFeatureOverflowInline;
+	}
+
+	public CSSColorGamut getMediaFeatureColorGamut() {
+		return mediaFeatureColorGamut;
+	}
+
+	public CSSDisplayMode getMediaFeatureDisplayMode() {
+		return mediaFeatureDisplayMode;
+	}
+
+	public CSSInvertedColors getMediaFeatureInvertedColors() {
+		return mediaFeatureInvertedColors;
+	}
+
+	public CSSPointer getMediaFeaturePointer() {
+		return mediaFeaturePointer;
+	}
+
+	public CSSHover getMediaFeatureHover() {
+		return mediaFeatureHover;
+	}
+
+	public CSSLightLevel getMediaFeatureLightLevel() {
+		return mediaFeatureLightLevel;
+	}
+
+	public CSSScripting getMediaFeatureScripting() {
+		return mediaFeatureScripting;
 	}
 }

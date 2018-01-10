@@ -18,7 +18,7 @@ import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 
 public class LongBrowserDocumentLoader
-		extends BaseBrowserDocumentLoader<Integer, Integer, LongHTMLDocument, Integer, LongCSSDocument>
+		extends BaseBrowserDocumentLoader<Integer, Integer, Void, LongHTMLDocument, Integer, LongCSSDocument>
 		implements IBrowserDocumentLoader<Integer, Integer, Integer> {
 
 	public LongBrowserDocumentLoader(IDelayedRendererFactory rendererFactory,  IBufferRendererFactory bufferRendererFactory, ITextExtent textExtent, DebugListeners debugListeners) {
@@ -49,7 +49,7 @@ public class LongBrowserDocumentLoader
 	}
 
 	@Override
-	protected HTMLParser<Integer, LongCSSDocument> createParser(LongHTMLDocument document,
+	protected HTMLParser<Integer, LongCSSDocument, Void> createParser(LongHTMLDocument document,
 			IHTMLParserListener<Integer> parserListener, LoadStream stream, CSSContext<Integer> cssContext) {
 		throw new UnsupportedOperationException("TODO");
 	}

@@ -3,33 +3,34 @@ package com.test.web.document.html.oo;
 import com.test.web.css.common.enums.CSSRuleType;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.oo.BaseOOCSSDocument;
+import com.test.web.css.oo.OOCSSBase;
 import com.test.web.css.oo.OOCSSRule;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.html.IHTMLStyleParserListener;
 
 public class OOStyleDocument extends BaseOOCSSDocument
-	implements IHTMLStyleParserListener<OOTagElement> {
+	implements IHTMLStyleParserListener<OOTagElement, OOCSSBase> {
 
 	public OOStyleDocument() {
 	}
 
 	@Override
-	public Void onBlockStart(CSSRuleType ruleType) {
+	public OOCSSBase onBlockStart(CSSRuleType ruleType) {
 		throw new UnsupportedOperationException("Not required for styles elements");
 	}
 	
 	@Override
-	public void onStylePropertyText(Void context, Tokenizer tokenizer, long propertyStartPos, long propertyEndPos) {
+	public void onStylePropertyText(OOCSSBase context, Tokenizer tokenizer, long propertyStartPos, long propertyEndPos) {
 		throw new UnsupportedOperationException("Not required for styles elements");
 	}
 
 	@Override
-	public void onEntityMap(Void context, CSSTarget entity, String id) {
+	public void onEntityMap(OOCSSBase context, CSSTarget entity, String id) {
 		throw new UnsupportedOperationException("Not required for styles elements");
 	}
 
 	@Override
-	public void onBlockEnd(Void context, Tokenizer tokenizer, long blockStartPos, long blockEndPos) {
+	public void onBlockEnd(OOCSSBase context, Tokenizer tokenizer, long blockStartPos, long blockEndPos) {
 		throw new UnsupportedOperationException("Not required for styles elements");
 	}
 

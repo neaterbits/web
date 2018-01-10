@@ -14,26 +14,43 @@ import com.test.web.css.common.enums.CSSBackgroundRepeat;
 import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSClear;
 import com.test.web.css.common.enums.CSSColor;
+import com.test.web.css.common.enums.CSSColorGamut;
 import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.css.common.enums.CSSDisplayMode;
 import com.test.web.css.common.enums.CSSFilter;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSForeground;
 import com.test.web.css.common.enums.CSSGradientDirectionType;
+import com.test.web.css.common.enums.CSSHover;
+import com.test.web.css.common.enums.CSSInvertedColors;
 import com.test.web.css.common.enums.CSSJustify;
+import com.test.web.css.common.enums.CSSLightLevel;
+import com.test.web.css.common.enums.CSSLogicalOperator;
 import com.test.web.css.common.enums.CSSMax;
+import com.test.web.css.common.enums.CSSMediaType;
 import com.test.web.css.common.enums.CSSMin;
+import com.test.web.css.common.enums.CSSOrientation;
 import com.test.web.css.common.enums.CSSOverflow;
+import com.test.web.css.common.enums.CSSOverflowBlock;
+import com.test.web.css.common.enums.CSSOverflowInline;
+import com.test.web.css.common.enums.CSSPointer;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSPositionComponent;
 import com.test.web.css.common.enums.CSSPriority;
+import com.test.web.css.common.enums.CSSRange;
+import com.test.web.css.common.enums.CSSResolutionUnit;
+import com.test.web.css.common.enums.CSSScan;
+import com.test.web.css.common.enums.CSSScripting;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.css.common.enums.CSSUpdate;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.css.CSSParserListener;
+import com.test.web.types.Ratio;
 
 // Base class for long-encoded CSS documents
 // This class is inherited from for both CSS documents and for CSS inline styles
@@ -702,6 +719,202 @@ public abstract class BaseLongCSSDocument
 	
 	@Override
 	public void onFontWeight(Void context, int fontWeightNumber, CSSFontWeight fontWeightEnum) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+
+	@Override
+	public Void onImportRuleStart(String file, String url) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void onImportRuleEnd(Void context) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Void onMediaQueryStart(Void context, boolean negated, CSSMediaType mediaType) {
+		// TODO Auto-generated method stub
+		
+		return null;
+	}
+	
+
+	@Override
+	public void onMediaFeaturesLogicalOperator(Void context, int level, CSSLogicalOperator logicalOperator) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaQueryEnd(Void context) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Void onMediaFeaturesStart(Void context, int level, boolean negated) {
+		// TODO Auto-generated method stub
+		
+		return null;
+	}
+
+	@Override
+	public void onMediaFeaturesEnd(Void context, int level) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureWidth(Void context, int level, int value, CSSUnit unit, CSSRange range) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureHeight(Void context, int level, int value, CSSUnit unit, CSSRange range) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureAspectRatio(Void context, int level, Ratio value, CSSRange range) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureOrientation(Void context, int level, CSSOrientation orientation) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureResolution(Void context, int level, int value, CSSResolutionUnit unit, CSSRange range) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureScan(Void context, int level, CSSScan value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureGrid(Void context, int level, boolean value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureUpdate(Void context, int level, CSSUpdate value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureOverflowBlock(Void context, int level, CSSOverflowBlock value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureOverflowInline(Void context, int level, CSSOverflowInline value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureColor(Void context, int level, int value, CSSRange range) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureColorGamut(Void context, int level, CSSColorGamut value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureColorIndex(Void context, int level, int value, CSSRange range) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureDisplayMode(Void context, int level, CSSDisplayMode value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureMonochrome(Void context, int level, int value, CSSRange range) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureInvertedColors(Void context, int level, CSSInvertedColors value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeaturePointer(Void context, int level, CSSPointer value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureHover(Void context, int level, CSSHover value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureAnyPointer(Void context, int level, CSSPointer value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureAnyHover(Void context, int level, CSSHover value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureLightLevel(Void context, int level, CSSLightLevel value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureScripting(Void context, int level, CSSScripting value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureDeviceWidth(Void context, int level, int value, CSSUnit unit, CSSRange range) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureDeviceHeight(Void context, int level, int value, CSSUnit unit, CSSRange range) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaFeatureDeviceAspectRatio(Void context, int level, Ratio value, CSSRange range) {
 		// TODO Auto-generated method stub
 		
 	}

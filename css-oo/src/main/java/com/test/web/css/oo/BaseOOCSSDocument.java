@@ -12,32 +12,50 @@ import com.test.web.css.common.enums.CSSBackgroundRepeat;
 import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSClear;
 import com.test.web.css.common.enums.CSSColor;
+import com.test.web.css.common.enums.CSSColorGamut;
 import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.css.common.enums.CSSDisplayMode;
 import com.test.web.css.common.enums.CSSFilter;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSForeground;
 import com.test.web.css.common.enums.CSSGradientDirectionType;
+import com.test.web.css.common.enums.CSSHover;
+import com.test.web.css.common.enums.CSSInvertedColors;
 import com.test.web.css.common.enums.CSSJustify;
+import com.test.web.css.common.enums.CSSLightLevel;
+import com.test.web.css.common.enums.CSSLogicalOperator;
 import com.test.web.css.common.enums.CSSMax;
+import com.test.web.css.common.enums.CSSMediaType;
 import com.test.web.css.common.enums.CSSMin;
+import com.test.web.css.common.enums.CSSOrientation;
 import com.test.web.css.common.enums.CSSOverflow;
+import com.test.web.css.common.enums.CSSOverflowBlock;
+import com.test.web.css.common.enums.CSSOverflowInline;
+import com.test.web.css.common.enums.CSSPointer;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSPositionComponent;
 import com.test.web.css.common.enums.CSSPriority;
+import com.test.web.css.common.enums.CSSRange;
+import com.test.web.css.common.enums.CSSResolutionUnit;
 import com.test.web.css.common.enums.CSSRuleType;
+import com.test.web.css.common.enums.CSSScan;
+import com.test.web.css.common.enums.CSSScripting;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.css.common.enums.CSSUpdate;
 import com.test.web.css.common.enums.CSStyle;
+import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.css.CSSParserListener;
+import com.test.web.types.Ratio;
 
 // Base class for long-encoded CSS documents
 // This class is inherited from for both CSS documents and for CSS inline styles
 
 public abstract class BaseOOCSSDocument 
-		implements CSSParserListener<Void>, ICSSDocumentStyles<OOCSSRule> {
+		implements CSSParserListener<OOCSSBase>, ICSSDocumentStyles<OOCSSRule> {
 
 	private OOCSSRule curParseElement;
 
@@ -536,28 +554,28 @@ public abstract class BaseOOCSSDocument
 
 
 	@Override
-	public void onLeft(Void context, int left, CSSUnit unit) {
+	public void onLeft(OOCSSBase context, int left, CSSUnit unit) {
 		stylesRef().addLeft(left, unit);
 	}
 
 	@Override
-	public void onTop(Void context, int top, CSSUnit unit) {
+	public void onTop(OOCSSBase context, int top, CSSUnit unit) {
 		stylesRef().addTop(top, unit);
 	}
 
 	@Override
-	public void onWidth(Void context, int width, CSSUnit unit) {
+	public void onWidth(OOCSSBase context, int width, CSSUnit unit) {
 		stylesRef().addWidth(width, unit);
 	}
 
 	@Override
-	public void onHeight(Void context, int height, CSSUnit unit) {
+	public void onHeight(OOCSSBase context, int height, CSSUnit unit) {
 		stylesRef().addHeight(height, unit);
 	}
 
 	
 	@Override
-	public void onMargin(Void context,
+	public void onMargin(OOCSSBase context,
 			int top, CSSUnit topUnit, CSSJustify topType,
 			int right, CSSUnit rightUnit, CSSJustify rightType,
 			int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
@@ -567,7 +585,7 @@ public abstract class BaseOOCSSDocument
 	}
 
 	@Override
-	public void onPadding(Void context,
+	public void onPadding(OOCSSBase context,
 			int top, CSSUnit topUnit, CSSJustify topType,
 			int right, CSSUnit rightUnit, CSSJustify rightType,
 			int bottom, CSSUnit bottomUnit, CSSJustify bottomType,
@@ -577,182 +595,182 @@ public abstract class BaseOOCSSDocument
 	}
 	
 	@Override
-	public void onColor(Void context, int r, int g, int b, int a) {
+	public void onColor(OOCSSBase context, int r, int g, int b, int a) {
 		stylesRef().setColorRGB(r, g, b, a);
 	}
 
 	@Override
-	public void onColor(Void context, CSSColor color) {
+	public void onColor(OOCSSBase context, CSSColor color) {
 		stylesRef().setColorCSS(color);
 	}
 	
 	@Override
-	public void onColor(Void context, CSSForeground foreground) {
+	public void onColor(OOCSSBase context, CSSForeground foreground) {
 		stylesRef().setColorType(foreground);
 	}
 	
 	@Override
-	public void onBgImageURL(Void context, int bgLayer, String url) {
+	public void onBgImageURL(OOCSSBase context, int bgLayer, String url) {
 		stylesRef().getOrAddBgLayer(bgLayer).setImageURL(url);
 	}
 
 	@Override
-	public void onBgImage(Void context, int bgLayer, CSSBackgroundImage image) {
+	public void onBgImage(OOCSSBase context, int bgLayer, CSSBackgroundImage image) {
 		stylesRef().getOrAddBgLayer(bgLayer).setImage(image);
 	}
 
 	@Override
-	public void onBgGradient(Void context, int bgLayer, int angle, CSSGradientColorStop[] colorStops) {
+	public void onBgGradient(OOCSSBase context, int bgLayer, int angle, CSSGradientColorStop[] colorStops) {
 		stylesRef().getOrAddBgLayer(bgLayer).setGradient(angle, colorStops);
 	}
 
 	@Override
-	public void onBgGradient(Void context, int bgLayer, CSSPositionComponent pos1, CSSPositionComponent pos2, CSSGradientColorStop[] colorStops) {
+	public void onBgGradient(OOCSSBase context, int bgLayer, CSSPositionComponent pos1, CSSPositionComponent pos2, CSSGradientColorStop[] colorStops) {
 		stylesRef().getOrAddBgLayer(bgLayer).setGradient(pos1, pos2, colorStops);
 	}
 
 	@Override
-	public void onBgGradient(Void context, int bgLayer, CSSGradientColorStop[] colorStops) {
+	public void onBgGradient(OOCSSBase context, int bgLayer, CSSGradientColorStop[] colorStops) {
 		stylesRef().getOrAddBgLayer(bgLayer).setGradient(colorStops);
 	}
 
 	@Override
-	public void onBgPosition(Void context, int bgLayer, int left, CSSUnit leftUnit, int top, CSSUnit topUnit) {
+	public void onBgPosition(OOCSSBase context, int bgLayer, int left, CSSUnit leftUnit, int top, CSSUnit topUnit) {
 		stylesRef().getOrAddBgLayer(bgLayer).setPosition(left, leftUnit, top, topUnit);
 	}
 
 	@Override
-	public void onBgPosition(Void context, int bgLayer, CSSBackgroundPosition position) {
+	public void onBgPosition(OOCSSBase context, int bgLayer, CSSBackgroundPosition position) {
 		stylesRef().getOrAddBgLayer(bgLayer).setPosition(position);
 	}
 
 	@Override
-	public void onBgSize(Void context, int bgLayer, int width, CSSUnit widthUnit, int height, CSSUnit heightUnit) {
+	public void onBgSize(OOCSSBase context, int bgLayer, int width, CSSUnit widthUnit, int height, CSSUnit heightUnit) {
 		stylesRef().getOrAddBgLayer(bgLayer).setSize(width, widthUnit, height, heightUnit);
 	}
 
 	@Override
-	public void onBgSize(Void context, int bgLayer, CSSBackgroundSize size) {
+	public void onBgSize(OOCSSBase context, int bgLayer, CSSBackgroundSize size) {
 		stylesRef().getOrAddBgLayer(bgLayer).setSize(size);
 	}
 
 	@Override
-	public void onBgRepeat(Void context, int bgLayer, CSSBackgroundRepeat repeat) {
+	public void onBgRepeat(OOCSSBase context, int bgLayer, CSSBackgroundRepeat repeat) {
 		stylesRef().getOrAddBgLayer(bgLayer).setRepeat(repeat);
 	}
 
 	@Override
-	public void onBgAttachment(Void context, int bgLayer, CSSBackgroundAttachment attachment) {
+	public void onBgAttachment(OOCSSBase context, int bgLayer, CSSBackgroundAttachment attachment) {
 		stylesRef().getOrAddBgLayer(bgLayer).setAttachment(attachment);
 	}
 
 	@Override
-	public void onBgOrigin(Void context, int bgLayer, CSSBackgroundOrigin origin) {
+	public void onBgOrigin(OOCSSBase context, int bgLayer, CSSBackgroundOrigin origin) {
 		stylesRef().getOrAddBgLayer(bgLayer).setOrigin(origin);
 	}
 
 	@Override
-	public void onBgClip(Void context, int bgLayer, CSSBackgroundOrigin clip) {
+	public void onBgClip(OOCSSBase context, int bgLayer, CSSBackgroundOrigin clip) {
 		stylesRef().getOrAddBgLayer(bgLayer).setClip(clip);
 	}
 
 	@Override
-	public void onBgColor(Void context, int r, int g, int b, int a) {
+	public void onBgColor(OOCSSBase context, int r, int g, int b, int a) {
 		stylesRef().setBgColorRGB(r, g, b, a);
 	}
 
 	@Override
-	public void onBgColor(Void context, CSSColor color) {
+	public void onBgColor(OOCSSBase context, CSSColor color) {
 		stylesRef().setBgColorCSS(color);
 	}
 
 	@Override
-	public void onBgColor(Void context, CSSBackgroundColor background) {
+	public void onBgColor(OOCSSBase context, CSSBackgroundColor background) {
 		stylesRef().setBgColorType(background);
 	}
 
 	@Override
-	public void onTextAlign(Void context, CSSTextAlign textAlign) {
+	public void onTextAlign(OOCSSBase context, CSSTextAlign textAlign) {
 		stylesRef().setTextAlign(textAlign);
 		
 	}
 	@Override
-	public void onDisplay(Void context, CSSDisplay display) {
+	public void onDisplay(OOCSSBase context, CSSDisplay display) {
 		stylesRef().setDisplay(display);
 	}
 
 	@Override
-	public void onPosition(Void context, CSSPosition position) {
+	public void onPosition(OOCSSBase context, CSSPosition position) {
 		stylesRef().setPosition(position);
 	}
 
 	@Override
-	public void onFloat(Void context, CSSFloat _float) {
+	public void onFloat(OOCSSBase context, CSSFloat _float) {
 		stylesRef().setFloat(_float);
 	}
 
 	@Override
-	public void onClear(Void context, CSSClear clear) {
+	public void onClear(OOCSSBase context, CSSClear clear) {
 		stylesRef().setClear(clear);
 	}
 
 	@Override
-	public void onOverflow(Void context, CSSOverflow overflow) {
+	public void onOverflow(OOCSSBase context, CSSOverflow overflow) {
 		stylesRef().setOverflow(overflow);
 	}
 
 	@Override
-	public void onTextDecoration(Void context, CSSTextDecoration textDecoration) {
+	public void onTextDecoration(OOCSSBase context, CSSTextDecoration textDecoration) {
 		stylesRef().setTextDecoration(textDecoration);
 	}
 
 	@Override
-	public void onMaxWidth(Void context, int width, CSSUnit unit, CSSMax type) {
+	public void onMaxWidth(OOCSSBase context, int width, CSSUnit unit, CSSMax type) {
 		stylesRef().setMaxWidth(width, unit, type);
 	}
 
 	@Override
-	public void onMaxHeight(Void context, int height, CSSUnit unit, CSSMax type) {
+	public void onMaxHeight(OOCSSBase context, int height, CSSUnit unit, CSSMax type) {
 		stylesRef().setMaxHeight(height, unit, type);
 	}
 
 	@Override
-	public void onMinWidth(Void context, int width, CSSUnit unit, CSSMin type) {
+	public void onMinWidth(OOCSSBase context, int width, CSSUnit unit, CSSMin type) {
 		stylesRef().setMinWidth(width, unit, type);
 	}
 
 	@Override
-	public void onMinHeight(Void context, int height, CSSUnit unit, CSSMin type) {
+	public void onMinHeight(OOCSSBase context, int height, CSSUnit unit, CSSMin type) {
 		stylesRef().setMinHeight(height, unit, type);
 	}
 	
 	@Override
-	public void onFilter(Void context, CSSFilter filter) {
+	public void onFilter(OOCSSBase context, CSSFilter filter) {
 		stylesRef().setFilter(filter);
 	}
 
 	@Override
-	public void onBlur(Void context, int blur) {
+	public void onBlur(OOCSSBase context, int blur) {
 		stylesRef().setBlur(blur);
 	}
 
 	@Override
-	public void onBrightness(Void context, int brightness) {
+	public void onBrightness(OOCSSBase context, int brightness) {
 		stylesRef().setBrightness(brightness);
 	}
 
 	@Override
-	public void onContrast(Void context, int contrast) {
+	public void onContrast(OOCSSBase context, int contrast) {
 		stylesRef().setContrast(contrast);
 	}
 
 	@Override
-	public void onGrayscale(Void context, int grayscale) {
+	public void onGrayscale(OOCSSBase context, int grayscale) {
 		stylesRef().setGrayscale(grayscale);
 	}
 
 	@Override
-	public void onDropShadow(Void context, int dropShadowH, CSSUnit dropShadowHUnit, int dropShadowV,
+	public void onDropShadow(OOCSSBase context, int dropShadowH, CSSUnit dropShadowHUnit, int dropShadowV,
 			CSSUnit dropShadowVUnit, int dropShadowBlur, int dropShadowSpread, int dropShadowR, int dropShadowG,
 			int dropShadowB, int dropShadowA) {
 
@@ -760,50 +778,298 @@ public abstract class BaseOOCSSDocument
 	}
 
 	@Override
-	public void onDropShadow(Void context, int dropShadowH, CSSUnit dropShadowHUnit, int dropShadowV,
+	public void onDropShadow(OOCSSBase context, int dropShadowH, CSSUnit dropShadowHUnit, int dropShadowV,
 			CSSUnit dropShadowVUnit, int dropShadowBlur, int dropShadowSpread, CSSColor dropShadowColor) {
 
 		stylesRef().setDropShadow(dropShadowH, dropShadowHUnit, dropShadowV, dropShadowVUnit, dropShadowBlur, dropShadowSpread, dropShadowColor);
 	}
 
 	@Override
-	public void onHueRotate(Void context, int hueRotate) {
+	public void onHueRotate(OOCSSBase context, int hueRotate) {
 		stylesRef().setHueRotate(hueRotate);
 	}
 
 	@Override
-	public void onInvert(Void context, int invert) {
+	public void onInvert(OOCSSBase context, int invert) {
 		stylesRef().setInvert(invert);
 	}
 
 	@Override
-	public void onOpacity(Void context, int opacity) {
+	public void onOpacity(OOCSSBase context, int opacity) {
 		stylesRef().setOpacity(opacity);
 	}
 
 	@Override
-	public void onSaturate(Void context, int saturate) {
+	public void onSaturate(OOCSSBase context, int saturate) {
 		stylesRef().setSaturate(saturate);
 	}
 
 	@Override
-	public void onSepia(Void context, int sepia) {
+	public void onSepia(OOCSSBase context, int sepia) {
 		stylesRef().setSepia(sepia);
 	}
 
 	@Override
-	public void onUrl(Void context, String url) {
+	public void onUrl(OOCSSBase context, String url) {
 		stylesRef().setUrl(url);
 	}
 
 	@Override
-	public void onFontSize(Void context, int fontSize, CSSUnit fontSizeUnit, CSSFontSize fontSizeEnum) {
+	public void onFontSize(OOCSSBase context, int fontSize, CSSUnit fontSizeUnit, CSSFontSize fontSizeEnum) {
 		stylesRef().setFontSize(fontSize, fontSizeUnit, fontSizeEnum);
 	}
 	
 	@Override
-	public void onFontWeight(Void context, int fontWeightNumber, CSSFontWeight fontWeightEnum) {
+	public void onFontWeight(OOCSSBase context, int fontWeightNumber, CSSFontWeight fontWeightEnum) {
 		stylesRef().setFontWeight(fontWeightNumber, fontWeightEnum);
+	}
+
+	@Override
+	public void onStylePropertyText(OOCSSBase context, Tokenizer tokenizer, long propertyStartPos, long propertyEndPos) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public final OOCSSBase onImportRuleStart(String file, String url) {
+		final OOCSSImportRule importRule = (OOCSSImportRule)allocateCurParseElement(CSSRuleType.IMPORT);
+		
+		importRule.setImportFile(file);
+		importRule.setImportUrl(url);
+		
+		return importRule;
+	}
+
+	@Override
+	public void onImportRuleEnd(OOCSSBase context) {
+		
+	}
+
+	@Override
+	public OOCSSBase onMediaQueryStart(OOCSSBase context, boolean negated, CSSMediaType mediaType) {
+		// Add to calling rule
+		final OOCSSMediaQueryList mediaQueryList = ((OOCSSMediaQueryRule)context).getMediaQueryList();
+
+		return mediaQueryList.addMediaQuery(negated, mediaType);
+	}
+	
+	@Override
+	public void onMediaFeaturesLogicalOperator(OOCSSBase context, int level, CSSLogicalOperator logicalOperator) {
+		((OOCSSMediaQueryOptions)context).setLogicalOperator(logicalOperator);
+	}
+
+	@Override
+	public void onMediaQueryEnd(OOCSSBase context) {
+		
+	}
+
+	@Override
+	public OOCSSBase onMediaFeaturesStart(OOCSSBase context, int level, boolean negated) {
+		
+		final OOCSSBase resultContext;
+		
+		if (level == 0) {
+			// Ignore since already contains list
+			resultContext = context;
+		}
+		else {
+			// sublevel, handle for individual features
+			final OOCSSMediaConditions conditions = new OOCSSMediaConditions(negated);
+			((OOCSSMediaQueryOptions)context).addOption(conditions);
+			
+			resultContext = conditions;
+		}
+		
+		return resultContext;
+	}
+
+	@Override
+	public void onMediaFeaturesEnd(OOCSSBase context, int level) {
+		
+	}
+	
+	// (a : b) and ((c : d) or (e : f)))
+	private OOCSSMediaFeature addFeature(OOCSSBase context) {
+		final OOCSSMediaFeature feature = new OOCSSMediaFeature();
+		
+		((OOCSSMediaQueryOptions)context).addOption(feature);
+		
+		return feature;
+	}
+
+	@Override
+	public void onMediaFeatureWidth(OOCSSBase context, int level, int value, CSSUnit unit, CSSRange range) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+		
+		mediaFeature.setWidth(value, unit, range);
+	}
+
+	@Override
+	public void onMediaFeatureHeight(OOCSSBase context, int level, int value, CSSUnit unit, CSSRange range) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setHeight(value, unit, range);
+	}
+
+	@Override
+	public void onMediaFeatureAspectRatio(OOCSSBase context, int level, Ratio value, CSSRange range) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setAspectRatio(value, range);
+	}
+
+	@Override
+	public void onMediaFeatureOrientation(OOCSSBase context, int level, CSSOrientation orientation) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setOrientation(orientation);
+	}
+
+	@Override
+	public void onMediaFeatureResolution(OOCSSBase context, int level, int value, CSSResolutionUnit unit, CSSRange range) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setResolution(value, unit, range);
+	}
+
+	@Override
+	public void onMediaFeatureScan(OOCSSBase context, int level, CSSScan value) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setScan(value);
+	}
+
+	@Override
+	public void onMediaFeatureGrid(OOCSSBase context, int level, boolean value) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setGrid(value);
+	}
+
+	@Override
+	public void onMediaFeatureUpdate(OOCSSBase context, int level, CSSUpdate value) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setUpdate(value);
+	}
+
+	@Override
+	public void onMediaFeatureOverflowBlock(OOCSSBase context, int level, CSSOverflowBlock value) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setOverflowBlock(value);
+	}
+
+	@Override
+	public void onMediaFeatureOverflowInline(OOCSSBase context, int level, CSSOverflowInline value) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setOverflowInline(value);
+	}
+
+	@Override
+	public void onMediaFeatureColor(OOCSSBase context, int level, int value, CSSRange range) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setColor(value, range);
+	}
+
+	@Override
+	public void onMediaFeatureColorGamut(OOCSSBase context, int level, CSSColorGamut value) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setColorGamut(value);
+	}
+
+	@Override
+	public void onMediaFeatureColorIndex(OOCSSBase context, int level, int value, CSSRange range) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setColorIndex(value, range);
+	}
+
+	@Override
+	public void onMediaFeatureDisplayMode(OOCSSBase context, int level, CSSDisplayMode value) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setDisplayMode(value);
+	}
+
+	@Override
+	public void onMediaFeatureMonochrome(OOCSSBase context, int level, int value, CSSRange range) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setMonochrome(value, range);
+	}
+
+	@Override
+	public void onMediaFeatureInvertedColors(OOCSSBase context, int level, CSSInvertedColors value) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setInvertedColors(value);
+	}
+
+	@Override
+	public void onMediaFeaturePointer(OOCSSBase context, int level, CSSPointer value) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setPointer(value);
+	}
+
+	@Override
+	public void onMediaFeatureHover(OOCSSBase context, int level, CSSHover value) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setHover(value);
+	}
+
+	@Override
+	public void onMediaFeatureAnyPointer(OOCSSBase context, int level, CSSPointer value) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setAnyPointer(value);
+	}
+
+	@Override
+	public void onMediaFeatureAnyHover(OOCSSBase context, int level, CSSHover value) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setAnyHover(value);
+	}
+
+	@Override
+	public void onMediaFeatureLightLevel(OOCSSBase context, int level, CSSLightLevel value) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setLightLevel(value);
+	}
+
+	@Override
+	public void onMediaFeatureScripting(OOCSSBase context, int level, CSSScripting value) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setScripting(value);
+	}
+
+	@Override
+	public void onMediaFeatureDeviceWidth(OOCSSBase context, int level, int value, CSSUnit unit, CSSRange range) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setDeviceWidth(value, unit, range);
+	}
+
+	@Override
+	public void onMediaFeatureDeviceHeight(OOCSSBase context, int level, int value, CSSUnit unit, CSSRange range) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setDeviceHeight(value, unit, range);
+	}
+
+	@Override
+	public void onMediaFeatureDeviceAspectRatio(OOCSSBase context, int level, Ratio value, CSSRange range) {
+		final OOCSSMediaFeature mediaFeature = addFeature(context);
+
+		mediaFeature.setDeviceAspectRatio(value, range);
 	}
 
 	@Override
@@ -854,7 +1120,11 @@ public abstract class BaseOOCSSDocument
 		case STYLE:
 			rule = new OOCSSStylesRule();
 			break;
-			
+		
+		case IMPORT:
+			rule = new OOCSSImportRule();
+			break;
+	
 		default:
 			throw new UnsupportedOperationException("Unknown rule type " + ruleType);
 		}

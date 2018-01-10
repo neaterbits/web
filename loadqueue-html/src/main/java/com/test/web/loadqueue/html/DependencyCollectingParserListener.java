@@ -31,13 +31,13 @@ import com.test.web.render.common.ITextExtent;
  * as soon as this information is available.
  */
 
-public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE>
+public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER_CONTEXT>
 			implements IHTMLParserListener<ELEMENT> {
 
 	// Base URL of the document we are loading, in order to resolve URLs to externa dependencies
 	private final URL documentURL;
 	
-	private final IDocumentParserListener<ELEMENT, ATTRIBUTE> delegate;
+	private final IDocumentParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER_CONTEXT> delegate;
 	private final ILoadQueue loadQueue;
 
 	private final LayoutAlgorithm<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>> layoutAlgorithm;
@@ -61,7 +61,7 @@ public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE>
 	
 	public DependencyCollectingParserListener(
 			URL documentURL,
-			IDocumentParserListener<ELEMENT, ATTRIBUTE> delegate,
+			IDocumentParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER_CONTEXT> delegate,
 			ILoadQueue loadQueue,
 			ViewPort viewPort,
 			ITextExtent textExtent,

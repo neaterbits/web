@@ -37,7 +37,8 @@ import com.test.web.render.html.PrintlnRenderDebugListener;
 public abstract class BaseBrowserDocumentLoader<
 				HTML_ELEMENT,
 				HTML_ATTRIBUTE,
-				DOCUMENT extends IDocumentParserListener<HTML_ELEMENT, HTML_ATTRIBUTE>,
+				CSS_LISTENER_CONTEXT,
+				DOCUMENT extends IDocumentParserListener<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_LISTENER_CONTEXT>,
 				CSS_ELEMENT,
 				STYLE_DOCUMENT>
 
@@ -51,7 +52,7 @@ public abstract class BaseBrowserDocumentLoader<
 
 	protected abstract DOCUMENT createDocument();
 	
-	protected abstract HTMLParser<HTML_ELEMENT, STYLE_DOCUMENT> createParser(
+	protected abstract HTMLParser<HTML_ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT> createParser(
 			DOCUMENT document,
 			IHTMLParserListener<HTML_ELEMENT> parserListener,
 			LoadStream stream,
@@ -152,7 +153,7 @@ public abstract class BaseBrowserDocumentLoader<
 			
 			// This parser listener will look for external dependencies and add those to the loadqueue,
 			// it will also forward parser events to the DOM and to the layout algorithm
-			final DependencyCollectingParserListener<HTML_ELEMENT, HTML_ATTRIBUTE> parserListener
+			final DependencyCollectingParserListener<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_LISTENER_CONTEXT> parserListener
 				= new DependencyCollectingParserListener<>(
 						url, // TODO handle redirects eg to index.html
 						document,
@@ -169,7 +170,7 @@ public abstract class BaseBrowserDocumentLoader<
 			final CSSContext<CSS_ELEMENT> cssContext = new CSSContext<>();
 			
 			// Load and parse the document throught the dependency collecting parser listener
-			final HTMLParser<HTML_ELEMENT, STYLE_DOCUMENT> htmlParser = createParser(document, parserListener, loadQueueAndStream.getStream(), cssContext);
+			final HTMLParser<HTML_ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT> htmlParser = createParser(document, parserListener, loadQueueAndStream.getStream(), cssContext);
 	
 			// Start parsing on this thread
 			// TODO perhaps move to new thread since this is the UI thread?

@@ -11,7 +11,7 @@ import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser.InitialMarginOrPaddingParser;
 import com.test.web.types.DecimalSize;
 
-class CSSParserHelperMargin {
+class CSSParserHelperMargin extends CSSParserHelperBase {
 	private static final CSSUnit marginOrPaddingDefaultUnit = CSSUnit.PX;
 
 	private static final CSSToken [] autoOrInitialOrInheritTokens = new CSSToken[] { CSSToken.INTEGER, CSSToken.AUTO, CSSToken.INITIAL, CSSToken.INHERIT, CSSToken.DOT };
@@ -32,7 +32,7 @@ class CSSParserHelperMargin {
 		
 		switch (token) {
 		case INTEGER:
-			final int intValue = Integer.parseInt(lexer.get());
+			final int intValue = parseInt(lexer);
 			CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(lexer, marginOrPaddingDefaultUnit, intValue, sizeCallback);
 			break;
 			

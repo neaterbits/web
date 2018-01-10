@@ -48,7 +48,7 @@ import com.test.web.types.Debug;
 
 public class LongHTMLDocument extends LongBuffersIntegerIndex
 
-	implements IDocumentParserListener<Integer, Integer> {
+	implements IDocumentParserListener<Integer, Integer, Void> {
 
 	private static final boolean CHECK_OVERWRITE = true;
 	private static final boolean CHECK_IS_CONTAINER = true;
@@ -754,7 +754,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 	
 	@Override
-	public IHTMLStyleParserListener<Integer> getStyleParserListener() {
+	public IHTMLStyleParserListener<Integer, Void> getStyleParserListener() {
 		return styleDocument;
 	}
 	
@@ -776,7 +776,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 		htmlDocument = new LongHTMLDocument(buffers);
 		
-		final HTMLParser<Integer, STYLE_DOCUMENT> parser = new HTMLParser<>(
+		final HTMLParser<Integer, STYLE_DOCUMENT, Void> parser = new HTMLParser<>(
 				buffers,
 				buffers,
 				htmlDocument,

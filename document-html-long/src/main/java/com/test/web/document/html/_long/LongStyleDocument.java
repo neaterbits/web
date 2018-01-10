@@ -12,7 +12,7 @@ import com.test.web.parse.html.IHTMLStyleParserListener;
 
 // Keeps track of style-attribute contents for all HTML elements within the DOM
 final class LongStyleDocument extends BaseLongCSSDocument
-	implements IHTMLStyleParserListener<Integer> {
+	implements IHTMLStyleParserListener<Integer, Void> {
 
 	private final Map<Integer, int[]> htmlToStyleElements;
 	

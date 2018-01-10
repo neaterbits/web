@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import com.test.web.css.common.enums.CSSRuleType;
+import com.test.web.css.oo.OOCSSBase;
 import com.test.web.css.oo.OOCSSRule;
 import com.test.web.document.common.DocumentState;
 import com.test.web.document.html.common.HTMLAttribute;
@@ -466,7 +467,7 @@ public abstract class OOTagElement extends OOAttributes {
 		}
 
 		final Lexer<CSSToken, CharInput> lexer = CSSParser.createLexer(charInput);
-		final CSSParser<Void> cssParser = new CSSParser<>(charInput, null, listener);
+		final CSSParser<OOCSSBase> cssParser = new CSSParser<>(charInput, null, listener);
 		
 		boolean done = false;
 

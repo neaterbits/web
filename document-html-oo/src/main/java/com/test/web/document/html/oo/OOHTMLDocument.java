@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.test.web.css.common.ICSSDocumentStyles;
+import com.test.web.css.oo.OOCSSBase;
 import com.test.web.document.common.DocumentState;
 import com.test.web.document.common.IElementListener;
 import com.test.web.document.html.common.HTMLAttribute;
@@ -31,7 +32,7 @@ import com.test.web.parse.html.IDocumentParserListener;
 import com.test.web.parse.html.IHTMLParserListener;
 import com.test.web.parse.html.IHTMLStyleParserListener;
 
-public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOAttribute>{
+public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOAttribute, OOCSSBase> {
 
 	private final IDocumentListener<OOTagElement> listener;
 	private final List<OOTagElement> stack;
@@ -40,7 +41,8 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 
 	private OOTagElement rootElement;
 
-	public static <STYLE_DOCUMENT> HTMLParser<OOTagElement, STYLE_DOCUMENT> createParser(
+	public static <STYLE_DOCUMENT>
+		HTMLParser<OOTagElement, STYLE_DOCUMENT, OOCSSBase> createParser(
 			OOHTMLDocument document,
 			IHTMLParserListener<OOTagElement> parserListener,
 			LoadStream stream,
@@ -48,7 +50,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 
 		final StringBuffers input = new StringBuffers(stream);
 		
-		final HTMLParser<OOTagElement, STYLE_DOCUMENT> parser = new HTMLParser<>(
+		final HTMLParser<OOTagElement, STYLE_DOCUMENT, OOCSSBase> parser = new HTMLParser<>(
 				input,
 				input,
 				parserListener,
@@ -58,11 +60,12 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 		return parser;
 	}
 	
-	public static <STYLE_DOCUMENT> OOHTMLDocument parseHTMLDocument(String html, IParse<STYLE_DOCUMENT> parseStyleDocument) throws ParserException {
+	public static <STYLE_DOCUMENT>
+		OOHTMLDocument parseHTMLDocument(String html, IParse<STYLE_DOCUMENT> parseStyleDocument) throws ParserException {
 
 		final OOHTMLDocument document = new OOHTMLDocument();
 		
-		final HTMLParser<OOTagElement, STYLE_DOCUMENT> parser = createParser(document, document, new SimpleLoadStream(html), parseStyleDocument);
+		final HTMLParser<OOTagElement, STYLE_DOCUMENT, OOCSSBase> parser = createParser(document, document, new SimpleLoadStream(html), parseStyleDocument);
 		
 		try {
 			parser.parseHTMLFile();
@@ -755,7 +758,7 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 	private final OOStyleDocument styleParserListener = new OOStyleDocument();
 	
 	@Override
-	public IHTMLStyleParserListener<OOTagElement> getStyleParserListener() {
+	public IHTMLStyleParserListener<OOTagElement, OOCSSBase> getStyleParserListener() {
 		return styleParserListener;
 	}
 

@@ -7,12 +7,12 @@ import com.test.web.parse.common.Lexer;
 import com.test.web.parse.common.ParserException;
 import com.test.web.types.DecimalSize;
 
-public class CSSParseHelperNumbers {
+public class CSSParseHelperNumbers extends CSSParserHelperBase {
 
 	static int parseInt(Lexer<CSSToken, CharInput> lexer) throws IOException, ParserException {
 		CSSParserHelperWS.assureTokenSkipWSAndComment(lexer, CSSToken.INTEGER);
 
-		return Integer.parseInt(lexer.get());
+		return parseInt(lexer);
 	}
 
 	static int parseDecimal(Lexer<CSSToken, CharInput> lexer) throws IOException, ParserException {
@@ -26,7 +26,7 @@ public class CSSParseHelperNumbers {
 
 		switch (token) {
 		case INTEGER:
-			beforeDot = Integer.parseInt(lexer.get());
+			beforeDot = parseInt(lexer);
 
 			// may or may not be a dot here
 			token = CSSParserHelperWS.lexSkipWSAndComment(lexer, CSSToken.DOT);

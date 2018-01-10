@@ -11,10 +11,14 @@ import com.test.web.parse.css.ICSSDocumentParserListener;
 
 public class DocumentParser {
 
-	public static <STYLE_ELEMENT, STYLE_DOCUMENT extends ICSSDocumentParserListener<STYLE_ELEMENT, Void>>
+	public static <
+							STYLE_ELEMENT,
+							CSS_LISTENER_CONTEXT,
+							STYLE_DOCUMENT extends ICSSDocumentParserListener<STYLE_ELEMENT, CSS_LISTENER_CONTEXT>
+						>
 			STYLE_DOCUMENT parseCSS(CharInput charInput, Tokenizer tokenizer, CSSContext<STYLE_ELEMENT> cssContext, STYLE_DOCUMENT styleDocument) throws IOException, ParserException {
 		
-		final CSSParser<Void> cssParser = new CSSParser<>(charInput, tokenizer, styleDocument);
+		final CSSParser<CSS_LISTENER_CONTEXT> cssParser = new CSSParser<>(charInput, tokenizer, styleDocument);
 
 		// Just parse the CSS straight away
 		cssParser.parseCSS();

@@ -2,6 +2,7 @@ package com.test.web.css.common;
 
 import java.util.List;
 
+import com.test.web.css.common.enums.CSSRuleType;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSStyle;
 
@@ -12,7 +13,11 @@ import com.test.web.css.common.enums.CSStyle;
  *
  */
 
-public interface ICSSDocument<TARGET> extends ICSSDocumentStyles<TARGET>, ICSSStyleSheet<TARGET> {
+public interface ICSSDocument<TARGET>
+	extends ICSSDocumentStyles<TARGET>,
+				  ICSSStyleSheet<TARGET>,
+				  CSSDocumentImports,
+				  CSSDocumentMediaQueries {
 
 	/**
 	 * Check whether a particular style is set for a target in this document
@@ -27,5 +32,10 @@ public interface ICSSDocument<TARGET> extends ICSSDocumentStyles<TARGET>, ICSSSt
 	boolean isSet(CSSTarget target, String targetName, CSStyle style);
 
 	List<TARGET> get(CSSTarget target, String targetName);
+	
+	int getNumRules();
+	
+	CSSRuleType getRuleType(int ruleIdx);
+	
 	
 }

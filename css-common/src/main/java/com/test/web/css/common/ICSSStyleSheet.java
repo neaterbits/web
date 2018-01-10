@@ -1,6 +1,5 @@
 package com.test.web.css.common;
 
-import com.test.web.css.common.enums.CSSPriority;
 import com.test.web.css.common.enums.CSSRuleType;
 import com.test.web.css.common.enums.CSStyle;
 

@@ -10,26 +10,43 @@ import com.test.web.css.common.enums.CSSBackgroundRepeat;
 import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSClear;
 import com.test.web.css.common.enums.CSSColor;
+import com.test.web.css.common.enums.CSSColorGamut;
 import com.test.web.css.common.enums.CSSDisplay;
+import com.test.web.css.common.enums.CSSDisplayMode;
 import com.test.web.css.common.enums.CSSFilter;
 import com.test.web.css.common.enums.CSSFloat;
 import com.test.web.css.common.enums.CSSFontSize;
 import com.test.web.css.common.enums.CSSFontWeight;
 import com.test.web.css.common.enums.CSSForeground;
+import com.test.web.css.common.enums.CSSHover;
+import com.test.web.css.common.enums.CSSInvertedColors;
 import com.test.web.css.common.enums.CSSJustify;
+import com.test.web.css.common.enums.CSSLightLevel;
+import com.test.web.css.common.enums.CSSLogicalOperator;
 import com.test.web.css.common.enums.CSSMax;
+import com.test.web.css.common.enums.CSSMediaType;
 import com.test.web.css.common.enums.CSSMin;
+import com.test.web.css.common.enums.CSSOrientation;
 import com.test.web.css.common.enums.CSSOverflow;
+import com.test.web.css.common.enums.CSSOverflowBlock;
+import com.test.web.css.common.enums.CSSOverflowInline;
+import com.test.web.css.common.enums.CSSPointer;
 import com.test.web.css.common.enums.CSSPosition;
 import com.test.web.css.common.enums.CSSPositionComponent;
 import com.test.web.css.common.enums.CSSPriority;
+import com.test.web.css.common.enums.CSSRange;
+import com.test.web.css.common.enums.CSSResolutionUnit;
 import com.test.web.css.common.enums.CSSRuleType;
+import com.test.web.css.common.enums.CSSScan;
+import com.test.web.css.common.enums.CSSScripting;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
+import com.test.web.css.common.enums.CSSUpdate;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.io.common.Tokenizer;
+import com.test.web.types.Ratio;
 
 public interface CSSParserListener<CONTEXT> {
 
@@ -232,5 +249,47 @@ public interface CSSParserListener<CONTEXT> {
 				0, null, CSSJustify.NONE,
 				left, leftUnit, leftType);
 	}
+	
+	// Import rules
+	CONTEXT onImportRuleStart(String file, String url);
+
+	void onImportRuleEnd(CONTEXT context);
+
+	// type may be null in case of only features
+	CONTEXT onMediaQueryStart(CONTEXT context, boolean negated, CSSMediaType type);
+
+	void onMediaQueryEnd(CONTEXT context);
+	
+	// (feature : value [ and | or  feature : value ] + )
+	CONTEXT onMediaFeaturesStart(CONTEXT context, int level, boolean negated); // for toplevel (level == 0), negated is always same as in onMediaQueryStart()
+	void onMediaFeaturesLogicalOperator(CONTEXT context, int level, CSSLogicalOperator logicalOperator);
+	void onMediaFeaturesEnd(CONTEXT context, int level);
+
+	void onMediaFeatureWidth(CONTEXT context, int level, int value, CSSUnit unit, CSSRange range);
+	void onMediaFeatureHeight(CONTEXT context, int level, int value, CSSUnit unit, CSSRange range);
+	void onMediaFeatureAspectRatio(CONTEXT context, int level, Ratio value, CSSRange range);
+	void onMediaFeatureOrientation(CONTEXT context, int level, CSSOrientation orientation);
+	void onMediaFeatureResolution(CONTEXT context, int level, int value, CSSResolutionUnit unit, CSSRange range);
+	void onMediaFeatureScan(CONTEXT context, int level, CSSScan value);
+	void onMediaFeatureGrid(CONTEXT context, int level, boolean value);
+	void onMediaFeatureUpdate(CONTEXT context, int level, CSSUpdate value);
+	void onMediaFeatureOverflowBlock(CONTEXT context, int level, CSSOverflowBlock value);
+	void onMediaFeatureOverflowInline(CONTEXT context, int level, CSSOverflowInline value);
+	void onMediaFeatureColor(CONTEXT context, int level, int value, CSSRange range);
+	void onMediaFeatureColorGamut(CONTEXT context, int level, CSSColorGamut value);
+	void onMediaFeatureColorIndex(CONTEXT context, int level, int value, CSSRange range);
+	void onMediaFeatureDisplayMode(CONTEXT context, int level, CSSDisplayMode value);
+	void onMediaFeatureMonochrome(CONTEXT context, int level, int value, CSSRange range);
+	void onMediaFeatureInvertedColors(CONTEXT context, int level, CSSInvertedColors value);
+	void onMediaFeaturePointer(CONTEXT context, int level, CSSPointer value);
+	void onMediaFeatureHover(CONTEXT context, int level, CSSHover value);
+	void onMediaFeatureAnyPointer(CONTEXT context, int level, CSSPointer value);
+	void onMediaFeatureAnyHover(CONTEXT context, int level, CSSHover value);
+	void onMediaFeatureLightLevel(CONTEXT context, int level, CSSLightLevel value);
+	void onMediaFeatureScripting(CONTEXT context, int level, CSSScripting value);
+	void onMediaFeatureDeviceWidth(CONTEXT context, int level, int value, CSSUnit unit, CSSRange range);
+	void onMediaFeatureDeviceHeight(CONTEXT context, int level, int value, CSSUnit unit, CSSRange range);
+	void onMediaFeatureDeviceAspectRatio(CONTEXT context, int level, Ratio value, CSSRange range);
+
 }
 

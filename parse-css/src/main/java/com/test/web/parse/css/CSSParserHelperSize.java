@@ -10,7 +10,7 @@ import com.test.web.parse.common.ParserException;
 import com.test.web.parse.common.TokenMergeHelper;
 import com.test.web.types.DecimalSize;
 
-public class CSSParserHelperSize {
+public class CSSParserHelperSize extends CSSParserHelperBase {
 	
 	static  CSSToken parsePossiblyDecimalSizeValue(
 			Lexer<CSSToken, CharInput> lexer,
@@ -33,7 +33,7 @@ public class CSSParserHelperSize {
 			
 			switch (token) {
 			case INTEGER:
-				value = Integer.parseInt(lexer.get());
+				value = parseInt(lexer);
 				done = true;
 				hasIntValue = true;
 				break;

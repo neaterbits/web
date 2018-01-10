@@ -3,10 +3,10 @@ package com.test.web.css.oo;
 import com.test.web.css.test.BaseCSSDocumentTest;
 import com.test.web.parse.css.ICSSDocumentParserListener;
 
-public class CSSDocumentTest extends BaseCSSDocumentTest<OOCSSRule> {
+public class CSSDocumentTest extends BaseCSSDocumentTest<OOCSSRule, OOCSSBase> {
 
 	@Override
-	protected ICSSDocumentParserListener<OOCSSRule, Void> createDocument() {
+	protected ICSSDocumentParserListener<OOCSSRule, OOCSSBase> createDocument() {
 		return new OOCSSDocument();
 	}
 }

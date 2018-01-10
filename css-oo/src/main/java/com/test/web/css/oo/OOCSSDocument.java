@@ -1,6 +1,7 @@
 package com.test.web.css.oo;
 
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -8,8 +9,22 @@ import com.test.web.css.common.CSSState;
 import com.test.web.css.common.CSSStyleBuilder;
 import com.test.web.css.common.CSSValueType;
 import com.test.web.css.common.ICSSStyleSheet;
+import com.test.web.css.common.enums.CSSColorGamut;
+import com.test.web.css.common.enums.CSSDisplayMode;
+import com.test.web.css.common.enums.CSSHover;
+import com.test.web.css.common.enums.CSSInvertedColors;
+import com.test.web.css.common.enums.CSSLightLevel;
+import com.test.web.css.common.enums.CSSMediaFeature;
+import com.test.web.css.common.enums.CSSMediaType;
+import com.test.web.css.common.enums.CSSOrientation;
+import com.test.web.css.common.enums.CSSOverflowBlock;
+import com.test.web.css.common.enums.CSSOverflowInline;
+import com.test.web.css.common.enums.CSSPointer;
 import com.test.web.css.common.enums.CSSRuleType;
+import com.test.web.css.common.enums.CSSScan;
+import com.test.web.css.common.enums.CSSScripting;
 import com.test.web.css.common.enums.CSSTarget;
+import com.test.web.css.common.enums.CSSUpdate;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.css.ICSSDocumentParserListener;
@@ -25,12 +40,14 @@ import com.test.web.parse.css.ICSSDocumentParserListener;
 
 public final class OOCSSDocument
 	extends BaseOOCSSDocument
-	implements ICSSDocumentParserListener<OOCSSRule, Void> {
+	implements ICSSDocumentParserListener<OOCSSRule, OOCSSBase> {
 
 	private final CSSState<OOCSSRule> state;
+	private final List<OOCSSRule> allRules;
 
 	public OOCSSDocument() {
 		this.state = new CSSState<>();
+		this.allRules = new ArrayList<>();
 	}
 
 	/***************************************************** Access interface *****************************************************/ 
@@ -73,15 +90,13 @@ public final class OOCSSDocument
 
 
 	@Override
-	public Void onBlockStart(CSSRuleType ruleType) {
-		allocateCurParseElement(ruleType);
-		
-		return null;
+	public OOCSSBase onBlockStart(CSSRuleType ruleType) {
+		return allocateCurParseElement(ruleType);
 	}
 	
 	
 	@Override
-	public void onEntityMap(Void context, CSSTarget target, String targetName) {
+	public void onEntityMap(OOCSSBase context, CSSTarget target, String targetName) {
 		
 		//System.out.println("## CSS target start " + target + "/" + targetName);
 		
@@ -89,12 +104,12 @@ public final class OOCSSDocument
 	}
 	
 	@Override
-	public void onStylePropertyText(Void context, Tokenizer tokenizer, long propertyStartPos, long propertyEndPos) {
+	public void onStylePropertyText(OOCSSBase context, Tokenizer tokenizer, long propertyStartPos, long propertyEndPos) {
 		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
-	public void onBlockEnd(Void context, Tokenizer tokenizer, long blockStartPos, long blockEndPos) {
+	public void onBlockEnd(OOCSSBase context, Tokenizer tokenizer, long blockStartPos, long blockEndPos) {
 		stylesRef().setOriginalCSSText(tokenizer.asString(blockStartPos, blockEndPos));
 	}
 
@@ -612,6 +627,242 @@ public final class OOCSSDocument
 
 	@Override
 	public void setSupportsConditionText(OOCSSRule rule, String conditionText) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getNumRules() {
+		return allRules.size();
+	}
+
+	@Override
+	public CSSRuleType getRuleType(int ruleIdx) {
+		return allRules.get(ruleIdx).getRuleType();
+	}
+	
+	private OOCSSRule getRule(int ruleIdx) {
+		return allRules.get(ruleIdx);
+	}
+
+	@Override
+	public String getImportUrl(int ruleIdx) {
+		return ((OOCSSImportRule)getRule(ruleIdx)).getImportUrl();
+	}
+
+	@Override
+	public String getImportFile(int ruleIdx) {
+		return ((OOCSSImportRule)getRule(ruleIdx)).getImportFile();
+	}
+	
+	private OOCSSMediaQueryList getMediaQueryList(int ruleIdx) {
+		final OOCSSMediaQueryRule mediaQueryRule = (OOCSSMediaQueryRule)getRule(ruleIdx);
+
+		return mediaQueryRule.getMediaQueryList();
+	}
+	
+	private OOCSSMediaQuery getMediaQuery(int ruleIdx, int mediaQueryIdx) {
+		return getMediaQueryList(ruleIdx).getMediaQuery(mediaQueryIdx);
+	}
+	
+	// Media query access for all rules that may have media queries
+	@Override
+	public int getNumMediaQueries(int ruleIdx) {
+		return getMediaQueryList(ruleIdx).getNumMediaQueries();
+	}
+
+	@Override
+	public boolean isMediaQueryNegated(int ruleIdx, int mediaQueryIdx) {
+		return getMediaQuery(ruleIdx, mediaQueryIdx).isNegated();
+	}
+
+	@Override
+	public CSSMediaType getMediaType(int ruleIdx, int mediaQueryIdx) {
+		return getMediaQuery(ruleIdx, mediaQueryIdx).getMediaType();
+	}
+	
+	private OOCSSMediaQueryOption getOption(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+
+		final OOCSSMediaQuery mediaQuery = getMediaQuery(ruleIdx, mediaQueryIdx);
+	
+		if (nesting.length == 0) {
+			throw new IllegalStateException("no nesting");
+		}
+		
+		OOCSSMediaQueryOptions options = mediaQuery;
+		
+		for (int i = 0; i < nesting.length - 1; ++ i) {
+			final int idx = nesting[i];
+			
+			options = (OOCSSMediaQueryOptions)options.getOption(idx);
+		}
+		
+		return options.getOption(nesting[nesting.length - 1]);
+	}
+	
+	@Override
+	public int getNumMediaFeatures(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		final OOCSSMediaQueryOptions options = (OOCSSMediaQueryOptions)getOption(ruleIdx, mediaQueryIdx, nesting);
+		
+		return options.getNumOptions();
+	}
+
+	private OOCSSMediaFeature getOOMediaFeature(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		return (OOCSSMediaFeature)getOption(ruleIdx, mediaQueryIdx, nesting);
+	}
+	
+	@Override
+	public CSSMediaFeature getMediaFeature(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		return getOOMediaFeature(ruleIdx, mediaQueryIdx, nesting).getMediaFeature();
+	}
+
+	@Override
+	public void getWidth(int ruleIdx, int mediaQueryIdx, int[] nesting, GetDimension getter) {
+		final OOCSSMediaFeature mediaFeature = getOOMediaFeature(ruleIdx, mediaQueryIdx, nesting);
+		
+		getter.onDimension(mediaFeature.getWidth(), mediaFeature.getWidthUnit(), mediaFeature.getWidthRange());
+	}
+
+	@Override
+	public void getHeight(int ruleIdx, int mediaQueryIdx, int[] nesting, GetDimension getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void getAspectRatio(int ruleIdx, int mediaQueryIdx, int[] nesting, GetAspectRatio getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public CSSOrientation getOrientation(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void getResolution(int ruleIdx, int mediaQueryIdx, int[] nesting, GetIntegerValue getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public CSSScan getScan(int ruleIdx, int mediaQueryIdx, int[] nesting, GetIntegerValue getter) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean getGrid(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public CSSUpdate getUpdate(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSOverflowBlock getOverflowBlock(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSOverflowInline getOverflowInline(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void getColor(int ruleIdx, int mediaQueryIdx, int[] nesting, GetIntegerValue getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public CSSColorGamut getColorGamut(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void getColorIndex(int ruleIdx, int mediaQueryIdx, int[] nesting, GetIntegerValue getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public CSSDisplayMode getDisplayMode(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void getMonocrome(int ruleIdx, int mediaQueryIdx, int[] nesting, GetIntegerValue getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public CSSInvertedColors getInvertedColors(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSPointer getPointer(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSHover getHover(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSPointer getAnyPointer(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSHover getAnyHover(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSLightLevel getLightLevel(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CSSScripting getScripting(int ruleIdx, int mediaQueryIdx, int[] nesting) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void getDeviceWidth(int ruleIdx, int mediaQueryIdx, int[] nesting, GetDimension getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void getDeviceHeight(int ruleIdx, int mediaQueryIdx, int[] nesting, GetDimension getter) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void getDeviceAspectRatio(int ruleIdx, int mediaQueryIdx, int[] nesting, GetAspectRatio getter) {
 		// TODO Auto-generated method stub
 		
 	}

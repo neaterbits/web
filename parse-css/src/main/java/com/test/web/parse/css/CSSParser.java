@@ -18,7 +18,9 @@ import com.test.web.css.common.enums.CSSBackgroundRepeat;
 import com.test.web.css.common.enums.CSSBackgroundSize;
 import com.test.web.css.common.enums.CSSColor;
 import com.test.web.css.common.enums.CSSForeground;
+import com.test.web.css.common.enums.CSSLogicalOperator;
 import com.test.web.css.common.enums.CSSMax;
+import com.test.web.css.common.enums.CSSMediaFeature;
 import com.test.web.css.common.enums.CSSMin;
 import com.test.web.css.common.enums.CSSPositionComponent;
 import com.test.web.css.common.enums.CSSPriority;
@@ -35,6 +37,7 @@ import com.test.web.parse.common.ParserException;
 import com.test.web.parse.common.TokenMergeHelper;
 import com.test.web.parse.css.CSSParserHelperFunction.IParseParam;
 import com.test.web.types.DecimalSize;
+import com.test.web.types.Ratio;
 import com.test.web.types.Value;
 
 /**
@@ -73,7 +76,14 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		
 		boolean done = false;
 		do {
-			CSSToken token = lexer.lex(CSSToken.WS, CSSToken.ID_MARKER, CSSToken.CLASS_MARKER, CSSToken.TAG, CSSToken.COMMENT, CSSToken.EOF);
+			CSSToken token = lexer.lex(
+					CSSToken.WS,
+					CSSToken.ID_MARKER,
+					CSSToken.CLASS_MARKER,
+					CSSToken.TAG,
+					CSSToken.AT,
+					CSSToken.COMMENT,
+					CSSToken.EOF);
 			
 			switch (token) {
 			case ID_MARKER:
@@ -83,6 +93,10 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 				final long startPos = parseMarkedBlock(token, context);
 
 				listener.onBlockEnd(context, tokenizer, startPos, lexer.getInputReadPos());
+				break;
+				
+			case AT:
+				parseAtRule();
 				break;
 				
 			case WS:
@@ -187,6 +201,336 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		}
 	}
 	
+	private void parseAtRule() throws IOException, ParserException {
+		final CSSToken token = lexSkipWSAndComment(CSSToken.AT_RULE_IMPORT);
+		
+		switch (token) {
+		case AT_RULE_IMPORT:
+			parseImportRule();
+			break;
+			
+		default:
+			throw lexer.unexpectedToken();
+		}
+		
+		assureTokenSkipWSAndComment(CSSToken.SEMICOLON);
+	}
+	
+	private void parseImportRule() throws IOException, ParserException {
+
+		final CSSToken token = lexSkipWSAndComment(CSSToken.FUNCTION_URL, CSSToken.QUOTED_STRING, CSSToken.SINGLE_QUOTED_STRING);
+
+		final String importURL;
+		final String importFile;
+		
+		switch (token) {
+		case FUNCTION_URL:
+			importURL = parseURLFunction();
+			importFile = null;
+			break;
+
+		case QUOTED_STRING:
+		case SINGLE_QUOTED_STRING:
+			importURL = null;
+			importFile = getQuotedString();
+			break;
+	
+		default:
+			throw lexer.unexpectedToken();
+		}
+
+		final LISTENER_CONTEXT context = listener.onImportRuleStart(importFile, importURL);
+
+		// now a list of media queries
+		parseMediaQueries(context);
+		
+		listener.onImportRuleEnd(context);
+	}
+
+
+	private void parseMediaQueries(LISTENER_CONTEXT context) throws IOException, ParserException {
+		
+		// Comma-separated query that may contain logical operators
+		boolean done = false;
+		
+		do {
+			parseMediaQuery(context, 0);
+
+			// Next should be comma or semicolon
+			final CSSToken next = lexSkipWSAndComment(CSSToken.COMMA);
+
+			if (next == CSSToken.NONE) {
+				// Probably semicolon, exit loop
+				done = true;
+			}
+			else {
+				// comma, continue loop
+			}
+		} while (!done);
+	}
+	
+	private static final CSSToken [] MEDIA_NEGATION_TYPE_AND_OR_FEATURES_TOKENS = copyTokens(token -> token.getMediaType() != null,
+			CSSToken.PARENTHESIS_START,
+			CSSToken.MF_LOGICAL_OPERATOR_NOT);
+
+	private static final CSSToken [] MEDIA_TYPE_AND_OR_FEATURES_TOKENS = copyTokens(token -> token.getMediaType() != null,
+			CSSToken.PARENTHESIS_START);
+
+	
+	private void parseMediaQuery(LISTENER_CONTEXT context, int level) throws IOException, ParserException {
+		final CSSToken token = lexSkipWSAndComment(MEDIA_NEGATION_TYPE_AND_OR_FEATURES_TOKENS);
+
+		switch (token) {
+		case PARENTHESIS_START:
+			processTopLevelMediaFeatures(context, false, false);
+			break;
+
+		case MF_LOGICAL_OPERATOR_NOT:
+			parseMediaTypeAndOrFeatures(context, true);
+			break;
+			
+		case NONE:
+			// No mediatype, just exit
+			break;
+
+		default:
+			processMediaType(context, token, false);
+			break;
+		}
+	}
+
+	private void parseMediaTypeAndOrFeatures(LISTENER_CONTEXT context, boolean negate) throws IOException, ParserException {
+		final CSSToken token = lexSkipWSAndComment(MEDIA_TYPE_AND_OR_FEATURES_TOKENS);
+		
+		switch (token) {
+		case PARENTHESIS_START:
+			processTopLevelMediaFeatures(context, negate, false);
+			break;
+
+		case MF_LOGICAL_OPERATOR_NOT:
+			parseMediaTypeAndOrFeatures(context, true);
+			break;
+
+		default:
+			processMediaType(context, token, false);
+			break;
+		}
+	}
+
+	private void processMediaType(LISTENER_CONTEXT context, CSSToken mediaTypeToken, boolean negated) throws IOException, ParserException {
+		if (mediaTypeToken.getMediaType() == null) {
+			throw lexer.unexpectedToken();
+		}
+		else {
+			final LISTENER_CONTEXT mediaQueryContext = listener.onMediaQueryStart(context, negated, mediaTypeToken.getMediaType());
+
+			final CSSToken andToken = lexSkipWSAndComment(CSSToken.MF_LOGICAL_OPERATOR_AND);
+
+			if (andToken == CSSToken.MF_LOGICAL_OPERATOR_AND) {
+				// May be (feature : value) or nested
+				parseTopLevelMediaFeatures(mediaQueryContext, negated, true);
+			}
+
+			listener.onMediaQueryEnd(mediaQueryContext);
+		}
+	}
+
+	private void processTopLevelMediaFeatures(LISTENER_CONTEXT context, boolean negated, boolean expectStartParenthesis) throws IOException, ParserException {
+		final LISTENER_CONTEXT mediaQueryContext = listener.onMediaQueryStart(context, negated, null);
+
+		parseTopLevelMediaFeatures(mediaQueryContext, negated, expectStartParenthesis);
+
+		listener.onMediaQueryEnd(mediaQueryContext);
+	}
+	
+
+	private static final CSSToken [] MEDIA_FEATURE_TOKENS = copyTokens(token -> token.getMediaFeature() != null,
+			CSSToken.PARENTHESIS_START, // nested
+			CSSToken.PARENTHESIS_END);
+
+	private void parseTopLevelMediaFeatures(LISTENER_CONTEXT context, boolean negated, boolean expectStartParenthesis) throws IOException, ParserException {
+
+		CSSToken token;
+		
+		final boolean parseMediaFeatures;
+
+		if (expectStartParenthesis) {
+			token = lexSkipWSAndComment(CSSToken.PARENTHESIS_START);
+			
+			parseMediaFeatures = token == CSSToken.PARENTHESIS_START;
+		}
+		else {
+			parseMediaFeatures = true;
+		}
+
+		if (parseMediaFeatures) {
+			token = lexSkipWSAndComment(MEDIA_FEATURE_TOKENS);
+			
+			boolean done = false;
+			
+			CSSToken [] operatorTokens = null;
+			
+			final int level = 0;
+			
+			final LISTENER_CONTEXT featuresContext = listener.onMediaFeaturesStart(context, level, negated);
+			
+			do {
+				switch (token) {
+				case NONE:
+					throw lexer.unexpectedToken();
+		
+				case PARENTHESIS_START:
+					// nested query
+					parseMediaFeaturesSub(context, level + 1);
+					break;
+		
+				default:
+					operatorTokens = processMediaFeature(featuresContext, level, token, operatorTokens);
+					
+					if (operatorTokens == null) {
+						// returns null for found end parenthesis
+						done = true;
+					}
+					break;
+				}
+			} while (!done);
+			
+			listener.onMediaFeaturesEnd(featuresContext, level);
+		}
+	}
+
+
+
+	private static final CSSToken [] MEDIA_FEATURE_TOKENS_SUB = TokenMergeHelper.merge(MEDIA_FEATURE_TOKENS, CSSToken.MF_LOGICAL_OPERATOR_NOT);
+	
+	private void parseMediaFeaturesSub(LISTENER_CONTEXT context, int level) throws IOException, ParserException {
+		
+		final CSSToken token = lexSkipWSAndComment(MEDIA_FEATURE_TOKENS_SUB);
+		
+		boolean done = false;
+		
+		CSSToken [] operatorTokens = null;
+		
+		LISTENER_CONTEXT featuresContext = null;
+		
+		boolean negated = false;
+		
+		do {
+			switch (token) {
+			case NONE:
+				throw lexer.unexpectedToken();
+	
+			case MF_LOGICAL_OPERATOR_NOT:
+				// starts with "not"
+				negated = true;
+				break;
+
+			case PARENTHESIS_START:
+				// nested query
+				parseMediaFeaturesSub(context, level + 1);
+				break;
+	
+			default:
+				
+				if (featuresContext == null) {
+					featuresContext = listener.onMediaFeaturesStart(context, level, negated);
+				}
+
+				operatorTokens = processMediaFeature(featuresContext, level, token, operatorTokens);
+				
+				if (operatorTokens == null) {
+					// returns null for found end parenthesis
+					done = true;
+				}
+				break;
+			}
+		} while (!done);
+		
+		listener.onMediaFeaturesEnd(featuresContext, level);
+	}
+	
+	private CSSToken [] processMediaFeature(LISTENER_CONTEXT context, int level, CSSToken token, CSSToken [] operatorTokens) throws IOException, ParserException {
+		// Parse the various features
+		final CSSMediaFeature mediaFeature = token.getMediaFeature();
+
+		parseMediaFeature(context, level, token, mediaFeature);
+
+		final boolean initial;
+		
+		if (operatorTokens == null) {
+			operatorTokens = new CSSToken [] {
+					CSSToken.MF_LOGICAL_OPERATOR_AND,
+					CSSToken.MF_LOGICAL_OPERATOR_OR,
+					CSSToken.PARENTHESIS_END
+			};
+
+			initial = true;
+		}
+		else {
+			initial = false;
+		}
+		
+		// Now is logical operator or end parenthesis
+		final CSSToken next = lexSkipWSAndComment(operatorTokens);
+		
+		switch (next) {
+		
+		case MF_LOGICAL_OPERATOR_AND:
+			if (initial) {
+				operatorTokens = new CSSToken [] {
+						CSSToken.MF_LOGICAL_OPERATOR_AND,
+						CSSToken.PARENTHESIS_END
+				};
+			}
+
+			listener.onMediaFeaturesLogicalOperator(context, level, CSSLogicalOperator.AND);
+			break;
+
+		case MF_LOGICAL_OPERATOR_OR:
+			if (initial) {
+				operatorTokens = new CSSToken [] {
+						CSSToken.MF_LOGICAL_OPERATOR_OR,
+						CSSToken.PARENTHESIS_END
+				};
+			}
+
+			listener.onMediaFeaturesLogicalOperator(context, level, CSSLogicalOperator.OR);
+			break;
+			
+		case PARENTHESIS_END:
+			operatorTokens = null;
+			break;
+			
+		default:
+			throw lexer.unexpectedToken();
+		}
+		
+		return operatorTokens;
+	}
+	
+	private void parseMediaFeature(LISTENER_CONTEXT context, int level, CSSToken token, CSSMediaFeature mediaFeature) throws IOException, ParserException {
+		
+		assureTokenSkipWSAndComment(CSSToken.COLON);
+		
+		switch (mediaFeature) {
+		case WIDTH:
+			CSSParserHelperSize.parseDecimalSizeValue(lexer, CSSUnit.PX, (value, unit) -> listener.onMediaFeatureWidth(context, level, value, unit, token.getMediaFeatureRange()));
+			break;
+			
+		case HEIGHT:
+			CSSParserHelperSize.parseDecimalSizeValue(lexer, CSSUnit.PX, (value, unit) -> listener.onMediaFeatureHeight(context, level, value, unit, token.getMediaFeatureRange()));
+			break;
+		
+		case ASPECT_RATIO:
+			final Ratio ratio = CSSParserHelperRatio.parseRatio(lexer);
+			listener.onMediaFeatureAspectRatio(context, level, ratio, token.getMediaFeatureRange());
+			break;
+		
+		default:
+			throw lexer.unexpectedToken();
+		}
+	}
+
 	private static final CSSToken [] STYLE_TOKENS = copyTokens(token -> token.getElement() != null, CSSToken.BROWSER_SPECIFIC_ATTRIBUTE);
 	
 	private static final CSSToken [] BLOCK_TOKENS = copyTokens(
@@ -484,7 +828,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		
 		switch (token) {
 		case INTEGER:
-			final int intValue = Integer.parseInt(lexer.get());
+			final int intValue = CSSParserHelperBase.parseInt(lexer);
 			CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(lexer, minMaxDefaultUnit, intValue, sizeCallback);
 			break;
 			
@@ -516,7 +860,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		
 		switch (token) {
 		case INTEGER:
-			final int intValue = Integer.parseInt(lexer.get());
+			final int intValue = CSSParserHelperBase.parseInt(lexer);
 			CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(lexer, minMaxDefaultUnit, intValue, sizeCallback);
 			break;
 			
@@ -613,7 +957,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	
 	private String parseImageURL() throws IOException, ParserException {
 		
-		final Object [] values = CSSParserHelperFunction.parseFunctionParams(lexer, 1, paramIdx -> parseQuotedString());
+		final Object [] values = CSSParserHelperFunction.parseFunctionParams(lexer, 1, paramIdx -> parseAnyQuotedString());
 		
 		final String url = (String)values[0];
 
@@ -668,7 +1012,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 				
 				if (intToken == CSSToken.INTEGER) {
 				
-					CSSParserHelperSize.parseSizeValueAfterInt(lexer, null, Integer.parseInt(lexer.get()), (value, unit) -> cachedSize.init(value, unit));
+					CSSParserHelperSize.parseSizeValueAfterInt(lexer, null, CSSParserHelperBase.parseInt(lexer), (value, unit) -> cachedSize.init(value, unit));
 					
 					if (cachedSize.getUnit() == null) {
 						throw new ParserException("No unit was specified for color stop");
@@ -750,7 +1094,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		
 		switch (token) {
 		case INTEGER:
-			ret = Integer.parseInt(lexer.get());
+			ret = CSSParserHelperBase.parseInt(lexer);
 			assureTokenSkipWSAndComment(CSSToken.RADIX_DEG);
 			break;
 			
@@ -803,12 +1147,24 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	private String parseQuotedString() throws IOException, ParserException {
 		
 		// parse until quote
-		final CSSToken token = lexSkipWSAndComment(CSSToken.QUOTED_STRING);
+		assureTokenSkipWSAndComment(CSSToken.QUOTED_STRING);
+
+		return getQuotedString();
+	}
+
+	private String parseAnyQuotedString() throws IOException, ParserException {
 		
-		if (token != CSSToken.QUOTED_STRING) {
+		// parse until quote
+		final CSSToken token = lexSkipWSAndComment(CSSToken.QUOTED_STRING, CSSToken.SINGLE_QUOTED_STRING);
+		
+		if (token != CSSToken.QUOTED_STRING && token != CSSToken.SINGLE_QUOTED_STRING) {
 			throw lexer.unexpectedToken();
 		}
-		
+
+		return getQuotedString();
+	}
+
+	private String getQuotedString() {
 		final String withQuotes = lexer.get();
 		
 		// remove quotes
@@ -828,7 +1184,11 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	private void parseBgPositionAfterInt(LISTENER_CONTEXT context, int bgLayer, CachedSize cachedSize) throws IOException, ParserException {
 		
 		// we got integer so a regular pos specification, parse any decimal fraction and unit as well
-		CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(lexer, posAndSizeDefaultUnit, Integer.parseInt(lexer.get()), (value, unit) -> cachedSize.init(value, unit));
+		CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(
+				lexer,
+				posAndSizeDefaultUnit,
+				CSSParserHelperBase.parseInt(lexer),
+				(value, unit) -> cachedSize.init(value, unit));
 		
 		final int bgl = bgLayer;
 		// Now should be another position value
@@ -932,7 +1292,11 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		switch (token) {
 		case INTEGER:
 			// we got integer so a regular size specification, parse any decimal fraction and unit as well
-			CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(lexer, posAndSizeDefaultUnit, Integer.parseInt(lexer.get()), (value, unit) -> cachedSize.init(value, unit));
+			CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(
+					lexer,
+					posAndSizeDefaultUnit,
+					CSSParserHelperBase.parseInt(lexer),
+					(value, unit) -> cachedSize.init(value, unit));
 			
 			final int bgl = bgLayer;
 			// Now should be another size value
@@ -1363,7 +1727,11 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		switch (token) {
 		case INTEGER:
 			// parse as size
-			CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(lexer, null, Integer.parseInt(lexer.get()), (value, unit) -> listener.onFontSize(context, value, unit, null));
+			CSSParserHelperSizeToSemicolon.parseSizeValueAfterInt(
+					lexer,
+					null,
+					CSSParserHelperBase.parseInt(lexer),
+					(value, unit) -> listener.onFontSize(context, value, unit, null));
 			break;
 			
 		case NONE:
@@ -1383,7 +1751,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		switch (token) {
 		case INTEGER:
 			// parse as size
-			final int value = Integer.parseInt(lexer.get());
+			final int value = CSSParserHelperBase.parseInt(lexer);
 			listener.onFontWeight(context, value, null);
 			break;
 			
@@ -1535,7 +1903,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 
 		assureTokenSkipWSAndComment(CSSToken.INTEGER);
 		
-		final int ret = Integer.parseInt(lexer.get());
+		final int ret = CSSParserHelperBase.parseInt(lexer);
 		
 		assureToken(CSSToken.UNIT_PX);
 		
@@ -1549,7 +1917,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 
 		assureTokenSkipWSAndComment(CSSToken.INTEGER);
 		
-		final int ret =  DecimalSize.encodeAsInt(Integer.parseInt(lexer.get()));
+		final int ret =  DecimalSize.encodeAsInt(CSSParserHelperBase.parseInt(lexer));
 		
 		assureToken(CSSToken.UNIT_PCT);
 		
@@ -1563,7 +1931,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 
 		assureTokenSkipWSAndComment(CSSToken.INTEGER);
 		
-		final int ret = DecimalSize.encodeAsInt(Integer.parseInt(lexer.get()));
+		final int ret = DecimalSize.encodeAsInt(CSSParserHelperBase.parseInt(lexer));
 		
 		assureToken(CSSToken.RADIX_DEG);
 		
@@ -1575,7 +1943,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	private String parseURLFunction() throws IOException, ParserException {
 		assureTokenSkipWSAndComment(CSSToken.PARENTHESIS_START);
 		
-		final String ret = parseQuotedString();
+		final String ret = parseAnyQuotedString();
 
 		assureTokenSkipWSAndComment(CSSToken.PARENTHESIS_END);
 
@@ -1714,7 +2082,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			parenthesisRead = CSSParserHelperSizeAsOnlyFunctionParam.parseSizeValueAfterInt(
 					lexer,
 					defaultUnit,
-					Integer.parseInt(lexer.get()),
+					CSSParserHelperBase.parseInt(lexer),
 					(value, unit) -> {
 						// should never be a decimal number and always px
 						sizeFunction.accept(DecimalSize.decodeToInt(value), unit);
