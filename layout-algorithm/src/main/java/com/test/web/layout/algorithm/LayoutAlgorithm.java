@@ -101,6 +101,10 @@ public class LayoutAlgorithm<
     
     	final BaseLayoutCase layoutCase = LayoutCases.determineLayoutCase(container, sub.layoutStyles, elementType);
 
+    	if (debugListener != null) {
+    		debugListener.onElementLayoutCase(getDebugDepth(state), elementType, layoutCase.getName());
+    	}
+    	
     	sub.setLayoutCase(layoutCase);
     	
     	layoutCase.onElementStart(container, element, sub, state);
@@ -117,7 +121,7 @@ public class LayoutAlgorithm<
 		}
 		
 		if (debugListener!= null && sub.resultingLayout.areBoundsComputed()) {
-			debugListener.onResultingLayoutAtStartTag(getDebugDepth(state), sub.resultingLayout, layoutCase.getClass().getSimpleName());
+			debugListener.onResultingLayoutAtStartTag(getDebugDepth(state), sub.resultingLayout, layoutCase.getName());
 		}
 	}
     
@@ -156,7 +160,7 @@ public class LayoutAlgorithm<
 		state.pop();
     	
     	if (debugListener != null) {
-    		debugListener.onElementEnd(getDebugDepth(state) , elementType);
+    		debugListener.onElementEnd(getDebugDepth(state) , elementType, sub.getLayoutCaseName());
     	}
 
 		final StackElement container = state.getCur();
@@ -165,6 +169,11 @@ public class LayoutAlgorithm<
 		// of the element and also the margins and padding?
 		// does not know size of content yet so cannot for sure know height of element
 		sub.getLayoutCase().onElementEnd(container, element, sub, state);
+
+		// Bounds must always be computed at this stage since we now are at end-tag and must be known here, regardless of layout case
+		if (!sub.resultingLayout.areBoundsComputed()) {
+			throw new IllegalStateException("Bounds were not computed for element " + elementType + " at end tag");
+		}
 
 		// Got layout, add to layer
 		final short zIndex = sub.layoutStyles.getZIndex();
@@ -181,7 +190,7 @@ public class LayoutAlgorithm<
 		
 		// log layout computation if was done in onElementEnd()
 		if (debugListener != null && ! boundsAlreadyComputed && sub.resultingLayout.areBoundsComputed()) {
-			debugListener.onResultingLayoutAtEndTag(getDebugDepth(state), sub.resultingLayout, sub.getLayoutCase().getClass().getSimpleName());
+			debugListener.onResultingLayoutAtEndTag(getDebugDepth(state), sub.resultingLayout, sub.getLayoutCaseName());
 		}
 	}
 
@@ -190,8 +199,12 @@ public class LayoutAlgorithm<
 	public void onText(DOCUMENT document, ELEMENT element, String text, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state) {
 		// We have a text element, compute text extents according to current mode
 		// TODO: text-align, overflow
-
+    	
     	final ELEMENT_TYPE elementType = document.getType(element);
+
+    	if (debugListener != null) {
+    		debugListener.onTextStart(getDebugDepth(state), elementType, text);
+    	}
 
     	if (!document.isLayoutElement(elementType)) {
     		return;
@@ -200,9 +213,13 @@ public class LayoutAlgorithm<
 		final StackElement cur = state.getCur();
 		
 		// just add to current text line as many characters as there are room for, or all the text if needed
-		computeAndAddInlineText_wrapAndRenderAsNecessary(document, element, cur, text, state);
+		computeAndAddInlineText_wrapAndRenderAsNecessary(document, element, elementType, cur, text, state);
 		
-		
+
+    	if (debugListener != null) {
+    		debugListener.onTextEnd(getDebugDepth(state), elementType, text);
+    	}
+
 		// onTextComputeAndRender(document, element, text, cur, state);
 	}
     
@@ -213,7 +230,7 @@ public class LayoutAlgorithm<
     // We need to compute layout for each element, if the display view is resized, we will recompute new elements.
     // Thus the layouted text elements are not necessarily corresponding to the HTML text elements. 
     
-    private void computeAndAddInlineText_wrapAndRenderAsNecessary(DOCUMENT document, ELEMENT element, StackElement cur, String text, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state) {
+    private void computeAndAddInlineText_wrapAndRenderAsNecessary(DOCUMENT document, ELEMENT element, ELEMENT_TYPE elementType, StackElement cur, String text, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state) {
 		final IFont font = cur.resultingLayout.getFont();
 
 		String remainingText = text;
@@ -278,6 +295,11 @@ public class LayoutAlgorithm<
 			if (state.getListener() != null) {
 				state.getListener().onText(document, element, lineText, textElem.resultingLayout);
 			}
+			
+	    	if (debugListener != null) {
+	    		debugListener.onTextLine(getDebugDepth(state), elementType, lineText, textElem.resultingLayout);
+	    	}
+
 
 			xPos = 0; // Back to start of line
 			yPos += lineHeight;
@@ -429,7 +451,7 @@ public class LayoutAlgorithm<
 					sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
 	
 			if (debugListener != null) {
-				debugListener.onResultingLayoutAtStartTag(getDebugDepth(state), sub.resultingLayout, sub.getLayoutCase().getClass().getSimpleName());
+				debugListener.onResultingLayoutAtStartTag(getDebugDepth(state), sub.resultingLayout, sub.getLayoutCaseName());
 			}
 			
 			layoutComputed = true;

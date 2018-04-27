@@ -13,6 +13,10 @@ abstract class BaseLayoutCase {
 	<ELEMENT> void onElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, ILayoutState state) {
 		
 	}
+	
+	final String getName() {
+		return getClass().getSimpleName();
+	}
 
 	final void initAvailableAndRemainingWidthFromCSS(IElementLayout containerLayout, StackElement sub) {
 		final int width  = LayoutHelperUnits.computeWidthPx(

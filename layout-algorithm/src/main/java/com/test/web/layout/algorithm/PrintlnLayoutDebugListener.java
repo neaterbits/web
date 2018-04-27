@@ -21,6 +21,12 @@ public class PrintlnLayoutDebugListener<ELEMENT_TYPE>
 	public void onElementStart(int depth, ELEMENT_TYPE element, String id, String tag, String[] classes) {
 		indent(depth, out).println("LAYOUT START " + element + " id=" + id + ", classes=" + Arrays.toString(classes));
 	}
+	
+	@Override
+	public void onElementLayoutCase(int depth, ELEMENT_TYPE element, String layoutCase) {
+		indent(depth, out).println("LAYOUT CASE " + layoutCase);
+	}
+	
 
 	@Override
 	public void onElementCSS(int depth, ILayoutStylesGetters layoutStyles) {
@@ -62,7 +68,22 @@ public class PrintlnLayoutDebugListener<ELEMENT_TYPE>
 	}
 
 	@Override
-	public void onElementEnd(int depth, ELEMENT_TYPE element) {
-		indent(depth, out).println("LAYOUT END " + element);
+	public void onElementEnd(int depth, ELEMENT_TYPE element, String layoutCaseName) {
+		indent(depth, out).println("LAYOUT END " + element+ " layoutCase=" + layoutCaseName );
+	}
+
+	@Override
+	public void onTextStart(int depth, ELEMENT_TYPE containerElement, String text) {
+		indent(depth, out).println("LAYOUT TEXT START " + containerElement + ": " + text);
+	}
+
+	@Override
+	public void onTextLine(int depth, ELEMENT_TYPE containerElement, String lineText, IElementLayout layout) {
+		indent(depth, out).println("LAYOUT TEXT LINE " + containerElement + ": \"" + lineText + "\" : " + layout);
+	}
+
+	@Override
+	public void onTextEnd(int depth, ELEMENT_TYPE containerElement, String text) {
+		indent(depth, out).println("LAYOUT TEXT END " + containerElement + ": " + text);
 	}
 }

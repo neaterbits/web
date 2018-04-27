@@ -10,6 +10,8 @@ public interface ILayoutDebugListener<ELEMENT_TYPE> {
 			String tag,
 			String [] classes);
 
+	void onElementLayoutCase(int depth, ELEMENT_TYPE element, String layoutCaseName);
+
 	// After applied CSS styles
 	void onElementCSS(int depth, ILayoutStylesGetters layoutStyles);
 	
@@ -25,5 +27,14 @@ public interface ILayoutDebugListener<ELEMENT_TYPE> {
 	void onResultingLayoutAtEndTag(int depth, IElementLayout layout, String layoutCase);
 	
 	// after element
-	void onElementEnd(int depth, ELEMENT_TYPE element);
+	void onElementEnd(int depth, ELEMENT_TYPE element, String layoutCaseName);
+	
+	// On started processing inline text
+	void onTextStart(int depth, ELEMENT_TYPE containerElement, String text) ;
+
+	// On processed one line or box of inline text
+	void onTextLine(int depth, ELEMENT_TYPE containerElement, String lineText, IElementLayout layout) ;
+	
+	// After processing inline text
+	void onTextEnd(int depth, ELEMENT_TYPE containerElement, String text) ;
 }

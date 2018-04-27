@@ -149,8 +149,8 @@ final class StackElement {
 		return ret;
 	}
 
-	void addToBlockElementWidth(int height) {
-		this.curBlockElementWidth += height;
+	void addToBlockElementWidth(int width) {
+		this.curBlockElementWidth += width;
 	}
 
 	int getCollectedBlockWidth() {
@@ -223,6 +223,10 @@ final class StackElement {
 
 	BaseLayoutCase getLayoutCase() {
 		return layoutCase;
+	}
+
+	String getLayoutCaseName() {
+		return layoutCase.getName();
 	}
 
 	void setLayoutCase(BaseLayoutCase layoutCase) {
