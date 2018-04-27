@@ -314,9 +314,14 @@ public class LayoutAlgorithm<
 	    	}
 
 
-			xPos = cur.getLineStartXPos(); // Back to start of line
-			yPos += lineHeight;
-			atStartOfLine = true;
+	    	if (lineWrapped) {
+				xPos = cur.getLineStartXPos(); // Back to start of line
+				yPos += lineHeight;
+				atStartOfLine = true;
+	    	}
+	    	else {
+	    		atStartOfLine = false;
+	    	}
 
 			state.pop();
 		}
