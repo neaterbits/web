@@ -9,6 +9,9 @@ public class MockTextExtent implements ITextExtent {
 	public IFont getFont(String fontFamily, int fontSize, int styleFlags) {
 		return new IFont() {
 			
+			private final int height = 12;
+			private final int averageWidth = 12;
+
 			@Override
 			public String getFontFamily() {
 				return fontFamily;
@@ -26,12 +29,17 @@ public class MockTextExtent implements ITextExtent {
 
 			@Override
 			public int getHeight() {
-				return 12;
+				return height;
 			}
 			
 			@Override
 			public int getAverageWidth() {
-				return 12;
+				return averageWidth;
+			}
+
+			@Override
+			public String toString() {
+				return "Font [h=" + getHeight() + ", aw=" + getAverageWidth() +"]";
 			}
 		};
 	}
