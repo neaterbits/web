@@ -207,6 +207,8 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 	// Computation of inline height, typically happens on reaching end tag
 	int computeInlineHeightAtEndTag() {
 
+		checkIsInlineElement();
+
 		// Verify that not already computed, since we are adding last max-value to current
 		if (totalInlineHeightComputed) {
 			throw new IllegalStateException("Already computed inline height");
@@ -223,11 +225,15 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 	
 	@Override
 	public int getInlineContentMaxWidth() {
+		checkIsInlineElement();
+
 		return inlineMaxWidth;
 	}
 
 	@Override
 	public int getInlineContentHeight() {
+		checkIsInlineElement();
+
 		if (!totalInlineHeightComputed) {
 			throw new IllegalStateException("inline content height not computed");
 		}
@@ -307,7 +313,13 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 		
 		return ret;
 	}
-	
+
+	private void checkIsInlineElement() {
+		if (isViewPort() || !this.getLayoutStyles().getDisplay().isInline()) {
+			throw new IllegalStateException("Current element is not an inline element");
+		}
+	}
+
 	private void checkIsBlockElement() {
 		if (!isViewPort() && !this.getLayoutStyles().getDisplay().isBlock()) {
 			throw new IllegalStateException("Current element is not a block element");
@@ -329,7 +341,8 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 		return getCollectedBlockHeight();
 	}
 
-	int getCollectedBlockHeight() {
+	@Override
+	public int getCollectedBlockHeight() {
 		checkIsBlockElement();
 
 		return curBlockElementHeight;

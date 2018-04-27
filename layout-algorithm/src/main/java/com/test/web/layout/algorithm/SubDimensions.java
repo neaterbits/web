@@ -20,4 +20,12 @@ public interface SubDimensions {
 	 * @return inline element height
 	 */
 	int getInlineContentHeight();
+
+
+	/**
+	 * For block element, get collected block height
+	 * 
+	 * @return block height
+	 */
+	int getCollectedBlockHeight();
 }

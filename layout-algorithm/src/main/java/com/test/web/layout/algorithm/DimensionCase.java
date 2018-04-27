@@ -3,7 +3,6 @@ package com.test.web.layout.algorithm;
 import com.test.web.layout.common.ILayoutStylesGetters;
 import com.test.web.layout.common.IStyleDimensions;
 import com.test.web.layout.common.IWrapping;
-import com.test.web.layout.common.enums.Display;
 import com.test.web.layout.common.enums.Justify;
 import com.test.web.layout.common.enums.Unit;
 
@@ -34,11 +33,11 @@ abstract class DimensionCase {
 		  SubDimensions sub,
 		  ElementLayout resultingLayout);
 	
-	static IWrapping initPadding(IStyleDimensions padding, ElementLayout resultingLayout, ContainerDimensions container) {
-		return initPadding(padding, resultingLayout, container.getAvailableWidth(), container.getAvailableHeight());
+	static IWrapping initPadding(IStyleDimensions padding, ContainerDimensions container, ElementLayout resultingLayout) {
+		return initPadding(padding, container.getAvailableWidth(), container.getAvailableHeight(), resultingLayout);
 	}
 
-	static IWrapping initPadding(IStyleDimensions padding, ElementLayout resultingLayout, int containerWidth, int containerHeight) {
+	private static IWrapping initPadding(IStyleDimensions padding, int containerWidth, int containerHeight, ElementLayout resultingLayout) {
     	final int topPadding 		= getPaddingSize(padding.getTop(), 		padding.getTopUnit(), 		padding.getTopType(),		containerHeight);
     	final int rightPadding 	= getPaddingSize(padding.getRight(), 		padding.getRightUnit(), 		padding.getRightType(),		containerWidth);
     	final int bottomPadding 	= getPaddingSize(padding.getBottom(), 	padding.getBottomUnit(), 	padding.getBottomType(),	containerHeight);
@@ -48,7 +47,21 @@ abstract class DimensionCase {
 
     	return resultingLayout.getPadding();
 	}
-	    
+
+	static IWrapping initNoAutoMargins(IStyleDimensions margins, ElementLayout resultingLayout, ContainerDimensions container) {
+		return initNoAutoMargins(margins, resultingLayout, container.getAvailableWidth(), container.getAvailableHeight());
+	}
+
+	private static IWrapping initNoAutoMargins(IStyleDimensions margins, ElementLayout resultingLayout, int containerWidth, int containerHeight) {
+		final int topMargin  = autoToNoneSize(margins.getTop(), margins.getTopUnit(), margins.getTopType(), containerHeight);
+  		final int rightMargin  = autoToNoneSize(margins.getRight(), margins.getRightUnit(), margins.getRightType(), containerWidth);
+  		final int bottomMargin  = autoToNoneSize(margins.getBottom(), margins.getBottomUnit(), margins.getBottomType(), containerHeight);
+		final int leftMargin  = autoToNoneSize(margins.getLeft(), margins.getLeftUnit(), margins.getLeftType(), containerWidth);
+
+		resultingLayout.getMarginWrapping().init(topMargin, rightMargin, bottomMargin, leftMargin);
+		
+		return resultingLayout.getMargins();
+	}
 	    
 	    static int getPaddingSize(int size, Unit unit, Justify type, int containerSize) {
 	    	return getNonAutoSize(size, unit, type, containerSize);
@@ -96,4 +109,5 @@ abstract class DimensionCase {
 	    static int autoToNoneSize(int size, Unit unit, Justify type, int curSize) {
 			return getNonAutoSize(size, unit, type == Justify.AUTO ? Justify.NONE : type, curSize);
 		}
+
 }

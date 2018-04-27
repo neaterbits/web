@@ -24,6 +24,12 @@ class LayoutCases {
 	private static final CaseBlockWithinBlockBehaving_CSSSizeKnown BLOCK_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN
 				= new CaseBlockWithinBlockBehaving_CSSSizeKnown();
 	
+	private static final CaseBlockWithinBlockBehaving_CSSWidthKnown BLOCK_WITHIN_BLOCK_BEHAVING_CSS_WIDTH_KNOWN
+				= new CaseBlockWithinBlockBehaving_CSSWidthKnown();
+
+	private static final CaseBlockWithinBlockBehaving_CSSHeightKnown BLOCK_WITHIN_BLOCK_BEHAVING_CSS_HEIGHT_KNOWN
+				= new CaseBlockWithinBlockBehaving_CSSHeightKnown();
+
 	private static final CaseBlockWithinBlockBehaving_CSSSizeUnknown BLOCK_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN
 				= new CaseBlockWithinBlockBehaving_CSSSizeUnknown();
 
@@ -68,9 +74,18 @@ class LayoutCases {
 					break;
 				
 				case BLOCK:
-					ret = hasDimensionsFromCSS
-						? BLOCK_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN
-						: BLOCK_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN;
+					if (subLayoutStyles.hasWidth() && subLayoutStyles.hasHeight()) {
+						ret = BLOCK_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN;
+					}
+					else if (subLayoutStyles.hasWidth()) {
+						ret = BLOCK_WITHIN_BLOCK_BEHAVING_CSS_WIDTH_KNOWN;
+					}
+					else if (subLayoutStyles.hasHeight()) {
+						ret = BLOCK_WITHIN_BLOCK_BEHAVING_CSS_HEIGHT_KNOWN;
+					}
+					else {
+						ret = BLOCK_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN;
+					}
 					break;
 	
 				default:

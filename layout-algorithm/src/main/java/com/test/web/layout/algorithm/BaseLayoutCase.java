@@ -3,7 +3,7 @@ package com.test.web.layout.algorithm;
 import com.test.web.layout.common.IElementLayout;
 import com.test.web.layout.common.ILayoutState;
 
-// Base class for layoutxx cases
+// Base class for layout cases
 abstract class BaseLayoutCase {
 
 	<ELEMENT> void onElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, ILayoutState state) {

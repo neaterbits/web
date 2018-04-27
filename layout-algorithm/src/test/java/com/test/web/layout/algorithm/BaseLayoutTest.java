@@ -117,8 +117,8 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE> extends TestC
 
 		assertThat(div2).isNotNull();
 
-		checkOuterBounds(layer, div2, 0, 0, 800, 600);
-		checkInnerBounds(layer, div2, 450, 0, 300, 600);
+		checkOuterBounds(layer, div2, 0, 0, 800, 12);
+		checkInnerBounds(layer, div2, 450, 0, 300, 12);
 		checkMargins(layer, div2, 0, 50, 0, 450);
 		checkPadding(layer, div2, 0, 0, 0, 0);
 	}

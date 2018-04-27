@@ -9,9 +9,6 @@ class CaseBlockWithinBlockBehaving_CSSSizeKnown extends CaseBlockWithinBlockBeha
 
 		// Knows sub elements size already, can make some computations
 		
-		//final int width  = LayoutHelperUnits.computeWidthPx (sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), container.resultingLayout);
-		//final int height = LayoutHelperUnits.computeHeightPx(sub.layoutStyles.getHeight(), sub.layoutStyles.getHeightUnit(), container.resultingLayout);
-
 		DimensionCases.BLOCK_CSS_SIZES_KNOWN.computeDimensions(sub.layoutStyles, container, sub, sub.resultingLayout);
 
 		final int width = sub.resultingLayout.getInnerBounds().getWidth();

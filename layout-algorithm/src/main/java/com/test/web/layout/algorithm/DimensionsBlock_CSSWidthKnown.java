@@ -4,13 +4,14 @@ import com.test.web.layout.common.ILayoutStylesGetters;
 import com.test.web.layout.common.IStyleDimensions;
 import com.test.web.layout.common.IWrapping;
 
-final class DimensionsBlock_CSSSizeKnown extends DimensionsBlock_Base {
+public class DimensionsBlock_CSSWidthKnown extends DimensionsBlock_Base {
 
 	@Override
-	void computeDimensions(ILayoutStylesGetters layoutStyles, ContainerDimensions container, SubDimensions sub, ElementLayout resultingLayout) {
+	void computeDimensions(ILayoutStylesGetters layoutStyles, ContainerDimensions container, SubDimensions sub,
+			ElementLayout resultingLayout) {
 
-		if ( ! layoutStyles.hasWidth() || ! layoutStyles.hasHeight()) {
-			  throw new IllegalArgumentException("CSS dims not known");
+		if ( ! layoutStyles.hasWidth() ||  layoutStyles.hasHeight()) {
+			  throw new IllegalArgumentException("CSS dims not matching");
 		}
 		
 		final IStyleDimensions layoutMargins = layoutStyles.getMargins();
@@ -20,9 +21,10 @@ final class DimensionsBlock_CSSSizeKnown extends DimensionsBlock_Base {
 
 		// TODO content-box
 		final int widthPx  = LayoutHelperUnits.computeWidthPx (layoutStyles.getWidth(), layoutStyles.getWidthUnit(), container.getAvailableWidth());
-		final int heightPx = LayoutHelperUnits.computeHeightPx(layoutStyles.getHeight(), layoutStyles.getHeightUnit(), container.getAvailableHeight());
+		
+		// This is a block element so get block-height
+		final int heightPx = sub.getCollectedBlockHeight();
 
 		initBoundsAndVerifyAutoMargins(layoutMargins, container, 0, container.getCurBlockYPos(), widthPx, heightPx, padding, margins, resultingLayout);
 	}
 }
-
