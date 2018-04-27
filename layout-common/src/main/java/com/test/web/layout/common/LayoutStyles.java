@@ -4,6 +4,7 @@ import com.test.web.layout.common.enums.Display;
 import com.test.web.layout.common.enums.LayoutFloat;
 import com.test.web.layout.common.enums.Position;
 import com.test.web.layout.common.enums.Unit;
+import com.test.web.types.DecimalSize;
 import com.test.web.types.FontSpec;
 
 /*
@@ -201,7 +202,7 @@ public final class LayoutStyles implements ILayoutStylesSetters, ILayoutStylesGe
 	@Override
 	public String toString() {
 		return "[d=" + display + ", p=" + position + ", f=" + _float + ", w="
-				+ width + ", wu=" + widthUnit + ", h=" + height + ", hu=" + heightUnit
+				+ DecimalSize.decodeToString(width) + ", wu=" + widthUnit + ", h=" + DecimalSize.decodeToString(height) + ", hu=" + heightUnit
 				+ ", m=" + margins + ", p=" + padding + ", z=" + zIndex + ", posL="
 				+ positionLeft + ", poSLU=" + positionLeftUnit + ", posT=" + positionTop
 				+ ", posTU=" + positionTopUnit + ", font=" + font + "]";

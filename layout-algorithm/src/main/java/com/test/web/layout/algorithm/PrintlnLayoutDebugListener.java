@@ -47,9 +47,18 @@ public class PrintlnLayoutDebugListener<ELEMENT_TYPE>
 				+ ", subCSSHeight=" + subCSSHeight);
 	}
 	
+	private void onResultingLayout(int depth, IElementLayout layout, String tagStartOrEnd, String layoutCaseName) {
+		indent(depth, out).println("LAYOUT result " + tagStartOrEnd + " : outer=" + layout.getOuterBounds() + ", inner=" + layout.getInnerBounds() + ", layoutCase=" + layoutCaseName);
+	}
+
 	@Override
-	public void onResultingLayout(int depth, IElementLayout layout) {
-		indent(depth, out).println("LAYOUT result: outer=" + layout.getOuterBounds() + ", inner=" + layout.getInnerBounds());
+	public void onResultingLayoutAtStartTag(int depth, IElementLayout layout, String layoutCaseName) {
+		onResultingLayout(depth, layout, "start", layoutCaseName);
+	}
+
+	@Override
+	public void onResultingLayoutAtEndTag(int depth, IElementLayout layout, String layoutCaseName) {
+		onResultingLayout(depth, layout, "end", layoutCaseName);
 	}
 
 	@Override

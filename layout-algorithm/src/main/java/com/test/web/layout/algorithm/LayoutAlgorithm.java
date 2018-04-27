@@ -117,7 +117,7 @@ public class LayoutAlgorithm<
 		}
 		
 		if (debugListener!= null && sub.resultingLayout.areBoundsComputed()) {
-			debugListener.onResultingLayout(getDebugDepth(state), sub.resultingLayout);
+			debugListener.onResultingLayoutAtStartTag(getDebugDepth(state), sub.resultingLayout, layoutCase.getClass().getSimpleName());
 		}
 	}
     
@@ -180,7 +180,7 @@ public class LayoutAlgorithm<
 		
 		// log layout computation if was done in onElementEnd()
 		if (debugListener != null && ! boundsAlreadyComputed && sub.resultingLayout.areBoundsComputed()) {
-			debugListener.onResultingLayout(getDebugDepth(state), sub.resultingLayout);
+			debugListener.onResultingLayoutAtEndTag(getDebugDepth(state), sub.resultingLayout, sub.getLayoutCase().getClass().getSimpleName());
 		}
 	}
 
@@ -420,7 +420,7 @@ public class LayoutAlgorithm<
 					sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
 	
 			if (debugListener != null) {
-				debugListener.onResultingLayout(getDebugDepth(state), sub.resultingLayout);
+				debugListener.onResultingLayoutAtStartTag(getDebugDepth(state), sub.resultingLayout, sub.getLayoutCase().getClass().getSimpleName());
 			}
 			
 			layoutComputed = true;

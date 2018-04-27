@@ -20,7 +20,9 @@ public interface ILayoutDebugListener<ELEMENT_TYPE> {
 
 	void onComputedHeight(int depth, int curAvailableHeight, int subAvailableHeight, int subCSSHeight, boolean hasCSSHeight);
 	
-	void onResultingLayout(int depth, IElementLayout layout);
+	void onResultingLayoutAtStartTag(int depth, IElementLayout layout, String layoutCase);
+
+	void onResultingLayoutAtEndTag(int depth, IElementLayout layout, String layoutCase);
 	
 	// after element
 	void onElementEnd(int depth, ELEMENT_TYPE element);
