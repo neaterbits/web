@@ -109,7 +109,7 @@ public class LayoutAlgorithm<
     	setResultingFont(state, sub);
 
 		// Got layout, set renderer from appropriate layer so that rendering can find it, rendering may happen already during this pass
-    	setResultingRenderer(state, sub);
+    	setResultingRenderer(sub, state);
 
 		// listener, eg renderer
 		if (state.getListener() != null) {
@@ -127,14 +127,15 @@ public class LayoutAlgorithm<
 		sub.resultingLayout.setFont(font);
     }
     
-    private void setResultingRenderer(LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, StackElement sub) {
+    private void setResultingRenderer(StackElement sub, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state) {
 		final short zIndex = sub.layoutStyles.getZIndex();
-		
-		setResultingRenderer(state, sub, zIndex);
+
+		setResultingRenderer(sub, state, zIndex);
     }
     
-    private void setResultingRenderer(LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, StackElement sub, int zIndex) {
+    private void setResultingRenderer(StackElement sub, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, int zIndex) {
 		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, rendererFactory);
+
 		sub.resultingLayout.setRenderer(zIndex, layer.getRenderer());
     }
   
@@ -205,22 +206,30 @@ public class LayoutAlgorithm<
 		// onTextComputeAndRender(document, element, text, cur, state);
 	}
     
+    
+    // Renders text in multiple text elements.
+    // It has to be multiple since we can add more text on the last line of the wrapping text if there is room for it
+    // eg. <span>This is some text that wraps</span><span>This is more text</span> could result in the latter span text result on the same line of the first span, wven if the first span wrapped.
+    // We need to compute layout for each element, if the display view is resized, we will recompute new elements.
+    // Thus the layouted text elements are not necessarily corresponding to the HTML text elements. 
+    
     private void computeAndAddInlineText_wrapAndRenderAsNecessary(DOCUMENT document, ELEMENT element, StackElement cur, String text, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state) {
 		final IFont font = cur.resultingLayout.getFont();
 
 		String remainingText = text;
 		
-		// Must push a separate layout for text for passing text bounds
-		final StackElement textElem = state.push(cur.getRemainingWidth(), cur.getRemainingHeight());
-		
-		setResultingRenderer(state, textElem, cur.layoutStyles.getZIndex());
 
 		// TODO must reflect any inline elements
 		int xPos = cur.getCollectedBlockWidth();
 		int yPos = cur.getCollectedBlockHeight();
 		
 		while ( ! remainingText.isEmpty() ) {
-		
+
+			// Must push a separate layout for text for passing text bounds in resultingLayout
+			final StackElement textElem = state.push(cur.getRemainingWidth(), cur.getRemainingHeight());
+			
+			setResultingRenderer(textElem, state, cur.layoutStyles.getZIndex());
+
 	    	// find number of chars width regards to this line
 			final NumberOfChars numChars = textUtil.findNumberOfChars(remainingText, cur.getRemainingWidth(), font);
 	
@@ -243,7 +252,7 @@ public class LayoutAlgorithm<
 				lineWrapped = false;
 				lineText = remainingText;
 				
-				remainingText = ""; // to exit loop
+				remainingText = ""; // in order to exit loop
 			}
 			
 
@@ -270,11 +279,11 @@ public class LayoutAlgorithm<
 				state.getListener().onText(document, element, lineText, textElem.resultingLayout);
 			}
 
-			xPos = 0;
+			xPos = 0; // Back to start of line
 			yPos += lineHeight;
+
+			state.pop();
 		}
-		
-		state.pop();
     }
  
     private void renderCurrentTextLine() {
