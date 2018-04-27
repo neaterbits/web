@@ -82,6 +82,7 @@ final class StackElement {
 
 	void clear() {
 		layoutStyles.clear();
+		resultingLayout.clear();
 
 		// reset array counter but keep array though to save on memory allocations
 		this.numElementsOnThisTextLine = 0;
