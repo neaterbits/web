@@ -10,6 +10,23 @@ import com.test.web.types.Pixels;
 // related to computing margins, padding and inner and outer bounds of elements
 class LayoutHelperWrappingBounds {
 
+	/**
+	 * Compute dimensions (size and position) when dimensions are specified in CSS, ie. "width: 500px; height: 25%".
+	 * Both dimensions must be specified.
+	 * This is for block containers.
+	 * 
+	 * This sets:
+	 * - outer bounds relative to container
+	 * - inner bounds relative to container
+	 * - absolute position in viewport
+	 * 
+	 * @param layoutStyles getters for obtaining CSS sizes
+	 * @param containerWidth total width of container element
+	 * @param containerHeight total height of container height
+	 * @param containerRemainingWidth width of free space in container, so that margin:auto can be handled properly
+	 * @param containerRemainingHeight height of free space in container, so that eg. vertical-align: middle can be handled correctly
+	 * @param resultingLayout computed information will be stored here
+	 */
 	  static void computeDimensionsFromKnownCSSDims(ILayoutStylesGetters layoutStyles,
 			  int containerWidth, int containerHeight,
 			  int containerRemainingWidth, int containerRemainingHeight,
@@ -38,34 +55,27 @@ class LayoutHelperWrappingBounds {
 	    		ElementLayout resultingLayout) {
 		  
 		  final int widthPx;
-		  final boolean hasCSSWidth;
 		  
 		  if (layoutStyles.hasWidth()) {
 			  widthPx = LayoutHelperUnits.computeWidthPx (layoutStyles.getWidth(), layoutStyles.getWidthUnit(), containerWidth);
-			  hasCSSWidth = true;
 		  }
 		  else {
 			  widthPx = Pixels.NONE;
-			  hasCSSWidth = false;
 		  }
 
 		  final int heightPx;
-		  final boolean hasCSSHeight;
 
 		  if (layoutStyles.hasHeight()) {
 			  heightPx = LayoutHelperUnits.computeHeightPx(layoutStyles.getHeight(), layoutStyles.getHeightUnit(), containerHeight);
-			  hasCSSHeight = true;
 		  }
 		  else {
 			  heightPx = Pixels.NONE;
-			  hasCSSHeight = false;
 		  }
-		  
 
 		  computeDimensionsFromOuter(
 				  layoutStyles.getDisplay(),
-				  remainingWidth, layoutStyles.getWidth(), layoutStyles.hasWidth(),
-				  remainingHeight, layoutStyles.getHeight(), layoutStyles.hasHeight(),
+				  remainingWidth, widthPx, layoutStyles.hasWidth(),
+				  remainingHeight, heightPx, layoutStyles.hasHeight(),
 				  layoutStyles.getMargins(), layoutStyles.getPadding(),
 				  resultingLayout);
 	  }
