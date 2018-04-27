@@ -101,12 +101,17 @@ public class CSSContext<TARGET> {
 			? document.getZIndex(target)
 			: (short)0;
 
-		result.merge(display.getLayoutDisplay(), position.getLayoutPosition(), cssFloat.getLayoutFloat(),
+		result.merge(
+				display != null ? display.getLayoutDisplay() : null,
+				position != null ? position.getLayoutPosition() : null,
+				cssFloat != null ? cssFloat.getLayoutFloat() : null,
 				
 				null, // TODO: font from CSS document
 				
-				positionLeft, positionLeftUnit.getLayoutUnit(), positionTop, positionTopUnit.getLayoutUnit(),
-				width, widthUnit.getLayoutUnit(), height, heightUnit.getLayoutUnit(),
+				positionLeft, positionLeftUnit != null ? positionLeftUnit.getLayoutUnit() : null,
+				positionTop, positionTopUnit != null ? positionTopUnit.getLayoutUnit() : null,
+				width, widthUnit != null ? widthUnit.getLayoutUnit() : null,
+				height, heightUnit != null ? heightUnit.getLayoutUnit() : null,
 				zIndex);
 		
 		document.getMargins(target, dimensionsSetter, result.getMargins());
@@ -140,10 +145,10 @@ public class CSSContext<TARGET> {
 			}
 
 			param.merge(
-					top, topUnit.getLayoutUnit(), topType.getLayoutJustify(),
-					right, rightUnit.getLayoutUnit(), rightType.getLayoutJustify(),
-					bottom, bottomUnit.getLayoutUnit(), bottomType.getLayoutJustify(),
-					left, leftUnit.getLayoutUnit(), leftType.getLayoutJustify());
+					top, 		topUnit != null ? topUnit.getLayoutUnit() : null, 			topType != null ? topType.getLayoutJustify() : null,
+					right, 	rightUnit != null ? rightUnit.getLayoutUnit() : null, 		rightType != null ? rightType.getLayoutJustify() : null,
+					bottom, bottomUnit != null ? bottomUnit.getLayoutUnit() : null, bottomType != null ? bottomType.getLayoutJustify() : null,
+					left, 		leftUnit != null ? leftUnit.getLayoutUnit() : null, 			leftType != null ? leftType.getLayoutJustify() : null);
 		}
 	}
 }
