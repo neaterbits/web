@@ -2,6 +2,7 @@ package com.test.web.layout.algorithm;
 
 import com.test.web.layout.common.IElementLayout;
 import com.test.web.layout.common.enums.Unit;
+import com.test.web.types.DecimalSize;
 
 class LayoutHelperUnits {
 
@@ -26,7 +27,7 @@ class LayoutHelperUnits {
 		
 		switch (sizeUnit) {
 		case PX:
-			ret = size;
+			ret = DecimalSize.decodeToInt(size);
 			break;
 			
 		case EM:
