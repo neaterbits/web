@@ -20,6 +20,53 @@ public enum Display {
 	TABLE_ROW,
 	NONE,
 	INITIAL,
-	INHERIT
+	INHERIT;
+	
+	public boolean isInline() {
+		final boolean isInline;
+		
+		switch (this) {
+		case INLINE:
+		case INLINE_BLOCK:
+		case INLINE_FLEX:
+		case INLINE_TABLE:
+			isInline = true;
+			break;
+			
+		case NONE:
+		case INITIAL:
+		case INHERIT:
+			throw new IllegalStateException("Called for non-display value: " + this);
+			
+		default:
+			isInline = false;
+			break;
+			
+		}
 
+		return isInline;
+	}
+
+	public boolean isBlock() {
+		final boolean isBlock;
+		
+		switch (this) {
+		case BLOCK:
+		case INLINE_BLOCK:
+			isBlock = true;
+			break;
+			
+		case NONE:
+		case INITIAL:
+		case INHERIT:
+			throw new IllegalStateException("Called for non-display value: " + this);
+			
+		default:
+			isBlock = false;
+			break;
+			
+		}
+
+		return isBlock;
+	}
 }

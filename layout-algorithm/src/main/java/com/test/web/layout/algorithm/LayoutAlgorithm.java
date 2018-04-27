@@ -9,6 +9,7 @@ import com.test.web.layout.common.IFontSettings;
 import com.test.web.layout.common.ILayoutContext;
 import com.test.web.layout.common.ILayoutDebugListener;
 import com.test.web.layout.common.ViewPort;
+import com.test.web.layout.common.enums.Display;
 import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.ITextExtent;
@@ -234,11 +235,17 @@ public class LayoutAlgorithm<
 		final IFont font = cur.resultingLayout.getFont();
 
 		String remainingText = text;
-		
+
+		// Find start position of text within container element
+		// Container element is either a block element or an inline element but either way we will set xPos to the current xPos withib that element.
+		// This might be multiple lines down in the element and in the middle of a line, ie. if text is wrapping.
 
 		// TODO must reflect any inline elements
-		int xPos = cur.getCollectedBlockWidth();
-		int yPos = cur.getCollectedBlockHeight();
+		int xPos = cur.getCurLineXPos();
+		int yPos = cur.getCurLineYPos();
+
+		// Can only be at start of line if no elements have been added, we will detect wrapping further down
+		boolean atStartOfLine = !cur.hasAnyInlineElementsAdded();
 		
 		while ( ! remainingText.isEmpty() ) {
 
@@ -254,8 +261,11 @@ public class LayoutAlgorithm<
 			final String lineText;
 			
 			final int numCharsOnLine = numChars.getNumberOfChars();
-			
-			if (numCharsOnLine < text.length()) {
+
+			if (numCharsOnLine == 0) {
+				throw new UnsupportedOperationException("TODO handle case where no room for more characters at end of line");
+			}
+			else if (numCharsOnLine < text.length()) {
 				
 				// Not enough room for all of text, which means that line wraps.
 				// figure max height, baseline and render line
@@ -272,8 +282,6 @@ public class LayoutAlgorithm<
 				remainingText = ""; // in order to exit loop
 			}
 			
-
-			cur.addInlineText(lineText);
 			
 			final int lineHeight = font.getHeight();
 			
@@ -290,7 +298,12 @@ public class LayoutAlgorithm<
 					lineHeight);
 
 			textElem.resultingLayout.setBoundsComputed();
-			
+
+			// Text is always inline
+			textElem.resultingLayout.setDisplay(Display.INLINE);
+
+			cur.addInlineText(lineText, textElem.resultingLayout, atStartOfLine);
+
 			// render each item of text in a separate callback
 			if (state.getListener() != null) {
 				state.getListener().onText(document, element, lineText, textElem.resultingLayout);
@@ -301,8 +314,9 @@ public class LayoutAlgorithm<
 	    	}
 
 
-			xPos = 0; // Back to start of line
+			xPos = cur.getLineStartXPos(); // Back to start of line
 			yPos += lineHeight;
+			atStartOfLine = true;
 
 			state.pop();
 		}

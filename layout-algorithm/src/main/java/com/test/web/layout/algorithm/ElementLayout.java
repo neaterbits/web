@@ -89,6 +89,14 @@ final class ElementLayout implements IElementRenderLayout {
 	}
 
 	void setDisplay(Display display) {
+		if (display == null) {
+			throw new IllegalArgumentException("display == null");
+		}
+
+		if (this.display != null) {
+			throw new IllegalStateException("display already set");
+		}
+
 		this.display = display;
 	}
 	
@@ -97,6 +105,11 @@ final class ElementLayout implements IElementRenderLayout {
 		this.renderer = null;
 		this.sumWidth = sumHeight = 0;
 		this.boundsComputed = false;
+		
+		// For easier debugging
+		absolute.init(-1, -1, -1, -1);
+		outer.init(-1, -1, -1, -1);
+		inner.init(-1, -1, -1, -1);
 	}
 	
 	void setRenderer(int zIndex, IDelayedRenderer renderer) {

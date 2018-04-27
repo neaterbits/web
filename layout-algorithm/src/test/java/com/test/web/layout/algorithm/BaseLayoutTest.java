@@ -63,8 +63,8 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE> extends TestC
 
 		assertThat(span1).isNotNull();
 
-		checkOuterBounds(layer, span1, 0, 0, 300, 600);
-		checkInnerBounds(layer, span1, 0, 0, 300, 600);
+		checkOuterBounds(layer, span1, 0, 0, 72, 12); // Even if width is specified for span, this is not used for inline elements
+		checkInnerBounds(layer, span1, 0, 0, 72, 12); // Even if width is specified for span, this is not used for inline elements
 		checkMargins(layer, span1, 0, 0, 0, 0);
 		checkPadding(layer, span1, 0, 0, 0, 0);
 		
@@ -72,8 +72,8 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE> extends TestC
 
 		assertThat(span2).isNotNull();
 
-		checkOuterBounds(layer, span2, 0, 0, 500, 600);
-		checkInnerBounds(layer, span2, 0, 0, 500, 600);
+		checkOuterBounds(layer, span2, 0, 0, 72, 12);
+		checkInnerBounds(layer, span2, 0, 0, 72, 12);
 		checkMargins(layer, span2, 0, 0, 0, 0);
 		checkPadding(layer, span2, 0, 0, 0, 0);
 	}

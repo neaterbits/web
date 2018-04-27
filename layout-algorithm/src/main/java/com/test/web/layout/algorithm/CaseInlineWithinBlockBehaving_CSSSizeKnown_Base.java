@@ -17,11 +17,16 @@ public abstract class CaseInlineWithinBlockBehaving_CSSSizeKnown_Base
 			container.getRemainingHeight(), height, sub.layoutStyles.hasHeight(),
 			sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
 
+		boolean atStartOfLine = container.hasAnyInlineElementsAdded();
+		
+		// TODO handle case where there is no room for element, the atStartOfLine may be set to true because we had to wrap
+		// to the next line, or we have to look at overflow flag
+		
 		// Add to textline and wrap and render if necessary
 		if (width > container.getRemainingWidth()) {
 			// No room on current textline so continue on next
 		}
 
-		container.addInlineElement(sub.resultingLayout);
+		container.addInlineElement(sub.resultingLayout, atStartOfLine);
 	}
 }

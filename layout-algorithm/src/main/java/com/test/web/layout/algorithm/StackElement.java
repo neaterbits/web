@@ -2,6 +2,7 @@ package com.test.web.layout.algorithm;
 
 import java.util.Arrays;
 
+import com.test.web.layout.common.IBounds;
 import com.test.web.layout.common.ILayoutStylesGetters;
 import com.test.web.layout.common.LayoutStyles;
 import com.test.web.layout.common.enums.Display;
@@ -26,7 +27,7 @@ final class StackElement {
 
 	// remaining width and height when adding elements
 	// this so that we can find the size of elements that do not have these specified
-	private int remainingWidth;
+	private int remainingWidth; // Always known since we know the width of the viewport? What about overflow:scroll?
 	private int remainingHeight;
 	
 	// Work area for singlethreaded algorithm, storing non threadsafe data here, but should be ok since HTML document parsing happens on one thread
@@ -42,27 +43,53 @@ final class StackElement {
 	
 	// -------------------------- Text specific --------------------------
 
-	// -------------------------- For inline elements  --------------------------
-	
-	// -------------------------- For block behaving elements  --------------------------
+	// -------------------------- For block or inline elements, ie for one inline. Also inline within inline  --------------------------
 
-	// Max height for inline elements on current inline textline
+	private boolean inlineElementsAdded;
+	
+	// Sum of width of subelements on this line, so can sum up to block level.Useful when block width not set
+	// Added to at end-tag of sub inline (or inline-block) elements
+	private int curInlineWidth;
+	
+	// Max width for inline element, eg. if line did not wrap this will be length of text on first line, otherwise
+	// will be length of longest line within wrapped text
+	private int inlineMaxWidth;
+
+	// Max height of subelements on this line, so can sum up to block level.
+	// Added to at end-tag of sub inline (or inline-block) elements
 	// When a text line wraps, the baseline will be computed from this
 	// Thus rendering of a line cannot happen until the whole line is processed and baseline is known
-	private int maxTextLineElementHeight;
 
-
-	// Sum of elements in block
-	// Usually same as available but might be less
-	private int curBlockElementWidth;
+	// So when at end tag of a inline element and we are certain of the height of that element, we will call on the container to see if > current max height.
+	// Only done when sum element is an inline or inline-block element
+	private int curInlineMaxHeight;
 	
-	// Current height of block element (if this is one). This is the sum of all textline heights.
-	// Unrelated to height specified by CSS, that would have to be handled by overflow attribute.
-	private int curBlockElementHeight;
+	// Height of this inline elemen, summarizing all text lines' max height
+	private int inlineHeight;
+	private boolean totalInlineHeightComputed; // For checking that we only compute total once for each element
 	
 	// track all inline elements on one text line until we have enough to render the line
 	private TextLineElement [] elementsOnThisTextLine;
 	private int numElementsOnThisTextLine;
+
+
+	// -------------------------- For inline elements  --------------------------
+	
+	// -------------------------- For block behaving elements  --------------------------
+
+
+	// We are not summarizing block element widths,
+	// that is done only for inline and inline-block elements
+	//private int curBlockElementWidth;
+	
+	// Current height of block element (if this is one). This is the sum of all block elements within this block.
+	// This is used in the case where height for blocks is not set in CSS, eg. for nested divs we just summarize
+	// the height of all sub divs to find the height of container div.
+	// Note as seen above, we do not do that for widths because that is only needed for inline elements within a block
+	
+	// Unrelated to height specified by CSS, that would have to be handled by overflow attribute.
+	private int curBlockElementHeight;
+	
 
 	StackElement(int stackIdx, int availableWidth, int availableHeight) {
 		this(stackIdx);
@@ -104,18 +131,136 @@ final class StackElement {
 		this.remainingWidth = availableWidth;
 		this.remainingHeight = availableHeight;
 
-		this.curBlockElementWidth = 0;
+		this.inlineElementsAdded = false;
+		this.curInlineWidth = 0;
+		this.inlineMaxWidth = 0;
+		this.curInlineMaxHeight = 0;
+		this.inlineHeight = 0;
+		this.totalInlineHeightComputed = false;
+
 		this.curBlockElementHeight = 0;
 	}
-
-	void addInlineText(String text) {
-		// Inherits the layout of this element
-		addTextLineElement().init(text);
+	
+	boolean hasAnyInlineElementsAdded() {
+		return inlineElementsAdded;
 	}
 
+	int getLineStartXPos() {
+		// TODO take margin of current element into account
+		final int leftMargin = 0;
+
+		return leftMargin;
+	}
+	
+	int getCurLineXPos() {
+		// Current inline x pos, computed from cur inline width
+		// Note that if this is the first textline, it is 0
+		
+		return getLineStartXPos() + (inlineElementsAdded ? this.curInlineWidth : 0);
+	}
+
+	int getCurLineYPos() {
+		// Current inline y pos, computed from cur inline height
+		
+		// TODO margins etc
+		
+		return inlineHeight;
+	}
+
+	/**
+	 * Add inline text, eg. <span>This is a text</span>
+	 * Note that for a long text that spans multiple lines, this will be called multiple times
+	 * as the text is wrapped over mutiple lines.
+	 * 
+	 * @param text the text to add for
+	 * @param subLayout computed layout for text
+	 * @param atStartOfLine true if first element or is first after line wrap
+	 */
+	void addInlineText(String text, ElementLayout subLayout, boolean atStartOfLine) {
+		// Inherits the layout of this element
+		addTextLineElement().init(text, subLayout);
+		
+		updateInlineInfo(subLayout, atStartOfLine);
+	}
+
+	/**
+	 * Add inline element, eg. the image in <span>This is a text<img ...> and an image</span>
+	 * 
+	 * @param layout computed layout for text
+	 * @param atStartOfLine true if first element or is first after line wrap
+	 */
+
 	// Add some nested inline element, like an image
-	void addInlineElement(ElementLayout layout) {
-		addTextLineElement().init(layout);
+	void addInlineElement(ElementLayout subLayout, boolean atStartOfLine) {
+		// Make sure we are adding an inline-element, otherwise should not call this methd
+		if (!subLayout.getDisplay().isInline()) {
+			throw new IllegalArgumentException("Adding inline element layout that is not inline-display : "  + subLayout.getDisplay());
+		}
+
+		addTextLineElement().init(subLayout);
+
+		updateInlineInfo(subLayout, atStartOfLine);
+	}
+	
+	int getInlineMaxWidth() {
+		return inlineMaxWidth;
+	}
+
+	// Computation of inline height, typically happens on reaching end tag
+	int computeInlineHeightAtEndTag() {
+
+		// Verify that not already computed, since we are adding last max-value to current
+		if (totalInlineHeightComputed) {
+			throw new IllegalStateException("Already computed inline height");
+		}
+		
+		this.totalInlineHeightComputed = true;
+
+		addToInlineHeight();
+		
+		return inlineHeight;
+	}
+	
+	private void updateInlineInfo(ElementLayout subLayout, boolean atStartOfLine) {
+
+		final IBounds bounds = subLayout.getOuterBounds();
+		
+
+		// Add to current inline-width
+		if (atStartOfLine) {
+			this.curInlineWidth = bounds.getWidth();
+		}
+		else {
+			// Appended to end of line without line wrapping
+			// Eg if nested span elements or an image within text
+			this.curInlineWidth += bounds.getWidth();
+			
+			if (this.curInlineWidth > availableWidth) {
+				throw new IllegalStateException();
+			}
+		}
+
+		// Inline max width must be increased if this line was longer then existing
+		if (curInlineWidth > inlineMaxWidth) {
+			this.inlineMaxWidth = curInlineWidth;
+		}
+
+		// If at start of line, add max height for last line.
+		if (atStartOfLine) {
+			addToInlineHeight();
+		}
+		
+		if (bounds.getHeight() > this.curInlineMaxHeight) {
+			// Tallest element on this line, update max height
+			this.curInlineMaxHeight = bounds.getHeight();
+		}
+	}
+	
+	private void addToInlineHeight() {
+		// If this is first line, then curInlineMaxHeight ought to be 0
+		// TODO must add line spacing, if so this might now work, could keep a counter of number of text lines
+		
+		this.inlineHeight += curInlineMaxHeight;
 	}
 
 	private TextLineElement addTextLineElement() {
@@ -148,20 +293,30 @@ final class StackElement {
 		
 		return ret;
 	}
-
-	void addToBlockElementWidth(int width) {
-		this.curBlockElementWidth += width;
-	}
-
-	int getCollectedBlockWidth() {
-		return curBlockElementWidth;
+	
+	private void checkIsBlockElement() {
+		if (!this.getLayoutStyles().getDisplay().isBlock()) {
+			throw new IllegalStateException("Current element is not a block element");
+		}
 	}
 
 	void addToBlockElementHeight(int height) {
+		checkIsBlockElement();
+
 		this.curBlockElementHeight += height;
+	}
+	
+	int getCurBlockYPos() {
+		// TODO margin
+
+		checkIsBlockElement();
+		
+		return getCollectedBlockHeight();
 	}
 
 	int getCollectedBlockHeight() {
+		checkIsBlockElement();
+
 		return curBlockElementHeight;
 	}
 	

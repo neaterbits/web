@@ -18,6 +18,14 @@ final class TextLineElement {
 		this.text = text;
 	}
 
+	void init(String text, ElementLayout layout) {
+		if (text == null) {
+			throw new IllegalArgumentException("text == null");
+		}
+
+		this.text = text;
+	}
+
 	void init(ElementLayout layout) {
 		if (layout == null) {
 			throw new IllegalArgumentException("layout == null");
