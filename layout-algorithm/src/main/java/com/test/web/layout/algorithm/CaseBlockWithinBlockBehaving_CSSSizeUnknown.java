@@ -18,16 +18,10 @@ class CaseBlockWithinBlockBehaving_CSSSizeUnknown extends CaseBlockWithinBlockBe
 			throw new IllegalStateException();
 		}
 
-		final int width  =  container.getAvailableWidth();
-
 		// The width 
 		final int height = sub.getCollectedBlockHeight();
 
-		LayoutHelperWrappingBounds.computeDimensionsFromOuter(
-			sub.layoutStyles.getDisplay(),
-			container.getRemainingWidth(),  width,  false,
-			container.getRemainingHeight(), height, false,
-			sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
+		DimensionCases.BLOCK_CSS_SIZES_UNKNOWN.computeDimensions(sub.layoutStyles, container, sub, sub.resultingLayout);
 
 		// block within block so will increase container size
 		container.addToBlockElementHeight(height);

@@ -7,10 +7,7 @@ final class CaseBlockRoot_CSSSizeUnknown extends CaseBlockRoot_Base {
 	@Override
 	<ELEMENT> void onElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, ILayoutState state) {
 		
-		LayoutHelperWrappingBounds.computeDimensionsFromOuter(
-						sub.layoutStyles,
-						state.getViewPort().getWidth(), state.getViewPort().getHeight(), // container width/height
-						state.getViewPort().getWidth(), state.getViewPort().getHeight(), // container remaining width/height
-						sub.resultingLayout);
+		DimensionCases.BLOCK_CSS_SIZES_UNKNOWN.computeDimensions(sub.layoutStyles, container, sub, sub.resultingLayout);
+
 	}
 }

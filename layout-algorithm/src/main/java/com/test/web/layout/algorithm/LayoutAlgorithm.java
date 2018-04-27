@@ -446,36 +446,6 @@ public class LayoutAlgorithm<
 		
 		return heightPx;
 	}
-
-	@Deprecated
-	private boolean tryComputeLayoutOfBlockBehavingElement(LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, StackElement cur, StackElement sub) {
-		// Adjust sub available width/height if is set
-
-		final int width = setBlockBehavingElementWidthIfPresentInCSS(state, cur, sub);
-		final int height = setBlockBehavingElementHeightIfPresentInCSS(state, cur, sub);
-		
-		final boolean layoutComputed;
-		
-		if (width != Pixels.NONE && height != Pixels.NONE) {
-			// Compute inner-dimensions
-			LayoutHelperWrappingBounds.computeDimensionsFromOuter(
-					sub.layoutStyles.getDisplay(),
-					cur.getRemainingWidth(),  width,  sub.layoutStyles.hasWidth(),
-					cur.getRemainingHeight(), height, sub.layoutStyles.hasHeight(),
-					sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
-	
-			if (debugListener != null) {
-				debugListener.onResultingLayoutAtStartTag(getDebugDepth(state), sub.resultingLayout, sub.getLayoutCaseName());
-			}
-			
-			layoutComputed = true;
-		}
-		else {
-			layoutComputed = false;
-		}
-
-		return layoutComputed;
-	}
 	
 	private void computeStyles(LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, DOCUMENT document, ELEMENT element, ELEMENT_TYPE elementType, StackElement sub) {
 		state.getLayoutContext().computeLayoutStyles(document, element, fontSettings, sub.layoutStyles, getDebugDepth(state), debugListener);

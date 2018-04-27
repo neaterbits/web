@@ -8,14 +8,14 @@ class CaseBlockWithinBlockBehaving_CSSSizeKnown extends CaseBlockWithinBlockBeha
 	<ELEMENT>void onElementStart(StackElement container, ELEMENT element, StackElement sub, ILayoutState state) {
 
 		// Knows sub elements size already, can make some computations
-		final int width  = LayoutHelperUnits.computeWidthPx (sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), container.resultingLayout);
-		final int height = LayoutHelperUnits.computeHeightPx(sub.layoutStyles.getHeight(), sub.layoutStyles.getHeightUnit(), container.resultingLayout);
+		
+		//final int width  = LayoutHelperUnits.computeWidthPx (sub.layoutStyles.getWidth(), sub.layoutStyles.getWidthUnit(), container.resultingLayout);
+		//final int height = LayoutHelperUnits.computeHeightPx(sub.layoutStyles.getHeight(), sub.layoutStyles.getHeightUnit(), container.resultingLayout);
 
-		LayoutHelperWrappingBounds.computeDimensionsFromOuter(
-			sub.layoutStyles.getDisplay(),
-			container.getRemainingWidth(),  width,  sub.layoutStyles.hasWidth(),
-			container.getRemainingHeight(), height, sub.layoutStyles.hasHeight(),
-			sub.layoutStyles.getMargins(), sub.layoutStyles.getPadding(), sub.resultingLayout);
+		DimensionCases.BLOCK_CSS_SIZES_KNOWN.computeDimensions(sub.layoutStyles, container, sub, sub.resultingLayout);
+
+		final int width = sub.resultingLayout.getInnerBounds().getWidth();
+		final int height = sub.resultingLayout.getInnerBounds().getHeight();
 
 		// set initially available and remaining
 		sub.setAvailableWidth(width);

@@ -1,0 +1,9 @@
+package com.test.web.layout.algorithm;
+
+class DimensionCases {
+	static final DimensionCase BLOCK_CSS_SIZES_KNOWN = new DimensionsBlock_CSSSizeKnown();
+	static final DimensionCase BLOCK_CSS_SIZES_UNKNOWN = new DimensionsBlock_CSSSizeUnknown();
+
+	static final DimensionCase INLINE_CSS_SIZES_KNOWN = new DimensionsInline_CSSSizeKnown();
+	static final DimensionCase INLINE_CSS_SIZES_UNKNOWN = new DimensionsInline_CSSSizeUnknown();
+}

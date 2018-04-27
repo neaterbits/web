@@ -5,7 +5,6 @@ public class ViewPort {
 	private final int viewPortHeight;
 	
 	public ViewPort(int viewPortWidth, int viewPortHeight) {
-		super();
 		this.viewPortWidth = viewPortWidth;
 		this.viewPortHeight = viewPortHeight;
 	}

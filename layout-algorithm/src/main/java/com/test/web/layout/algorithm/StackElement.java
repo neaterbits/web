@@ -10,7 +10,7 @@ import com.test.web.layout.common.enums.Display;
 // Stack element on the layout stack, we add information here at time of start tag
 // and then just fetch that information when getting to end tag
 // Mutable so can be reused within stack
-final class StackElement {
+final class StackElement implements ContainerDimensions, SubDimensions  {
 	
 	static final int UNKNOWN_WIDTH = 0x01;
 	static final int UNKNOWN_HEIGHT = 0x02;
@@ -145,7 +145,8 @@ final class StackElement {
 		return inlineElementsAdded;
 	}
 
-	int getLineStartXPos() {
+	@Override
+	public int getLineStartXPos() {
 		// TODO take margin of current element into account
 		final int leftMargin = 0;
 
@@ -202,9 +203,6 @@ final class StackElement {
 		updateInlineInfo(subLayout, atStartOfLine);
 	}
 	
-	int getInlineMaxWidth() {
-		return inlineMaxWidth;
-	}
 
 	// Computation of inline height, typically happens on reaching end tag
 	int computeInlineHeightAtEndTag() {
@@ -221,6 +219,22 @@ final class StackElement {
 		return inlineHeight;
 	}
 	
+	
+	
+	@Override
+	public int getInlineContentMaxWidth() {
+		return inlineMaxWidth;
+	}
+
+	@Override
+	public int getInlineContentHeight() {
+		if (!totalInlineHeightComputed) {
+			throw new IllegalStateException("inline content height not computed");
+		}
+		
+		return inlineHeight;
+	}
+
 	private void updateInlineInfo(ElementLayout subLayout, boolean atStartOfLine) {
 
 		final IBounds bounds = subLayout.getOuterBounds();
@@ -295,7 +309,7 @@ final class StackElement {
 	}
 	
 	private void checkIsBlockElement() {
-		if (!this.getLayoutStyles().getDisplay().isBlock()) {
+		if (!isViewPort() && !this.getLayoutStyles().getDisplay().isBlock()) {
 			throw new IllegalStateException("Current element is not a block element");
 		}
 	}
@@ -306,7 +320,8 @@ final class StackElement {
 		this.curBlockElementHeight += height;
 	}
 	
-	int getCurBlockYPos() {
+	@Override
+	public int getCurBlockYPos() {
 		// TODO margin
 
 		checkIsBlockElement();
@@ -320,7 +335,8 @@ final class StackElement {
 		return curBlockElementHeight;
 	}
 	
-	int getAvailableWidth() {
+	@Override
+	public int getAvailableWidth() {
 		return availableWidth;
 	}
 
@@ -332,7 +348,8 @@ final class StackElement {
 		this.availableWidth = availableWidth;
 	}
 
-	int getAvailableHeight() {
+	@Override
+	public int getAvailableHeight() {
 		return availableHeight;
 	}
 
@@ -340,7 +357,8 @@ final class StackElement {
 		this.availableHeight = availableHeight;
 	}
 	
-	int getRemainingWidth() {
+	@Override
+	public int getRemainingWidth() {
 		return remainingWidth;
 	}
 
@@ -348,7 +366,8 @@ final class StackElement {
 		this.remainingWidth = remainingWidth;
 	}
 
-	int getRemainingHeight() {
+	@Override
+	public int getRemainingHeight() {
 		return remainingHeight;
 	}
 
