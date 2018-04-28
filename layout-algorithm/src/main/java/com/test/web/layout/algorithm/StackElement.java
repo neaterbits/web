@@ -104,11 +104,6 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 	
 	// -------------------------- For block behaving elements  --------------------------
 
-
-	// We are not summarizing block element widths,
-	// that is done only for inline and inline-block elements
-	//private int curBlockElementWidth;
-	
 	// Current height of block element (if this is one). This is the sum of all block elements within this block.
 	// This is used in the case where height for blocks is not set in CSS, eg. for nested divs we just summarize
 	// the height of all sub divs to find the height of container div.

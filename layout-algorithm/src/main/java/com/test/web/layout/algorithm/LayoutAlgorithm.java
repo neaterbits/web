@@ -8,6 +8,7 @@ import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.IFontSettings;
 import com.test.web.layout.common.ILayoutContext;
 import com.test.web.layout.common.ILayoutDebugListener;
+import com.test.web.layout.common.LayoutStyles;
 import com.test.web.layout.common.ViewPort;
 import com.test.web.layout.common.enums.Display;
 import com.test.web.render.common.IDelayedRendererFactory;
@@ -93,11 +94,13 @@ public class LayoutAlgorithm<
     	final StackElement container = state.getCur();
 
     	// Push new sub-element onto stack with remaining width and height from current element
-    	final StackElement sub = state.push(container.getRemainingWidth(), container.getRemainingHeight(), elementType.toString());
-    	
-    	// Compute all style information from defaults, css files, in-document style text and style attributes.
-    	// Store the result in sub
-    	computeStyles(state, document, element, elementType, sub);
+    	// Calls back to compute all style information from defaults, css files, in-document style text and style attributes.
+    	// This must be done from .push() since .push() must know CSS display type
+    	final StackElement sub = state.push(
+    			container.getRemainingWidth(), container.getRemainingHeight(),
+    			elementType.toString(),
+    			
+    			layoutStyles -> computeStyles(state, document, element, elementType, layoutStyles));
     
     	final BaseLayoutCase layoutCase = LayoutCases.determineLayoutCase(container, sub.layoutStyles, elementType);
 
@@ -314,7 +317,7 @@ public class LayoutAlgorithm<
     	return lineHeight;
     }
 
-	private void computeStyles(LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, DOCUMENT document, ELEMENT element, ELEMENT_TYPE elementType, StackElement sub) {
-		state.getLayoutContext().computeLayoutStyles(document, element, fontSettings, sub.layoutStyles, getDebugDepth(state), debugListener);
+	private void computeStyles(LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, DOCUMENT document, ELEMENT element, ELEMENT_TYPE elementType, LayoutStyles layoutStyles) {
+		state.getLayoutContext().computeLayoutStyles(document, element, fontSettings, layoutStyles, getDebugDepth(state), debugListener);
 	}
 }

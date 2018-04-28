@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import com.test.web.document.common.IDocumentBase;
 import com.test.web.document.common.IElementListener;
@@ -11,7 +12,9 @@ import com.test.web.layout.common.FontKey;
 import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.ILayoutContext;
 import com.test.web.layout.common.ILayoutState;
+import com.test.web.layout.common.LayoutStyles;
 import com.test.web.layout.common.ViewPort;
+import com.test.web.layout.common.enums.Display;
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
@@ -44,8 +47,14 @@ public final class LayoutState<
 	// Resulting page layout dimensionsn are collected here
 	private final PageLayout<ELEMENT> pageLayout;
 
-	// Position of current display block
-	private int curBlockYPos;
+	// Index of current block element into stack
+	// This so that we know which StackElement to push element tree to.
+	// This will be updated when pushing or poping elements from the stack
+	
+	// TODO perhaps inline elements should not be pushed on this stack?
+	// On the other hand we may have block elements within inline elements, or we might have inline-block elements nested within inline elements
+	// so it might make sense to keep inline elements on this stack
+	private int curBlockElement;
 	
 	public LayoutState(
 			ITextExtent textExtent,
@@ -65,11 +74,8 @@ public final class LayoutState<
 
 		this.pageLayout = pageLayout;
 		
-		// TODO how does this work for other zIndex? Will they have their separate layout?
-		this.curBlockYPos = 0;
-		
 		// Push intial element on stack, which is not a real element
-		push(viewPort.getWidth(), viewPort.getHeight(), "viewport");
+		push(viewPort.getWidth(), viewPort.getHeight(), "viewport", cssLayout -> cssLayout.setDisplay(Display.BLOCK));
 	}
 	
 	@Override
@@ -97,7 +103,7 @@ public final class LayoutState<
 		return curDepth == 0 ? null : stack.get(curDepth - 1);
 	}
 	
-	StackElement push(int availableWidth, int availableHeight, String debugName) {
+	StackElement push(int availableWidth, int availableHeight, String debugName, Consumer<LayoutStyles> computeStyles) {
 		
 		final StackElement ret;
 		
@@ -126,14 +132,54 @@ public final class LayoutState<
 				stack.set(curDepth, ret);
 			}
 		}
+		
+		computeStyles.accept(ret.layoutStyles);
+		
+		if (isBlock(ret)) {
+			// Update current block to point to this one
+			this.curBlockElement = curDepth;
+		}
 
 		++ curDepth;
 	
 		return ret;
 	}
-	
+
 	void pop() {
 		-- curDepth;
+		
+		if (curDepth < this.curBlockElement) {
+			// We must find closest block element upwards so that any inline elements are added to that
+			boolean blockElementFound = false;
+			
+			for (int i = curDepth - 1; i >= 0; -- i) {
+				if (isBlock(stack.get(i))) {
+					this.curBlockElement = i;
+					blockElementFound = true;
+					break;
+				}
+			}
+
+			if  (!blockElementFound) {
+				throw new IllegalStateException("No block element found");
+			}
+		}
+	}
+
+	private StackElement getCurBlockElement() {
+		return stack.get(curBlockElement);
+	}
+	
+	void addTextChunk(String text, boolean atStartOfLine) {
+		getCur().addInlineTextChunk(text, atStartOfLine);
+	}
+
+	private static boolean isBlock(StackElement element) {
+		return element.layoutStyles.getDisplay().isBlock();
+	}
+
+	private static boolean isInline(StackElement element) {
+		return element.layoutStyles.getDisplay().isInline();
 	}
 	
 	IFont getOrOpenFont(FontSpec spec, short style) {
