@@ -69,7 +69,7 @@ public final class LayoutState<
 		this.curBlockYPos = 0;
 		
 		// Push intial element on stack, which is not a real element
-		push(viewPort.getWidth(), viewPort.getHeight());
+		push(viewPort.getWidth(), viewPort.getHeight(), "viewport");
 	}
 	
 	@Override
@@ -97,12 +97,12 @@ public final class LayoutState<
 		return curDepth == 0 ? null : stack.get(curDepth - 1);
 	}
 	
-	StackElement push(int availableWidth, int availableHeight) {
+	StackElement push(int availableWidth, int availableHeight, String debugName) {
 		
 		final StackElement ret;
 		
 		if (curDepth == stack.size()) {
-			ret = new StackElement(curDepth, availableWidth, availableHeight);
+			ret = new StackElement(curDepth, availableWidth, availableHeight, debugName);
 			
 			stack.add(ret);
 		}
@@ -112,7 +112,7 @@ public final class LayoutState<
 			
 	    	// make sure is cleared since reused
 			ret.clear();
-			ret.init(availableWidth, availableHeight);
+			ret.init(availableWidth, availableHeight, debugName);
 		}
 
 		++ curDepth;

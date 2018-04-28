@@ -94,7 +94,7 @@ public class LayoutAlgorithm<
     	final StackElement container = state.getCur();
 
     	// Push new sub-element onto stack with remaining width and height from current element
-    	final StackElement sub = state.push(container.getRemainingWidth(), container.getRemainingHeight());
+    	final StackElement sub = state.push(container.getRemainingWidth(), container.getRemainingHeight(), elementType.toString());
     	
     	// Compute all style information from defaults, css files, in-document style text and style attributes.
     	// Store the result in sub
@@ -252,7 +252,7 @@ public class LayoutAlgorithm<
 				font,
 				atStartOfLineInitial,
 				() -> {
-					final StackElement textElem = state.push(cur.getRemainingWidth(), cur.getRemainingHeight());
+					final StackElement textElem = state.push(cur.getRemainingWidth(), cur.getRemainingHeight(), "text chunk");
 					
 					setResultingRenderer(textElem, state, cur.layoutStyles.getZIndex());
 					

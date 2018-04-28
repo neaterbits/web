@@ -12,7 +12,7 @@ import com.test.web.layout.common.ILayoutState;
 class CaseBlockWithinBlockBehaving_CSSSizeUnknown extends CaseBlockWithinBlockBehaving_Base {
 
 	@Override
-	<ELEMENT> void onElementEnd(StackElement container, ELEMENT element, StackElement sub, ILayoutState state) {
+	<ELEMENT> void onBlockElementEnd(StackElement container, ELEMENT element, StackElement sub, ILayoutState state) {
 
 		if (sub.hasUserSpecifiedWidth() || sub.hasUserSpecifiedHeight()) {
 			throw new IllegalStateException();

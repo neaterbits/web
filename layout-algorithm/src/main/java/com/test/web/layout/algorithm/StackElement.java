@@ -17,6 +17,8 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 	
 	private final int stackIdx;
 	
+	private String debugName;
+	
 	// flags for layout dimensions that cannot be computed until we have computed dimensions of all inner-elements
 	int delayedLayout;
 	
@@ -91,10 +93,10 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 	private int curBlockElementHeight;
 	
 
-	StackElement(int stackIdx, int availableWidth, int availableHeight) {
+	StackElement(int stackIdx, int availableWidth, int availableHeight, String debugName) {
 		this(stackIdx);
 		
-		init(availableWidth, availableHeight);
+		init(availableWidth, availableHeight, debugName);
 	}
 	
 	StackElement(int stackIdx) {
@@ -115,7 +117,7 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 		this.numElementsOnThisTextLine = 0;
 	}
 
-	void init(int availableWidth, int availableHeight) {
+	void init(int availableWidth, int availableHeight, String debugName) {
 		
 		if (availableWidth == 0)  {
 			throw new IllegalArgumentException("availableWidth == 0");
@@ -128,6 +130,8 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 		this.availableWidth = availableWidth;
 		this.availableHeight = availableHeight;
 		
+		this.debugName = debugName;
+
 		this.remainingWidth = availableWidth;
 		this.remainingHeight = availableHeight;
 
@@ -137,7 +141,7 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 		this.curInlineMaxHeight = 0;
 		this.inlineHeight = 0;
 		this.totalInlineHeightComputed = false;
-
+		this.inlineElementsAdded = false;
 		this.curBlockElementHeight = 0;
 	}
 	
@@ -205,9 +209,7 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 	
 
 	// Computation of inline height, typically happens on reaching end tag
-	int computeInlineHeightAtEndTag() {
-
-		checkIsInlineElement();
+	int computeInlineHeightAndClearInlineData() {
 
 		// Verify that not already computed, since we are adding last max-value to current
 		if (totalInlineHeightComputed) {
@@ -215,6 +217,7 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 		}
 		
 		this.totalInlineHeightComputed = true;
+		this.inlineElementsAdded = false;
 
 		addToInlineHeight();
 		
@@ -244,7 +247,8 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 	private void updateInlineInfo(ElementLayout subLayout, boolean atStartOfLine) {
 
 		final IBounds bounds = subLayout.getOuterBounds();
-		
+
+		this.inlineElementsAdded = true;
 
 		// Add to current inline-width
 		if (atStartOfLine) {

@@ -11,7 +11,7 @@ abstract class CaseInlineWithinBlockBehaving_CSSSizeUnknown_Base
 		// as sub of sub-elements.
 		
 		// Make sure inline height is computed for end-tag
-		sub.computeInlineHeightAtEndTag();
+		// TODO does not work to call this here sub.computeInlineHeightAndClearInlineData();
 		
 		// Set width and height to whatever is computed from sub element and add to current
 		DimensionCases.INLINE_CSS_SIZES_UNKNOWN.computeDimensions(

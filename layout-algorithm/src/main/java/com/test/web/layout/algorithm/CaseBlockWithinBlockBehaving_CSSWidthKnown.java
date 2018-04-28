@@ -6,7 +6,7 @@ import com.test.web.layout.common.ILayoutStylesGetters;
 final class CaseBlockWithinBlockBehaving_CSSWidthKnown extends CaseBlockWithinBlockBehaving_Base {
 
 	@Override
-	<ELEMENT> void onElementStart(StackElement container, ELEMENT element, StackElement sub, ILayoutState state) {
+	<ELEMENT> void onBlockElementStart(StackElement container, ELEMENT element, StackElement sub, ILayoutState state) {
 
 		final ILayoutStylesGetters styles = sub.getLayoutStyles();
 
@@ -20,7 +20,7 @@ final class CaseBlockWithinBlockBehaving_CSSWidthKnown extends CaseBlockWithinBl
 
 	// Since we do not know height, we must handle layout upon element end
 	@Override
-	<ELEMENT> void onElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, ILayoutState state) {
+	<ELEMENT> void onBlockElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, ILayoutState state) {
 		
 		DimensionCases.BLOCK_CSS_WIDTH_KNOWN.computeDimensions(sub.layoutStyles, container, sub, sub.resultingLayout);
 

@@ -46,7 +46,6 @@ interface ContainerDimensions {
 
 	/**
 	 * Get current pixel y start position for text line within this container, ie. when adding inline-elements.
-	 * Ie. this is the start y pos of the current line, top of block element
 	 * 
 	 * @return position
 	 */
