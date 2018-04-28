@@ -200,6 +200,10 @@ public class LayoutAlgorithm<
 	public void onText(DOCUMENT document, ELEMENT element, String text, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state) {
 		// We have a text element, compute text extents according to current mode
 		// TODO: text-align, overflow
+
+    	if (text.trim().isEmpty()) {
+    		return; // Skip empty text
+    	}
     	
     	final ELEMENT_TYPE elementType = document.getType(element);
 
