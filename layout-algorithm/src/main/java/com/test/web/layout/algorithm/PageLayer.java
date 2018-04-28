@@ -8,8 +8,12 @@ import com.test.web.layout.common.IWrapping;
 import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IFont;
 
-/*
- * A layer within a layout, eg. defined by z-index
+/**
+ * A layer within a layout, eg. defined by z-index.
+ * Implements Comparable so we can sort layers according to z-index.
+ * Is also associated with a renderer so that the layer can be rendered onto something. Note the renderer
+ * is a delayed renderer, ie. a queue of render operations so that render operations can be rearranged
+ * eg. in case of an outer div with background for which height is unknown (can only render background when height is known)
  */
 
 public class PageLayer<ELEMENT> implements Comparable<PageLayer<ELEMENT>> {

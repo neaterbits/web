@@ -543,7 +543,7 @@ public abstract class BaseOOCSSDocument
 
 	@Override
 	public int onStylePropertyStart(CSStyle property) {
-		// return next index so that sets priority on tight instance
+		// return next index so that sets priority on right instance
 		return stylesRef().getLength();
 	}
 

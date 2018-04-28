@@ -66,11 +66,14 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 	// Only done when sum element is an inline or inline-block element
 	private int curInlineMaxHeight;
 	
-	// Height of this inline elemen, summarizing all text lines' max height
+	// Height of this inline element, summarizing all text lines' max height
 	private int inlineHeight;
 	private boolean totalInlineHeightComputed; // For checking that we only compute total once for each element
 	
 	// track all inline elements on one text line until we have enough to render the line
+	// elements may differ in height, and there may be other elements like images 
+	// eg <span style='font-size: 12'>Some text with larger font</span>More text with default font<img ../>
+	// Thus we only know the size of elements after having processed a whole line
 	private TextLineElement [] elementsOnThisTextLine;
 	private int numElementsOnThisTextLine;
 
