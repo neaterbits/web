@@ -25,6 +25,6 @@ public abstract class CaseInlineWithinBlockBehaving_CSSSizeKnown_Base
 			// No room on current textline so continue on next
 		}
 
-		container.addInlineElement(sub.resultingLayout, atStartOfLine);
+		container.addInlineElement(sub, atStartOfLine);
 	}
 }

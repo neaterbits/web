@@ -14,7 +14,6 @@ import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.ITextExtent;
 import com.test.web.types.FontSpec;
-import com.test.web.types.Pixels;
 
 
 /*
@@ -139,9 +138,13 @@ public class LayoutAlgorithm<
     }
     
     private void setResultingRenderer(StackElement sub, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, int zIndex) {
+    	setResultingRenderer(sub.resultingLayout, state, zIndex);
+    }
+
+    private void setResultingRenderer(ElementLayout layout, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, int zIndex) {
 		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, rendererFactory);
 
-		sub.resultingLayout.setRenderer(zIndex, layer.getRenderer());
+		layout.setRenderer(zIndex, layer.getRenderer());
     }
   
     @Override
@@ -255,20 +258,11 @@ public class LayoutAlgorithm<
 				cur.getLineStartXPos(), // x pos of position of at new line
 				font,
 				atStartOfLineInitial,
-				() -> {
-					final StackElement textElem = state.push(cur.getRemainingWidth(), cur.getRemainingHeight(), "text chunk");
-					
-					setResultingRenderer(textElem, state, cur.layoutStyles.getZIndex());
-					
-					return textElem;
-				},
 				() -> cur.getRemainingWidth(), // return remaining width of current element
-				(lineText, textElem, numChars, x, y, atStartOfLine) -> {
+				(lineText, numChars, x, y, atStartOfLine) -> {
 					// will update current remaining width
-					processOneTextElement(lineText, textElem, cur, numChars, x, y, lineHeight, atStartOfLineInitial, state, element, elementType, document);
+					processOneTextElement(lineText, cur, numChars, x, y, lineHeight, atStartOfLineInitial, state, element, elementType, document);
 
-					// Must remove text element from stack again
-			    	state.pop();
 					
 					return lineHeight;
 				});
@@ -276,7 +270,6 @@ public class LayoutAlgorithm<
     
     private int processOneTextElement(
     		String lineText,
-    		StackElement textElem,
     		StackElement cur,
     		NumberOfChars numChars,
     		int xPos, int yPos, int lineHeight,
@@ -288,30 +281,34 @@ public class LayoutAlgorithm<
     	
 		final ElementLayout containerLayout = cur.resultingLayout;
 		
+		final ElementLayout textChunkLayout = cur.addInlineTextChunk(lineText, atStartOfLine);
+
+		setResultingRenderer(textChunkLayout, state, cur.layoutStyles.getZIndex());
+
 		// Compute bounds of text
-		textElem.resultingLayout.getOuter().init(xPos, yPos, numChars.getWidth(), lineHeight);
-		textElem.resultingLayout.getInner().init(xPos, yPos, numChars.getWidth(), lineHeight);
 		
-		textElem.resultingLayout.getAbsolute().init(
+		// TODO might not be correct since we do not know line height due to other inline elements on this line
+		textChunkLayout.getOuter().init(xPos, yPos, numChars.getWidth(), lineHeight);
+		textChunkLayout.getInner().init(xPos, yPos, numChars.getWidth(), lineHeight);
+		
+		textChunkLayout.getAbsolute().init(
 				containerLayout.getAbsolute().getLeft() + xPos,
 				containerLayout.getAbsolute().getTop() + yPos,
 				numChars.getWidth(),
 				lineHeight);
 
-		textElem.resultingLayout.setBoundsComputed();
+		textChunkLayout.setBoundsComputed();
 
 		// Text is always inline
-		textElem.resultingLayout.setDisplay(Display.INLINE);
-
-		cur.addInlineText(lineText, textElem.resultingLayout, atStartOfLine);
+		textChunkLayout.setDisplay(Display.INLINE);
 
 		// render each item of text in a separate callback
 		if (state.getListener() != null) {
-			state.getListener().onText(document, element, lineText, textElem.resultingLayout);
+			state.getListener().onText(document, element, lineText, textChunkLayout);
 		}
 
     	if (debugListener != null) {
-    		debugListener.onTextLine(getDebugDepth(state), elementType, lineText, textElem.resultingLayout);
+    		debugListener.onTextLine(getDebugDepth(state), elementType, lineText, textChunkLayout);
     	}
 
     	return lineHeight;

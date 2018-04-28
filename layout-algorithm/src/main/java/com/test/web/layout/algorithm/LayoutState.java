@@ -108,11 +108,23 @@ public final class LayoutState<
 		}
 		else {
 			// reuse existing
-			ret = stack.get(curDepth);
+			final StackElement toReuse = stack.get(curDepth);
 			
-	    	// make sure is cleared since reused
-			ret.clear();
-			ret.init(availableWidth, availableHeight, debugName);
+			// StackElement may be referenced from inline element tree within StackElement so must check whether can reuse
+			final boolean mayReuse = toReuse.checkAndUpdateWhetherInStackElementTree();
+			
+			if (mayReuse) {
+		    	// make sure is cleared since reused
+				toReuse.clear();
+				toReuse.init(availableWidth, availableHeight, debugName);
+				
+				ret = toReuse;
+			}
+			else {
+				// Cannot reuse, allocate new instance and set in stack
+				ret = new StackElement(curDepth, availableWidth, availableHeight, debugName);
+				stack.set(curDepth, ret);
+			}
 		}
 
 		++ curDepth;

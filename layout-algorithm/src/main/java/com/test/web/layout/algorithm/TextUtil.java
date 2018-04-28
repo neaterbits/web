@@ -2,8 +2,6 @@ package com.test.web.layout.algorithm;
 
 import java.util.function.Supplier;
 
-import com.test.web.layout.algorithm.TextUtil.NumberOfChars;
-import com.test.web.layout.common.enums.Display;
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.ITextExtent;
 import com.test.web.types.Pixels;
@@ -82,8 +80,8 @@ final class TextUtil {
     }
 
     @FunctionalInterface
-    interface OnTextElement<T> {
-    	int onElement(String lineText, T element, NumberOfChars numChars, int xPos, int yPos, boolean atStartOfLine);
+    interface OnTextElement {
+    	int onElement(String lineText, NumberOfChars numChars, int xPos, int yPos, boolean atStartOfLine);
     }
     
     /**
@@ -91,23 +89,20 @@ final class TextUtil {
      * Will callback onto caller for each time text is split
      * 
      */
-    <T> void splitTextIntoLines(
+    void splitTextIntoLines(
     		String text,
     		int xPos, int yPos,
     		int lineStartPos,
     		IFont font,
     		boolean atStartOfLine,
     		
-    		Supplier<T> startIteration,
     		Supplier<Integer> getRemainingWidth,
-    		OnTextElement<T> onTextElement) {
+    		OnTextElement onTextElement) {
 
     	String remainingText = text;
 
 		while ( ! remainingText.isEmpty() ) {
 
-			// Must push a separate layout for text for passing text bounds in resultingLayout
-			final T textElem = startIteration.get();
 
 	    	// find number of chars width regards to this line
 			final NumberOfChars numChars = findNumberOfChars(remainingText, getRemainingWidth.get(), font);
@@ -137,7 +132,7 @@ final class TextUtil {
 				remainingText = ""; // in order to exit loop
 			}
 			
-			final int lineHeight = onTextElement.onElement(lineText, textElem, numChars, xPos, yPos, atStartOfLine);
+			final int lineHeight = onTextElement.onElement(lineText, numChars, xPos, yPos, atStartOfLine);
 
 	    	if (lineWrapped) {
 				xPos = lineStartPos; // Back to start of line

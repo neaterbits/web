@@ -12,11 +12,30 @@ import com.test.web.layout.common.enums.Display;
 // Mutable so can be reused within stack
 final class StackElement implements ContainerDimensions, SubDimensions  {
 	
+	// Since we can reuse stack elements on a stack, we keep track of allocation state.
+	// We need to keep a nested tree of StackElement instances when processing inline elements since we cannot
+	// compute layout until we have reached line wrap or start of a block element or end of current block element.
+	// To avoid re-allocation of this and all subtypes (most of which will have all values re-initialiezed anyeay), we re-use elements on the stack
+	// but have to make sure we do not reuse if there are inline elements kept in inline-element tree
+	// eg if we have <span>som text<span>sub span</span><span>another sub span</span></span>
+	// the stack in LayoutState would try to reuse the StackElement for <span>sub span</span> unless we track that this
+	// is referenced in the tree from the outer <span> StackElement. So for <span>another sub span</span>
+	// one will have to allocate a new StackElement() (which is simpler and more efficient than implementing copy-on-write or similar)
+	enum AllocationState {
+		ALLOCATED,   						// Newly allocated with new operator
+		CLEARED, 							// Reused, called by clear()
+		IN_LAYOUT_STATE_STACK, // In layout state stack only
+		IN_LAYOUT_STATE_STACK_AND_STACK_ELEMENT_TREE, // Still on layout stack but also in stack element tree of containing element (eg while processing <span>sub span</span> above)
+		IN_STACK_ELEMENT_TREE, // Referenced from stack element tree so cannot be caleld clear() or init() on.
+	}
+	
 	static final int UNKNOWN_WIDTH = 0x01;
 	static final int UNKNOWN_HEIGHT = 0x02;
 	
 	private final int stackIdx;
 	
+	private AllocationState allocationState;
+
 	private String debugName;
 	
 	// flags for layout dimensions that cannot be computed until we have computed dimensions of all inner-elements
@@ -70,11 +89,14 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 	private int inlineHeight;
 	private boolean totalInlineHeightComputed; // For checking that we only compute total once for each element
 	
-	// track all inline elements on one text line until we have enough to render the line
+	// Keep track of all inline sub stack elements, this is since we cannot know the dimensioning of inline elements
+	// at least until line wrap when we know the height of the tallest element.
+	// At that point we can update layout of elements
+	
 	// elements may differ in height, and there may be other elements like images 
 	// eg <span style='font-size: 12'>Some text with larger font</span>More text with default font<img ../>
 	// Thus we only know the size of elements after having processed a whole line
-	private TextLineElement [] elementsOnThisTextLine;
+	private InlineElement [] elementsOnThisTextLine;
 	private int numElementsOnThisTextLine;
 
 
@@ -106,13 +128,72 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 		this.stackIdx = stackIdx;
 		this.layoutStyles = new LayoutStyles();
 		this.resultingLayout = new ElementLayout();
+		
+		setAllocationState(AllocationState.ALLOCATED);
+	}
+	
+	private void setAllocationState(AllocationState state) {
+		if (state == null) {
+			throw new IllegalArgumentException("state == null");
+		}
+		
+		if (this.allocationState == state) {
+			throw new IllegalArgumentException("Setting to same state: " + state);
+		}
+		
+		this.allocationState = state;
 	}
 
 	boolean isViewPort() {
 		return this.stackIdx == 0;
 	}
+	
+	boolean checkAndUpdateWhetherInStackElementTree() {
+		final boolean mayReuse;
+		
+		switch (allocationState) {
+		case IN_LAYOUT_STATE_STACK:
+			mayReuse = true;
+			break;
+			
+		case IN_LAYOUT_STATE_STACK_AND_STACK_ELEMENT_TREE:
+			mayReuse = false;
+			// From now on only in stack element tree since LayoutState will have to allocate a new StackElement instance
+			setAllocationState(AllocationState.IN_STACK_ELEMENT_TREE);
+			break;
+			
+		default:
+			throw new IllegalStateException("Cannot try reuse stack elements in state " + allocationState);
+		}
+		
+		return mayReuse;
+	}
+	
+	// Call this to release from stack element tree, eg. after we have computed layout for the element and added it to page layer
+	void releaseFromStackElementTree() {
+		switch (allocationState) {
+		case IN_LAYOUT_STATE_STACK_AND_STACK_ELEMENT_TREE:
+			// Still can be reused in layout state since it is still on layout state stack
+			setAllocationState(AllocationState.IN_LAYOUT_STATE_STACK);
+			break;
+			
+		case IN_STACK_ELEMENT_TREE:
+			// Was removed from stack so no use updating allocation state
+			break;
+			
+		default:
+			throw new IllegalStateException("Unexpected allocation state " + allocationState);
+		}
+	}
 
 	void clear() {
+		
+		if (allocationState != AllocationState.IN_LAYOUT_STATE_STACK) {
+			throw new IllegalStateException("Can only clear elements that are in use in layout stack: "  + allocationState);
+		}
+		
+		setAllocationState(AllocationState.CLEARED);
+		
 		layoutStyles.clear();
 		resultingLayout.clear();
 
@@ -121,6 +202,13 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 	}
 
 	void init(int availableWidth, int availableHeight, String debugName) {
+		
+		if (allocationState != AllocationState.ALLOCATED && allocationState != AllocationState.CLEARED) {
+			throw new IllegalStateException("Can only init elements that are either newly allocated or cleared");
+		}
+		
+		// Now in use in layout stack
+		setAllocationState(AllocationState.IN_LAYOUT_STATE_STACK);
 		
 		if (availableWidth == 0)  {
 			throw new IllegalArgumentException("availableWidth == 0");
@@ -176,19 +264,19 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 	}
 
 	/**
-	 * Add inline text, eg. <span>This is a text</span>
+	 * Add inline text chunk, eg. <span>This is a text</span>
 	 * Note that for a long text that spans multiple lines, this will be called multiple times
-	 * as the text is wrapped over mutiple lines.
+	 * as the text is wrapped over multiple lines.
 	 * 
 	 * @param text the text to add for
 	 * @param subLayout computed layout for text
 	 * @param atStartOfLine true if first element or is first after line wrap
 	 */
-	void addInlineText(String text, ElementLayout subLayout, boolean atStartOfLine) {
+	ElementLayout addInlineTextChunk(String text,  boolean atStartOfLine) {
 		// Inherits the layout of this element
-		addTextLineElement().init(text, subLayout);
-		
-		updateInlineInfo(subLayout, atStartOfLine);
+		final ElementLayout textChunkLayout = addTextLineElement().initTextChunk(text);
+
+		return textChunkLayout;
 	}
 
 	/**
@@ -199,15 +287,21 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 	 */
 
 	// Add some nested inline element, like an image
-	void addInlineElement(ElementLayout subLayout, boolean atStartOfLine) {
-		// Make sure we are adding an inline-element, otherwise should not call this methd
-		if (!subLayout.getDisplay().isInline()) {
-			throw new IllegalArgumentException("Adding inline element layout that is not inline-display : "  + subLayout.getDisplay());
+	void addInlineElement(StackElement stackElement, boolean atStartOfLine) {
+		
+		if (stackElement.allocationState != AllocationState.IN_LAYOUT_STATE_STACK) {
+			throw new IllegalStateException("Expected element to be on layout stack: " + stackElement.allocationState);
 		}
 
-		addTextLineElement().init(subLayout);
+		// Now in both layout state and on stack element tree
+		stackElement.setAllocationState(AllocationState.IN_LAYOUT_STATE_STACK_AND_STACK_ELEMENT_TREE);
+		
+		// Make sure we are adding an inline-element, otherwise should not call this method
+		if (!stackElement.getDisplay().isInline()) {
+			throw new IllegalArgumentException("Adding inline element layout that is not inline-display : "  + stackElement.getDisplay());
+		}
 
-		updateInlineInfo(subLayout, atStartOfLine);
+		addTextLineElement().initHTMLElement(stackElement);
 	}
 	
 
@@ -290,16 +384,16 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 		this.inlineHeight += curInlineMaxHeight;
 	}
 
-	private TextLineElement addTextLineElement() {
-		final TextLineElement ret;
+	private InlineElement addTextLineElement() {
+		final InlineElement ret;
 		
 		// could use ArrayList but this is much-accessed part so just use array directly
 		// not that complicated anyway and isolated to this method
 		if (elementsOnThisTextLine == null) {
 			// Just allocate a good number, not much memory since is in a stack
-			this.elementsOnThisTextLine = new TextLineElement[20];
+			this.elementsOnThisTextLine = new InlineElement[20];
 			
-			ret = elementsOnThisTextLine[0] = new TextLineElement();
+			ret = elementsOnThisTextLine[0] = new InlineElement();
 			numElementsOnThisTextLine = 1;
 		}
 		else {
@@ -308,12 +402,13 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 				this.elementsOnThisTextLine = Arrays.copyOf(elementsOnThisTextLine, elementsOnThisTextLine.length * 2);
 			}
 			
-			TextLineElement existing = elementsOnThisTextLine[numElementsOnThisTextLine];
+			InlineElement existing = elementsOnThisTextLine[numElementsOnThisTextLine];
 			
 			if (existing == null) {
-				ret = elementsOnThisTextLine[numElementsOnThisTextLine] = new TextLineElement();
+				ret = elementsOnThisTextLine[numElementsOnThisTextLine] = new InlineElement();
 			}
 			else {
+				existing.clear();
 				ret = existing;
 			}
 		}
