@@ -14,6 +14,10 @@ abstract class BaseLayoutCase {
 		
 	}
 	
+	<ELEMENT >void onText(StackElement container, StackElement text, ILayoutState state) {
+		
+	}
+
 	final String getName() {
 		return getClass().getSimpleName();
 	}

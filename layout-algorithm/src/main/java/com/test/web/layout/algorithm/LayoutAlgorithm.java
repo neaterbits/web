@@ -214,7 +214,7 @@ public class LayoutAlgorithm<
 		final StackElement cur = state.getCur();
 		
 		// just add to current text line as many characters as there are room for, or all the text if needed
-		computeAndAddInlineText_wrapAndRenderAsNecessary(document, element, elementType, cur, text, state);
+		computeAndAddInlineText_wrapAndRenderAsNecessary_textUtil(document, element, elementType, cur, text, state);
 		
 
     	if (debugListener != null) {
@@ -231,7 +231,8 @@ public class LayoutAlgorithm<
     // We need to compute layout for each element, if the display view is resized, we will recompute new elements.
     // Thus the layouted text elements are not necessarily corresponding to the HTML text elements. 
     
-    private void computeAndAddInlineText_wrapAndRenderAsNecessary(DOCUMENT document, ELEMENT element, ELEMENT_TYPE elementType, StackElement cur, String text, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state) {
+
+    private void computeAndAddInlineText_wrapAndRenderAsNecessary_textUtil(DOCUMENT document, ELEMENT element, ELEMENT_TYPE elementType, StackElement cur, String text, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state) {
 		final IFont font = cur.resultingLayout.getFont();
 
 		String remainingText = text;
@@ -245,88 +246,77 @@ public class LayoutAlgorithm<
 		int yPos = cur.getCurLineYPos();
 
 		// Can only be at start of line if no elements have been added, we will detect wrapping further down
-		boolean atStartOfLine = !cur.hasAnyInlineElementsAdded();
-		
-		while ( ! remainingText.isEmpty() ) {
+		boolean atStartOfLineInitial = !cur.hasAnyInlineElementsAdded();
+		final int lineHeight = font.getHeight();
 
-			// Must push a separate layout for text for passing text bounds in resultingLayout
-			final StackElement textElem = state.push(cur.getRemainingWidth(), cur.getRemainingHeight());
-			
-			setResultingRenderer(textElem, state, cur.layoutStyles.getZIndex());
+		textUtil.splitTextIntoLines(
+				remainingText,
+				xPos, yPos,
+				cur.getLineStartXPos(),
+				font,
+				atStartOfLineInitial,
+				() -> {
+					final StackElement textElem = state.push(cur.getRemainingWidth(), cur.getRemainingHeight());
+					
+					setResultingRenderer(textElem, state, cur.layoutStyles.getZIndex());
+					
+					return textElem;
+				},
+				() -> cur.getRemainingWidth(), // return remaining width of current element
+				(lineText, textElem, numChars, x, y, atStartOfLine) -> {
+					// will update current remaining width
+					processOneTextElement(lineText, textElem, cur, numChars, xPos, yPos, lineHeight, atStartOfLineInitial, state, element, elementType, document);
 
-	    	// find number of chars width regards to this line
-			final NumberOfChars numChars = textUtil.findNumberOfChars(remainingText, cur.getRemainingWidth(), font);
-	
-			final boolean lineWrapped;
-			final String lineText;
-			
-			final int numCharsOnLine = numChars.getNumberOfChars();
-
-			if (numCharsOnLine == 0) {
-				throw new UnsupportedOperationException("TODO handle case where no room for more characters at end of line");
-			}
-			else if (numCharsOnLine < text.length()) {
-				
-				// Not enough room for all of text, which means that line wraps.
-				// figure max height, baseline and render line
-				lineWrapped = true;
-				lineText = remainingText.substring(0, numCharsOnLine);
-
-				remainingText = remainingText.substring(numCharsOnLine);
-			}
-			else {
-				// space for all characters
-				lineWrapped = false;
-				lineText = remainingText;
-				
-				remainingText = ""; // in order to exit loop
-			}
-			
-			
-			final int lineHeight = font.getHeight();
-			
-			final ElementLayout containerLayout = cur.resultingLayout;
-			
-			// Compute bounds of text
-			textElem.resultingLayout.getOuter().init(xPos, yPos, numChars.getWidth(), lineHeight);
-			textElem.resultingLayout.getInner().init(xPos, yPos, numChars.getWidth(), lineHeight);
-			
-			textElem.resultingLayout.getAbsolute().init(
-					containerLayout.getAbsolute().getLeft() + xPos,
-					containerLayout.getAbsolute().getTop() + yPos,
-					numChars.getWidth(),
-					lineHeight);
-
-			textElem.resultingLayout.setBoundsComputed();
-
-			// Text is always inline
-			textElem.resultingLayout.setDisplay(Display.INLINE);
-
-			cur.addInlineText(lineText, textElem.resultingLayout, atStartOfLine);
-
-			// render each item of text in a separate callback
-			if (state.getListener() != null) {
-				state.getListener().onText(document, element, lineText, textElem.resultingLayout);
-			}
-			
-	    	if (debugListener != null) {
-	    		debugListener.onTextLine(getDebugDepth(state), elementType, lineText, textElem.resultingLayout);
-	    	}
-
-
-	    	if (lineWrapped) {
-				xPos = cur.getLineStartXPos(); // Back to start of line
-				yPos += lineHeight;
-				atStartOfLine = true;
-	    	}
-	    	else {
-	    		atStartOfLine = false;
-	    	}
-
-			state.pop();
-		}
+					// Must remove text element from stack again
+			    	state.pop();
+					
+					return lineHeight;
+				});
     }
- 
+    
+    private int processOneTextElement(
+    		String lineText,
+    		StackElement textElem,
+    		StackElement cur,
+    		NumberOfChars numChars,
+    		int xPos, int yPos, int lineHeight,
+    		boolean atStartOfLine,
+    		LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state,
+    		ELEMENT element,
+    		ELEMENT_TYPE elementType,
+    		DOCUMENT document) {
+    	
+		final ElementLayout containerLayout = cur.resultingLayout;
+		
+		// Compute bounds of text
+		textElem.resultingLayout.getOuter().init(xPos, yPos, numChars.getWidth(), lineHeight);
+		textElem.resultingLayout.getInner().init(xPos, yPos, numChars.getWidth(), lineHeight);
+		
+		textElem.resultingLayout.getAbsolute().init(
+				containerLayout.getAbsolute().getLeft() + xPos,
+				containerLayout.getAbsolute().getTop() + yPos,
+				numChars.getWidth(),
+				lineHeight);
+
+		textElem.resultingLayout.setBoundsComputed();
+
+		// Text is always inline
+		textElem.resultingLayout.setDisplay(Display.INLINE);
+
+		cur.addInlineText(lineText, textElem.resultingLayout, atStartOfLine);
+
+		// render each item of text in a separate callback
+		if (state.getListener() != null) {
+			state.getListener().onText(document, element, lineText, textElem.resultingLayout);
+		}
+
+    	if (debugListener != null) {
+    		debugListener.onTextLine(getDebugDepth(state), elementType, lineText, textElem.resultingLayout);
+    	}
+
+    	return lineHeight;
+    }
+
     private void renderCurrentTextLine() {
     	throw new UnsupportedOperationException("TODO");
     }

@@ -1,5 +1,9 @@
 package com.test.web.layout.algorithm;
 
+import java.util.function.Supplier;
+
+import com.test.web.layout.algorithm.TextUtil.NumberOfChars;
+import com.test.web.layout.common.enums.Display;
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.ITextExtent;
 import com.test.web.types.Pixels;
@@ -74,6 +78,75 @@ final class TextUtil {
 
 		int getWidth() {
 			return width;
+		}
+    }
+
+    @FunctionalInterface
+    interface OnTextElement<T> {
+    	int onElement(String lineText, T element, NumberOfChars numChars, int xPos, int yPos, boolean atStartOfLine);
+    }
+    
+    /**
+     * Split a text into lines, depending on width of some bounding box.
+     * Will callback onto caller for each time text is split
+     * 
+     */
+    <T> void splitTextIntoLines(
+    		String text,
+    		int xPos, int yPos,
+    		int lineStartPos,
+    		IFont font,
+    		boolean atStartOfLine,
+    		
+    		Supplier<T> startIteration,
+    		Supplier<Integer> getRemainingWidth,
+    		OnTextElement<T> onTextElement) {
+
+    	String remainingText = text;
+
+		while ( ! remainingText.isEmpty() ) {
+
+			// Must push a separate layout for text for passing text bounds in resultingLayout
+			final T textElem = startIteration.get();
+
+	    	// find number of chars width regards to this line
+			final NumberOfChars numChars = findNumberOfChars(remainingText, getRemainingWidth.get(), font);
+	
+			final boolean lineWrapped;
+			final String lineText;
+			
+			final int numCharsOnLine = numChars.getNumberOfChars();
+
+			if (numCharsOnLine == 0) {
+				throw new UnsupportedOperationException("TODO handle case where no room for more characters at end of line");
+			}
+			else if (numCharsOnLine < text.length()) {
+				
+				// Not enough room for all of text, which means that line wraps.
+				// figure max height, baseline and render line
+				lineWrapped = true;
+				lineText = remainingText.substring(0, numCharsOnLine);
+
+				remainingText = remainingText.substring(numCharsOnLine);
+			}
+			else {
+				// space for all characters
+				lineWrapped = false;
+				lineText = remainingText;
+
+				remainingText = ""; // in order to exit loop
+			}
+			
+			final int lineHeight = onTextElement.onElement(lineText, textElem, numChars, xPos, yPos, atStartOfLine);
+
+	    	if (lineWrapped) {
+				xPos = lineStartPos; // Back to start of line
+				yPos += lineHeight;
+				atStartOfLine = true;
+	    	}
+	    	else {
+	    		atStartOfLine = false;
+	    	}
 		}
     }
     

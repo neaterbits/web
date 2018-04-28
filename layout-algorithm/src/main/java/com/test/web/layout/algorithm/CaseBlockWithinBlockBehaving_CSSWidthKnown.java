@@ -9,14 +9,14 @@ final class CaseBlockWithinBlockBehaving_CSSWidthKnown extends CaseBlockWithinBl
 	<ELEMENT> void onElementStart(StackElement container, ELEMENT element, StackElement sub, ILayoutState state) {
 
 		final ILayoutStylesGetters styles = sub.getLayoutStyles();
-		
+
 		final int width = LayoutHelperUnits.computeWidthPx(styles.getWidth(), styles.getWidthUnit(), container.getAvailableWidth());
 
 		// set initially available and remaining width since this is known
 		sub.setAvailableWidth(width);
 		sub.setRemainingWidth(width);
-
 	}
+
 
 	// Since we do not know height, we must handle layout upon element end
 	@Override
