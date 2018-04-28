@@ -235,24 +235,20 @@ public class LayoutAlgorithm<
     private void computeAndAddInlineText_wrapAndRenderAsNecessary_textUtil(DOCUMENT document, ELEMENT element, ELEMENT_TYPE elementType, StackElement cur, String text, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state) {
 		final IFont font = cur.resultingLayout.getFont();
 
-		String remainingText = text;
 
 		// Find start position of text within container element
 		// Container element is either a block element or an inline element but either way we will set xPos to the current xPos withib that element.
 		// This might be multiple lines down in the element and in the middle of a line, ie. if text is wrapping.
 
 		// TODO must reflect any inline elements
-		int xPos = cur.getCurLineXPos();
-		int yPos = cur.getCurLineYPos();
-
 		// Can only be at start of line if no elements have been added, we will detect wrapping further down
 		boolean atStartOfLineInitial = !cur.hasAnyInlineElementsAdded();
 		final int lineHeight = font.getHeight();
 
 		textUtil.splitTextIntoLines(
-				remainingText,
-				xPos, yPos,
-				cur.getLineStartXPos(),
+				text,
+				cur.getCurLineXPos(),  cur.getCurLineYPos(), // current x and y pos inline element
+				cur.getLineStartXPos(), // x pos of position of at new line
 				font,
 				atStartOfLineInitial,
 				() -> {
@@ -265,7 +261,7 @@ public class LayoutAlgorithm<
 				() -> cur.getRemainingWidth(), // return remaining width of current element
 				(lineText, textElem, numChars, x, y, atStartOfLine) -> {
 					// will update current remaining width
-					processOneTextElement(lineText, textElem, cur, numChars, xPos, yPos, lineHeight, atStartOfLineInitial, state, element, elementType, document);
+					processOneTextElement(lineText, textElem, cur, numChars, x, y, lineHeight, atStartOfLineInitial, state, element, elementType, document);
 
 					// Must remove text element from stack again
 			    	state.pop();
