@@ -265,7 +265,6 @@ public class LayoutAlgorithm<
 				(lineText, numChars, x, y, lineWrapped, atStartOfLine) -> {
 					// will update current remaining width
 					processOneTextElement(lineText, cur, numChars, x, y, lineHeight, lineWrapped, atStartOfLineInitial, state, element, elementType, document);
-
 					
 					return lineHeight;
 				});

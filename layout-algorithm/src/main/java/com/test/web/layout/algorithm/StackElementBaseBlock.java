@@ -1,7 +1,5 @@
 package com.test.web.layout.algorithm;
 
-import com.test.web.layout.common.IBounds;
-
 // Contains all elements for block behaving elements
 // Note that subclasses that for inline. we reuse
 // StackElement class for all elements so that we can reuse objects and all sub-objects
@@ -29,15 +27,22 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 	// Sum of width of subelements on this line, so can sum up to block level.Useful when block width not set
 	// Added to at end-tag of sub inline (or inline-block) elements
 	private int curInlineWidth;
+	
+	// Whether any inline elements have been added to this block element at all
+	// Cached value, could figure by looking at element tree
 	private boolean inlineElementsAdded;
-	private boolean totalInlineHeightComputed; // For checking that we only compute total once for each element
-
+	
+	// Keeping track of total height of consecutive inline lines in block element (eg. lines of text)
+	private boolean totalConsecutiveInlineHeightComputed; // For checking that we only compute total consecutive once for each element
+	private int totalConsecutiveInlineHeight; // Height of all inline elements occuring in sequence within a block element until terminated by a block element or end tag for this block element
+		
 	// So when at end tag of a inline element and we are certain of the height of that element, we will call on the container to see if > current max height.
 	// Only done when sum element is an inline or inline-block element
 	private int curInlineMaxHeight;
 	
-	// Height of this inline element, summarizing all text lines' max height
-	private int inlineHeight;
+	// number of elements on current line (regarded whether are nested)
+	// TODO perhaps get from tree?
+	private int numElementsOnLine;
 	
 	// current inline line no within block
 	private int curLineNoInBlock;
@@ -58,70 +63,35 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 
 		this.curInlineWidth = 0;
 		this.inlineElementsAdded = false;
-		this.totalInlineHeightComputed = false;
+		this.totalConsecutiveInlineHeightComputed = false;
 		this.curInlineMaxHeight = 0;
-		this.inlineHeight = 0;
+		this.totalConsecutiveInlineHeight = 0;
 		this.curLineNoInBlock = 0;
+		this.numElementsOnLine = 0;
 	}
 
 	// Computation of inline height, typically happens on reaching end tag
 	int computeInlineHeightAndClearInlineData() {
 
 		// Verify that not already computed, since we are adding last max-value to current
-		if (totalInlineHeightComputed) {
+		if (totalConsecutiveInlineHeightComputed) {
 			throw new IllegalStateException("Already computed inline height");
 		}
 		
-		this.totalInlineHeightComputed = true;
+		this.totalConsecutiveInlineHeightComputed = true;
 		this.inlineElementsAdded = false;
 
-		addToInlineHeight();
+		addToCurLineMaxHeightToTotalConsecutiveInlineHeight();
 		
-		return inlineHeight;
+		return totalConsecutiveInlineHeight;
 	}
 	
 	
-	private void updateInlineInfo(ElementLayout subLayout, boolean atStartOfLine) {
-
-		final IBounds bounds = subLayout.getOuterBounds();
-
-		this.inlineElementsAdded = true;
-
-		// Add to current inline-width
-		if (atStartOfLine) {
-			this.curInlineWidth = bounds.getWidth();
-		}
-		else {
-			// Appended to end of line without line wrapping
-			// Eg if nested span elements or an image within text
-			this.curInlineWidth += bounds.getWidth();
-			
-			if (this.curInlineWidth > availableWidth) {
-				throw new IllegalStateException();
-			}
-		}
-
-		// Inline max width must be increased if this line was longer than existing
-		if (curInlineWidth > inlineMaxWidth) {
-			this.inlineMaxWidth = curInlineWidth;
-		}
-
-		// If at start of line, add max height for last line.
-		if (atStartOfLine) {
-			addToInlineHeight();
-		}
-		
-		if (bounds.getHeight() > this.curInlineMaxHeight) {
-			// Tallest element on this line, update max height
-			this.curInlineMaxHeight = bounds.getHeight();
-		}
-	}
-	
-	private void addToInlineHeight() {
+	private void addToCurLineMaxHeightToTotalConsecutiveInlineHeight() {
 		// If this is first line, then curInlineMaxHeight ought to be 0
 		// TODO must add line spacing, if so this might now work, could keep a counter of number of text lines
 		
-		this.inlineHeight += curInlineMaxHeight;
+		this.totalConsecutiveInlineHeight += curInlineMaxHeight;
 	}
 
 	
@@ -138,11 +108,11 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 	@Override
 	public final int getInlineContentHeight() {
 
-		if (!totalInlineHeightComputed) {
+		if (!totalConsecutiveInlineHeightComputed) {
 			throw new IllegalStateException("inline content height not computed");
 		}
 		
-		return inlineHeight;
+		return totalConsecutiveInlineHeight;
 	}
 
 	@Override
@@ -182,21 +152,52 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 		// Compute any horizontal margins
 		final boolean lineWrapped = widthPx > remainingWidth;
 
-		updateBlockInlineRemainingWidth(widthPx, lineWrapped);
+		
+		if (lineWrapped) {
+			// Must wrap line since no more space on this one
+			applyLineBreak();
+		}
+		
+		// then update
+		updateCurrentLine(widthPx, heightPx);
 		
 		return lineWrapped;
 	}
 
-	final void updateBlockInlineRemainingWidth(int widthPx, boolean applyLineWrap) {
+	final void updateBlockInlineRemainingWidthForTextElement(int widthPx, int heightPx, boolean applyLineWrap) {
+		
+		// Add to current widths
+		updateCurrentLine(widthPx, heightPx);
+
 		if (applyLineWrap) {
-			// TODO overflow
-			this.remainingWidth = getAvailableWidth();
-			++ curLineNoInBlock;
-		}
-		else {
-			this.remainingWidth -= widthPx;
+			// Add last line max-height to current
+			applyLineBreak();
 		}
 	}
+	
+	private void applyLineBreak() {
+		addToCurLineMaxHeightToTotalConsecutiveInlineHeight();
+		this.numElementsOnLine = 0;
+		++ curLineNoInBlock;
+		this.curInlineWidth = 0;
+		this.remainingWidth = getAvailableWidth();
+	}
+	
+	private void updateCurrentLine(int widthPx, int heightPx) {
+		this.curInlineWidth += widthPx;
+		
+		if (this.curInlineWidth > availableWidth) {
+			throw new IllegalStateException();
+		}
+		this.remainingWidth -= widthPx;
+		
+		++ numElementsOnLine;
+		
+		if (heightPx > curInlineMaxHeight) {
+			this.curInlineMaxHeight = heightPx;
+		}
+	}
+
 
 	final int getCurInlineLineNoInBlock() {
 		return curLineNoInBlock;
@@ -222,7 +223,7 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 		
 		// TODO margins etc
 		
-		return inlineHeight;
+		return totalConsecutiveInlineHeight;
 	}
 	
 	@Override

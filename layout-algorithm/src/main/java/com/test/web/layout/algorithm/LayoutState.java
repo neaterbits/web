@@ -216,7 +216,7 @@ public final class LayoutState<
 		}
 
 		// Must wrap block remaining-width
-		curBlockElement.updateBlockInlineRemainingWidth(widthPx, lineWrapped);
+		curBlockElement.updateBlockInlineRemainingWidthForTextElement(widthPx, heightPx, lineWrapped);
 
 		return cur.addInlineTextChunk(text);
 	}

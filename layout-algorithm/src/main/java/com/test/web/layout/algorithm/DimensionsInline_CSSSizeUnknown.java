@@ -3,6 +3,7 @@ package com.test.web.layout.algorithm;
 import com.test.web.layout.common.ILayoutStylesGetters;
 import com.test.web.layout.common.IWrapping;
 
+@Deprecated
 final class DimensionsInline_CSSSizeUnknown extends DimensionsInline_Base {
 	@Override
 	void computeDimensions(ILayoutStylesGetters layoutStyles, ContainerDimensions container, SubDimensions sub,
