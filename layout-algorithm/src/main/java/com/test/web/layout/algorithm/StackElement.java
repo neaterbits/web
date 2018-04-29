@@ -282,8 +282,8 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 	 */
 
 	// Add some nested inline element, like an image
-	void addInlineElement(StackElement stackElement, boolean atStartOfLine) {
-		
+	void addInlineElement(StackElement stackElement) {
+	
 		if (stackElement.allocationState != AllocationState.IN_LAYOUT_STATE_STACK) {
 			throw new IllegalStateException("Expected element to be on layout stack: " + stackElement.allocationState);
 		}
@@ -315,7 +315,6 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 		
 		return inlineHeight;
 	}
-	
 	
 	
 	@Override
@@ -356,7 +355,7 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 			}
 		}
 
-		// Inline max width must be increased if this line was longer then existing
+		// Inline max width must be increased if this line was longer than existing
 		if (curInlineWidth > inlineMaxWidth) {
 			this.inlineMaxWidth = curInlineWidth;
 		}
@@ -421,6 +420,26 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 		if (!isViewPort() && !this.getLayoutStyles().getDisplay().isBlock()) {
 			throw new IllegalStateException("Current element is not a block element");
 		}
+	}
+	
+	boolean updateBlockRemainingForNewInlineElement(int widthPx, int heightPx) {
+		checkIsBlockElement();
+
+		// Compute any horizontal margins
+		final boolean lineWrapped;
+		
+		if (widthPx > this.remainingWidth) {
+			// TODO overflow
+			this.remainingWidth = getAvailableWidth();
+			
+			lineWrapped = true;
+		}
+		else {
+			this.remainingWidth -= widthPx;
+			lineWrapped = false;
+		}
+
+		return lineWrapped;
 	}
 
 	void addToBlockElementHeight(int height) {

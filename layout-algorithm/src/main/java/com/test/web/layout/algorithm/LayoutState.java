@@ -26,7 +26,7 @@ public final class LayoutState<
 			ELEMENT_TYPE,
 			DOCUMENT extends IDocumentBase<ELEMENT, ELEMENT_TYPE, DOCUMENT>> 
 
-		implements ILayoutState {
+		implements ILayoutState, LayoutUpdate {
 	
 	private final ITextExtent textExtent;
 	private final ViewPort viewPort;
@@ -164,6 +164,44 @@ public final class LayoutState<
 				throw new IllegalStateException("No block element found");
 			}
 		}
+	}
+	
+	private void checkAddInlineElement(StackElement container, StackElement sub) {
+		if (container != stack.get(curDepth - 2)) {
+			throw new IllegalStateException("container does not match stack");
+		}
+		
+		if (sub != getCur()) {
+			throw new IllegalStateException("sub is not cur");
+		}
+	}
+	
+	// Add inline element to tree within current block-element and check whether width is known
+	// This might be either called at start-tag for inline elements where dimensions are known beforehand or it might be upon end tag,
+	// eg. for inline-block elements where width and height is not given.
+	@Override
+	public void addInlineElementAndWrapIfNecessary(StackElement container, StackElement sub, int widthPx, int heightPx) {
+
+		checkAddInlineElement(container, sub);
+
+		final StackElement curBlockElement = getCurBlockElement();
+		
+		if (widthPx > curBlockElement.getAvailableWidth()) {
+			throw new IllegalStateException("TODO no room for inline element in block element - should do overflow handling");
+		}
+		
+		// Will update remaining-width for current block element, will also add to line-height
+		final boolean addedToNewLine = curBlockElement.updateBlockRemainingForNewInlineElement(widthPx, heightPx);
+
+		// Add as inline element to container so building a tree of elements
+		container.addInlineElement(sub);
+	}
+
+	@Override
+	public void addInlineWrapperElement(StackElement container, StackElement sub) {
+		checkAddInlineElement(container, sub);
+
+		container.addInlineElement(sub);
 	}
 
 	private StackElement getCurBlockElement() {

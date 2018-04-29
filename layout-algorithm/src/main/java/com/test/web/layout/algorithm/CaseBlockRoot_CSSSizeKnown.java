@@ -1,11 +1,9 @@
 package com.test.web.layout.algorithm;
 
-import com.test.web.layout.common.ILayoutState;
-
 final class CaseBlockRoot_CSSSizeKnown extends CaseBlockRoot_Base {
 
 	@Override
-	<ELEMENT> void onBlockElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, ILayoutState state) {
+	<ELEMENT> void onBlockElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, LayoutUpdate state) {
 		// Knows sub elements size already, can make some computations
 		DimensionCases.BLOCK_CSS_SIZES_KNOWN.computeDimensions(
 			sub.layoutStyles,

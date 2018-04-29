@@ -1,20 +1,19 @@
 package com.test.web.layout.algorithm;
 
 import com.test.web.layout.common.IElementLayout;
-import com.test.web.layout.common.ILayoutState;
 
 // Base class for layout cases
 abstract class BaseLayoutCase {
 
-	<ELEMENT> void onElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, ILayoutState state) {
+	<ELEMENT> void onElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, LayoutUpdate state) {
 		
 	}
 
-	<ELEMENT> void onElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, ILayoutState state) {
+	<ELEMENT> void onElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, LayoutUpdate state) {
 		
 	}
 	
-	<ELEMENT >void onText(StackElement container, StackElement text, ILayoutState state) {
+	<ELEMENT >void onText(StackElement container, StackElement text, LayoutUpdate state) {
 		
 	}
 

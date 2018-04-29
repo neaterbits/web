@@ -9,17 +9,17 @@ class LayoutCases {
 
 	private static final CaseBlockRoot_CSSSizeUnknown BLOCK_ROOT_CSS_SIZE_UNKNOWN = new CaseBlockRoot_CSSSizeUnknown();
 
-	private static final CaseInlineWithinBlockBehaving_CSSSizeKnown_DisplayInline INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN_DISPLAY_INLINE
-				= new CaseInlineWithinBlockBehaving_CSSSizeKnown_DisplayInline();
+	private static final CaseInlineWithinBlockBehaving_SizeKnown_DisplayInline INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN_DISPLAY_INLINE
+				= new CaseInlineWithinBlockBehaving_SizeKnown_DisplayInline();
 
-	private static final CaseInlineWithinBlockBehaving_CSSSizeUnknown_DisplayInline INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN_DISPLAY_INLINE
-				= new CaseInlineWithinBlockBehaving_CSSSizeUnknown_DisplayInline();
+	private static final CaseInlineWithinBlockBehaving_WidthOrHeightUnknown_DisplayInline INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN_DISPLAY_INLINE
+				= new CaseInlineWithinBlockBehaving_WidthOrHeightUnknown_DisplayInline();
 	
 	private static final CaseInlineWithinBlockBehaving_CSSSizeKnown_DisplayInlineBlock INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN_DISPLAY_INLINE_BLOCK
 				= new CaseInlineWithinBlockBehaving_CSSSizeKnown_DisplayInlineBlock();
 
-	private static final CaseInlineWithinBlockBehaving_CSSSizeUnknown_DisplayInlineBlock INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN_DISPLAY_INLINE_BLOCK
-				= new CaseInlineWithinBlockBehaving_CSSSizeUnknown_DisplayInlineBlock();
+	private static final CaseInlineWithinBlockBehaving_CSSWidthOrHeightUnknown_DisplayInlineBlock INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN_DISPLAY_INLINE_BLOCK
+				= new CaseInlineWithinBlockBehaving_CSSWidthOrHeightUnknown_DisplayInlineBlock();
 
 	private static final CaseBlockWithinBlockBehaving_CSSSizeKnown BLOCK_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN
 				= new CaseBlockWithinBlockBehaving_CSSSizeKnown();

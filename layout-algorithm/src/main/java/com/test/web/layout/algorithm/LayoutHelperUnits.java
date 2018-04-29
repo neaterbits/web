@@ -10,12 +10,20 @@ class LayoutHelperUnits {
 		return computeWidthPx(width, widthUnit, containerLayout.getOuterBounds().getWidth());
 	}
 
+	static int computeWidthPx(int width, Unit widthUnit, ContainerDimensions container) {
+		return computeSizePx(width, widthUnit, container.getAvailableWidth());
+	}
+
 	static int computeWidthPx(int width, Unit widthUnit, int curWidth) {
 		return computeSizePx(width, widthUnit, curWidth);
 	}
 
 	static int computeHeightPx(int width, Unit widthUnit, IElementLayout containerLayout) {
 		return computeHeightPx(width, widthUnit, containerLayout.getOuterBounds().getHeight());
+	}
+
+	static int computeHeightPx(int height, Unit heightUnit, ContainerDimensions container) {
+		return computeSizePx(height, heightUnit, container.getAvailableHeight());
 	}
 
 	static int computeHeightPx(int height, Unit heightUnit, int curHeight) {

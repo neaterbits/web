@@ -1,7 +1,5 @@
 package com.test.web.layout.algorithm;
 
-import com.test.web.layout.common.ILayoutState;
-
 /**
  * Whenever container element and current element (eg. in onElementStart()) are both block level elements
  * and the current element has no size set in CSS.
@@ -12,7 +10,7 @@ import com.test.web.layout.common.ILayoutState;
 class CaseBlockWithinBlockBehaving_CSSSizeUnknown extends CaseBlockWithinBlockBehaving_Base {
 
 	@Override
-	<ELEMENT> void onBlockElementEnd(StackElement container, ELEMENT element, StackElement sub, ILayoutState state) {
+	<ELEMENT> void onBlockElementEnd(StackElement container, ELEMENT element, StackElement sub, LayoutUpdate state) {
 
 		if (sub.hasUserSpecifiedWidth() || sub.hasUserSpecifiedHeight()) {
 			throw new IllegalStateException();

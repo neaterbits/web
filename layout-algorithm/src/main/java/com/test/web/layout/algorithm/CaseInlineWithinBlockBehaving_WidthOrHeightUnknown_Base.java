@@ -1,6 +1,6 @@
 package com.test.web.layout.algorithm;
 
-
-public abstract class CaseInlineWithinBlockBehaving_CSSSizeKnown_Base
+abstract class CaseInlineWithinBlockBehaving_WidthOrHeightUnknown_Base
 	extends CaseInlineWithinBlockBehaving_Base {
+
 }

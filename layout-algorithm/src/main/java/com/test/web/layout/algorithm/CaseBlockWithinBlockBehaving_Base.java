@@ -1,12 +1,11 @@
 package com.test.web.layout.algorithm;
 
-import com.test.web.layout.common.ILayoutState;
 import com.test.web.types.Pixels;
 
 abstract class CaseBlockWithinBlockBehaving_Base extends CaseBlock_Base {
 
 	@Override
-	<ELEMENT> void onBlockElementStart(StackElement container, ELEMENT element, StackElement sub, ILayoutState state) {
+	<ELEMENT> void onBlockElementStart(StackElement container, ELEMENT element, StackElement sub, LayoutUpdate state) {
 
 		// Try to figure out available space
 		if (sub.layoutStyles.hasWidth()) {

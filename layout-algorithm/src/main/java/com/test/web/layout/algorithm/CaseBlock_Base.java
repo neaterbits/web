@@ -1,6 +1,5 @@
 package com.test.web.layout.algorithm;
 
-import com.test.web.layout.common.ILayoutState;
 
 /**
  * Base class for all cases where sub element is display: block
@@ -16,16 +15,16 @@ import com.test.web.layout.common.ILayoutState;
 
 abstract class CaseBlock_Base extends BaseLayoutCase {
 
-	<ELEMENT> void onBlockElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, ILayoutState state) {
+	<ELEMENT> void onBlockElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, LayoutUpdate state) {
 		
 	}
 
-	<ELEMENT> void onBlockElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, ILayoutState state) {
+	<ELEMENT> void onBlockElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, LayoutUpdate state) {
 		
 	}
 
 	@Override
-	final <ELEMENT> void onElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, ILayoutState state) {
+	final <ELEMENT> void onElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, LayoutUpdate state) {
 		
 		
 		// Start of a block element, we should now process any remaining inline elements
@@ -38,7 +37,7 @@ abstract class CaseBlock_Base extends BaseLayoutCase {
 	}
 
 	@Override
-	final <ELEMENT> void onElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, ILayoutState state) {
+	final <ELEMENT> void onElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, LayoutUpdate state) {
 		
 		// Here we might have the second case where there are unprocessed inline elements within the current block
 		// that we have to process here. Do that first and then call subclass
