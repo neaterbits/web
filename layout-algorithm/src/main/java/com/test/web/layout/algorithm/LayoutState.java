@@ -194,14 +194,14 @@ public final class LayoutState<
 		final boolean addedToNewLine = curBlockElement.updateBlockRemainingForNewInlineElement(widthPx, heightPx);
 
 		// Add as inline element to container so building a tree of elements
-		container.addInlineElement(sub);
+		container.addInlineElement(sub, getCurInlineLineNoInBlock());
 	}
 
 	@Override
 	public void addInlineWrapperElement(StackElement container, StackElement sub) {
 		checkAddInlineElement(container, sub);
 
-		container.addInlineElement(sub);
+		container.addInlineElement(sub, getCurInlineLineNoInBlock());
 	}
 	
 	ElementLayout  addTextChunk(StackElement cur, String text, int widthPx, int heightPx, boolean lineWrapped) {
@@ -218,7 +218,11 @@ public final class LayoutState<
 		// Must wrap block remaining-width
 		curBlockElement.updateBlockInlineRemainingWidthForTextElement(widthPx, heightPx, lineWrapped);
 
-		return cur.addInlineTextChunk(text);
+		return cur.addInlineTextChunk(text, getCurInlineLineNoInBlock());
+	}
+	
+	private int getCurInlineLineNoInBlock() {
+		return getCurBlockElement().getCurInlineLineNoInBlock();
 	}
 
 	int getInlineRemainingWidth() {
