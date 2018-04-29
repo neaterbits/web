@@ -185,7 +185,7 @@ final class StackElement extends StackElementBaseBlock implements ContainerDimen
 	 */
 	ElementLayout addInlineTextChunk(String text) {
 		// Inherits the layout of this element
-		final ElementLayout textChunkLayout = addTextLineElement().initTextChunk(text);
+		final ElementLayout textChunkLayout = addTextLineElement().initTextChunk(getCurInlineLineNoInBlock(), text);
 
 		return textChunkLayout;
 	}
@@ -212,7 +212,7 @@ final class StackElement extends StackElementBaseBlock implements ContainerDimen
 			throw new IllegalArgumentException("Adding inline element layout that is not inline-display : "  + stackElement.getDisplay());
 		}
 
-		addTextLineElement().initHTMLElement(stackElement);
+		addTextLineElement().initHTMLElement(getCurInlineLineNoInBlock(), stackElement);
 	}
 	
 

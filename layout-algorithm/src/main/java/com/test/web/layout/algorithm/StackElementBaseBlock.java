@@ -38,6 +38,9 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 	
 	// Height of this inline element, summarizing all text lines' max height
 	private int inlineHeight;
+	
+	// current inline line no within block
+	private int curLineNoInBlock;
 
 	StackElementBaseBlock(int stackIdx) {
 		super(stackIdx);
@@ -58,6 +61,7 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 		this.totalInlineHeightComputed = false;
 		this.curInlineMaxHeight = 0;
 		this.inlineHeight = 0;
+		this.curLineNoInBlock = 0;
 	}
 
 	// Computation of inline height, typically happens on reaching end tag
@@ -182,17 +186,22 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 		
 		return lineWrapped;
 	}
-	
+
 	final void updateBlockInlineRemainingWidth(int widthPx, boolean applyLineWrap) {
 		if (applyLineWrap) {
 			// TODO overflow
 			this.remainingWidth = getAvailableWidth();
+			++ curLineNoInBlock;
 		}
 		else {
 			this.remainingWidth -= widthPx;
 		}
 	}
 
+	final int getCurInlineLineNoInBlock() {
+		return curLineNoInBlock;
+	}
+	
 	@Override
 	public final int getLineStartXPos() {
 		// TODO take margin of current element into account

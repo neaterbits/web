@@ -27,6 +27,8 @@ final class InlineElement {
 	
 	private State state;
 
+	private int lineNo; // Line no from 0-n within block
+	
 	// -------------------------- HTMLelements  --------------------------
 	private StackElement stackElement; // Every HTML element has a corresponding StackElement with all CSS properties computed at that level
 
@@ -34,6 +36,7 @@ final class InlineElement {
 	private String textChunk; // Cache text to render when reaching end of text line
 	private ElementLayout resultingLayout; // The layout of this text chunk element, this is used as scratch area for computation
 
+	
 	public InlineElement() {
 		setState(State.ALLOCATED);
 	}
@@ -48,7 +51,7 @@ final class InlineElement {
 		this.state = state;
 	}
 	
-	void initHTMLElement(StackElement stackElement) {
+	void initHTMLElement(int lineNo, StackElement stackElement) {
 		if (stackElement == null) {
 			throw new IllegalArgumentException("stackElement == null");
 		}
@@ -56,11 +59,12 @@ final class InlineElement {
 		checkNotInUse();
 		
 		setState(State.HTML_ELEMENT);
-		
+		this.lineNo = lineNo;
+
 		this.stackElement = stackElement;
 	}
 	
-	ElementLayout initTextChunk(String text) {
+	ElementLayout initTextChunk(int lineNo, String text) {
 		if (text == null) {
 			throw new IllegalArgumentException("text == null");
 		}
@@ -68,7 +72,8 @@ final class InlineElement {
 		checkNotInUse();
 		
 		setState(State.TEXT_CHUNK);
-		
+		this.lineNo = lineNo;
+
 		if (this.resultingLayout == null) {
 			// Create a scratch area for computing layout for this chunk
 			this.resultingLayout = new ElementLayout();
