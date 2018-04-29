@@ -265,9 +265,8 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 	 * 
 	 * @param text the text to add for
 	 * @param subLayout computed layout for text
-	 * @param atStartOfLine true if first element or is first after line wrap
 	 */
-	ElementLayout addInlineTextChunk(String text,  boolean atStartOfLine) {
+	ElementLayout addInlineTextChunk(String text) {
 		// Inherits the layout of this element
 		final ElementLayout textChunkLayout = addTextLineElement().initTextChunk(text);
 
@@ -423,23 +422,33 @@ final class StackElement implements ContainerDimensions, SubDimensions  {
 	}
 	
 	boolean updateBlockRemainingForNewInlineElement(int widthPx, int heightPx) {
+		
+		if (widthPx <= 0) {
+			throw new IllegalArgumentException("widthPx <= 0");
+		}
+
+		if (heightPx <= 0) {
+			throw new IllegalArgumentException("heightPx <= 0");
+		}
+		
 		checkIsBlockElement();
 
 		// Compute any horizontal margins
-		final boolean lineWrapped;
+		final boolean lineWrapped = widthPx > remainingWidth;
+
+		updateBlockInlineRemainingWidth(widthPx, lineWrapped);
 		
-		if (widthPx > this.remainingWidth) {
+		return lineWrapped;
+	}
+	
+	void updateBlockInlineRemainingWidth(int widthPx, boolean applyLineWrap) {
+		if (applyLineWrap) {
 			// TODO overflow
 			this.remainingWidth = getAvailableWidth();
-			
-			lineWrapped = true;
 		}
 		else {
 			this.remainingWidth -= widthPx;
-			lineWrapped = false;
 		}
-
-		return lineWrapped;
 	}
 
 	void addToBlockElementHeight(int height) {

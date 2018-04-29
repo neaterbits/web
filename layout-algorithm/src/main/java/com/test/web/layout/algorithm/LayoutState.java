@@ -203,14 +203,32 @@ public final class LayoutState<
 
 		container.addInlineElement(sub);
 	}
+	
+	ElementLayout  addTextChunk(StackElement cur, String text, int widthPx, int heightPx, boolean lineWrapped) {
+		if (cur != getCur()) {
+			throw new IllegalStateException("Expected cur to be top of stack");
+		}
+
+		final StackElement curBlockElement = getCurBlockElement();
+		
+		if (widthPx > curBlockElement.getAvailableWidth()) {
+			throw new IllegalStateException("TODO no room for text in block element - should do overflow handling");
+		}
+
+		// Must wrap block remaining-width
+		curBlockElement.updateBlockInlineRemainingWidth(widthPx, lineWrapped);
+
+		return cur.addInlineTextChunk(text);
+	}
+
+	int getInlineRemainingWidth() {
+		return getCurBlockElement().getRemainingWidth();
+	}
 
 	private StackElement getCurBlockElement() {
 		return stack.get(curBlockElement);
 	}
 	
-	void addTextChunk(String text, boolean atStartOfLine) {
-		getCur().addInlineTextChunk(text, atStartOfLine);
-	}
 
 	private static boolean isBlock(StackElement element) {
 		return element.layoutStyles.getDisplay().isBlock();

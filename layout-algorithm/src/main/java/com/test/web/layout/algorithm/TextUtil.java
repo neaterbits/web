@@ -81,7 +81,7 @@ final class TextUtil {
 
     @FunctionalInterface
     interface OnTextElement {
-    	int onElement(String lineText, NumberOfChars numChars, int xPos, int yPos, boolean atStartOfLine);
+    	int onElement(String lineText, NumberOfChars numChars, int xPos, int yPos, boolean lineWrapped, boolean atStartOfLine);
     }
     
     /**
@@ -103,13 +103,13 @@ final class TextUtil {
 
 		while ( ! remainingText.isEmpty() ) {
 
-
 	    	// find number of chars width regards to this line
-			final NumberOfChars numChars = findNumberOfChars(remainingText, getRemainingWidth.get(), font);
-	
+			final int remainingWidth = getRemainingWidth.get();
+			final NumberOfChars numChars = findNumberOfChars(remainingText, remainingWidth, font);
+
 			final boolean lineWrapped;
 			final String lineText;
-			
+
 			final int numCharsOnLine = numChars.getNumberOfChars();
 
 			if (numCharsOnLine == 0) {
@@ -132,7 +132,7 @@ final class TextUtil {
 				remainingText = ""; // in order to exit loop
 			}
 			
-			final int lineHeight = onTextElement.onElement(lineText, numChars, xPos, yPos, atStartOfLine);
+			final int lineHeight = onTextElement.onElement(lineText, numChars, xPos, yPos, lineWrapped, atStartOfLine);
 
 	    	if (lineWrapped) {
 				xPos = lineStartPos; // Back to start of line
@@ -205,28 +205,36 @@ final class TextUtil {
     		ret = tryCharacters;
     		retWidth = width;
     	}
-    	else {
+    	else if (width < availableWidth) {
     		int numChars = tryCharacters + 1;
     		retWidth = -1;
+    		
+    		int lastW = width;
     		
     		for (;;) {
     			final int w = textExtent.getTextExtent(font, string.substring(0, numChars));
     	
     			if (w > availableWidth) {
+     				retWidth = lastW;
+    				// skip to last
     				-- numChars;
     				break;
     			}
     			else if (w == availableWidth) {
+    				retWidth = w;
    			    	break;
     			}
  
-  				retWidth = w;
-  				 
+    			lastW = w;
+
     			++ numChars;
     		}
-    		
+
     		ret = numChars;
     	}
+		else {
+			throw new IllegalStateException("Should not reach here");
+		}
     	
     	return new NumberOfChars(ret, retWidth);
     }

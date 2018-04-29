@@ -261,10 +261,10 @@ public class LayoutAlgorithm<
 				cur.getLineStartXPos(), // x pos of position of at new line
 				font,
 				atStartOfLineInitial,
-				() -> cur.getRemainingWidth(), // return remaining width of current element
-				(lineText, numChars, x, y, atStartOfLine) -> {
+				() -> state.getInlineRemainingWidth(), // return remaining width of current element
+				(lineText, numChars, x, y, lineWrapped, atStartOfLine) -> {
 					// will update current remaining width
-					processOneTextElement(lineText, cur, numChars, x, y, lineHeight, atStartOfLineInitial, state, element, elementType, document);
+					processOneTextElement(lineText, cur, numChars, x, y, lineHeight, lineWrapped, atStartOfLineInitial, state, element, elementType, document);
 
 					
 					return lineHeight;
@@ -276,6 +276,7 @@ public class LayoutAlgorithm<
     		StackElement cur,
     		NumberOfChars numChars,
     		int xPos, int yPos, int lineHeight,
+    		boolean lineWrapped,
     		boolean atStartOfLine,
     		LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state,
     		ELEMENT element,
@@ -284,7 +285,7 @@ public class LayoutAlgorithm<
     	
 		final ElementLayout containerLayout = cur.resultingLayout;
 		
-		final ElementLayout textChunkLayout = cur.addInlineTextChunk(lineText, atStartOfLine);
+		final ElementLayout textChunkLayout = state.addTextChunk(cur, lineText, numChars.getWidth(), lineHeight, lineWrapped);
 
 		setResultingRenderer(textChunkLayout, state, cur.layoutStyles.getZIndex());
 
