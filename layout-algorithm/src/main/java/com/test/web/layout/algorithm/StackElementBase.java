@@ -1,15 +1,19 @@
 package com.test.web.layout.algorithm;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 
+import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.LayoutStyles;
+import com.test.web.render.common.IDelayedRenderer;
+import com.test.web.render.common.IFont;
 
 abstract class StackElementBase {
 
 	// Since we can reuse stack elements on a stack, we keep track of allocation state.
 	// We need to keep a nested tree of StackElement instances when processing inline elements since we cannot
 	// compute layout until we have reached line wrap or start of a block element or end of current block element.
-	// To avoid re-allocation of this and all subtypes (most of which will have all values re-initialiezed anyeay), we re-use elements on the stack
+	// To avoid re-allocation of this and all subtypes (most of which will have all values re-initialiezed anyway), we re-use elements on the stack
 	// but have to make sure we do not reuse if there are inline elements kept in inline-element tree
 	// eg if we have <span>som text<span>sub span</span><span>another sub span</span></span>
 	// the stack in LayoutState would try to reuse the StackElement for <span>sub span</span> unless we track that this
@@ -31,27 +35,20 @@ abstract class StackElementBase {
 	final LayoutStyles layoutStyles;
 
 	// -------------------------- For block or inline elements, ie for one inline. Also inline within inline  --------------------------
-
-	// Max height of subelements on this line, so can sum up to block level.
-	// Added to at end-tag of sub inline (or inline-block) elements
-	// When a text line wraps, the baseline will be computed from this
-	// Thus rendering of a line cannot happen until the whole line is processed and baseline is known
-
 	
 	// Keep track of all inline sub stack elements, this is since we cannot know the dimensioning of inline elements
 	// at least until line wrap when we know the height of the tallest element.
 	// At that point we can update layout of elements
-	
-	// elements may differ in height, and there may be other elements like images 
-	// eg <span style='font-size: 12'>Some text with larger font</span>More text with default font<img ../>
-	// Thus we only know the size of elements after having processed a whole line
-	private InlineElement [] elementsOnThisTextLine;
-	private int numElementsOnThisTextLine;
+
+	// Elements within an element, either a block or an inline element (eg a span within a div or nested spans)
+	private InlineElement [] inlineElements;
+	private int firstInlineElement; // while processing inline-elements, we will increase this to point to the element that is currently being processed
+	private int numInlineElements; // number of inline elements in the array above, this mmight be the same as array.length in case we are reusing existing objects
 
 	StackElementBase(int stackIdx) {
 		this.stackIdx = stackIdx;
 		this.layoutStyles = new LayoutStyles();
-		
+
 		setAllocationState(AllocationState.ALLOCATED);
 	}
 
@@ -67,7 +64,7 @@ abstract class StackElementBase {
 		this.allocationState = state;
 	}
 	
-	boolean checkAndUpdateWhetherInStackElementTree() {
+	final boolean checkAndUpdateWhetherInStackElementTree() {
 		final boolean mayReuse;
 		
 		switch (allocationState) {
@@ -89,7 +86,7 @@ abstract class StackElementBase {
 	}
 	
 	// Call this to release from stack element tree, eg. after we have computed layout for the element and added it to page layer
-	void releaseFromStackElementTree() {
+	final void releaseFromStackElementTree() {
 		switch (allocationState) {
 		case IN_LAYOUT_STATE_STACK_AND_STACK_ELEMENT_TREE:
 			// Still can be reused in layout state since it is still on layout state stack
@@ -113,9 +110,14 @@ abstract class StackElementBase {
 	 * @param text the text to add for
 	 * @param subLayout computed layout for text
 	 */
-	final ElementLayout addInlineTextChunk(String text, int inlineLineNoInBlock) {
+	final IElementRenderLayout addInlineTextChunk(int inlineLineNoInBlock, String text, IFont font, int width, int height, int zIndex, IDelayedRenderer renderer) {
 		// Inherits the layout of this element
-		final ElementLayout textChunkLayout = addTextLineElement().initTextChunk(inlineLineNoInBlock, text);
+		final ElementLayout textChunkLayout = addTextLineElement().initTextChunk(inlineLineNoInBlock, text, font);
+
+		textChunkLayout.getInner().initWidthHeight(width, height);
+		textChunkLayout.getOuter().initWidthHeight(width, height);
+		
+		textChunkLayout.setRenderer(zIndex, renderer);
 
 		return textChunkLayout;
 	}
@@ -128,7 +130,7 @@ abstract class StackElementBase {
 	 */
 
 	// Add some nested inline element, like an image
-	final void addInlineElement(StackElement stackElement, int inlineLineNoInBlock) {
+	final void addInlineElementStart(StackElement stackElement, int inlineLineNoInBlock) {
 	
 		if (((StackElementBase)stackElement).allocationState != AllocationState.IN_LAYOUT_STATE_STACK) {
 			throw new IllegalStateException("Expected element to be on layout stack: " + ((StackElementBase)stackElement).allocationState);
@@ -142,31 +144,54 @@ abstract class StackElementBase {
 			throw new IllegalArgumentException("Adding inline element layout that is not inline-display : "  + stackElement.getDisplay());
 		}
 
-		addTextLineElement().initHTMLElement(inlineLineNoInBlock, stackElement);
+		addTextLineElement().initWrapperHTMLElementStart(inlineLineNoInBlock, stackElement);
 	}
 
+	final void addInlineElementEnd(StackElement stackElement, int inlineLineNoInBlock) {
+		
+		final AllocationState allocationState = ((StackElementBase)stackElement).allocationState;
+		
+		if (allocationState != AllocationState.IN_LAYOUT_STATE_STACK_AND_STACK_ELEMENT_TREE) {
+			throw new IllegalStateException("Expected element to be on layout stack: " + allocationState);
+		}
+
+		((StackElementBase)stackElement).setAllocationState(AllocationState.IN_LAYOUT_STATE_STACK);
+
+		// Make sure we are adding an inline-element, otherwise should not call this method
+		if (!stackElement.getDisplay().isInline()) {
+			throw new IllegalArgumentException("Adding inline element layout that is not inline-display : "  + stackElement.getDisplay());
+		}
+
+		addTextLineElement().initWrapperHTMLElementEnd(inlineLineNoInBlock, stackElement);
+	}
+	
+	final boolean hasAnyInlineElementsAdded() {
+		return numInlineElements > 0;
+	}
+
+	
 	private InlineElement addTextLineElement() {
 		final InlineElement ret;
 		
 		// could use ArrayList but this is much-accessed part so just use array directly
 		// not that complicated anyway and isolated to this method
-		if (elementsOnThisTextLine == null) {
+		if (inlineElements == null) {
 			// Just allocate a good number, not much memory since is in a stack
-			this.elementsOnThisTextLine = new InlineElement[20];
+			this.inlineElements = new InlineElement[20];
 			
-			ret = elementsOnThisTextLine[0] = new InlineElement();
-			numElementsOnThisTextLine = 1;
+			ret = inlineElements[0] = new InlineElement();
+			numInlineElements = 1;
 		}
 		else {
-			if (numElementsOnThisTextLine == elementsOnThisTextLine.length) {
+			if (numInlineElements == inlineElements.length) {
 				// expand array
-				this.elementsOnThisTextLine = Arrays.copyOf(elementsOnThisTextLine, elementsOnThisTextLine.length * 2);
+				this.inlineElements = Arrays.copyOf(inlineElements, inlineElements.length * 2);
 			}
 			
-			InlineElement existing = elementsOnThisTextLine[numElementsOnThisTextLine];
+			InlineElement existing = inlineElements[numInlineElements];
 			
 			if (existing == null) {
-				ret = elementsOnThisTextLine[numElementsOnThisTextLine] = new InlineElement();
+				ret = inlineElements[numInlineElements] = new InlineElement();
 			}
 			else {
 				existing.clear();
@@ -176,12 +201,71 @@ abstract class StackElementBase {
 		
 		return ret;
 	}
+	
+	/**
+	 * Process all inline text lines up to the specified line, removing 
+	 * any <inlineElement></inlineElement> that ends at this layouted line. Eg. a <span> that spans multiple lines
+	 * and then its content is terminated on lastLine, the <span> will be removed from inline-elements being cached here so that it is no longer processed.
+	 * This also might allow the StackElement object to be removed.
+	 * 
+	 * @param lastLine the last line being processed
+	 * @param consumer process inline elements appearing from the last line up to the current line
+	 */
+	final void recursivelyProcessInlineElementsUpTo(int lastLine, Consumer<InlineElement> consumer) {
+		
+		InlineElement lastStartElement = null;
+		
+		for (int i = firstInlineElement; i < numInlineElements; ++ i) {
+
+			final InlineElement inlineElement = inlineElements[i];
+
+			switch (inlineElement.getType()) {
+			case WRAPPER_HTML_ELEMENT_START:
+				if (lastStartElement != null) {
+					throw new IllegalStateException("Wrapper HTML element already set");
+				}
+
+				// Remember current start-element
+				lastStartElement = inlineElement;
+
+				consumer.accept(inlineElement);
+
+				// recurse into found element
+				inlineElement. getStackElement().recursivelyProcessInlineElementsUpTo(lastLine, consumer);
+				break;
+
+			case WRAPPER_HTML_ELEMENT_END:
+				consumer.accept(inlineElement);
+				lastStartElement = null;
+				break;
+
+			case KNOWN_SIZE_HTML_ELEMENT:
+				consumer.accept(inlineElement);
+
+				final int lineNo = inlineElement.getLineNo() ;
+
+				if (lineNo <= lastLine) {
+					// This inline-element ended at or before the asked for last-line.
+					// This means we can delete this from the current lines at this level
+					this.firstInlineElement = i + 1;
+				}
+				break;
+
+			case TEXT_CHUNK:
+				consumer.accept(inlineElement);
+				break;
+
+			default:
+				throw new UnsupportedOperationException("Unknown inline element type " + inlineElement.getType());
+			}
+		}
+	}
 
 	final void initBase() {
 		if (allocationState != AllocationState.ALLOCATED && allocationState != AllocationState.CLEARED) {
 			throw new IllegalStateException("Can only init elements that are either newly allocated or cleared");
 		}
-		
+
 		// Now in use in layout stack
 		setAllocationState(AllocationState.IN_LAYOUT_STATE_STACK);
 	}
@@ -195,7 +279,7 @@ abstract class StackElementBase {
 		setAllocationState(AllocationState.CLEARED);
 
 		// reset array counter but keep array though to save on memory allocations
-		this.numElementsOnThisTextLine = 0;
+		this.numInlineElements = 0;
 
 		layoutStyles.clear();
 	}

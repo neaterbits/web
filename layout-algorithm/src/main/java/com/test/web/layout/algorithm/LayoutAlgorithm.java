@@ -4,6 +4,7 @@ import com.test.web.document.common.IDocumentBase;
 import com.test.web.document.common.IElementListener;
 import com.test.web.layout.algorithm.TextUtil.NumberOfChars;
 import com.test.web.layout.common.FontStyle;
+import com.test.web.layout.common.IElementLayout;
 import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.IFontSettings;
 import com.test.web.layout.common.ILayoutContext;
@@ -11,6 +12,7 @@ import com.test.web.layout.common.ILayoutDebugListener;
 import com.test.web.layout.common.LayoutStyles;
 import com.test.web.layout.common.ViewPort;
 import com.test.web.layout.common.enums.Display;
+import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.ITextExtent;
@@ -62,7 +64,7 @@ public class LayoutAlgorithm<
 			PageLayout<ELEMENT> pageLayout,
 			IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT, IElementRenderLayout> listener) {
 		
-		final LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state = new LayoutState<>(textExtent, viewPort, layoutContext, pageLayout, listener);
+		final LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state = new LayoutState<>(textExtent, viewPort, layoutContext, pageLayout, listener, debugListener);
 		
 		document.iterate(this, state);
 	}
@@ -143,11 +145,13 @@ public class LayoutAlgorithm<
     private void setResultingRenderer(StackElement sub, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, int zIndex) {
     	setResultingRenderer(sub.resultingLayout, state, zIndex);
     }
+    
+    private IDelayedRenderer getRenderer(LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, int zIndex) {
+    	return  state.addOrGetLayer(zIndex, rendererFactory).getRenderer();
+    }
 
     private void setResultingRenderer(ElementLayout layout, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, int zIndex) {
-		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, rendererFactory);
-
-		layout.setRenderer(zIndex, layer.getRenderer());
+		layout.setRenderer(zIndex, getRenderer(state, zIndex));
     }
   
     @Override
@@ -163,22 +167,27 @@ public class LayoutAlgorithm<
 		final StackElement sub = state.getCur();
 	
 		final boolean boundsAlreadyComputed = sub.resultingLayout.areBoundsComputed();
-			    
-		state.pop();
-    	
-    	if (debugListener != null) {
-    		debugListener.onElementEnd(getDebugDepth(state) , elementType, sub.getLayoutCaseName());
-    	}
 
-		final StackElement container = state.getCur();
+		final StackElement container = state.getContainer();
 
 		// Now should have collected relevant information to do layout and find the dimensions
 		// of the element and also the margins and padding?
 		// does not know size of content yet so cannot for sure know height of element
 		sub.getLayoutCase().onElementEnd(container, element, sub, state);
 
-		// Bounds must always be computed at this stage since we now are at end-tag and must be known here, regardless of layout case
-		if (!sub.resultingLayout.areBoundsComputed()) {
+		state.pop();
+    	
+    	if (debugListener != null) {
+    		debugListener.onElementEnd(getDebugDepth(state) , elementType, sub.getLayoutCaseName());
+    	}
+
+		// If not inline, bounds must always be computed at this stage since we now are at end-tag and must be known here, regardless of layout case
+    	final Display display = sub.resultingLayout.getDisplay();
+    	if (display == null) {
+    		throw new IllegalStateException("display == null: " + sub.getDebugName() + "/" + sub.resultingLayout);
+    	}
+
+    	if (!display.isInline() && !sub.resultingLayout.areBoundsComputed()) {
 			throw new IllegalStateException("Bounds were not computed for element " + elementType + " at end tag");
 		}
 
@@ -281,29 +290,11 @@ public class LayoutAlgorithm<
     		ELEMENT element,
     		ELEMENT_TYPE elementType,
     		DOCUMENT document) {
-    	
+
 		final ElementLayout containerLayout = cur.resultingLayout;
-		
-		final ElementLayout textChunkLayout = state.addTextChunk(cur, lineText, numChars.getWidth(), lineHeight, lineWrapped);
+		final int zIndex = cur.layoutStyles.getZIndex();
 
-		setResultingRenderer(textChunkLayout, state, cur.layoutStyles.getZIndex());
-
-		// Compute bounds of text
-		
-		// TODO might not be correct since we do not know line height due to other inline elements on this line
-		textChunkLayout.getOuter().init(xPos, yPos, numChars.getWidth(), lineHeight);
-		textChunkLayout.getInner().init(xPos, yPos, numChars.getWidth(), lineHeight);
-		
-		textChunkLayout.getAbsolute().init(
-				containerLayout.getAbsolute().getLeft() + xPos,
-				containerLayout.getAbsolute().getTop() + yPos,
-				numChars.getWidth(),
-				lineHeight);
-
-		textChunkLayout.setBoundsComputed();
-
-		// Text is always inline
-		textChunkLayout.setDisplay(Display.INLINE);
+		final IElementRenderLayout textChunkLayout = state.addTextChunk(cur, lineText, numChars.getWidth(), lineHeight, zIndex, getRenderer(state, zIndex), lineWrapped);
 
 		// render each item of text in a separate callback
 		if (state.getListener() != null) {

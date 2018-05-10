@@ -10,7 +10,7 @@ public class CaseInlineWithinBlockBehaving_CSSWidthOrHeightUnknown_DisplayInline
 		// on different elements in block-layout. But we do need width and height 
 		// We must probably fix that in a separate pass once we have layout of a complete line
 		
-		state.addInlineElementAndWrapIfNecessary(
+		state.addInlineElementAndWrapToNextTextLineIfNecessary(
 				container,
 				sub,
 				sub.resultingLayout.getOuterBounds().getWidth(),

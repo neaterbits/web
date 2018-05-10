@@ -86,4 +86,14 @@ public class PrintlnLayoutDebugListener<ELEMENT_TYPE>
 	public void onTextEnd(int depth, ELEMENT_TYPE containerElement, String text) {
 		indent(depth, out).println("LAYOUT TEXT END " + containerElement + ": " + text);
 	}
+
+	@Override
+	public void onApplyLineBreakStart(int depth, int lineNo) {
+		indent(depth, out).println("LAYOUT  APPLY LINEBREAK START : " + lineNo);
+	}
+
+	@Override
+	public void onApplyLineBreakEnd(int depth) {
+		indent(depth, out).println("LAYOUT  APPLY LINEBREAK END");
+	}
 }

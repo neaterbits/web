@@ -30,7 +30,7 @@ abstract class CaseBlock_Base extends BaseLayoutCase {
 		// Start of a block element, we should now process any remaining inline elements
 		// added so far within the container (not the new sub element)
 		// since we are going to the next block in the document
-		processAnyPendingInlineElements(container);
+		processAnyPendingInlineElements(container, state);
 		
 		// Then call subclass to do computations with regards to this new block element
 		onBlockElementStart(container, htmlElement, sub, state);
@@ -38,17 +38,21 @@ abstract class CaseBlock_Base extends BaseLayoutCase {
 
 	@Override
 	final <ELEMENT> void onElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, LayoutUpdate state) {
+
 		
 		// Here we might have the second case where there are unprocessed inline elements within the current block
 		// that we have to process here. Do that first and then call subclass
-		processAnyPendingInlineElements(sub);
+		processAnyPendingInlineElements( sub, state);
 		
 		onBlockElementEnd(container, htmlElement, sub, state);
 	}
 	
-	private void processAnyPendingInlineElements(StackElement element) {
+	private void processAnyPendingInlineElements(StackElement element, LayoutUpdate state) {
 		
 		if (element.hasAnyInlineElementsAdded()) {
+
+			// Apply linebreak to previous element
+			state.applyLineBreakAtEndOfBlockElement(element);
 			
 			// There are unprocessed inline elements in the container, compute height of all and clear
 			final int inlineHeight = element.computeInlineHeightAndClearInlineData();

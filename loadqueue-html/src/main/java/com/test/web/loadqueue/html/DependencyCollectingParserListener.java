@@ -87,7 +87,8 @@ public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER
 				viewPort,
 				new HTMLLayoutContext<>(cssContext),
 				pageLayout,
-				renderListener);
+				renderListener,
+				layoutDebugListener);
 	}
 
 	@Override

@@ -36,5 +36,9 @@ public interface ILayoutDebugListener<ELEMENT_TYPE> {
 	void onTextLine(int depth, ELEMENT_TYPE containerElement, String lineText, IElementLayout layout) ;
 	
 	// After processing inline text
-	void onTextEnd(int depth, ELEMENT_TYPE containerElement, String text) ;
+	void onTextEnd(int depth, ELEMENT_TYPE containerElement, String text);
+	
+	void onApplyLineBreakStart(int depth, int lineNo);
+
+	void onApplyLineBreakEnd(int depth);
 }

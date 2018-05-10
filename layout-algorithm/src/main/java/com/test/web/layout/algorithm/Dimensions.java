@@ -34,6 +34,16 @@ final class Dimensions implements IBounds {
 		this.width = width;
 		this.height = height;
 	}
+	
+	void initPosition(int left, int top) {
+		this.left = left;
+		this.top = top;
+	}
+
+	void initWidthHeight(int width, int height) {
+		this.width = width;
+		this.height = height;
+	}
 
 	void setLeft(int left) {
 		this.left = left;

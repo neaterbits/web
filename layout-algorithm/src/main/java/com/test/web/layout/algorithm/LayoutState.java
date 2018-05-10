@@ -9,13 +9,16 @@ import java.util.function.Consumer;
 import com.test.web.document.common.IDocumentBase;
 import com.test.web.document.common.IElementListener;
 import com.test.web.layout.common.FontKey;
+import com.test.web.layout.common.IElementLayout;
 import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.ILayoutContext;
+import com.test.web.layout.common.ILayoutDebugListener;
 import com.test.web.layout.common.ILayoutState;
 import com.test.web.layout.common.LayoutStyles;
 import com.test.web.layout.common.ViewPort;
 import com.test.web.layout.common.enums.Display;
 import com.test.web.render.common.IFont;
+import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 import com.test.web.types.FontSpec;
@@ -44,9 +47,11 @@ public final class LayoutState<
 	// Cache of fonts used during layout
 	private final Map<FontKey, IFont> fonts;
 	
-	// Resulting page layout dimensionsn are collected here
+	// Resulting page layout dimensions are collected here
 	private final PageLayout<ELEMENT> pageLayout;
 
+	private final ILayoutDebugListener<ELEMENT_TYPE> debugListener;
+	
 	// Index of current block element into stack
 	// This so that we know which StackElement to push element tree to.
 	// This will be updated when pushing or poping elements from the stack
@@ -61,7 +66,9 @@ public final class LayoutState<
 			ViewPort viewPort,
 			ILayoutContext<ELEMENT, ELEMENT_TYPE, DOCUMENT> layoutContext,
 			PageLayout<ELEMENT> pageLayout,
-			IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT, IElementRenderLayout> listener) {
+			IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT, IElementRenderLayout> listener,
+			ILayoutDebugListener<ELEMENT_TYPE> debugListener) {
+
 		this.textExtent = textExtent;
 		this.viewPort = viewPort;
 		this.layoutContext = layoutContext;
@@ -73,6 +80,8 @@ public final class LayoutState<
 		this.fonts = new HashMap<>();
 
 		this.pageLayout = pageLayout;
+
+		this.debugListener = debugListener;
 		
 		// Push intial element on stack, which is not a real element
 		push(viewPort.getWidth(), viewPort.getHeight(), "viewport", cssLayout -> cssLayout.setDisplay(Display.BLOCK));
@@ -101,6 +110,14 @@ public final class LayoutState<
 
 	StackElement getCur() {
 		return curDepth == 0 ? null : stack.get(curDepth - 1);
+	}
+	
+	StackElement getContainer() {
+		if (curDepth < 1) {
+			throw new IllegalStateException("curDepth < 1");
+		}
+
+		return curDepth == 1 ? null : stack.get(curDepth - 2);
 	}
 	
 	StackElement push(int availableWidth, int availableHeight, String debugName, Consumer<LayoutStyles> computeStyles) {
@@ -135,6 +152,9 @@ public final class LayoutState<
 		
 		computeStyles.accept(ret.layoutStyles);
 		
+		// Knows CSS display so set in resulting layout
+		ret.resultingLayout.setDisplay(ret.layoutStyles.getDisplay());
+		
 		if (isBlock(ret)) {
 			// Update current block to point to this one
 			this.curBlockElement = curDepth;
@@ -168,7 +188,7 @@ public final class LayoutState<
 	
 	private void checkAddInlineElement(StackElement container, StackElement sub) {
 		if (container != stack.get(curDepth - 2)) {
-			throw new IllegalStateException("container does not match stack");
+			throw new IllegalStateException("container does not match stack: " + container + "/" + stack);
 		}
 		
 		if (sub != getCur()) {
@@ -176,11 +196,20 @@ public final class LayoutState<
 		}
 	}
 	
+	@Override
+	public final void applyLineBreakAtEndOfBlockElement(StackElement sub) {
+		if (!isBlock(sub)) {
+			throw new IllegalStateException("Expected sub element to be block element");
+		}
+
+		sub.applyLineBreakAtEndOfBlockElement(getDepth(), debugListener);
+	}
+
 	// Add inline element to tree within current block-element and check whether width is known
 	// This might be either called at start-tag for inline elements where dimensions are known beforehand or it might be upon end tag,
 	// eg. for inline-block elements where width and height is not given.
 	@Override
-	public void addInlineElementAndWrapIfNecessary(StackElement container, StackElement sub, int widthPx, int heightPx) {
+	public void addInlineElementAndWrapToNextTextLineIfNecessary(StackElement container, StackElement sub, int widthPx, int heightPx) {
 
 		checkAddInlineElement(container, sub);
 
@@ -191,20 +220,27 @@ public final class LayoutState<
 		}
 		
 		// Will update remaining-width for current block element, will also add to line-height
-		final boolean addedToNewLine = curBlockElement.updateBlockRemainingForNewInlineElement(widthPx, heightPx);
+		final boolean addedToNewLine = curBlockElement.updateBlockRemainingForNewInlineElement(widthPx, heightPx, getDepth(), debugListener);
 
 		// Add as inline element to container so building a tree of elements
-		container.addInlineElement(sub, getCurInlineLineNoInBlock());
+		container.addInlineElementStart(sub, getCurInlineLineNoInBlock());
 	}
 
 	@Override
-	public void addInlineWrapperElement(StackElement container, StackElement sub) {
+	public void addInlineWrapperElementStart(StackElement container, StackElement sub) {
 		checkAddInlineElement(container, sub);
 
-		container.addInlineElement(sub, getCurInlineLineNoInBlock());
+		container.addInlineElementStart(sub, getCurInlineLineNoInBlock());
 	}
-	
-	ElementLayout  addTextChunk(StackElement cur, String text, int widthPx, int heightPx, boolean lineWrapped) {
+
+	@Override
+	public void addInlineWrapperElementEnd(StackElement container, StackElement sub) {
+		checkAddInlineElement(container, sub);
+
+		container.addInlineElementEnd(sub, getCurInlineLineNoInBlock());
+	}
+
+	IElementRenderLayout  addTextChunk(StackElement cur, String text, int widthPx, int heightPx, int zIndex, IDelayedRenderer renderer, boolean lineWrapped) {
 		if (cur != getCur()) {
 			throw new IllegalStateException("Expected cur to be top of stack");
 		}
@@ -216,9 +252,9 @@ public final class LayoutState<
 		}
 
 		// Must wrap block remaining-width
-		curBlockElement.updateBlockInlineRemainingWidthForTextElement(widthPx, heightPx, lineWrapped);
+		curBlockElement.updateBlockInlineRemainingWidthForTextElement(widthPx, heightPx, lineWrapped, getDepth(), debugListener);
 
-		return cur.addInlineTextChunk(text, getCurInlineLineNoInBlock());
+		return cur.addInlineTextChunk(getCurInlineLineNoInBlock(), text, cur.getResultingLayout().getFont(), widthPx, heightPx, zIndex, renderer);
 	}
 	
 	private int getCurInlineLineNoInBlock() {

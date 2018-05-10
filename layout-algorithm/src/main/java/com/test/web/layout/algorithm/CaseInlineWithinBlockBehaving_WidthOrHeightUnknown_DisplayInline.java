@@ -9,7 +9,14 @@ class CaseInlineWithinBlockBehaving_WidthOrHeightUnknown_DisplayInline
 	<ELEMENT> void onInlineElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, LayoutUpdate state) {
 
 		// Just a wrapper but must still be added to inline-element tree
-		state.addInlineWrapperElement(container, sub);
+		state.addInlineWrapperElementStart(container, sub);
 		
+	}
+
+	@Override
+	<ELEMENT> void onInlineElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, LayoutUpdate state) {
+
+		state.addInlineWrapperElementEnd(container, sub);
+
 	}
 }

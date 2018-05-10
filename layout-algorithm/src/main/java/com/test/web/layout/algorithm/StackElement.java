@@ -65,7 +65,7 @@ final class StackElement extends StackElementBaseBlock implements ContainerDimen
 		if (availableHeight == 0) {
 			throw new IllegalArgumentException("availableHeight == 0");
 		}
-
+		
 		this.debugName = debugName;
 
 		initInline();
@@ -103,6 +103,10 @@ final class StackElement extends StackElementBaseBlock implements ContainerDimen
 
 	void setLayoutCase(BaseLayoutCase layoutCase) {
 		this.layoutCase = layoutCase;
+	}
+	
+	String getDebugName() {
+		return debugName;
 	}
 }
 

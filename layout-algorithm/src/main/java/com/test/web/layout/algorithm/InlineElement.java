@@ -1,5 +1,7 @@
 package com.test.web.layout.algorithm;
 
+import com.test.web.render.common.IFont;
+
 /**
  * For caching inline elements in a tree through StackElement until we have at least got to liewrap
  * and can look for elements for which we can compute complete dimensions.
@@ -15,28 +17,41 @@ package com.test.web.layout.algorithm;
  *    or keep a free-list to minimize GC (allocating from a free-list of same class i very fast)
  */
 
-final class InlineElement {
-	enum State {
-		ALLOCATED,
-		HTML_ELEMENT,
-		TEXT_CHUNK,
-		CLEARED;
+public final class InlineElement {
+	
+	public enum Type {
+		// An HTML element where we know width and height from eg image width/height (from HTML or from the downloaded image data)
+		KNOWN_SIZE_HTML_ELEMENT, 
+
+		// start of an element for which we do not know the size, eg. a <span> element with some styles applied
+		WRAPPER_HTML_ELEMENT_START,
+		WRAPPER_HTML_ELEMENT_END, // end of same element, so that we know when to update inline element layout
+
+		// a rectangular text chunk, inside a wrapper HTML element
+		TEXT_CHUNK
+	}
+	
+	// State use for caching of allocated elements, allowing us to reuse objects
+	private enum State {
+		ALLOCATED, // Newly allocated
+		IN_USE,       // in use within layout algorith processing
+		CLEARED;    // No longer in use, and cleared such that can be reused
 	}
 	// In order to reuse elements in the stack and avoid memory allocation for each push/pop
 	// we keep information specific to inline, text and block etc in the same element
 	
 	private State state;
-
+	private Type type;
 	private int lineNo; // Line no from 0-n within block
+	
 	
 	// -------------------------- HTMLelements  --------------------------
 	private StackElement stackElement; // Every HTML element has a corresponding StackElement with all CSS properties computed at that level
 
 	// -------------------------- Text chunks --------------------------
 	private String textChunk; // Cache text to render when reaching end of text line
-	private ElementLayout resultingLayout; // The layout of this text chunk element, this is used as scratch area for computation
+	private ElementLayout textResultingLayout; // The layout of this text chunk element, this is used as scratch area for computation
 
-	
 	public InlineElement() {
 		setState(State.ALLOCATED);
 	}
@@ -51,41 +66,100 @@ final class InlineElement {
 		this.state = state;
 	}
 	
-	void initHTMLElement(int lineNo, StackElement stackElement) {
+	final int getLineNo() {
+		return lineNo;
+	}
+
+	public final Type getType() {
+		return type;
+	}
+	
+	final StackElement getStackElement() {
+		return stackElement;
+	}
+	
+	public final ElementLayout getResultingLayout() {
+		
+		final ElementLayout result;
+
+		switch (type) {
+		case KNOWN_SIZE_HTML_ELEMENT:
+			result = stackElement.resultingLayout;
+			break;
+
+		case TEXT_CHUNK:
+			result = textResultingLayout;
+			break;
+
+		default:
+			throw new IllegalStateException("Can only set layout for known size html element or text chunk");
+		}
+
+		return result;
+	}
+	
+	private void setInUse(Type type) {
+		if (type == null) {
+			throw new IllegalArgumentException("type == null");
+		}
+
+		checkNotInUse();
+
+		setState(State.IN_USE);
+
+		this.type = type;
+	}
+
+	private void initWithStackElement(int lineNo, StackElement stackElement, Type type) {
 		if (stackElement == null) {
 			throw new IllegalArgumentException("stackElement == null");
 		}
-		
-		checkNotInUse();
-		
-		setState(State.HTML_ELEMENT);
-		this.lineNo = lineNo;
 
+		setInUse(type);
+
+		this.lineNo = lineNo;
 		this.stackElement = stackElement;
 	}
+
+	void initKnownSizeHTMLElement(int lineNo, StackElement stackElement) {
+		initWithStackElement(lineNo, stackElement, Type.KNOWN_SIZE_HTML_ELEMENT);
+	}
 	
-	ElementLayout initTextChunk(int lineNo, String text) {
+	void initWrapperHTMLElementStart(int lineNo, StackElement stackElement) {
+		initWithStackElement(lineNo, stackElement, Type.WRAPPER_HTML_ELEMENT_START);
+	}
+
+	void initWrapperHTMLElementEnd(int lineNo, StackElement stackElement) {
+		initWithStackElement(lineNo, stackElement, Type.WRAPPER_HTML_ELEMENT_END);
+	}
+
+	ElementLayout initTextChunk(int lineNo, String text, IFont font) {
+
 		if (text == null) {
 			throw new IllegalArgumentException("text == null");
 		}
 		
-		checkNotInUse();
-		
-		setState(State.TEXT_CHUNK);
+		if (font == null) {
+			throw new IllegalArgumentException("font == null");
+		}
+
+		setInUse(Type.TEXT_CHUNK);
 		this.lineNo = lineNo;
 
-		if (this.resultingLayout == null) {
+		if (this.textResultingLayout == null) {
 			// Create a scratch area for computing layout for this chunk
-			this.resultingLayout = new ElementLayout();
+			this.textResultingLayout = new ElementLayout();
 		}
 		else {
 			// Reuse existing but clear first
-			resultingLayout.clear();
+			textResultingLayout.clear();
 		}
 		
+		textResultingLayout.setFont(font);
+
 		this.textChunk = text;
-		
-		return resultingLayout;
+
+		return textResultingLayout;
 	}
 	
 	void clear() {
@@ -94,5 +168,10 @@ final class InlineElement {
 		}
 		
 		setState(State.CLEARED);
+		this.type = null;
+		
+		if (stackElement != null) {
+			this.stackElement = null;
+		}
 	}
 }

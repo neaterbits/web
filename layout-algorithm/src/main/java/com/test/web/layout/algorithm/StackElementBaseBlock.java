@@ -1,5 +1,8 @@
 package com.test.web.layout.algorithm;
 
+import com.test.web.layout.common.ILayoutDebugListener;
+import com.test.web.render.common.IFont;
+
 // Contains all elements for block behaving elements
 // Note that subclasses that for inline. we reuse
 // StackElement class for all elements so that we can reuse objects and all sub-objects
@@ -28,21 +31,17 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 	// Added to at end-tag of sub inline (or inline-block) elements
 	private int curInlineWidth;
 	
-	// Whether any inline elements have been added to this block element at all
-	// Cached value, could figure by looking at element tree
-	private boolean inlineElementsAdded;
-	
 	// Keeping track of total height of consecutive inline lines in block element (eg. lines of text)
 	private boolean totalConsecutiveInlineHeightComputed; // For checking that we only compute total consecutive once for each element
 	private int totalConsecutiveInlineHeight; // Height of all inline elements occuring in sequence within a block element until terminated by a block element or end tag for this block element
 		
+	// Max height of subelements on this line, so can sum up to block level.
+	// Added to at end-tag of sub inline (or inline-block) elements
+	// When a text line wraps, the baseline will be computed from this
+	// Thus rendering of a line cannot happen until the whole line is processed and baseline is known
 	// So when at end tag of a inline element and we are certain of the height of that element, we will call on the container to see if > current max height.
 	// Only done when sum element is an inline or inline-block element
 	private int curInlineMaxHeight;
-	
-	// number of elements on current line (regarded whether are nested)
-	// TODO perhaps get from tree?
-	private int numElementsOnLine;
 	
 	// current inline line no within block
 	private int curLineNoInBlock;
@@ -62,12 +61,10 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 		this.curBlockElementHeight = 0;
 
 		this.curInlineWidth = 0;
-		this.inlineElementsAdded = false;
 		this.totalConsecutiveInlineHeightComputed = false;
 		this.curInlineMaxHeight = 0;
 		this.totalConsecutiveInlineHeight = 0;
 		this.curLineNoInBlock = 0;
-		this.numElementsOnLine = 0;
 	}
 
 	// Computation of inline height, typically happens on reaching end tag
@@ -79,7 +76,6 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 		}
 		
 		this.totalConsecutiveInlineHeightComputed = true;
-		this.inlineElementsAdded = false;
 
 		addToCurLineMaxHeightToTotalConsecutiveInlineHeight();
 		
@@ -92,11 +88,6 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 		// TODO must add line spacing, if so this might now work, could keep a counter of number of text lines
 		
 		this.totalConsecutiveInlineHeight += curInlineMaxHeight;
-	}
-
-	
-	final boolean hasAnyInlineElementsAdded() {
-		return inlineElementsAdded;
 	}
 
 	final void addToBlockElementHeight(int height) {
@@ -137,7 +128,7 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 		}
 	}
 	
-	final boolean updateBlockRemainingForNewInlineElement(int widthPx, int heightPx) {
+	final <ELEMENT_TYPE> boolean updateBlockRemainingForNewInlineElement(int widthPx, int heightPx, int debugDepth, ILayoutDebugListener<ELEMENT_TYPE> debugListener) {
 		
 		if (widthPx <= 0) {
 			throw new IllegalArgumentException("widthPx <= 0");
@@ -155,7 +146,7 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 		
 		if (lineWrapped) {
 			// Must wrap line since no more space on this one
-			applyLineBreak();
+			applyLineBreak(debugDepth, debugListener);
 		}
 		
 		// then update
@@ -164,34 +155,116 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 		return lineWrapped;
 	}
 
-	final void updateBlockInlineRemainingWidthForTextElement(int widthPx, int heightPx, boolean applyLineWrap) {
+	final <ELEMENT_TYPE> void updateBlockInlineRemainingWidthForTextElement(int widthPx, int heightPx, boolean applyLineWrap, int debugDepth, ILayoutDebugListener<ELEMENT_TYPE> layoutDebugListener) {
+		
+		checkIsBlockElement();
 		
 		// Add to current widths
 		updateCurrentLine(widthPx, heightPx);
 
 		if (applyLineWrap) {
 			// Add last line max-height to current
-			applyLineBreak();
+			applyLineBreak(debugDepth, layoutDebugListener);
 		}
 	}
 	
-	private void applyLineBreak() {
-		addToCurLineMaxHeightToTotalConsecutiveInlineHeight();
-		this.numElementsOnLine = 0;
-		++ curLineNoInBlock;
-		this.curInlineWidth = 0;
-		this.remainingWidth = getAvailableWidth();
+	
+	// Call this when reaching end of current div-element so we can compute sizes for the last inline text line
+	final <ELEMENT_TYPE> void applyLineBreakAtEndOfBlockElement(int debugDepth, ILayoutDebugListener<ELEMENT_TYPE> layoutDebugListener) {
+
+		checkIsBlockElement();
+		
+		applyLineBreak(debugDepth, layoutDebugListener);
 	}
 	
+	private <ELEMENT_TYPE> void applyLineBreak(int debugDepth, ILayoutDebugListener<ELEMENT_TYPE> layoutDebugListener) {
+		
+		checkIsBlockElement();
+		
+		layoutDebugListener.onApplyLineBreakStart(debugDepth, curLineNoInBlock);
+		
+		addToCurLineMaxHeightToTotalConsecutiveInlineHeight();
+		
+		this.curInlineWidth = 0;
+		this.remainingWidth = getAvailableWidth();
+
+		// Main calculation for inline elements happen at line-break, we recursively scan tree of inline elements
+		// and compute elements
+
+		recursivelyCheckForAnyCompletedInlineElementAndComputeBounds(this, curLineNoInBlock, curInlineMaxHeight, debugDepth, layoutDebugListener);
+
+		this.curInlineMaxHeight = 0;
+		++ curLineNoInBlock;
+
+		layoutDebugListener.onApplyLineBreakEnd(debugDepth);
+	}
+
+
+	private <ELEMENT_TYPE> void recursivelyCheckForAnyCompletedInlineElementAndComputeBounds(
+			StackElementBase element,
+			int lineToCompute,
+			int lineMaxHeight,
+			int debugDepth,
+			ILayoutDebugListener<ELEMENT_TYPE> layoutDebugListener) {
+		
+		// Must collect elements on lines
+		
+		// Iterate all inline elements that are directly beneath current inline elements.
+		// This will advance the current inline-counter in StackElementBase for this element
+		// to make sure we do not process the same inline elements twice
+		element.recursivelyProcessInlineElementsUpTo(lineToCompute, inlineElement -> {
+		
+			// Only process lines at current line-no
+			if (inlineElement.getLineNo() == lineToCompute) {
+				
+				switch (inlineElement.getType()) {
+				case KNOWN_SIZE_HTML_ELEMENT:
+					// <img> or similar, we know width and height for this element so nothing in particular to be done
+					break;
+
+				case WRAPPER_HTML_ELEMENT_START:
+					// Start of HTML element, just a wrapper so no real need to set ElementLayout positions
+					break;
+
+				case WRAPPER_HTML_ELEMENT_END:
+					// end of wrapper element, this element may not be rectangular in size if it wraps multiple lines
+					break;
+
+				case TEXT_CHUNK:
+					// a text chunk, these are always rectangular in size.
+					// here we have to compute the positioning of the chunk since size was computed earlier
+					final ElementLayout textChunkLayout = inlineElement.getResultingLayout();
+					
+					// TODO might not be correct since we do not know line height due to other inline elements on this line
+					
+					final int yPos = getTextYPosOnLine(textChunkLayout.getFont(), lineMaxHeight);
+					
+					textChunkLayout.getOuter().initPosition(textChunkLayout.getOuter().getLeft(), yPos);
+					textChunkLayout.getInner().initPosition(textChunkLayout.getInner().getLeft(), yPos);
+					
+					textChunkLayout.setBoundsComputed();
+					break;
+
+				default:
+					throw new UnsupportedOperationException("Unknown inline element type: " + inlineElement.getType());
+				}
+			}
+		});
+	}
+
+	private int getTextYPosOnLine(IFont font, int lineMaxHeight) {
+		// TODO align text to baseline
+		return lineMaxHeight - font.getHeight();
+	}
+
 	private void updateCurrentLine(int widthPx, int heightPx) {
 		this.curInlineWidth += widthPx;
 		
 		if (this.curInlineWidth > availableWidth) {
 			throw new IllegalStateException();
 		}
+
 		this.remainingWidth -= widthPx;
-		
-		++ numElementsOnLine;
 		
 		if (heightPx > curInlineMaxHeight) {
 			this.curInlineMaxHeight = heightPx;
@@ -215,7 +288,7 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 		// Current inline x pos, computed from cur inline width
 		// Note that if this is the first textline, it is 0
 		
-		return getLineStartXPos() + (inlineElementsAdded ? this.curInlineWidth : 0);
+		return getLineStartXPos() + (hasAnyInlineElementsAdded() ? this.curInlineWidth : 0);
 	}
 
 	final int getCurLineYPos() {

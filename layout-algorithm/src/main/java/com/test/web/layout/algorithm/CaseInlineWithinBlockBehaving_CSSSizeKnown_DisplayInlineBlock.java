@@ -18,6 +18,6 @@ class CaseInlineWithinBlockBehaving_CSSSizeKnown_DisplayInlineBlock
 				container);
 
 		// Can add to layout-state in start-tag, will also update remaining width in current block element
-		state.addInlineElementAndWrapIfNecessary(container, sub, widthFromCSS, heightFromCSS);
+		state.addInlineElementAndWrapToNextTextLineIfNecessary(container, sub, widthFromCSS, heightFromCSS);
 	}
 }
