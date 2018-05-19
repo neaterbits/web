@@ -16,10 +16,6 @@ final class ElementLayout implements IElementRenderLayout {
 	// font used to render this element
 	private IFont font;
 	
-	// whether width/height was specified in CSS
-	private boolean hasCSSWidth;
-	private boolean hasCSSHeight;
-
 	// sum width and height of sub elements
 	private int sumWidth;
 	private int sumHeight;
@@ -65,9 +61,6 @@ final class ElementLayout implements IElementRenderLayout {
 
 		this.display = toCopy.display;
 		this.font = toCopy.font;
-		this.hasCSSWidth = toCopy.hasCSSWidth;
-		this.hasCSSHeight = toCopy.hasCSSHeight;
-		
 		this.outer = toCopy.outer.makeCopy();
 		this.absolute = toCopy.outer.makeCopy();
 		this.inner = toCopy.inner.makeCopy();
@@ -134,22 +127,6 @@ final class ElementLayout implements IElementRenderLayout {
 	@Override
 	public int getZIndex() {
 		return zIndex;
-	}
-
-	void setHasCSSWidth(boolean hasCSSWidth) {
-		this.hasCSSWidth = hasCSSWidth;
-	}
-
-	void setHasCSSHeight(boolean hasCSSHeight) {
-		this.hasCSSHeight = hasCSSHeight;
-	}
-
-	public boolean hasCSSWidth() {
-		return hasCSSWidth;
-	}
-
-	public boolean hasCSSHeight() {
-		return hasCSSHeight;
 	}
 
 	Dimensions getOuter() {
@@ -233,8 +210,8 @@ final class ElementLayout implements IElementRenderLayout {
 
 	@Override
 	public String toString() {
-		return "ElementLayout [display=" + display + ", font=" + font + ", hasCSSWidth=" + hasCSSWidth
-				+ ", hasCSSHeight=" + hasCSSHeight + ", sumWidth=" + sumWidth + ", sumHeight=" + sumHeight
+		return "ElementLayout [display=" + display + ", font=" + font 
+				+ ", sumWidth=" + sumWidth + ", sumHeight=" + sumHeight
 				+ ", dimensions=" + outer + ", margin=" + margin + ", padding=" + padding + ", inner=" + inner
 				+ ", renderer=" + renderer + "]";
 	}
