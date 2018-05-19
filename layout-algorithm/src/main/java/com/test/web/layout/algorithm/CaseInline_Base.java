@@ -25,20 +25,13 @@ abstract class CaseInline_Base extends BaseLayoutCase {
 	final <ELEMENT> void onElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, LayoutUpdate state) {
 
 		onInlineElementStart(container, htmlElement, sub, state);
-		
-		// TODO handle case where there is no room for element, the atStartOfLine may be set to true because we had to wrap
-		// to the next line, or we have to look at overflow flag
 
-		final int width = sub.resultingLayout.getInnerBounds().getWidth();
-
-		// Add to textline and wrap and render if necessary
-		if (width > container.getRemainingWidth()) {
-			// No room on current textline so continue on next
-		}
 	}
 
 	@Override
 	final <ELEMENT> void onElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, LayoutUpdate state) {
+
 		onInlineElementEnd(container, htmlElement, sub, state);
+
 	}
 }

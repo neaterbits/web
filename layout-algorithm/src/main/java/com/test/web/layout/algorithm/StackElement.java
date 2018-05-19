@@ -1,8 +1,5 @@
 package com.test.web.layout.algorithm;
 
-import com.test.web.layout.common.ILayoutStylesGetters;
-import com.test.web.layout.common.enums.Display;
-
 // Stack element on the layout stack, we add information here at time of start tag
 // and then just fetch that information when getting to end tag
 // Mutable so can be reused within stack

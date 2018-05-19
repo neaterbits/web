@@ -131,7 +131,6 @@ abstract class StackElementBase {
 	 * @param atStartOfLine true if first element or is first after line wrap
 	 */
 
-	// Add some nested inline element, like an image
 	final void addInlineElementStart(StackElement stackElement, int inlineLineNoInBlock) {
 	
 		if (((StackElementBase)stackElement).allocationState != AllocationState.IN_LAYOUT_STATE_STACK) {
@@ -208,7 +207,7 @@ abstract class StackElementBase {
 	 * Process all inline text lines up to the specified line, removing 
 	 * any <inlineElement></inlineElement> that ends at this layouted line. Eg. a <span> that spans multiple lines
 	 * and then its content is terminated on lastLine, the <span> will be removed from inline-elements being cached here so that it is no longer processed.
-	 * This also might allow the StackElement object to be removed.
+	 * This also might allow the StackElement object to be cleared and reused.
 	 * 
 	 * @param lastLine the last line being processed
 	 * @param consumer process inline elements appearing from the last line up to the current line
