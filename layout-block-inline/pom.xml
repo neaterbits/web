@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>com.test.web</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>root</artifactId>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>layout-block-inline</artifactId>
+  <name>Common layout code for block-inline type layouts</name>
+  <packaging>jar</packaging>
+  <dependencies>
+
+	<dependency>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>types</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>io-common</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>document-common</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>layout-algorithm</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+ 
+	<!-- test dependencies --> 
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+</project>

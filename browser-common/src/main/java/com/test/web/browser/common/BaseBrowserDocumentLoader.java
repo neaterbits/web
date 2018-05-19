@@ -10,9 +10,10 @@ import com.test.web.document.html.common.IDocument;
 import com.test.web.io.common.LoadStream;
 import com.test.web.layout.algorithm.LayoutAlgorithm;
 import com.test.web.layout.algorithm.PageLayout;
-import com.test.web.layout.common.HTMLLayoutContext;
 import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.ViewPort;
+import com.test.web.layout.html.HTMLLayoutAlgorithm;
+import com.test.web.layout.html.HTMLLayoutContext;
 import com.test.web.loadqueue.common.LoadQueue;
 import com.test.web.loadqueue.common.LoadQueueAndStream;
 import com.test.web.loadqueue.common.LoadScheduler;
@@ -80,8 +81,8 @@ public abstract class BaseBrowserDocumentLoader<
 
 		final ViewPort viewPort = new ViewPort(viewPortWidth, viewPortHeight);
 		
-		final LayoutAlgorithm<HTML_ELEMENT, HTMLElement, IDocument<HTML_ELEMENT, HTML_ATTRIBUTE>> layoutAgorithm
-			= new LayoutAlgorithm<>(
+		final HTMLLayoutAlgorithm<HTML_ELEMENT, HTMLElement, IDocument<HTML_ELEMENT, HTML_ATTRIBUTE>> layoutAgorithm
+			= new HTMLLayoutAlgorithm<>(
 				textExtent,
 				renderFactory,
 				new FontSettings(),

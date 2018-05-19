@@ -4,29 +4,29 @@ import com.test.web.layout.common.IElementLayout;
 import com.test.web.layout.common.enums.Unit;
 import com.test.web.types.DecimalSize;
 
-class LayoutHelperUnits {
+public class LayoutHelperUnits {
 
-	static int computeWidthPx(int width, Unit widthUnit, IElementLayout containerLayout) {
+	public static int computeWidthPx(int width, Unit widthUnit, IElementLayout containerLayout) {
 		return computeWidthPx(width, widthUnit, containerLayout.getOuterBounds().getWidth());
 	}
 
-	static int computeWidthPx(int width, Unit widthUnit, ContainerDimensions container) {
+	public static int computeWidthPx(int width, Unit widthUnit, ContainerDimensions container) {
 		return computeSizePx(width, widthUnit, container.getAvailableWidth());
 	}
 
-	static int computeWidthPx(int width, Unit widthUnit, int curWidth) {
+	public static int computeWidthPx(int width, Unit widthUnit, int curWidth) {
 		return computeSizePx(width, widthUnit, curWidth);
 	}
 
-	static int computeHeightPx(int width, Unit widthUnit, IElementLayout containerLayout) {
+	public static int computeHeightPx(int width, Unit widthUnit, IElementLayout containerLayout) {
 		return computeHeightPx(width, widthUnit, containerLayout.getOuterBounds().getHeight());
 	}
 
-	static int computeHeightPx(int height, Unit heightUnit, ContainerDimensions container) {
+	public static int computeHeightPx(int height, Unit heightUnit, ContainerDimensions container) {
 		return computeSizePx(height, heightUnit, container.getAvailableHeight());
 	}
 
-	static int computeHeightPx(int height, Unit heightUnit, int curHeight) {
+	public static int computeHeightPx(int height, Unit heightUnit, int curHeight) {
 		return computeSizePx(height, heightUnit, curHeight);
 	}
 
@@ -61,5 +61,4 @@ class LayoutHelperUnits {
 	private static int percentOf(int px, int pct) {
 		return (px * pct) / 100; 
 	}
-
 }

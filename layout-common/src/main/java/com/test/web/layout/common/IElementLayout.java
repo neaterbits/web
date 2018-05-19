@@ -1,5 +1,6 @@
 package com.test.web.layout.common;
 
+import com.test.web.layout.common.enums.Display;
 import com.test.web.render.common.IFont;
 
 public interface IElementLayout {
@@ -26,5 +27,8 @@ public interface IElementLayout {
 	int getRenderQueueStartOffset();
 
 	int getRenderQueueEndOffset();
+	
+	// TODO should not be here since Display is a HTML thing
+	Display getDisplay();
 
 }

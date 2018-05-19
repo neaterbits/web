@@ -8,7 +8,7 @@ import com.test.web.layout.common.enums.Display;
 import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IFont;
 
-final class ElementLayout implements IElementRenderLayout {
+final class ElementLayout implements IElementRenderLayout, ElementLayoutSettersGetters  {
 	
 	// display class for this element
 	private Display display;
@@ -73,11 +73,13 @@ final class ElementLayout implements IElementRenderLayout {
 		this.renderer = toCopy.renderer;
 	}
 	
-	ElementLayout makeCopy() {
+	@Override
+	public IElementRenderLayout makeCopy() {
 		return new ElementLayout(this);
 	}
 
-	Display getDisplay() {
+	@Override
+	public Display getDisplay() {
 		return display;
 	}
 
@@ -93,7 +95,8 @@ final class ElementLayout implements IElementRenderLayout {
 		this.display = display;
 	}
 	
-	void clear() {
+	@Override
+	public void clear() {
 		this.display = null;
 		this.renderer = null;
 		this.sumWidth = sumHeight = 0;
@@ -105,7 +108,8 @@ final class ElementLayout implements IElementRenderLayout {
 		inner.init(-1, -1, -1, -1);
 	}
 	
-	void setRenderer(int zIndex, IDelayedRenderer renderer) {
+	@Override
+	public void setRenderer(int zIndex, IDelayedRenderer renderer) {
 		
 		if (renderer == null) {
 			throw new IllegalArgumentException("renderer == null");
@@ -120,7 +124,8 @@ final class ElementLayout implements IElementRenderLayout {
 		return font;
 	}
 
-	void setFont(IFont font) {
+	@Override
+	public void setFont(IFont font) {
 		this.font = font;
 	}
 	
@@ -149,7 +154,8 @@ final class ElementLayout implements IElementRenderLayout {
 		return padding;
 	}
 
-	void setBoundsComputed() {
+	@Override
+	public void setBoundsComputed() {
 		if (boundsComputed) {
 			throw new IllegalStateException("bounds computed twice");
 		}
@@ -206,6 +212,54 @@ final class ElementLayout implements IElementRenderLayout {
 	public void setRenderQueueOffsets(int startOffset, int endOffset) {
 		this.renderQueueStartOffset = startOffset;
 		this.renderQueueEndOffset   = endOffset;
+	}
+
+	
+	
+	@Override
+	public IWrapping initMargins(int top, int right, int bottom, int left) {
+  		getMarginWrapping().init(top, right, bottom, left);
+  		
+  		return getMargins();
+	}
+
+	
+	
+	@Override
+	public IWrapping initPadding(int top, int right, int bottom, int left) {
+    	getPaddingWrapping().init(top, right, bottom, left);
+
+    	return getPadding();
+	}
+	
+	@Override
+	public void initOuter(int left, int top, int width, int height) {
+		getOuter().init(left, top, width, height);
+	}
+
+	@Override
+	public void initInner(int left, int top, int width, int height) {
+		getInner().init(left, top, width, height);
+	}
+
+	@Override
+	public void initOuterPosition(int left, int top) {
+		getOuter().initPosition(left, top);
+	}
+
+	@Override
+	public void initInnerPosition(int left, int top) {
+		getInner().initPosition(left, top);
+	}
+
+	@Override
+	public void initOuterWidthHeight(int width, int height) {
+		getOuter().initWidthHeight(width, height);
+	}
+
+	@Override
+	public void initInnerWidthHeight(int width, int height) {
+		getInner().initWidthHeight(width, height);
 	}
 
 	@Override

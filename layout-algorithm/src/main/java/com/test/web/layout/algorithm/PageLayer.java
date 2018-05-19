@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 
 import com.test.web.layout.common.IBounds;
 import com.test.web.layout.common.IElementLayout;
+import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.IWrapping;
 import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IFont;
@@ -16,9 +17,9 @@ import com.test.web.render.common.IFont;
  * eg. in case of an outer div with background for which height is unknown (can only render background when height is known)
  */
 
-public class PageLayer<ELEMENT> implements Comparable<PageLayer<ELEMENT>> {
+public final class PageLayer<ELEMENT> implements Comparable<PageLayer<ELEMENT>> {
 	private final int index;
-	private final LinkedHashMap<ELEMENT, ElementLayout> layouts;
+	private final LinkedHashMap<ELEMENT, IElementRenderLayout> layouts;
 	
 	// The renderer used to render this layer
 	private final IDelayedRenderer renderer;
@@ -29,7 +30,7 @@ public class PageLayer<ELEMENT> implements Comparable<PageLayer<ELEMENT>> {
 		this.renderer = renderer;
 	}
 
-	void add(ELEMENT element, ElementLayout layout) {
+	void add(ELEMENT element, IElementRenderLayout layout) {
 		if (element == null) {
 			throw new IllegalArgumentException("element == null");
 		}
@@ -56,20 +57,20 @@ public class PageLayer<ELEMENT> implements Comparable<PageLayer<ELEMENT>> {
 	}
 	
 	// Bounds outside wrapping and padding
-	IBounds getOuterBounds(ELEMENT element) {
+	public IBounds getOuterBounds(ELEMENT element) {
 		return get(element).getOuterBounds();
 	}
 	
 	// Bounds of element itself
-	IBounds getInnerBounds(ELEMENT element) {
+	public IBounds getInnerBounds(ELEMENT element) {
 		return get(element).getInnerBounds();
 	}
 	
-	IWrapping getMargins(ELEMENT element) {
+	public IWrapping getMargins(ELEMENT element) {
 		return get(element).getMargins();
 	}
 	
-	IWrapping getPadding(ELEMENT element) {
+	public IWrapping getPadding(ELEMENT element) {
 		return get(element).getPadding();
 	}
 

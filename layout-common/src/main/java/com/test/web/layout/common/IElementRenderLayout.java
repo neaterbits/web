@@ -9,4 +9,6 @@ public interface IElementRenderLayout extends IElementLayout {
 	IDelayedRenderer getRenderer();
 	
 	void setRenderQueueOffsets(int startOffset, int endOffset);
+	
+	IElementRenderLayout makeCopy();
 }

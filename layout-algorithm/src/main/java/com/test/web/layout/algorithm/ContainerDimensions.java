@@ -5,7 +5,7 @@ package com.test.web.layout.algorithm;
  * 
  */
 
-interface ContainerDimensions {
+public interface ContainerDimensions {
 
 	/**
 	 * Container width, ie. the width that '%' sizes in sub element will be computed from.

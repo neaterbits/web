@@ -1,6 +1,7 @@
 package com.test.web.layout.algorithm;
 
 import com.test.web.layout.algorithm.TextUtil;
+import com.test.web.layout.common.MockTextExtent;
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.ITextExtent;
 

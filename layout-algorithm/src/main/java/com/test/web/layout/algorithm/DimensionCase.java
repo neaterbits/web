@@ -7,7 +7,7 @@ import com.test.web.layout.common.enums.Justify;
 import com.test.web.layout.common.enums.Unit;
 
 // related to computing margins, padding and inner and outer bounds of elements
-abstract class DimensionCase {
+public abstract class DimensionCase {
 
 	/**
 	 * Compute dimensions (size and position) when dimensions are specified in CSS, ie. "width: 500px; height: 25%".
@@ -27,40 +27,37 @@ abstract class DimensionCase {
 	 * @param resultingLayout computed information will be stored here
 	 */
 
-	abstract void computeDimensions(
+	public abstract void computeDimensions(
 		  ILayoutStylesGetters layoutStyles,
 		  ContainerDimensions container,
 		  SubDimensions sub,
-		  ElementLayout resultingLayout);
+		  ElementLayoutSetters resultingLayout);
 	
-	static IWrapping initPadding(IStyleDimensions padding, ContainerDimensions container, ElementLayout resultingLayout) {
+	public static IWrapping initPadding(IStyleDimensions padding, ContainerDimensions container, ElementLayoutSetters resultingLayout) {
 		return initPadding(padding, container.getAvailableWidth(), container.getAvailableHeight(), resultingLayout);
 	}
 
-	private static IWrapping initPadding(IStyleDimensions padding, int containerWidth, int containerHeight, ElementLayout resultingLayout) {
+	private static IWrapping initPadding(IStyleDimensions padding, int containerWidth, int containerHeight, ElementLayoutSetters resultingLayout) {
     	final int topPadding 		= getPaddingSize(padding.getTop(), 		padding.getTopUnit(), 		padding.getTopType(),		containerHeight);
     	final int rightPadding 	= getPaddingSize(padding.getRight(), 		padding.getRightUnit(), 		padding.getRightType(),		containerWidth);
     	final int bottomPadding 	= getPaddingSize(padding.getBottom(), 	padding.getBottomUnit(), 	padding.getBottomType(),	containerHeight);
     	final int leftPadding 		= getPaddingSize(padding.getLeft(),			padding.getLeftUnit(), 		padding.getLeftType(),		containerWidth);
 
-    	resultingLayout.getPaddingWrapping().init(topPadding, rightPadding, bottomPadding, leftPadding);
-
-    	return resultingLayout.getPadding();
+    	
+    	return resultingLayout.initPadding(topPadding, rightPadding, bottomPadding, leftPadding);
 	}
 
-	static IWrapping initNoAutoMargins(IStyleDimensions margins, ElementLayout resultingLayout, ContainerDimensions container) {
+	public static IWrapping initNoAutoMargins(IStyleDimensions margins, ElementLayoutSetters resultingLayout, ContainerDimensions container) {
 		return initNoAutoMargins(margins, resultingLayout, container.getAvailableWidth(), container.getAvailableHeight());
 	}
 
-	private static IWrapping initNoAutoMargins(IStyleDimensions margins, ElementLayout resultingLayout, int containerWidth, int containerHeight) {
+	private static IWrapping initNoAutoMargins(IStyleDimensions margins, ElementLayoutSetters resultingLayout, int containerWidth, int containerHeight) {
 		final int topMargin  = autoToNoneSize(margins.getTop(), margins.getTopUnit(), margins.getTopType(), containerHeight);
   		final int rightMargin  = autoToNoneSize(margins.getRight(), margins.getRightUnit(), margins.getRightType(), containerWidth);
   		final int bottomMargin  = autoToNoneSize(margins.getBottom(), margins.getBottomUnit(), margins.getBottomType(), containerHeight);
 		final int leftMargin  = autoToNoneSize(margins.getLeft(), margins.getLeftUnit(), margins.getLeftType(), containerWidth);
 
-		resultingLayout.getMarginWrapping().init(topMargin, rightMargin, bottomMargin, leftMargin);
-		
-		return resultingLayout.getMargins();
+		return resultingLayout.initMargins(topMargin, rightMargin, bottomMargin, leftMargin);
 	}
 	    
 	    static int getPaddingSize(int size, Unit unit, Justify type, int containerSize) {
@@ -68,25 +65,29 @@ abstract class DimensionCase {
 	    }
 	    
 	    
-	    static void initBounds(int containerLeft, int containerTop, int innerWidth, int innerHeight, IWrapping padding, IWrapping margins, ElementLayout resultingLayout) {
+	    public static int initBounds(int containerLeft, int containerTop, int innerWidth, int innerHeight, IWrapping padding, IWrapping margins, ElementLayoutSetters resultingLayout) {
 
-	    	resultingLayout.getOuter().init(
+	    	final int outerWidth = margins.getLeft() + padding.getLeft() + innerWidth + padding.getRight() + margins.getRight();
+	    	
+	    	resultingLayout.initOuter(
 	    			containerLeft,
 	    			containerTop,
-	    			margins.getLeft() + padding.getLeft() + innerWidth + padding.getRight() + margins.getRight(),
+	    			outerWidth,
 	    			margins.getTop() + padding.getTop() + innerHeight + padding.getBottom() + margins.getBottom());
 	    	
-	    	resultingLayout.getInner().init(
+	    	resultingLayout.initInner(
 	    			containerLeft + margins.getLeft() + padding.getLeft() ,
 	    			containerTop + margins.getTop() + padding.getTop(),
 	    			innerWidth,
 	    			innerHeight);
 	    	
 			resultingLayout.setBoundsComputed();
+
+			return outerWidth;
 	    }
 	    	    
 	    
-	    static int getNonAutoSize(int size, Unit unit, Justify type, int curSize) {
+	    public static int getNonAutoSize(int size, Unit unit, Justify type, int curSize) {
 	        
 	    	final int ret;
 	    	

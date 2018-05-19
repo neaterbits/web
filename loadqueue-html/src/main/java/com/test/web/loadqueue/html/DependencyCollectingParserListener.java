@@ -10,15 +10,15 @@ import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.HTMLElementListener;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.io.common.Tokenizer;
-import com.test.web.layout.algorithm.LayoutAlgorithm;
-import com.test.web.layout.algorithm.LayoutState;
 import com.test.web.layout.algorithm.PageLayout;
 import com.test.web.layout.common.LayoutStyles;
-import com.test.web.layout.common.HTMLLayoutContext;
 import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.IFontSettings;
 import com.test.web.layout.common.ILayoutDebugListener;
 import com.test.web.layout.common.ViewPort;
+import com.test.web.layout.html.HTMLLayoutAlgorithm;
+import com.test.web.layout.html.HTMLLayoutContext;
+import com.test.web.layout.html.HTMLLayoutState;
 import com.test.web.loadqueue.common.ILoadQueue;
 import com.test.web.loadqueue.common.LoadCompletionListener;
 import com.test.web.parse.html.IHTMLParserListener;
@@ -40,7 +40,7 @@ public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER
 	private final IDocumentParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER_CONTEXT> delegate;
 	private final ILoadQueue loadQueue;
 
-	private final LayoutAlgorithm<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>> layoutAlgorithm;
+	private final HTMLLayoutAlgorithm<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>> layoutAlgorithm;
 
 	private final IFontSettings<HTMLElement> fontSettings;
 	
@@ -57,7 +57,7 @@ public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER
 	
 	private final CSSContext<ELEMENT> cssContext;
 
-	private final LayoutState<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>>layoutState;
+	private final HTMLLayoutState<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>>layoutState;
 	
 	public DependencyCollectingParserListener(
 			URL documentURL,
@@ -77,12 +77,12 @@ public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER
 		
 		this.fontSettings = fontSettings;
 	
-		this.layoutAlgorithm = new LayoutAlgorithm<>(textExtent, renderFactory, fontSettings, layoutDebugListener);
+		this.layoutAlgorithm = new HTMLLayoutAlgorithm<>(textExtent, renderFactory, fontSettings, layoutDebugListener);
 		
 		this.tempLayoutStyles = new LayoutStyles();
 		
 		this.cssContext = new CSSContext<>();
-		this.layoutState = new LayoutState<>(
+		this.layoutState = new HTMLLayoutState<>(
 				textExtent,
 				viewPort,
 				new HTMLLayoutContext<>(cssContext),

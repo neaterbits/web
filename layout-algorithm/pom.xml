@@ -36,62 +36,7 @@
 
  
 	<!-- test dependencies --> 
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>render-common</artifactId>
-		<version>${project.version}</version>
-		<scope>test</scope>
-	</dependency>
 
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>render-queue</artifactId>
-		<version>${project.version}</version>
-		<scope>test</scope>
-	</dependency>
-	
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>testdata</artifactId>
-		<version>${project.version}</version>
-		<scope>test</scope>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>io-long</artifactId>
-		<version>${project.version}</version>
-		<scope>test</scope>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>document-html-long</artifactId>
-		<version>${project.version}</version>
-		<scope>test</scope>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>document-html-oo</artifactId>
-		<version>${project.version}</version>
-		<scope>test</scope>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>render-html</artifactId>
-		<version>${project.version}</version>
-		<scope>test</scope>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>layout-html</artifactId>
-		<version>${project.version}</version>
-		<scope>test</scope>
-	</dependency>
 
     <dependency>
       <groupId>junit</groupId>

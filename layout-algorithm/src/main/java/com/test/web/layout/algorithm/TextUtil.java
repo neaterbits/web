@@ -11,7 +11,7 @@ import com.test.web.types.Pixels;
  * 
  */
 
-final class TextUtil {
+public final class TextUtil {
 	
 	private final ITextExtent textExtent;
 	
@@ -61,7 +61,7 @@ final class TextUtil {
     	return ret;
     }
     
-    static class NumberOfChars {
+    public static final class NumberOfChars {
     	private final int numberOfChars;
     	private final int width;
 
@@ -74,13 +74,13 @@ final class TextUtil {
 			return numberOfChars;
 		}
 
-		int getWidth() {
+		public int getWidth() {
 			return width;
 		}
     }
 
     @FunctionalInterface
-    interface OnTextElement {
+   public  interface OnTextElement {
     	int onElement(String lineText, NumberOfChars numChars, int xPos, int yPos, boolean lineWrapped, boolean atStartOfLine);
     }
     
@@ -89,7 +89,7 @@ final class TextUtil {
      * Will callback onto caller for each time text is split
      * 
      */
-    void splitTextIntoLines(
+   public  void splitTextIntoLines(
     		String text,
     		int xPos, int yPos,
     		int lineStartPos,
@@ -237,42 +237,6 @@ final class TextUtil {
 		}
     	
     	return new NumberOfChars(ret, retWidth);
-    }
-    
-    
-    int getTextLineHeight(StackElement cur, IFont font) {
-		// TODO add spacing between text lines
-    	return font.getHeight();
-    }
-    
-    @Deprecated // Should lay out one text line at a time
-    int computeTextLinesHeight(String text, StackElement cur, IFont font) {
-		String s = text;
-		
-		int height = 0;
-		
-		for (;;) {
-		
-			// For each line, find with of text
-			int numChars = findNumberOfChars(s, cur.getAvailableWidth(), font).getNumberOfChars();
-			
-			if (numChars == 0 && !s.isEmpty()) {
-				throw new IllegalStateException("No room for characters in element of width " + cur.getAvailableWidth());
-			}
-			
-			// System.out.println("## numChars "+ numChars + " of \"" + s + "\"");
-			
-			height += getTextLineHeight(cur, font);
-			
-			if (numChars == s.length()) {
-				// was room for rest of string, exit
-				break;
-			}
-			
-			s = s.substring(numChars);
-		}
- 
-		return height;
     }
 }
 
