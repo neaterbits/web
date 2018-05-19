@@ -8,31 +8,17 @@ import com.test.web.layout.common.enums.Display;
 // Mutable so can be reused within stack
 final class StackElement extends StackElementBaseBlock implements ContainerDimensions, SubDimensions  {
 	
-	
-	static final int UNKNOWN_WIDTH = 0x01;
-	static final int UNKNOWN_HEIGHT = 0x02;
-	
-
+	// For debug printouts
 	private String debugName;
-	
-	// flags for layout dimensions that cannot be computed until we have computed dimensions of all inner-elements
-	int delayedLayout;
 	
 	// The resulting layout after computation of width and height, this is what rendering sees
 	final ElementLayout resultingLayout;
 
+	// The layout case for this element, eg an inline-block element within a block element
 	private BaseLayoutCase layoutCase;
 	
 	// In order to reuse elements in the stack and avoid memory allocation for each push/pop
 	// we keep information specific to inline, text and block etc in the same element
-	
-	// -------------------------- Text specific --------------------------
-
-
-
-	// -------------------------- For inline elements  --------------------------
-	
-	// -------------------------- For block behaving elements  --------------------------
 	
 
 	StackElement(int stackIdx, int availableWidth, int availableHeight, String debugName) {
