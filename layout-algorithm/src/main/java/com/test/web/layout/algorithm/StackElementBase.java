@@ -238,11 +238,6 @@ abstract class StackElementBase {
 			case WRAPPER_HTML_ELEMENT_END:
 				consumer.accept(inlineElement);
 				lastStartElement = null;
-				break;
-
-			case KNOWN_SIZE_HTML_ELEMENT:
-				consumer.accept(inlineElement);
-
 				final int lineNo = inlineElement.getLineNo() ;
 
 				if (lineNo <= lastLine) {
@@ -250,6 +245,10 @@ abstract class StackElementBase {
 					// This means we can delete this from the current lines at this level
 					this.firstInlineElement = i + 1;
 				}
+				break;
+
+			case KNOWN_SIZE_HTML_ELEMENT:
+				consumer.accept(inlineElement);
 				break;
 
 			case TEXT_CHUNK:
