@@ -191,10 +191,12 @@ public final class LayoutStyles implements ILayoutStylesSetters, ILayoutStylesGe
 		return margins;
 	}
 	
+	@Override
 	public FontSpec getFont() {
 		return font;
 	}
 
+	@Override
 	public short getZIndex() {
 		return zIndex;
 	}

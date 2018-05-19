@@ -123,7 +123,7 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 	}
 
 	private void checkIsBlockElement() {
-		if (!isViewPort() && !layoutStyles.getDisplay().isBlock()) {
+		if (!isViewPort() && !getDisplay().isBlock()) {
 			throw new IllegalStateException("Current element is not a block element");
 		}
 	}

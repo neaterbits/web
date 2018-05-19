@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 import com.test.web.layout.common.IElementRenderLayout;
+import com.test.web.layout.common.ILayoutStylesGetters;
 import com.test.web.layout.common.LayoutStyles;
+import com.test.web.layout.common.enums.Display;
 import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IFont;
 
@@ -32,7 +34,7 @@ abstract class StackElementBase {
 	private AllocationState allocationState;
 
 	// Work area for singlethreaded algorithm, storing non threadsafe data here, but should be ok since HTML document parsing happens on one thread
-	final LayoutStyles layoutStyles;
+	private final LayoutStyles layoutStyles;
 
 	// -------------------------- For block or inline elements, ie for one inline. Also inline within inline  --------------------------
 	
@@ -286,5 +288,27 @@ abstract class StackElementBase {
 	
 	final boolean isViewPort() {
 		return this.stackIdx == 0;
+	}
+
+	final ILayoutStylesGetters getLayoutStyles() {
+		return layoutStyles;
+	}
+
+	final boolean hasUserSpecifiedWidth() {
+		return layoutStyles.hasWidth();
+	}
+
+	final boolean hasUserSpecifiedHeight() {
+		return layoutStyles.hasHeight();
+	}
+
+	final Display getDisplay() {
+		return layoutStyles.getDisplay();
+	}
+	
+	
+	final void initCSSLayoutStyles(Consumer<LayoutStyles> computeStyles) {
+		// Just calls method to compute onto layoutStyles object
+		computeStyles.accept(layoutStyles);
 	}
 }

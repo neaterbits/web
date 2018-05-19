@@ -104,7 +104,7 @@ public class LayoutAlgorithm<
     			
     			layoutStyles -> computeStyles(state, document, element, elementType, layoutStyles));
     
-    	final BaseLayoutCase layoutCase = LayoutCases.determineLayoutCase(container, sub.layoutStyles, elementType);
+    	final BaseLayoutCase layoutCase = LayoutCases.determineLayoutCase(container, sub.getLayoutStyles(), elementType);
 
     	if (debugListener != null) {
     		debugListener.onElementLayoutCase(getDebugDepth(state), elementType, layoutCase.getName());
@@ -131,13 +131,13 @@ public class LayoutAlgorithm<
 	}
     
     private void setResultingFont(LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state, StackElement sub) {
-		final FontSpec spec = sub.layoutStyles.getFont();
+		final FontSpec spec = sub.getLayoutStyles().getFont();
 		final IFont font = state.getOrOpenFont(spec, FontStyle.NONE); // TODO: font styles
 		sub.resultingLayout.setFont(font);
     }
     
     private void setResultingRenderer(StackElement sub, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> state) {
-		final short zIndex = sub.layoutStyles.getZIndex();
+		final short zIndex = sub.getLayoutStyles().getZIndex();
 
 		setResultingRenderer(sub, state, zIndex);
     }
@@ -192,7 +192,7 @@ public class LayoutAlgorithm<
 		}
 
 		// Got layout, add to layer
-		final short zIndex = sub.layoutStyles.getZIndex();
+		final short zIndex = sub.getLayoutStyles().getZIndex();
 		
 		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, rendererFactory);
 
@@ -292,7 +292,7 @@ public class LayoutAlgorithm<
     		DOCUMENT document) {
 
 		final ElementLayout containerLayout = cur.resultingLayout;
-		final int zIndex = cur.layoutStyles.getZIndex();
+		final int zIndex = cur.getLayoutStyles().getZIndex();
 
 		final IElementRenderLayout textChunkLayout = state.addTextChunk(cur, lineText, numChars.getWidth(), lineHeight, zIndex, getRenderer(state, zIndex), lineWrapped);
 

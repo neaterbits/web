@@ -59,26 +59,10 @@ final class StackElement extends StackElementBaseBlock implements ContainerDimen
 	}
 	
 
-	ILayoutStylesGetters getLayoutStyles() {
-		return layoutStyles;
-	}
-
 	ElementLayout getResultingLayout() {
 		return resultingLayout;
 	}
 	
-	Display getDisplay() {
-		return layoutStyles.getDisplay();
-	}
-
-	boolean hasUserSpecifiedWidth() {
-		return layoutStyles.hasWidth();
-	}
-
-	boolean hasUserSpecifiedHeight() {
-		return layoutStyles.hasHeight();
-	}
-
 	BaseLayoutCase getLayoutCase() {
 		return layoutCase;
 	}

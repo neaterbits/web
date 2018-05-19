@@ -23,8 +23,8 @@ abstract class BaseLayoutCase {
 
 	final void initAvailableAndRemainingWidthFromCSS(IElementLayout containerLayout, StackElement sub) {
 		final int width  = LayoutHelperUnits.computeWidthPx(
-				sub.layoutStyles.getWidth(),
-				sub.layoutStyles.getWidthUnit(),
+				sub.getLayoutStyles().getWidth(),
+				sub.getLayoutStyles().getWidthUnit(),
 				containerLayout);
 
 		initAvailableAndRemainingFromCSSWidth(sub, width);
@@ -42,8 +42,8 @@ abstract class BaseLayoutCase {
 
 	final void initAvailableAndRemainingHeightFromCSS(IElementLayout containerLayout, StackElement sub) {
 		final int height  = LayoutHelperUnits.computeHeightPx(
-				sub.layoutStyles.getHeight(),
-				sub.layoutStyles.getHeightUnit(),
+				sub.getLayoutStyles().getHeight(),
+				sub.getLayoutStyles().getHeightUnit(),
 				containerLayout);
 
 		initAvailableAndRemainingFromCSSHeight(sub, height);

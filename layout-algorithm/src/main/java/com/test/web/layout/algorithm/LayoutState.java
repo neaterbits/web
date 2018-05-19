@@ -150,10 +150,11 @@ public final class LayoutState<
 			}
 		}
 		
-		computeStyles.accept(ret.layoutStyles);
+		ret.initCSSLayoutStyles(computeStyles);
+		
 		
 		// Knows CSS display so set in resulting layout
-		ret.resultingLayout.setDisplay(ret.layoutStyles.getDisplay());
+		ret.resultingLayout.setDisplay(ret.getLayoutStyles().getDisplay());
 		
 		if (isBlock(ret)) {
 			// Update current block to point to this one
@@ -271,11 +272,11 @@ public final class LayoutState<
 	
 
 	private static boolean isBlock(StackElement element) {
-		return element.layoutStyles.getDisplay().isBlock();
+		return element.getDisplay().isBlock();
 	}
 
 	private static boolean isInline(StackElement element) {
-		return element.layoutStyles.getDisplay().isInline();
+		return element.getDisplay().isInline();
 	}
 	
 	IFont getOrOpenFont(FontSpec spec, short style) {

@@ -21,7 +21,7 @@ final class CaseBlockWithinBlockBehaving_CSSWidthKnown extends CaseBlockWithinBl
 	@Override
 	<ELEMENT> void onBlockElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, LayoutUpdate state) {
 		
-		DimensionCases.BLOCK_CSS_WIDTH_KNOWN.computeDimensions(sub.layoutStyles, container, sub, sub.resultingLayout);
+		DimensionCases.BLOCK_CSS_WIDTH_KNOWN.computeDimensions(sub.getLayoutStyles(), container, sub, sub.resultingLayout);
 
 		// block within block so will increase container size with what was computed
 		container.addToBlockElementHeight(sub.resultingLayout.getOuterBounds().getHeight());

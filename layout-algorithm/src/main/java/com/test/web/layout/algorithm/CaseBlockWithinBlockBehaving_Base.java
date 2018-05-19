@@ -8,7 +8,7 @@ abstract class CaseBlockWithinBlockBehaving_Base extends CaseBlock_Base {
 	<ELEMENT> void onBlockElementStart(StackElement container, ELEMENT element, StackElement sub, LayoutUpdate state) {
 
 		// Try to figure out available space
-		if (sub.layoutStyles.hasWidth()) {
+		if (sub.getLayoutStyles().hasWidth()) {
 			// width in CSS
 			initAvailableAndRemainingWidthFromCSS(container.resultingLayout, sub);
 		}
@@ -17,7 +17,7 @@ abstract class CaseBlockWithinBlockBehaving_Base extends CaseBlock_Base {
 			initAvailableAndRemainingWidthFromContainerRemaining(container, sub);
 		}
 
-		if (sub.layoutStyles.hasHeight()) {
+		if (sub.getLayoutStyles().hasHeight()) {
 			initAvailableAndRemainingHeightFromCSS(container.resultingLayout, sub);
 		}
 		else if (container.hasUserSpecifiedHeight()) {

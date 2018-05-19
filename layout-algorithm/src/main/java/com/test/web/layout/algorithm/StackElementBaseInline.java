@@ -14,7 +14,7 @@ abstract class StackElementBaseInline extends StackElementBase implements SubDim
 	}
 
 	private void checkIsInlineElement() {
-		if (isViewPort() || !layoutStyles.getDisplay().isInline()) {
+		if (isViewPort() || !getDisplay().isInline()) {
 			throw new IllegalStateException("Current element is not an inline element");
 		}
 	}

@@ -6,7 +6,7 @@ final class CaseBlockRoot_CSSSizeKnown extends CaseBlockRoot_Base {
 	<ELEMENT> void onBlockElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, LayoutUpdate state) {
 		// Knows sub elements size already, can make some computations
 		DimensionCases.BLOCK_CSS_SIZES_KNOWN.computeDimensions(
-			sub.layoutStyles,
+			sub.getLayoutStyles(),
 			container,
 			sub,
 	//		state.getViewPort().getWidth(), state.getViewPort().getHeight(), // container width/height

@@ -19,7 +19,7 @@ class CaseBlockWithinBlockBehaving_CSSSizeUnknown extends CaseBlockWithinBlockBe
 		// The width 
 		final int height = sub.getCollectedBlockHeight();
 
-		DimensionCases.BLOCK_CSS_SIZES_UNKNOWN.computeDimensions(sub.layoutStyles, container, sub, sub.resultingLayout);
+		DimensionCases.BLOCK_CSS_SIZES_UNKNOWN.computeDimensions(sub.getLayoutStyles(), container, sub, sub.resultingLayout);
 
 		// block within block so will increase container size
 		container.addToBlockElementHeight(height);

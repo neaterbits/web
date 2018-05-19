@@ -40,4 +40,5 @@ public interface ILayoutStylesGetters {
 	
 	FontSpec getFont();
 
+	short getZIndex();
 }
