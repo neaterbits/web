@@ -297,6 +297,7 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 
 					@SuppressWarnings("unchecked")
 					final E element = (E)inlineElement.getStackElement().getElement();
+					
 					layout.setBoundsComputed();
 					addToPageLayer.add(element, layout);
 					

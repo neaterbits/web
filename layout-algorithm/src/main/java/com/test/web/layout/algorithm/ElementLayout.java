@@ -10,6 +10,8 @@ import com.test.web.render.common.IFont;
 
 final class ElementLayout implements IElementRenderLayout, ElementLayoutSettersGetters  {
 	
+	private int layoutPartsSetFlag;
+	
 	// display class for this element
 	private Display display;
 	
@@ -59,6 +61,7 @@ final class ElementLayout implements IElementRenderLayout, ElementLayoutSettersG
 	
 	private ElementLayout(ElementLayout toCopy) {
 
+		this.layoutPartsSetFlag = toCopy.layoutPartsSetFlag;
 		this.display = toCopy.display;
 		this.font = toCopy.font;
 		this.outer = toCopy.outer.makeCopy();
@@ -97,6 +100,7 @@ final class ElementLayout implements IElementRenderLayout, ElementLayoutSettersG
 	
 	@Override
 	public void clear() {
+		this.layoutPartsSetFlag = 0;
 		this.display = null;
 		this.renderer = null;
 		this.sumWidth = sumHeight = 0;
@@ -159,6 +163,10 @@ final class ElementLayout implements IElementRenderLayout, ElementLayoutSettersG
 		if (boundsComputed) {
 			throw new IllegalStateException("bounds computed twice");
 		}
+		
+		if (this.layoutPartsSetFlag != LayoutPart.ALL_MASK) {
+			throw new IllegalStateException(String.format("Not all layut parts set: %04x", layoutPartsSetFlag));
+		}
 
 		this.boundsComputed = true;
 	}
@@ -213,8 +221,6 @@ final class ElementLayout implements IElementRenderLayout, ElementLayoutSettersG
 		this.renderQueueStartOffset = startOffset;
 		this.renderQueueEndOffset   = endOffset;
 	}
-
-	
 	
 	@Override
 	public IWrapping initMargins(int top, int right, int bottom, int left) {
@@ -222,8 +228,6 @@ final class ElementLayout implements IElementRenderLayout, ElementLayoutSettersG
   		
   		return getMargins();
 	}
-
-	
 	
 	@Override
 	public IWrapping initPadding(int top, int right, int bottom, int left) {
@@ -231,35 +235,60 @@ final class ElementLayout implements IElementRenderLayout, ElementLayoutSettersG
 
     	return getPadding();
 	}
-	
+
+	private void markLayoutPartAsSet(LayoutPart part) {
+
+		final int flag = part.flag();
+		
+		if ((this.layoutPartsSetFlag & flag) != 0) {
+			throw new IllegalStateException("part already set: " + part);
+		}
+		
+		this.layoutPartsSetFlag |= flag;
+	}
+
 	@Override
 	public void initOuter(int left, int top, int width, int height) {
 		getOuter().init(left, top, width, height);
+		
+		markLayoutPartAsSet(LayoutPart.OUTER_POSITION);
+		markLayoutPartAsSet(LayoutPart.OUTER_WIDTH_HEIGHT);
 	}
 
 	@Override
 	public void initInner(int left, int top, int width, int height) {
 		getInner().init(left, top, width, height);
+
+		markLayoutPartAsSet(LayoutPart.INNER_POSITION);
+		markLayoutPartAsSet(LayoutPart.INNER_WIDTH_HEIGHT);
 	}
 
 	@Override
 	public void initOuterPosition(int left, int top) {
 		getOuter().initPosition(left, top);
+
+		markLayoutPartAsSet(LayoutPart.OUTER_POSITION);
 	}
 
 	@Override
 	public void initInnerPosition(int left, int top) {
 		getInner().initPosition(left, top);
+
+		markLayoutPartAsSet(LayoutPart.INNER_POSITION);
 	}
 
 	@Override
 	public void initOuterWidthHeight(int width, int height) {
 		getOuter().initWidthHeight(width, height);
+
+		markLayoutPartAsSet(LayoutPart.OUTER_WIDTH_HEIGHT);
 	}
 
 	@Override
 	public void initInnerWidthHeight(int width, int height) {
 		getInner().initWidthHeight(width, height);
+
+		markLayoutPartAsSet(LayoutPart.INNER_WIDTH_HEIGHT);
 	}
 
 	@Override
