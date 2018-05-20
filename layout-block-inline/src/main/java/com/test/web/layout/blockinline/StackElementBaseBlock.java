@@ -208,26 +208,58 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 	// For any wrapper element like <span></span> that ends on this line, we advance firstInlineElement index past it
 	// so that we do not loop through that the next time we run this algorithm
 	
-	static <E> int recursivelyProcessInlineElementsUpTo(StackElementBase<E> cur, int lineToProcess, int lineMaxHeight, AddToPageLayer<E> addToPageLayer) {
+	static <E> long recursivelyProcessInlineElementsUpTo(StackElementBase<E> cur, int lineToProcess, int lineMaxHeight, AddToPageLayer<E> addToPageLayer) {
 
 		int widthForLineToProcess = 0;
+		int widthForCurrentWrapperElement = -1;
+		int heightForCurrentWrapperElement = -1;
 
 		InlineElement lastStartElement;
+		
+		// Keep track of width found at start-element, so we can update in end-element
 		int widthForLineInStartElement = 0;
 		
+		// Max height for text and non-wrapper elements on current line, this is reset whenever we move to a new line
+		int maxHeightForCurLine = 0;
+		
+		int currentLineNo = -1;
+		
+		// sum-height, returned in order to compute heigher of wrapper elements
+		int sumHeight = 0;
+
 		for (int i = cur.getFirstInlineElement(); i < cur.getNumInlineElements(); ++ i) {
 
+			
 			final InlineElement inlineElement = cur.getInlineElementAt(i);
 
+			final int lineNo = inlineElement.getLineNo() ;
+
+			if (lineNo > currentLineNo) {
+				// Moved to a new line, add max height to sum
+				sumHeight += maxHeightForCurLine;
+				maxHeightForCurLine = 0;
+				currentLineNo = lineNo;
+			}
+			
+			// height of element if this is a non-wrapper element
+			final int nonWrapperElementHeight;
+			
 			switch (inlineElement.getType()) {
-			case WRAPPER_HTML_ELEMENT_START:
+			case WRAPPER_HTML_ELEMENT_START: {
 				
 				// recurse into found element, return width found for current line to process
 				@SuppressWarnings({ "unchecked", "rawtypes" })
 				final StackElement<E> sub = (StackElement)inlineElement. getStackElement();
 			
-				final int widthForLine = recursivelyProcessInlineElementsUpTo(sub, lineToProcess, lineMaxHeight, addToPageLayer);
+				final long widthAndHeight = recursivelyProcessInlineElementsUpTo(sub, lineToProcess, lineMaxHeight, addToPageLayer);
 				
+				// Sum of width for lineToProcess
+				final int widthForLine = (int)((widthAndHeight >> 32) & 0xFFFFFFFFL);
+				
+				final int sumHeightForSub = (int)(widthAndHeight & 0xFFFFFFFFL);
+
+				heightForCurrentWrapperElement = sumHeightForSub;
+
 				final ElementLayoutSettersGetters layout = inlineElement.getResultingLayout();
 				
 				lastStartElement = inlineElement;
@@ -241,27 +273,33 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 					// TODO take margin and padding into account?
 					layout.initOuterWidthHeight(widthForLine, layout.getOuterBounds().getHeight());
 					layout.initInnerWidthHeight(widthForLine, layout.getInnerBounds().getHeight());
-					
-					@SuppressWarnings("unchecked")
-					final E element = (E)inlineElement.getStackElement().getElement();
-
-					layout.setBoundsComputed();
-					
-					addToPageLayer.add(element, layout);
 				}
 
 				widthForLineToProcess = widthForLine;
+
+				nonWrapperElementHeight = 0; // this is a wrapper element
 				break;
+			}
 
 			case WRAPPER_HTML_ELEMENT_END:
-				final int lineNo = inlineElement.getLineNo() ;
-
+				
 				if (lineNo <= lineToProcess) {
+					final ElementLayoutSettersGetters layout = inlineElement.getResultingLayout();
+
 					// This inline-element ended at or before the asked for last-line.
 					// This means we can delete this from the current lines at this level
 					if (i < cur.getNumInlineElements() - 1) {
 						cur.updateFirstInlineElement(i + 1);
 					}
+
+					// Set sum height for element that we cached from element-start
+					layout.initOuterWidthHeight(layout.getOuterBounds().getWidth(), heightForCurrentWrapperElement);
+					layout.initInnerWidthHeight(layout.getInnerBounds().getWidth(), heightForCurrentWrapperElement);
+
+					@SuppressWarnings("unchecked")
+					final E element = (E)inlineElement.getStackElement().getElement();
+					layout.setBoundsComputed();
+					addToPageLayer.add(element, layout);
 					
 					// release since no longer needed
 					inlineElement.getStackElement().removedFromSeparateTree();
@@ -271,6 +309,7 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 					// return width for all element in this wrapper that appears on this line only
 					widthForLineToProcess += widthForLineInStartElement;
 				}
+				nonWrapperElementHeight = 0; // this is a wrapper element
 				break;
 
 			case KNOWN_SIZE_HTML_ELEMENT:
@@ -279,14 +318,17 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 				if (inlineElement.getLineNo() == lineToProcess) {
 					widthForLineToProcess += inlineElement.getResultingLayout().getOuterBounds().getWidth();
 				}
+
+				nonWrapperElementHeight = inlineElement.getResultingLayout().getOuterBounds().getHeight();
 				break;
 
 			case TEXT_CHUNK:
 				
+				final ElementLayoutSettersGetters textChunkLayout = inlineElement.getResultingLayout();
+
 				if (inlineElement.getLineNo() == lineToProcess) {
 					// a text chunk, these are always rectangular in size.
 					// here we have to compute the positioning of the chunk since size was computed earlier
-					final ElementLayoutSettersGetters textChunkLayout = inlineElement.getResultingLayout();
 					
 					// TODO might not be correct since we do not know line height due to other inline elements on this line
 					
@@ -295,24 +337,35 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 					
 					textChunkLayout.initOuterPosition(textChunkLayout.getOuterBounds().getLeft(), yPos);
 					textChunkLayout.initInnerPosition(textChunkLayout.getInnerBounds().getLeft(), yPos);
+					
 				
 					textChunkLayout.setBoundsComputed();
 					
 					// Must add this to layers for this element
 
-					widthForLineToProcess += inlineElement.getResultingLayout().getOuterBounds().getWidth();
+					widthForLineToProcess += textChunkLayout.getOuterBounds().getWidth();
 				}
-				else if (inlineElement.getLineNo() < lineToProcess && !inlineElement.getResultingLayout().areBoundsComputed()) {
+
+				else if (inlineElement.getLineNo() < lineToProcess && !textChunkLayout.areBoundsComputed()) {
 					throw new IllegalStateException("Previous line not computed");
 				}
+				nonWrapperElementHeight = textChunkLayout.getOuterBounds().getHeight();
 				break;
 
 			default:
 				throw new UnsupportedOperationException("Unknown inline element type " + inlineElement.getType());
 			}
+
+			if (nonWrapperElementHeight > maxHeightForCurLine) {
+				maxHeightForCurLine = nonWrapperElementHeight;
+			}
 		}
 
-		return widthForLineToProcess;
+		// Any leftover in completion of current line
+		sumHeight += maxHeightForCurLine;
+
+		// return in a long-var so that no need for allocation
+		return ((long)widthForLineToProcess) << 32 | sumHeight;
 	}
 
 	private static int getTextYPosOnLine(IFont font, int lineMaxHeight) {

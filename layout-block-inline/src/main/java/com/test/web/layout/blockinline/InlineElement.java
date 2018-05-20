@@ -96,6 +96,7 @@ public final class InlineElement {
 			
 		// can also set layout on <span> elements
 		case WRAPPER_HTML_ELEMENT_START:
+		case WRAPPER_HTML_ELEMENT_END:
 			result = stackElement.resultingLayout;
 			break;
 
