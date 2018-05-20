@@ -1,7 +1,5 @@
 package com.test.web.layout.blockinline;
 
-import com.test.web.layout.algorithm.BaseLayoutCase;
-
 /**
  * Base for all inline elements.
  * 
@@ -13,25 +11,25 @@ import com.test.web.layout.algorithm.BaseLayoutCase;
  *    Thus we just handle onElementStart() and onElementEnd() in baseclass so that is handled consistently
  *    for all inline elements.
  */
-abstract class CaseInline_Base extends BaseBlockInlineLayoutCase {
+abstract class CaseInline_Base<ELEMENT> extends BaseBlockInlineLayoutCase<ELEMENT> {
 
-	<ELEMENT> void onInlineElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, BlockInlineLayoutUpdate state) {
+	void onInlineElementStart(StackElement<ELEMENT> container, ELEMENT htmlElement, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 		
 	}
 
-	<ELEMENT> void onInlineElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, BlockInlineLayoutUpdate state) {
+	void onInlineElementEnd(StackElement<ELEMENT> container, ELEMENT htmlElement, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 		
 	}
 
 	@Override
-	protected final <ELEMENT> void onElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, BlockInlineLayoutUpdate state) {
+	protected final void onElementStart(StackElement<ELEMENT> container, ELEMENT htmlElement, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 
 		onInlineElementStart(container, htmlElement, sub, state);
 
 	}
 
 	@Override
-	protected final <ELEMENT> void onElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, BlockInlineLayoutUpdate state) {
+	protected final void onElementEnd(StackElement<ELEMENT> container, ELEMENT htmlElement, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 
 		onInlineElementEnd(container, htmlElement, sub, state);
 

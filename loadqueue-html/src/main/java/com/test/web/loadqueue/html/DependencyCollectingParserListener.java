@@ -85,6 +85,7 @@ public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER
 		this.layoutState = new HTMLLayoutState<>(
 				textExtent,
 				viewPort,
+				renderFactory,
 				new HTMLLayoutContext<>(cssContext),
 				pageLayout,
 				renderListener,

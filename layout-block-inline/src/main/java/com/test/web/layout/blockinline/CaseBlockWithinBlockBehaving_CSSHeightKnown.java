@@ -1,14 +1,14 @@
 package com.test.web.layout.blockinline;
 
-public final class CaseBlockWithinBlockBehaving_CSSHeightKnown extends CaseBlockWithinBlockBehaving_Base {
+public final class CaseBlockWithinBlockBehaving_CSSHeightKnown<ELEMENT> extends CaseBlockWithinBlockBehaving_Base<ELEMENT> {
 
 	@Override
-	<ELEMENT> void onBlockElementStart(StackElement container, ELEMENT element, StackElement sub, BlockInlineLayoutUpdate state) {
+	void onBlockElementStart(StackElement<ELEMENT> container, ELEMENT element, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 		throw new UnsupportedOperationException("TODO");
 	}
 
 	@Override
-	<ELEMENT> void onBlockElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, BlockInlineLayoutUpdate state) {
+	void onBlockElementEnd(StackElement<ELEMENT> container, ELEMENT htmlElement, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 		throw new UnsupportedOperationException("TODO");
 	}
 }

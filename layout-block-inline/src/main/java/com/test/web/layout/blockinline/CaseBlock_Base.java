@@ -1,7 +1,5 @@
 package com.test.web.layout.blockinline;
 
-import com.test.web.layout.algorithm.BaseLayoutCase;
-
 /**
  * Base class for all cases where sub element is display: block
  * 
@@ -14,18 +12,18 @@ import com.test.web.layout.algorithm.BaseLayoutCase;
  * 
  */
 
-abstract class CaseBlock_Base extends BaseBlockInlineLayoutCase {
+abstract class CaseBlock_Base<ELEMENT> extends BaseBlockInlineLayoutCase<ELEMENT> {
 
-	<ELEMENT> void onBlockElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, BlockInlineLayoutUpdate state) {
+	void onBlockElementStart(StackElement<ELEMENT> container, ELEMENT htmlElement, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 		
 	}
 
-	<ELEMENT> void onBlockElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, BlockInlineLayoutUpdate state) {
+	void onBlockElementEnd(StackElement<ELEMENT> container, ELEMENT htmlElement, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 		
 	}
 
 	@Override
-	protected final <ELEMENT> void onElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, BlockInlineLayoutUpdate state) {
+	protected final void onElementStart(StackElement<ELEMENT> container, ELEMENT htmlElement, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 		
 		
 		// Start of a block element, we should now process any remaining inline elements
@@ -38,17 +36,17 @@ abstract class CaseBlock_Base extends BaseBlockInlineLayoutCase {
 	}
 
 	@Override
-	protected final <ELEMENT> void onElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, BlockInlineLayoutUpdate state) {
+	protected final void onElementEnd(StackElement<ELEMENT> container, ELEMENT htmlElement, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 
 		
 		// Here we might have the second case where there are unprocessed inline elements within the current block
 		// that we have to process here. Do that first and then call subclass
-		processAnyPendingInlineElements( sub, state);
+		processAnyPendingInlineElements(sub, state);
 		
 		onBlockElementEnd(container, htmlElement, sub, state);
 	}
 	
-	private void processAnyPendingInlineElements(StackElement element, BlockInlineLayoutUpdate state) {
+	private void processAnyPendingInlineElements(StackElement<ELEMENT> element, BlockInlineLayoutUpdate<ELEMENT> state) {
 		
 		if (element.hasAnyInlineElementsAdded()) {
 

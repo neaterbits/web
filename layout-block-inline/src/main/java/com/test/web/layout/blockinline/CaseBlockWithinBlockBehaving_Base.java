@@ -2,10 +2,10 @@ package com.test.web.layout.blockinline;
 
 import com.test.web.types.Pixels;
 
-abstract class CaseBlockWithinBlockBehaving_Base extends CaseBlock_Base {
+abstract class CaseBlockWithinBlockBehaving_Base<ELEMENT> extends CaseBlock_Base<ELEMENT> {
 
 	@Override
-	<ELEMENT> void onBlockElementStart(StackElement container, ELEMENT element, StackElement sub, BlockInlineLayoutUpdate state) {
+	void onBlockElementStart(StackElement<ELEMENT> container, ELEMENT element, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 
 		// Try to figure out available space
 		if (sub.getLayoutStyles().hasWidth()) {

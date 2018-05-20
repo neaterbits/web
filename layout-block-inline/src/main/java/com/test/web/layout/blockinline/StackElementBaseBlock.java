@@ -9,7 +9,7 @@ import com.test.web.render.common.IFont;
 // Contains all elements for block behaving elements
 // Note that subclasses that for inline. we reuse
 // StackElement class for all elements so that we can reuse objects and all sub-objects
-abstract class StackElementBaseBlock extends StackElementBaseInline implements ContainerDimensions, SubDimensions {
+abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELEMENT> implements ContainerDimensions, SubDimensions {
 
 	// Current height of block element (if this is one). This is the sum of all block elements within this block.
 	// This is used in the case where height for blocks is not set in CSS, eg. for nested divs we just summarize
@@ -131,7 +131,7 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 		}
 	}
 	
-	final <ELEMENT_TYPE> boolean updateBlockRemainingForNewInlineElement(int widthPx, int heightPx, int debugDepth, ILayoutDebugListener<ELEMENT_TYPE> debugListener) {
+	final <ELEMENT_TYPE> boolean updateBlockRemainingForNewInlineElement(int widthPx, int heightPx, int debugDepth, ILayoutDebugListener<ELEMENT_TYPE> debugListener, AddToPageLayer<ELEMENT> addToPageLayer) {
 		
 		if (widthPx <= 0) {
 			throw new IllegalArgumentException("widthPx <= 0");
@@ -149,7 +149,7 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 		
 		if (lineWrapped) {
 			// Must wrap line since no more space on this one
-			applyLineBreak(debugDepth, debugListener);
+			applyLineBreak(debugDepth, debugListener, addToPageLayer);
 		}
 		
 		// then update
@@ -158,7 +158,7 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 		return lineWrapped;
 	}
 
-	final <ELEMENT_TYPE> void updateBlockInlineRemainingWidthForTextElement(int widthPx, int heightPx, boolean applyLineWrap, int debugDepth, ILayoutDebugListener<ELEMENT_TYPE> layoutDebugListener) {
+	final <ELEMENT_TYPE> void updateBlockInlineRemainingWidthForTextElement(int widthPx, int heightPx, boolean applyLineWrap, int debugDepth, ILayoutDebugListener<ELEMENT_TYPE> layoutDebugListener, AddToPageLayer<ELEMENT> addToPageLayer) {
 		
 		checkIsBlockElement();
 		
@@ -167,20 +167,20 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 
 		if (applyLineWrap) {
 			// Add last line max-height to current
-			applyLineBreak(debugDepth, layoutDebugListener);
+			applyLineBreak(debugDepth, layoutDebugListener, addToPageLayer);
 		}
 	}
 	
 	
 	// Call this when reaching end of current div-element so we can compute sizes for the last inline text line
-	final <ELEMENT_TYPE> void applyLineBreakAtEndOfBlockElement(int debugDepth, ILayoutDebugListener<ELEMENT_TYPE> layoutDebugListener) {
+	final <ELEMENT_TYPE> void applyLineBreakAtEndOfBlockElement(int debugDepth, ILayoutDebugListener<ELEMENT_TYPE> layoutDebugListener, AddToPageLayer<ELEMENT> addToPageLayer) {
 
 		checkIsBlockElement();
 		
-		applyLineBreak(debugDepth, layoutDebugListener);
+		applyLineBreak(debugDepth, layoutDebugListener, addToPageLayer);
 	}
 	
-	private <ELEMENT_TYPE> void applyLineBreak(int debugDepth, ILayoutDebugListener<ELEMENT_TYPE> layoutDebugListener) {
+	private <ELEMENT_TYPE> void applyLineBreak(int debugDepth, ILayoutDebugListener<ELEMENT_TYPE> layoutDebugListener, AddToPageLayer<ELEMENT> addToPageLayer) {
 		
 		checkIsBlockElement();
 		
@@ -194,7 +194,9 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 		// Main calculation for inline elements happen at line-break, we recursively scan tree of inline elements
 		// and compute elements
 
-		recursivelyCheckForAnyCompletedInlineElementAndComputeBounds(this, curLineNoInBlock, curInlineMaxHeight, debugDepth, layoutDebugListener);
+		// recursivelyCheckForAnyCompletedInlineElementAndComputeBounds(this, curLineNoInBlock, curInlineMaxHeight, debugDepth, layoutDebugListener);
+		
+		recursivelyProcessInlineElementsUpTo(this, curLineNoInBlock, curInlineMaxHeight, addToPageLayer);
 
 		this.curInlineMaxHeight = 0;
 		++ curLineNoInBlock;
@@ -202,38 +204,86 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 		layoutDebugListener.onApplyLineBreakEnd(debugDepth);
 	}
 
+	// Recurses all inline-elements under this block-element that we have buffered during parsing, advancing until we have proessed current line no.
+	// For any wrapper element like <span></span> that ends on this line, we advance firstInlineElement index past it
+	// so that we do not loop through that the next time we run this algorithm
+	
+	static <E> int recursivelyProcessInlineElementsUpTo(StackElementBase<E> cur, int lineToProcess, int lineMaxHeight, AddToPageLayer<E> addToPageLayer) {
 
-	private <ELEMENT_TYPE> void recursivelyCheckForAnyCompletedInlineElementAndComputeBounds(
-			StackElementBase element,
-			int lineToCompute,
-			int lineMaxHeight,
-			int debugDepth,
-			ILayoutDebugListener<ELEMENT_TYPE> layoutDebugListener) {
+		int widthForLineToProcess = 0;
+
+		InlineElement lastStartElement;
+		int widthForLineInStartElement = 0;
 		
-		// Must collect elements on lines
-		
-		// Iterate all inline elements that are directly beneath current inline elements.
-		// This will advance the current inline-counter in StackElementBase for this element
-		// to make sure we do not process the same inline elements twice
-		element.recursivelyProcessInlineElementsUpTo(lineToCompute, inlineElement -> {
-		
-			// Only process lines at current line-no
-			if (inlineElement.getLineNo() == lineToCompute) {
+		for (int i = cur.getFirstInlineElement(); i < cur.getNumInlineElements(); ++ i) {
+
+			final InlineElement inlineElement = cur.getInlineElementAt(i);
+
+			switch (inlineElement.getType()) {
+			case WRAPPER_HTML_ELEMENT_START:
 				
-				switch (inlineElement.getType()) {
-				case KNOWN_SIZE_HTML_ELEMENT:
-					// <img> or similar, we know width and height for this element so nothing in particular to be done
-					break;
+				// recurse into found element, return width found for current line to process
+				@SuppressWarnings({ "unchecked", "rawtypes" })
+				final StackElement<E> sub = (StackElement)inlineElement. getStackElement();
+			
+				final int widthForLine = recursivelyProcessInlineElementsUpTo(sub, lineToProcess, lineMaxHeight, addToPageLayer);
+				
+				final ElementLayoutSettersGetters layout = inlineElement.getResultingLayout();
+				
+				lastStartElement = inlineElement;
+				widthForLineInStartElement = widthForLine; // Need this if this is last line, eg. </span> so that we may return width for this element on current line
 
-				case WRAPPER_HTML_ELEMENT_START:
-					// Start of HTML element, just a wrapper so no real need to set ElementLayout positions
-					break;
+				// if width found is more than current sum, then add to width for span element.
+				// this is done so that if spans multiple lines, we will find the largest width within the span
+				// so that we find bounding-box
+				
+				if (widthForLine > layout.getOuterBounds().getWidth()) {
+					// TODO take margin and padding into account?
+					layout.initOuterWidthHeight(widthForLine, layout.getOuterBounds().getHeight());
+					layout.initInnerWidthHeight(widthForLine, layout.getInnerBounds().getHeight());
+					
+					@SuppressWarnings("unchecked")
+					final E element = (E)inlineElement.getStackElement().getElement();
 
-				case WRAPPER_HTML_ELEMENT_END:
-					// end of wrapper element, this element may not be rectangular in size if it wraps multiple lines
-					break;
+					layout.setBoundsComputed();
+					
+					addToPageLayer.add(element, layout);
+				}
 
-				case TEXT_CHUNK:
+				widthForLineToProcess = widthForLine;
+				break;
+
+			case WRAPPER_HTML_ELEMENT_END:
+				final int lineNo = inlineElement.getLineNo() ;
+
+				if (lineNo <= lineToProcess) {
+					// This inline-element ended at or before the asked for last-line.
+					// This means we can delete this from the current lines at this level
+					if (i < cur.getNumInlineElements() - 1) {
+						cur.updateFirstInlineElement(i + 1);
+					}
+					
+					// release since no longer needed
+					inlineElement.getStackElement().removedFromSeparateTree();
+				}
+				
+				if (lineNo == lineToProcess) {
+					// return width for all element in this wrapper that appears on this line only
+					widthForLineToProcess += widthForLineInStartElement;
+				}
+				break;
+
+			case KNOWN_SIZE_HTML_ELEMENT:
+				// <img> or similar, we know width and height for this element so nothing in particular to be done
+				
+				if (inlineElement.getLineNo() == lineToProcess) {
+					widthForLineToProcess += inlineElement.getResultingLayout().getOuterBounds().getWidth();
+				}
+				break;
+
+			case TEXT_CHUNK:
+				
+				if (inlineElement.getLineNo() == lineToProcess) {
 					// a text chunk, these are always rectangular in size.
 					// here we have to compute the positioning of the chunk since size was computed earlier
 					final ElementLayoutSettersGetters textChunkLayout = inlineElement.getResultingLayout();
@@ -245,18 +295,27 @@ abstract class StackElementBaseBlock extends StackElementBaseInline implements C
 					
 					textChunkLayout.initOuterPosition(textChunkLayout.getOuterBounds().getLeft(), yPos);
 					textChunkLayout.initInnerPosition(textChunkLayout.getInnerBounds().getLeft(), yPos);
-					
+				
 					textChunkLayout.setBoundsComputed();
-					break;
+					
+					// Must add this to layers for this element
 
-				default:
-					throw new UnsupportedOperationException("Unknown inline element type: " + inlineElement.getType());
+					widthForLineToProcess += inlineElement.getResultingLayout().getOuterBounds().getWidth();
 				}
+				else if (inlineElement.getLineNo() < lineToProcess && !inlineElement.getResultingLayout().areBoundsComputed()) {
+					throw new IllegalStateException("Previous line not computed");
+				}
+				break;
+
+			default:
+				throw new UnsupportedOperationException("Unknown inline element type " + inlineElement.getType());
 			}
-		});
+		}
+
+		return widthForLineToProcess;
 	}
 
-	private int getTextYPosOnLine(IFont font, int lineMaxHeight) {
+	private static int getTextYPosOnLine(IFont font, int lineMaxHeight) {
 		// TODO align text to baseline
 		return lineMaxHeight - font.getHeight();
 	}

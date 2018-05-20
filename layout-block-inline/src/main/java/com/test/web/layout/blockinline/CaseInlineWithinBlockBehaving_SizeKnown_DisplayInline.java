@@ -1,19 +1,19 @@
 package com.test.web.layout.blockinline;
 
 @Deprecated // cannot ussualy have size known for display-inline since setting style size does not have any impact
-public class CaseInlineWithinBlockBehaving_SizeKnown_DisplayInline
-	extends CaseInlineWithinBlockBehaving_SizeKnown_Base {
+public class CaseInlineWithinBlockBehaving_SizeKnown_DisplayInline<ELEMENT>
+	extends CaseInlineWithinBlockBehaving_SizeKnown_Base<ELEMENT> {
 
 	@Override
-	<ELEMENT> void onInlineElementStart(StackElement container, ELEMENT htmlElement, StackElement sub,
-			BlockInlineLayoutUpdate state) {
+	void onInlineElementStart(StackElement<ELEMENT> container, ELEMENT htmlElement, StackElement<ELEMENT> sub,
+			BlockInlineLayoutUpdate<ELEMENT> state) {
 
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	<ELEMENT> void onInlineElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub,
-			BlockInlineLayoutUpdate state) {
+	void onInlineElementEnd(StackElement<ELEMENT> container, ELEMENT htmlElement, StackElement<ELEMENT> sub,
+			BlockInlineLayoutUpdate<ELEMENT> state) {
 
 		throw new UnsupportedOperationException();
 	}

@@ -7,7 +7,7 @@ import com.test.web.layout.common.LayoutStyles;
 import com.test.web.layout.common.ViewPort;
 import com.test.web.layout.common.enums.Display;
 
-public abstract class LayoutStackElement {
+public abstract class LayoutStackElement<ELEMENT> {
 	// Since we can reuse stack elements on a stack, we keep track of allocation state.
 	// We need to keep a nested tree of StackElement instances when processing inline elements since we cannot
 	// compute layout until we have reached line wrap or start of a block element or end of current block element.
@@ -26,6 +26,9 @@ public abstract class LayoutStackElement {
 	}
 
 	private final int stackIdx;
+	
+	// Source element for this layout stack element, eg. an HTML <div>
+	private ELEMENT element;
 
 	// For debug printouts
 	private String debugName;
@@ -39,7 +42,7 @@ public abstract class LayoutStackElement {
 	public final ElementLayoutSettersGetters resultingLayout;
 
 	// The layout case for this element, eg an inline-block element within a block element
-	private BaseLayoutCase<?, ?> layoutCase;
+	private BaseLayoutCase<?, ?, ?> layoutCase;
 
 
 	private AllocationState allocationState;
@@ -59,7 +62,7 @@ public abstract class LayoutStackElement {
 	
 	protected void clear() {
 		
-		if (allocationState != AllocationState.IN_LAYOUT_STATE_STACK) {
+		if (allocationState != AllocationState.IN_LAYOUT_STATE_STACK && allocationState != AllocationState.IN_STACK_ELEMENT_TREE) {
 			throw new IllegalStateException("Can only clear elements that are in use in layout stack: "  + allocationState);
 		}
 		
@@ -70,7 +73,9 @@ public abstract class LayoutStackElement {
 		resultingElementLayout.clear();
 	}
 	
-	
+	protected final ELEMENT getElement() {
+		return element;
+	}
 	
 	public final ILayoutStylesGetters getLayoutStyles() {
 		return layoutStyles;
@@ -99,11 +104,19 @@ public abstract class LayoutStackElement {
 	
 	public final void removedFromSeparateTree() {
 		
-		if (allocationState != AllocationState.IN_LAYOUT_STATE_STACK_AND_STACK_ELEMENT_TREE) {
+		switch (allocationState) {
+		case IN_LAYOUT_STATE_STACK_AND_STACK_ELEMENT_TREE:
+			setAllocationState(AllocationState.IN_LAYOUT_STATE_STACK);
+			break;
+
+		case IN_STACK_ELEMENT_TREE:
+			clear();
+			break;
+			
+		default:
 			throw new IllegalStateException("Expected element to be on layout stack: " + allocationState);
 		}
-
-		setAllocationState(AllocationState.IN_LAYOUT_STATE_STACK);
+		
 	}
 	
 	
@@ -117,12 +130,20 @@ public abstract class LayoutStackElement {
 		return this.stackIdx == 0;
 	}
 
-    protected void init(LayoutStackElement container, String debugName) {
+    protected void init(LayoutStackElement<ELEMENT> container, ELEMENT element, String debugName) {
     	init(debugName);
+    	
+    	if (element == null) {
+    		throw new IllegalArgumentException("element == null");
+    	}
+
+    	this.element = element;
     }
 
     protected void init(ViewPort viewPort, String debugName) {
     	init(debugName);
+
+    	this.element = null;
     }
 
     private void init(String debugName) {
@@ -190,7 +211,7 @@ public abstract class LayoutStackElement {
 		return resultingLayout;
 	}
 	
-	final BaseLayoutCase<?, ?> getLayoutCase() {
+	final BaseLayoutCase<?, ?, ?> getLayoutCase() {
 		return layoutCase;
 	}
 
@@ -198,7 +219,8 @@ public abstract class LayoutStackElement {
 		return layoutCase.getName();
 	}
 
-	final void setLayoutCase(BaseLayoutCase<?, ?> layoutCase) {
+	// TODO type safety on ELEMENT?
+	final void setLayoutCase(BaseLayoutCase<?, ?, ?> layoutCase) {
 		this.layoutCase = layoutCase;
 	}
 	

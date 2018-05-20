@@ -8,6 +8,7 @@ import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.ILayoutContext;
 import com.test.web.layout.common.ILayoutDebugListener;
 import com.test.web.layout.common.ViewPort;
+import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 
 public class HTMLLayoutState<
@@ -17,10 +18,10 @@ public class HTMLLayoutState<
 
 		extends BlockInlineLayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT> {
 
-	public HTMLLayoutState(ITextExtent textExtent, ViewPort viewPort,
+	public HTMLLayoutState(ITextExtent textExtent, ViewPort viewPort, IDelayedRendererFactory rendererFactory,
 			ILayoutContext<ELEMENT, ELEMENT_TYPE, DOCUMENT> layoutContext, PageLayout<ELEMENT> pageLayout,
 			IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT, IElementRenderLayout> listener,
 			ILayoutDebugListener<ELEMENT_TYPE> debugListener) {
-		super(textExtent, viewPort, layoutContext, pageLayout, listener, debugListener);
+		super(textExtent, viewPort, rendererFactory, layoutContext, pageLayout, listener, debugListener);
 	}
 }

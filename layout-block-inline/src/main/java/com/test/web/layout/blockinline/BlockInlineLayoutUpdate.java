@@ -11,7 +11,7 @@ import com.test.web.render.common.IDelayedRenderer;
  * 
  */
 
-public interface BlockInlineLayoutUpdate extends ILayoutState {
+public interface BlockInlineLayoutUpdate<ELEMENT> extends ILayoutState {
 	
 	/**
 	 * Add <img> or similar inline element
@@ -22,7 +22,7 @@ public interface BlockInlineLayoutUpdate extends ILayoutState {
 	 * @param heightPx height in pixels og inline element (eg. img.height)
 	 */
 
-	void addInlineElementAndWrapToNextTextLineIfNecessary(StackElement container, StackElement sub, int widthPx, int heightPx);
+	void addInlineElementAndWrapToNextTextLineIfNecessary(StackElement<ELEMENT> container, StackElement<ELEMENT> sub, int widthPx, int heightPx);
 
 	/**
 	 *  Add an element that is only a wrapper-element for text, eg. <span> element or an <a> link
@@ -30,14 +30,14 @@ public interface BlockInlineLayoutUpdate extends ILayoutState {
 	   They must however still be added to the tree of inline elements so that we can properly traverse the whole tree
 	   from the closest block element
 	 */
-	void addInlineWrapperElementStart(StackElement container, StackElement sub);
+	void addInlineWrapperElementStart(StackElement<ELEMENT> container, StackElement<ELEMENT> sub);
 
 	/**
 	 * 
 	 * @param container container element for wrapper
 	 * @param sub wrapper element
 	 */
-	void addInlineWrapperElementEnd(StackElement container, StackElement sub);
+	void addInlineWrapperElementEnd(StackElement<ELEMENT> container, StackElement<ELEMENT> sub);
 	
 	/**
 	 *  Called at end of block-element to compute layout for any inline-elements on last line.
@@ -46,12 +46,12 @@ public interface BlockInlineLayoutUpdate extends ILayoutState {
 	 * 
 	 * @param sub inline element
 	 */
-	void applyLineBreakAtEndOfBlockElement(StackElement sub);
+	void applyLineBreakAtEndOfBlockElement(StackElement<ELEMENT> sub);
 
 
 	// Remaining width available on this block line
 	int getInlineRemainingWidth();
 
-	IElementRenderLayout  addTextChunk(StackElement cur, String text, int widthPx, int heightPx, int zIndex, IDelayedRenderer renderer, boolean lineWrapped);
+	IElementRenderLayout  addTextChunk(StackElement<ELEMENT> cur, String text, int widthPx, int heightPx, int zIndex, IDelayedRenderer renderer, boolean lineWrapped);
 }
 

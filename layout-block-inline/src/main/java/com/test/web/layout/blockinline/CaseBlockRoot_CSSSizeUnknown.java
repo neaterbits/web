@@ -1,9 +1,9 @@
 package com.test.web.layout.blockinline;
 
-public final class CaseBlockRoot_CSSSizeUnknown extends CaseBlockRoot_Base {
+public final class CaseBlockRoot_CSSSizeUnknown<ELEMENT> extends CaseBlockRoot_Base<ELEMENT> {
 
 	@Override
-	<ELEMENT> void onBlockElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, BlockInlineLayoutUpdate state) {
+	void onBlockElementEnd(StackElement<ELEMENT> container, ELEMENT htmlElement, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 		
 		DimensionCases.BLOCK_CSS_SIZES_UNKNOWN.computeDimensions(sub.getLayoutStyles(), container, sub, sub.resultingLayout);
 

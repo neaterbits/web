@@ -7,10 +7,10 @@ package com.test.web.layout.blockinline;
  * We compute the height of this element as the sum of block-level heights for the sub element and then also add that to the container.
  * Width of this element is set to the width of the container since block elements cover the whole width of the container unless otherwise specified.
  */
-public final class CaseBlockWithinBlockBehaving_CSSSizeUnknown extends CaseBlockWithinBlockBehaving_Base {
+public final class CaseBlockWithinBlockBehaving_CSSSizeUnknown<ELEMENT> extends CaseBlockWithinBlockBehaving_Base<ELEMENT> {
 
 	@Override
-	<ELEMENT> void onBlockElementEnd(StackElement container, ELEMENT element, StackElement sub, BlockInlineLayoutUpdate state) {
+	void onBlockElementEnd(StackElement<ELEMENT> container, ELEMENT element, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 
 		if (sub.hasUserSpecifiedWidth() || sub.hasUserSpecifiedHeight()) {
 			throw new IllegalStateException();

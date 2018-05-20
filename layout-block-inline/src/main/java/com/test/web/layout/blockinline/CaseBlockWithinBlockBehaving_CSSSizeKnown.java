@@ -1,9 +1,9 @@
 package com.test.web.layout.blockinline;
 
-public class CaseBlockWithinBlockBehaving_CSSSizeKnown extends CaseBlockWithinBlockBehaving_Base {
+public class CaseBlockWithinBlockBehaving_CSSSizeKnown<ELEMENT> extends CaseBlockWithinBlockBehaving_Base<ELEMENT> {
 
 	@Override
-	<ELEMENT>void onBlockElementStart(StackElement container, ELEMENT element, StackElement sub, BlockInlineLayoutUpdate state) {
+	void onBlockElementStart(StackElement<ELEMENT> container, ELEMENT element, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 
 		// Knows sub elements size already, can make some computations
 		

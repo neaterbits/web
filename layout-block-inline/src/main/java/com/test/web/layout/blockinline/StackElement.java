@@ -8,18 +8,10 @@ import com.test.web.layout.common.ViewPort;
 // Stack element on the layout stack, we add information here at time of start tag
 // and then just fetch that information when getting to end tag
 // Mutable so can be reused within stack
-public final class StackElement extends StackElementBaseBlock implements ContainerDimensions, SubDimensions  {
-	
+public final class StackElement<ELEMENT> extends StackElementBaseBlock<ELEMENT> implements ContainerDimensions, SubDimensions  {
 	
 	// In order to reuse elements in the stack and avoid memory allocation for each push/pop
 	// we keep information specific to inline, text and block etc in the same element
-	
-
-	StackElement(int stackIdx, StackElement container, String debugName) {
-		this(stackIdx);
-		
-		init(container, debugName);
-	}
 	
 	StackElement(int stackIdx) {
 		super(stackIdx);
@@ -34,10 +26,10 @@ public final class StackElement extends StackElementBaseBlock implements Contain
 	}
 
 	@Override
-    protected void init(LayoutStackElement container, String debugName) {
-		super.init(container, debugName);
+    protected void init(LayoutStackElement<ELEMENT> container, ELEMENT element, String debugName) {
+		super.init(container, element, debugName);
 		
-		final StackElement containerElement = (StackElement)container;
+		final StackElement<ELEMENT> containerElement = (StackElement<ELEMENT>)container;
 		
 		final int availableWidth = containerElement.getAvailableWidth();
 		final int availableHeight = containerElement.getAvailableHeight();

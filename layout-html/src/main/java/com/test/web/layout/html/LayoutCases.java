@@ -17,37 +17,37 @@ import com.test.web.layout.common.enums.Display;
 
 class LayoutCases {
 
-	private static final CaseBlockRoot_CSSSizeKnown BLOCK_ROOT_CSS_SIZE_KNOWN = new CaseBlockRoot_CSSSizeKnown();
+	private static final CaseBlockRoot_CSSSizeKnown<?> BLOCK_ROOT_CSS_SIZE_KNOWN = new CaseBlockRoot_CSSSizeKnown<>();
 
-	private static final CaseBlockRoot_CSSSizeUnknown BLOCK_ROOT_CSS_SIZE_UNKNOWN = new CaseBlockRoot_CSSSizeUnknown();
+	private static final CaseBlockRoot_CSSSizeUnknown<?> BLOCK_ROOT_CSS_SIZE_UNKNOWN = new CaseBlockRoot_CSSSizeUnknown<>();
 
-	private static final CaseInlineWithinBlockBehaving_SizeKnown_DisplayInline INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN_DISPLAY_INLINE
-				= new CaseInlineWithinBlockBehaving_SizeKnown_DisplayInline();
+	private static final CaseInlineWithinBlockBehaving_SizeKnown_DisplayInline<?> INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN_DISPLAY_INLINE
+				= new CaseInlineWithinBlockBehaving_SizeKnown_DisplayInline<>();
 
-	private static final CaseInlineWithinBlockBehaving_WidthOrHeightUnknown_DisplayInline INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN_DISPLAY_INLINE
-				= new CaseInlineWithinBlockBehaving_WidthOrHeightUnknown_DisplayInline();
+	private static final CaseInlineWithinBlockBehaving_WidthOrHeightUnknown_DisplayInline<?> INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN_DISPLAY_INLINE
+				= new CaseInlineWithinBlockBehaving_WidthOrHeightUnknown_DisplayInline<>();
 	
-	private static final CaseInlineWithinBlockBehaving_CSSSizeKnown_DisplayInlineBlock INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN_DISPLAY_INLINE_BLOCK
-				= new CaseInlineWithinBlockBehaving_CSSSizeKnown_DisplayInlineBlock();
+	private static final CaseInlineWithinBlockBehaving_CSSSizeKnown_DisplayInlineBlock<?> INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN_DISPLAY_INLINE_BLOCK
+				= new CaseInlineWithinBlockBehaving_CSSSizeKnown_DisplayInlineBlock<>();
 
-	private static final CaseInlineWithinBlockBehaving_CSSWidthOrHeightUnknown_DisplayInlineBlock INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN_DISPLAY_INLINE_BLOCK
-				= new CaseInlineWithinBlockBehaving_CSSWidthOrHeightUnknown_DisplayInlineBlock();
+	private static final CaseInlineWithinBlockBehaving_CSSWidthOrHeightUnknown_DisplayInlineBlock<?> INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN_DISPLAY_INLINE_BLOCK
+				= new CaseInlineWithinBlockBehaving_CSSWidthOrHeightUnknown_DisplayInlineBlock<>();
 
-	private static final CaseBlockWithinBlockBehaving_CSSSizeKnown BLOCK_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN
-				= new CaseBlockWithinBlockBehaving_CSSSizeKnown();
+	private static final CaseBlockWithinBlockBehaving_CSSSizeKnown<?> BLOCK_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN
+				= new CaseBlockWithinBlockBehaving_CSSSizeKnown<>();
 	
-	private static final CaseBlockWithinBlockBehaving_CSSWidthKnown BLOCK_WITHIN_BLOCK_BEHAVING_CSS_WIDTH_KNOWN
-				= new CaseBlockWithinBlockBehaving_CSSWidthKnown();
+	private static final CaseBlockWithinBlockBehaving_CSSWidthKnown<?> BLOCK_WITHIN_BLOCK_BEHAVING_CSS_WIDTH_KNOWN
+				= new CaseBlockWithinBlockBehaving_CSSWidthKnown<>();
 
-	private static final CaseBlockWithinBlockBehaving_CSSHeightKnown BLOCK_WITHIN_BLOCK_BEHAVING_CSS_HEIGHT_KNOWN
-				= new CaseBlockWithinBlockBehaving_CSSHeightKnown();
+	private static final CaseBlockWithinBlockBehaving_CSSHeightKnown<?> BLOCK_WITHIN_BLOCK_BEHAVING_CSS_HEIGHT_KNOWN
+				= new CaseBlockWithinBlockBehaving_CSSHeightKnown<>();
 
-	private static final CaseBlockWithinBlockBehaving_CSSSizeUnknown BLOCK_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN
-				= new CaseBlockWithinBlockBehaving_CSSSizeUnknown();
+	private static final CaseBlockWithinBlockBehaving_CSSSizeUnknown<?> BLOCK_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN
+				= new CaseBlockWithinBlockBehaving_CSSSizeUnknown<>();
 
-	static <ELEMENT_TYPE> BaseLayoutCase<?, ?> determineLayoutCase(StackElement container, ILayoutStylesGetters subLayoutStyles, ELEMENT_TYPE elementType) {
+	static <ELEMENT_TYPE> BaseLayoutCase<?, ?, ?> determineLayoutCase(StackElement<?> container, ILayoutStylesGetters subLayoutStyles, ELEMENT_TYPE elementType) {
 
-		final BaseLayoutCase<?, ?> ret;
+		final BaseLayoutCase<?, ?, ?> ret;
 
 		if (container.isViewPort()) {
 			if (subLayoutStyles.getDisplay() != Display.BLOCK) {

@@ -26,12 +26,13 @@ public abstract class LayoutState<
 			ELEMENT,
 			ELEMENT_TYPE,
 			DOCUMENT extends IDocumentBase<ELEMENT, ELEMENT_TYPE, DOCUMENT>,
-			STACK_ELEMENT extends LayoutStackElement> 
+			STACK_ELEMENT extends LayoutStackElement<ELEMENT>> 
 
 		implements ILayoutState {
 	
 	private final ITextExtent textExtent;
 	private final ViewPort viewPort;
+	private final IDelayedRendererFactory rendererFactory;
 	
 	// For finding size of text strings when using a particular font for rendering
 	private final ILayoutContext<ELEMENT, ELEMENT_TYPE, DOCUMENT> layoutContext;
@@ -61,6 +62,7 @@ public abstract class LayoutState<
 	protected LayoutState(
 			ITextExtent textExtent,
 			ViewPort viewPort,
+			IDelayedRendererFactory rendererFactory,
 			ILayoutContext<ELEMENT, ELEMENT_TYPE, DOCUMENT> layoutContext,
 			PageLayout<ELEMENT> pageLayout,
 			IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT, IElementRenderLayout> listener,
@@ -68,6 +70,7 @@ public abstract class LayoutState<
 
 		this.textExtent = textExtent;
 		this.viewPort = viewPort;
+		this.rendererFactory = rendererFactory;
 		this.layoutContext = layoutContext;
 		this.listener = listener;
 
@@ -125,9 +128,28 @@ public abstract class LayoutState<
 		return curDepth == 1 ? null : stack.get(curDepth - 2);
 	}
 	
-	final STACK_ELEMENT push(STACK_ELEMENT container, String debugName, Consumer<LayoutStyles> computeStyles) {
+    final void addToLayerForComputedLayout(STACK_ELEMENT sub) {
 
-		return push(debugName, computeStyles, stackElement -> stackElement.init(container, debugName));
+		addToLayerForComputedLayout(sub.getElement(), sub.resultingLayout);
+    }
+
+	protected final void addToLayerForComputedLayout(ELEMENT element, IElementRenderLayout elementLayout) {
+		
+		if (!elementLayout.areBoundsComputed()) {
+			throw new IllegalStateException("Bounds were not computed for element " + element + " at end tag");
+		}
+
+		final PageLayer<ELEMENT>layer = addOrGetLayer(elementLayout.getZIndex(), rendererFactory);
+
+		// make copy since resulting layout is reused
+		// TODO long-buffer version
+		layer.add(element, elementLayout.makeCopy());
+    }
+
+	
+	final STACK_ELEMENT push(STACK_ELEMENT container, ELEMENT element, String debugName, Consumer<LayoutStyles> computeStyles) {
+
+		return push(debugName, computeStyles, stackElement -> stackElement.init(container, element, debugName));
 		
 	}
 

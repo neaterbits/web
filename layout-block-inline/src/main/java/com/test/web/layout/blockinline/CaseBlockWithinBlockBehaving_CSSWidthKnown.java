@@ -3,10 +3,10 @@ package com.test.web.layout.blockinline;
 import com.test.web.layout.algorithm.LayoutHelperUnits;
 import com.test.web.layout.common.ILayoutStylesGetters;
 
-public final class CaseBlockWithinBlockBehaving_CSSWidthKnown extends CaseBlockWithinBlockBehaving_Base {
+public final class CaseBlockWithinBlockBehaving_CSSWidthKnown<ELEMENT> extends CaseBlockWithinBlockBehaving_Base<ELEMENT> {
 
 	@Override
-	<ELEMENT> void onBlockElementStart(StackElement container, ELEMENT element, StackElement sub, BlockInlineLayoutUpdate state) {
+	void onBlockElementStart(StackElement<ELEMENT> container, ELEMENT element, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 
 		final ILayoutStylesGetters styles = sub.getLayoutStyles();
 
@@ -20,7 +20,7 @@ public final class CaseBlockWithinBlockBehaving_CSSWidthKnown extends CaseBlockW
 
 	// Since we do not know height, we must handle layout upon element end
 	@Override
-	<ELEMENT> void onBlockElementEnd(StackElement container, ELEMENT htmlElement, StackElement sub, BlockInlineLayoutUpdate state) {
+	void onBlockElementEnd(StackElement<ELEMENT> container, ELEMENT htmlElement, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 		
 		DimensionCases.BLOCK_CSS_WIDTH_KNOWN.computeDimensions(sub.getLayoutStyles(), container, sub, sub.resultingLayout);
 

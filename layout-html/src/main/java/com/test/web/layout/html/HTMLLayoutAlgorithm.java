@@ -17,7 +17,7 @@ import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 
 public class HTMLLayoutAlgorithm<ELEMENT, ELEMENT_TYPE, DOCUMENT extends IDocumentBase<ELEMENT,ELEMENT_TYPE,DOCUMENT>>
-		extends LayoutAlgorithm<ELEMENT, ELEMENT_TYPE, DOCUMENT, StackElement> {
+		extends LayoutAlgorithm<ELEMENT, ELEMENT_TYPE, DOCUMENT, StackElement<ELEMENT>> {
 
 	public HTMLLayoutAlgorithm(ITextExtent textExtent, IDelayedRendererFactory rendererFactory,
 			IFontSettings<ELEMENT_TYPE> fontSettings, ILayoutDebugListener<ELEMENT_TYPE> debugListener) {
@@ -25,17 +25,19 @@ public class HTMLLayoutAlgorithm<ELEMENT, ELEMENT_TYPE, DOCUMENT extends IDocume
 	}
 
 	@Override
-	protected BaseLayoutCase<?, ?> determineLayoutCase(StackElement container, ILayoutStylesGetters subLayoutStyles,
+	protected BaseLayoutCase<?, ?, ?> determineLayoutCase(StackElement<ELEMENT> container, ILayoutStylesGetters subLayoutStyles,
 			ELEMENT_TYPE elementType) {
 		return LayoutCases.determineLayoutCase(container, subLayoutStyles, elementType);
 	}
 
 	@Override
-	protected LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT, StackElement> createLayoutState(ITextExtent textExtent,
-			ViewPort viewPort, ILayoutContext<ELEMENT, ELEMENT_TYPE, DOCUMENT> layoutContext,
+	protected LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT, StackElement<ELEMENT>> createLayoutState(ITextExtent textExtent,
+			ViewPort viewPort,
+			IDelayedRendererFactory rendererFactory,
+			ILayoutContext<ELEMENT, ELEMENT_TYPE, DOCUMENT> layoutContext,
 			PageLayout<ELEMENT> pageLayout,
 			IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT, IElementRenderLayout> listener,
 			ILayoutDebugListener<ELEMENT_TYPE> debugListener) {
-		return new HTMLLayoutState<>(textExtent, viewPort, layoutContext, pageLayout, listener, debugListener);
+		return new HTMLLayoutState<>(textExtent, viewPort, rendererFactory, layoutContext, pageLayout, listener, debugListener);
 	}
 }

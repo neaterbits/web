@@ -3,11 +3,11 @@ package com.test.web.layout.blockinline;
 import com.test.web.layout.algorithm.LayoutHelperUnits;
 
 // inline-block element with known size
-public class CaseInlineWithinBlockBehaving_CSSSizeKnown_DisplayInlineBlock
-	extends CaseInlineWithinBlockBehaving_SizeKnown_Base {
+public class CaseInlineWithinBlockBehaving_CSSSizeKnown_DisplayInlineBlock<ELEMENT>
+	extends CaseInlineWithinBlockBehaving_SizeKnown_Base<ELEMENT> {
 
 	@Override
-	<ELEMENT> void onInlineElementStart(StackElement container, ELEMENT htmlElement, StackElement sub, BlockInlineLayoutUpdate state) {
+	void onInlineElementStart(StackElement<ELEMENT> container, ELEMENT htmlElement, StackElement<ELEMENT> sub, BlockInlineLayoutUpdate<ELEMENT> state) {
 
 		final int widthFromCSS = LayoutHelperUnits.computeWidthPx(
 				sub.getLayoutStyles().getWidth(),

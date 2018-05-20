@@ -1,7 +1,6 @@
 package com.test.web.layout.blockinline;
 
 import java.util.Arrays;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.test.web.layout.algorithm.ElementLayoutSettersGetters;
@@ -10,8 +9,9 @@ import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IFont;
 
-abstract class StackElementBase extends LayoutStackElement {
+abstract class StackElementBase<ELEMENT> extends LayoutStackElement<ELEMENT> {
 
+	private static final boolean CHECK_ADD = true;
 
 	StackElementBase(int stackIdx) {
 		super(stackIdx);
@@ -30,6 +30,30 @@ abstract class StackElementBase extends LayoutStackElement {
 	private int firstInlineElement; // while processing inline-elements, we will increase this to point to the element that is currently being processed
 	private int numInlineElements; // number of inline elements in the array above, this mmight be the same as array.length in case we are reusing existing objects
 
+	final int getFirstInlineElement() {
+		return firstInlineElement;
+	}
+	
+	final int getNumInlineElements() {
+		return numInlineElements;
+	}
+	
+	final InlineElement getInlineElementAt(int index) {
+		return inlineElements[index];
+	}
+	
+	final void updateFirstInlineElement(int idx) {
+		
+		if (idx >= numInlineElements) {
+			throw new IllegalArgumentException("idx >= numInlineElements: " + idx + "/" + numInlineElements);
+		}
+
+		this.firstInlineElement = idx;
+	}
+	
+	final String inlineElementsDebugString() {
+		return Arrays.toString(inlineElements);
+	}
 
 	/**
 	 * Add inline text chunk, eg. <span>This is a text</span>
@@ -58,10 +82,18 @@ abstract class StackElementBase extends LayoutStackElement {
 	 * @param atStartOfLine true if first element or is first after line wrap
 	 */
 
-	final void addInlineElementStart(StackElement stackElement, int inlineLineNoInBlock) {
+	final void addInlineElementStart(StackElement<ELEMENT> stackElement, int inlineLineNoInBlock) {
 
 		stackElement.addedInSeparateTree();
 	
+		if (CHECK_ADD) {
+			for (int i = firstInlineElement; i < numInlineElements; ++ i) {
+				if (inlineElements[i].getStackElement() == stackElement) {
+					throw new IllegalArgumentException("stack element already added at " + i + "/" + numInlineElements);
+				}
+			}
+		}
+		
 		// Make sure we are adding an inline-element, otherwise should not call this method
 		if (!stackElement.getDisplay().isInline()) {
 			throw new IllegalArgumentException("Adding inline element layout that is not inline-display : "  + stackElement.getDisplay());
@@ -70,11 +102,8 @@ abstract class StackElementBase extends LayoutStackElement {
 		addTextLineElement().initWrapperHTMLElementStart(inlineLineNoInBlock, stackElement);
 	}
 
-	final void addInlineElementEnd(StackElement stackElement, int inlineLineNoInBlock) {
+	final void addInlineElementEnd(StackElement<ELEMENT> stackElement, int inlineLineNoInBlock) {
 		
-		// TODO simplify memory reuse handling
-		stackElement.removedFromSeparateTree();
-
 		// Make sure we are adding an inline-element, otherwise should not call this method
 		if (!stackElement.getDisplay().isInline()) {
 			throw new IllegalArgumentException("Adding inline element layout that is not inline-display : "  + stackElement.getDisplay());
@@ -115,69 +144,13 @@ abstract class StackElementBase extends LayoutStackElement {
 				existing.clear();
 				ret = existing;
 			}
+			
+			 ++ numInlineElements;
 		}
 		
 		return ret;
 	}
 	
-	/**
-	 * Process all inline text lines up to the specified line, removing 
-	 * any <inlineElement></inlineElement> that ends at this layouted line. Eg. a <span> that spans multiple lines
-	 * and then its content is terminated on lastLine, the <span> will be removed from inline-elements being cached here so that it is no longer processed.
-	 * This also might allow the StackElement object to be cleared and reused.
-	 * 
-	 * @param lastLine the last line being processed
-	 * @param consumer process inline elements appearing from the last line up to the current line
-	 */
-	final void recursivelyProcessInlineElementsUpTo(int lastLine, Consumer<InlineElement> consumer) {
-		
-		InlineElement lastStartElement = null;
-		
-		for (int i = firstInlineElement; i < numInlineElements; ++ i) {
-
-			final InlineElement inlineElement = inlineElements[i];
-
-			switch (inlineElement.getType()) {
-			case WRAPPER_HTML_ELEMENT_START:
-				if (lastStartElement != null) {
-					throw new IllegalStateException("Wrapper HTML element already set");
-				}
-
-				// Remember current start-element
-				lastStartElement = inlineElement;
-
-				consumer.accept(inlineElement);
-
-				// recurse into found element
-				inlineElement. getStackElement().recursivelyProcessInlineElementsUpTo(lastLine, consumer);
-				break;
-
-			case WRAPPER_HTML_ELEMENT_END:
-				consumer.accept(inlineElement);
-				lastStartElement = null;
-				final int lineNo = inlineElement.getLineNo() ;
-
-				if (lineNo <= lastLine) {
-					// This inline-element ended at or before the asked for last-line.
-					// This means we can delete this from the current lines at this level
-					this.firstInlineElement = i + 1;
-				}
-				break;
-
-			case KNOWN_SIZE_HTML_ELEMENT:
-				consumer.accept(inlineElement);
-				break;
-
-			case TEXT_CHUNK:
-				consumer.accept(inlineElement);
-				break;
-
-			default:
-				throw new UnsupportedOperationException("Unknown inline element type " + inlineElement.getType());
-			}
-		}
-	}
-
 	final void initBase() {
 
 	}
@@ -185,6 +158,7 @@ abstract class StackElementBase extends LayoutStackElement {
 	final void clearBase() {
 
 		// reset array counter but keep array though to save on memory allocations
+		this.firstInlineElement = 0;
 		this.numInlineElements = 0;
 	}
 }

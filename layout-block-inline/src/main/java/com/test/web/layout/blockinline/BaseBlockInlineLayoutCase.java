@@ -11,10 +11,10 @@ import com.test.web.layout.common.IElementLayout;
 import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.render.common.IFont;
 
-abstract class BaseBlockInlineLayoutCase extends BaseLayoutCase<StackElement, BlockInlineLayoutUpdate> {
+abstract class BaseBlockInlineLayoutCase<ELEMENT> extends BaseLayoutCase<ELEMENT, StackElement<ELEMENT>, BlockInlineLayoutUpdate<ELEMENT>> {
 
 	@Override
-	protected final <ELEMENT> void onText(StackElement container, String text, TextUtil textUtil,  BlockInlineLayoutUpdate state, GetRenderer getRenderer, BiConsumer<String, IElementRenderLayout> chunkListener) {
+	protected final void onText(StackElement<ELEMENT> container, String text, TextUtil textUtil,  BlockInlineLayoutUpdate<ELEMENT> state, GetRenderer getRenderer, BiConsumer<String, IElementRenderLayout> chunkListener) {
 		computeAndAddInlineText_wrapAndRenderAsNecessary_textUtil(container, text, textUtil, state, getRenderer, chunkListener);
 	}
 
@@ -25,8 +25,8 @@ abstract class BaseBlockInlineLayoutCase extends BaseLayoutCase<StackElement, Bl
     // Thus the layouted text elements are not necessarily corresponding to the HTML text elements. 
     
 
-    private void computeAndAddInlineText_wrapAndRenderAsNecessary_textUtil(StackElement cur, String text,
-    				TextUtil textUtil, BlockInlineLayoutUpdate state, GetRenderer getRenderer, BiConsumer<String, IElementRenderLayout> chunkListener) {
+    private void computeAndAddInlineText_wrapAndRenderAsNecessary_textUtil(StackElement<ELEMENT> cur, String text,
+    				TextUtil textUtil, BlockInlineLayoutUpdate<ELEMENT> state, GetRenderer getRenderer, BiConsumer<String, IElementRenderLayout> chunkListener) {
 
 		final IFont font = cur.resultingLayout.getFont();
 
@@ -57,12 +57,12 @@ abstract class BaseBlockInlineLayoutCase extends BaseLayoutCase<StackElement, Bl
     
     private int processOneTextElement(
     		String lineText,
-    		StackElement cur,
+    		StackElement<ELEMENT> cur,
     		NumberOfChars numChars,
     		int xPos, int yPos, int lineHeight,
     		boolean lineWrapped,
     		boolean atStartOfLine,
-    		BlockInlineLayoutUpdate state,
+    		BlockInlineLayoutUpdate<ELEMENT> state,
     		GetRenderer getRenderer,
     		BiConsumer<String, IElementRenderLayout> chunkListener) {
 
@@ -76,7 +76,7 @@ abstract class BaseBlockInlineLayoutCase extends BaseLayoutCase<StackElement, Bl
     	return lineHeight;
     }
 
-	final void initAvailableAndRemainingWidthFromCSS(IElementLayout containerLayout, StackElement sub) {
+	final void initAvailableAndRemainingWidthFromCSS(IElementLayout containerLayout, StackElement<ELEMENT> sub) {
 		final int width  = LayoutHelperUnits.computeWidthPx(
 				sub.getLayoutStyles().getWidth(),
 				sub.getLayoutStyles().getWidthUnit(),
@@ -85,17 +85,17 @@ abstract class BaseBlockInlineLayoutCase extends BaseLayoutCase<StackElement, Bl
 		initAvailableAndRemainingFromCSSWidth(sub, width);
 	}
 
-	final void initAvailableAndRemainingFromCSSWidth(StackElement sub, int width) {
+	final void initAvailableAndRemainingFromCSSWidth(StackElement<ELEMENT> sub, int width) {
 		sub.setAvailableWidth(width);
 		sub.setRemainingWidth(width);
 	}
 
-	final void initAvailableAndRemainingWidthFromContainerRemaining(StackElement container, StackElement cur) {
+	final void initAvailableAndRemainingWidthFromContainerRemaining(StackElement<ELEMENT> container, StackElement<ELEMENT> cur) {
 		cur.setAvailableWidth(cur.getRemainingWidth());
 		cur.setRemainingWidth(cur.getRemainingWidth());
 	}
 
-	final void initAvailableAndRemainingHeightFromCSS(IElementLayout containerLayout, StackElement sub) {
+	final void initAvailableAndRemainingHeightFromCSS(IElementLayout containerLayout, StackElement<ELEMENT> sub) {
 		final int height  = LayoutHelperUnits.computeHeightPx(
 				sub.getLayoutStyles().getHeight(),
 				sub.getLayoutStyles().getHeightUnit(),
@@ -104,12 +104,12 @@ abstract class BaseBlockInlineLayoutCase extends BaseLayoutCase<StackElement, Bl
 		initAvailableAndRemainingFromCSSHeight(sub, height);
 	}
 
-	final void initAvailableAndRemainingFromCSSHeight(StackElement sub, int height) {
+	final void initAvailableAndRemainingFromCSSHeight(StackElement<ELEMENT> sub, int height) {
 		sub.setAvailableHeight(height);
 		sub.setRemainingHeight(height);
 	}
 
-	final void initAvailableAndRemainingHeightFromContainerRemaining(StackElement container, StackElement cur) {
+	final void initAvailableAndRemainingHeightFromContainerRemaining(StackElement<ELEMENT> container, StackElement<ELEMENT> cur) {
 		cur.setAvailableHeight(cur.getRemainingHeight());
 		cur.setRemainingHeight(cur.getRemainingHeight());
 	}

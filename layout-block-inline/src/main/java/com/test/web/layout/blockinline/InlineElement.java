@@ -49,7 +49,7 @@ public final class InlineElement {
 	
 	
 	// -------------------------- HTMLelements  --------------------------
-	private StackElement stackElement; // Every HTML element has a corresponding StackElement with all CSS properties computed at that level
+	private StackElement<?> stackElement; // Every HTML element has a corresponding StackElement with all CSS properties computed at that level
 
 	// -------------------------- Text chunks --------------------------
 	private String textChunk; // Cache text to render when reaching end of text line
@@ -77,7 +77,7 @@ public final class InlineElement {
 		return type;
 	}
 	
-	final StackElement getStackElement() {
+	final StackElement<?> getStackElement() {
 		return stackElement;
 	}
 	
@@ -92,6 +92,11 @@ public final class InlineElement {
 
 		case TEXT_CHUNK:
 			result = textResultingLayout;
+			break;
+			
+		// can also set layout on <span> elements
+		case WRAPPER_HTML_ELEMENT_START:
+			result = stackElement.resultingLayout;
 			break;
 
 		default:
@@ -113,7 +118,7 @@ public final class InlineElement {
 		this.type = type;
 	}
 
-	private void initWithStackElement(int lineNo, StackElement stackElement, Type type) {
+	private void initWithStackElement(int lineNo, StackElement<?> stackElement, Type type) {
 		if (stackElement == null) {
 			throw new IllegalArgumentException("stackElement == null");
 		}
@@ -124,15 +129,15 @@ public final class InlineElement {
 		this.stackElement = stackElement;
 	}
 
-	void initKnownSizeHTMLElement(int lineNo, StackElement stackElement) {
+	void initKnownSizeHTMLElement(int lineNo, StackElement<?> stackElement) {
 		initWithStackElement(lineNo, stackElement, Type.KNOWN_SIZE_HTML_ELEMENT);
 	}
 	
-	void initWrapperHTMLElementStart(int lineNo, StackElement stackElement) {
+	void initWrapperHTMLElementStart(int lineNo, StackElement<?> stackElement) {
 		initWithStackElement(lineNo, stackElement, Type.WRAPPER_HTML_ELEMENT_START);
 	}
 
-	void initWrapperHTMLElementEnd(int lineNo, StackElement stackElement) {
+	void initWrapperHTMLElementEnd(int lineNo, StackElement<?> stackElement) {
 		initWithStackElement(lineNo, stackElement, Type.WRAPPER_HTML_ELEMENT_END);
 	}
 
@@ -176,5 +181,14 @@ public final class InlineElement {
 		if (stackElement != null) {
 			this.stackElement = null;
 		}
+		
+		if (textResultingLayout != null) {
+			textResultingLayout.clear();
+		}
+	}
+	
+	@Override
+	public String toString() {
+		return type.toString();
 	}
 }

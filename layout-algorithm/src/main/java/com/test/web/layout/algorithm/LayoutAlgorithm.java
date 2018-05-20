@@ -30,7 +30,7 @@ public abstract class LayoutAlgorithm<
 		ELEMENT,
 		ELEMENT_TYPE,
 		DOCUMENT extends IDocumentBase<ELEMENT, ELEMENT_TYPE, DOCUMENT>,
-		STACK_ELEMENT extends LayoutStackElement>
+		STACK_ELEMENT extends LayoutStackElement<ELEMENT>>
 
 	implements IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT, LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT, STACK_ELEMENT>> {
 
@@ -44,7 +44,7 @@ public abstract class LayoutAlgorithm<
 	
 	private final TextUtil textUtil;
 
-	protected abstract BaseLayoutCase<?, ?> determineLayoutCase(STACK_ELEMENT container, ILayoutStylesGetters subLayoutStyles, ELEMENT_TYPE elementType);
+	protected abstract BaseLayoutCase<?, ?, ?> determineLayoutCase(STACK_ELEMENT container, ILayoutStylesGetters subLayoutStyles, ELEMENT_TYPE elementType);
 
 	public LayoutAlgorithm(
 			ITextExtent textExtent,
@@ -62,6 +62,7 @@ public abstract class LayoutAlgorithm<
 	protected abstract LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT, STACK_ELEMENT> createLayoutState(
 			ITextExtent textExtent,
 			ViewPort viewPort,
+			IDelayedRendererFactory rendererFactory,
 			ILayoutContext<ELEMENT, ELEMENT_TYPE, DOCUMENT> layoutContext,
 			PageLayout<ELEMENT> pageLayout,
 			IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT, IElementRenderLayout> listener,
@@ -74,7 +75,7 @@ public abstract class LayoutAlgorithm<
 			PageLayout<ELEMENT> pageLayout,
 			IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT, IElementRenderLayout> listener) {
 		
-		final LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT, STACK_ELEMENT> state = createLayoutState(textExtent, viewPort, layoutContext, pageLayout, listener, debugListener);
+		final LayoutState<ELEMENT, ELEMENT_TYPE, DOCUMENT, STACK_ELEMENT> state = createLayoutState(textExtent, viewPort, rendererFactory, layoutContext, pageLayout, listener, debugListener);
 		
 		document.iterate(this, state);
 	}
@@ -110,10 +111,11 @@ public abstract class LayoutAlgorithm<
     	// This must be done from .push() since .push() must know CSS display type
     	final STACK_ELEMENT sub = state.push(
     			container,
+    			element,
     			elementType.toString(),
     			layoutStyles -> computeStyles(state, document, element, elementType, layoutStyles));
     
-    	final BaseLayoutCase<?, ?> layoutCase = determineLayoutCase(container, sub.getLayoutStyles(), elementType);
+    	final BaseLayoutCase<?, ?, ?> layoutCase = determineLayoutCase(container, sub.getLayoutStyles(), elementType);
 
     	if (debugListener != null) {
     		debugListener.onElementLayoutCase(getDebugDepth(state), elementType, layoutCase.getName());
@@ -196,31 +198,23 @@ public abstract class LayoutAlgorithm<
     		throw new IllegalStateException("display == null: " + sub.getDebugName() + "/" + sub.resultingLayout);
     	}
 
-    	if (!display.isInline() && !sub.resultingLayout.areBoundsComputed()) {
-			throw new IllegalStateException("Bounds were not computed for element " + elementType + " at end tag");
+    	if (!display.isInline()) {
+    		state.addToLayerForComputedLayout(sub);
 		}
-
-		// Got layout, add to layer
-		final short zIndex = sub.getLayoutStyles().getZIndex();
-		
-		final PageLayer<ELEMENT>layer = state.addOrGetLayer(zIndex, rendererFactory);
-
-		// make copy since resulting layout is reused
-		// TODO long-buffer version
-		layer.add(element, sub.resultingLayout.makeCopy());
 
 		if (state.getListener() != null) {
 			state.getListener().onElementEnd(document, element, sub.resultingLayout);
 		}
-		
+
 		// log layout computation if was done in onElementEnd()
 		if (debugListener != null && ! boundsAlreadyComputed && sub.resultingLayout.areBoundsComputed()) {
 			debugListener.onResultingLayoutAtEndTag(getDebugDepth(state), sub.resultingLayout, sub.getLayoutCaseName());
 		}
 	}
     
+    
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	private BaseLayoutCase<STACK_ELEMENT, Object> getLayoutCase(STACK_ELEMENT element) {
+	private BaseLayoutCase<ELEMENT, STACK_ELEMENT, Object> getLayoutCase(STACK_ELEMENT element) {
     	return (BaseLayoutCase)element.getLayoutCase();
     }
 
