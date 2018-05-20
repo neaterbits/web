@@ -165,7 +165,7 @@ final class ElementLayout implements IElementRenderLayout, ElementLayoutSettersG
 		}
 		
 		if (this.layoutPartsSetFlag != LayoutPart.ALL_MASK) {
-			throw new IllegalStateException(String.format("Not all layut parts set: %04x", layoutPartsSetFlag));
+			throw new IllegalStateException(String.format("Not all layout parts set: %04x", layoutPartsSetFlag));
 		}
 
 		this.boundsComputed = true;

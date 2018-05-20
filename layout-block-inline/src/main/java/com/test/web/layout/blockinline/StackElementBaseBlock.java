@@ -49,6 +49,9 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 	
 	// current inline line no within block
 	private int curLineNoInBlock;
+	
+	// Temp object for value result
+	private WrapperSums wrapperSums;
 
 	StackElementBaseBlock(int stackIdx) {
 		super(stackIdx);
@@ -197,33 +200,51 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 
 		// recursivelyCheckForAnyCompletedInlineElementAndComputeBounds(this, curLineNoInBlock, curInlineMaxHeight, debugDepth, layoutDebugListener);
 		
-		recursivelyProcessInlineElementsUpTo(this, curLineNoInBlock, curInlineMaxHeight, addToPageLayer);
+		if (this.wrapperSums == null) {
+			this.wrapperSums = new WrapperSums();
+		}
+		
+		recursivelyProcessInlineElementsUpTo(this, curLineNoInBlock, curInlineMaxHeight, addToPageLayer, wrapperSums);
 
 		this.curInlineMaxHeight = 0;
 		++ curLineNoInBlock;
 
 		layoutDebugListener.onApplyLineBreakEnd(debugDepth);
 	}
+	
+	// For summarizing position and sizes of wrapper element and returning upwards in tree.
+	// Note, this is passed in so to avoid allocating a return-object
+	private static class WrapperSums {
+		private int maxWidth; // max width for all lines this wrapper element spans across
+		private int sumHeight; // sum height for all lines this wrapper element spans across
+		private int leftmostX; // leftmost position of wrapper element. This is always at start of first non-wrapper element on a line if wraps
+		private int topmostY;
+		
+		void init(int maxWidth, int sumHeight, int leftmostX, int topmostY) {
+			this.maxWidth = maxWidth;
+			this.sumHeight = sumHeight;
+			this.leftmostX = leftmostX;
+			this.topmostY = topmostY;
+		}
+	}
 
 	// Recurses all inline-elements under this block-element that we have buffered during parsing, advancing until we have proessed current line no.
 	// For any wrapper element like <span></span> that ends on this line, we advance firstInlineElement index past it
 	// so that we do not loop through that the next time we run this algorithm
 	
-	static <E> long recursivelyProcessInlineElementsUpTo(StackElementBase<E> cur, int lineToProcess, int lineMaxHeight, AddToPageLayer<E> addToPageLayer) {
+	static <E> void recursivelyProcessInlineElementsUpTo(StackElementBase<E> cur, int lineToProcess, int lineMaxHeight, AddToPageLayer<E> addToPageLayer, WrapperSums wrapperSums) {
 
 		int widthForCurrentWrapperElement = -1;
 		int heightForCurrentWrapperElement = -1;
+		int leftmostXForCurrentWrapperElement = -1;
+		int topmostYForCurrentWrapperElement = -1;
 
-		InlineElement lastStartElement;
-		
-		// Keep track of width found at start-element, so we can update in end-element
-		int widthForLineInStartElement = 0;
-		
 		// sum-width for cur line, for figuring width of current line
 		int sumWidthForCurLine = 0;
 		
 		// Max height for text and non-wrapper elements on current line, this is reset whenever we move to a new line
 		int maxHeightForCurLine = 0;
+		
 		
 		int currentLineNo = -1;
 		
@@ -232,6 +253,9 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 		
 		// sum-height, returned in order to compute height of wrapper elements
 		int sumHeight = 0;
+		
+		int leftmostX = Integer.MAX_VALUE;
+		int topmostY = -1;
 
 		for (int i = cur.getFirstInlineElement(); i < cur.getNumInlineElements(); ++ i) {
 			
@@ -255,6 +279,8 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 			// height of element if this is a non-wrapper element
 			final int nonWrapperElementWidth;
 			final int nonWrapperElementHeight;
+			final int nonWrapperElementX;
+			final int nonWrapperElementY;
 			
 			switch (inlineElement.getType()) {
 			case WRAPPER_HTML_ELEMENT_START: {
@@ -263,13 +289,13 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 				@SuppressWarnings({ "unchecked", "rawtypes" })
 				final StackElement<E> sub = (StackElement)inlineElement. getStackElement();
 			
-				final long widthAndHeight = recursivelyProcessInlineElementsUpTo(sub, lineToProcess, lineMaxHeight, addToPageLayer);
+				recursivelyProcessInlineElementsUpTo(sub, lineToProcess, lineMaxHeight, addToPageLayer, wrapperSums);
 				
-				// Sum of width for lineToProcess
-				widthForCurrentWrapperElement = (int)((widthAndHeight >> 32) & 0xFFFFFFFFL);
-				heightForCurrentWrapperElement  = (int)(widthAndHeight & 0xFFFFFFFFL);
-				
-				lastStartElement = inlineElement;
+				// Sum of width for lineToProcess. Cache value so that temp object for returning values can be reused
+				widthForCurrentWrapperElement = wrapperSums.maxWidth;
+				heightForCurrentWrapperElement  = wrapperSums.sumHeight;
+				leftmostXForCurrentWrapperElement = wrapperSums.leftmostX;
+				topmostYForCurrentWrapperElement = wrapperSums.topmostY;
 
 				// if width found is more than current sum, then add to width for span element.
 				// this is done so that if spans multiple lines, we will find the largest width within the span
@@ -277,11 +303,13 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 				
 				nonWrapperElementWidth = 0; // this is a wrapper element
 				nonWrapperElementHeight = 0; // this is a wrapper element
+				nonWrapperElementX = Integer.MAX_VALUE; // this is a wrapper element
+				nonWrapperElementY = -1; // this is a wrapper element
 				break;
 			}
 
 			case WRAPPER_HTML_ELEMENT_END:
-				
+
 				if (lineNo <= lineToProcess) {
 					final ElementLayoutSettersGetters layout = inlineElement.getResultingLayout();
 
@@ -294,19 +322,24 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 					// Set sum height for element that we cached from element-start
 					layout.initOuterWidthHeight(widthForCurrentWrapperElement, heightForCurrentWrapperElement);
 					layout.initInnerWidthHeight(widthForCurrentWrapperElement, heightForCurrentWrapperElement);
+					
+					layout.initOuterPosition(leftmostXForCurrentWrapperElement, topmostYForCurrentWrapperElement);
+					layout.initInnerPosition(leftmostXForCurrentWrapperElement, topmostYForCurrentWrapperElement);
 
 					@SuppressWarnings("unchecked")
 					final E element = (E)inlineElement.getStackElement().getElement();
-					
+
 					layout.setBoundsComputed();
 					addToPageLayer.add(element, layout);
-					
+
 					// release since no longer needed
 					inlineElement.getStackElement().removedFromSeparateTree();
 				}
-				
+
 				nonWrapperElementWidth = 0; // this is a wrapper element
 				nonWrapperElementHeight = 0; // this is a wrapper element
+				nonWrapperElementX = Integer.MAX_VALUE; // this is a wrapper element
+				nonWrapperElementY = -1; // this is a wrapper element
 				break;
 
 			case KNOWN_SIZE_HTML_ELEMENT:
@@ -315,6 +348,8 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 
 				nonWrapperElementWidth = layout.getOuterBounds().getWidth();
 				nonWrapperElementHeight = layout.getOuterBounds().getHeight();
+				nonWrapperElementX = layout.getOuterBounds().getLeft();
+				nonWrapperElementY = layout.getOuterBounds().getTop();
 				break;
 
 			case TEXT_CHUNK:
@@ -341,6 +376,8 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 				}
 				nonWrapperElementWidth = textChunkLayout.getOuterBounds().getWidth();
 				nonWrapperElementHeight = textChunkLayout.getOuterBounds().getHeight();
+				nonWrapperElementX = textChunkLayout.getOuterBounds().getLeft();
+				nonWrapperElementY = textChunkLayout.getOuterBounds().getTop();
 				break;
 
 			default:
@@ -352,6 +389,14 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 			}
 
 			sumWidthForCurLine += nonWrapperElementWidth;
+			
+			if (nonWrapperElementX < leftmostX) {
+				leftmostX = nonWrapperElementX;
+			}
+			
+			if (nonWrapperElementY >= 0 && topmostY < 0) {
+				topmostY = nonWrapperElementY;
+			}
 		}
 
 		// Any leftover in completion of current line
@@ -361,7 +406,7 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 		sumHeight += maxHeightForCurLine;
 
 		// return in a long-var so that no need for allocation
-		return ((long)maxWidth) << 32 | sumHeight;
+		wrapperSums.init(maxWidth, sumHeight, leftmostX, topmostY);
 	}
 
 	private static int getTextYPosOnLine(IFont font, int lineMaxHeight) {
