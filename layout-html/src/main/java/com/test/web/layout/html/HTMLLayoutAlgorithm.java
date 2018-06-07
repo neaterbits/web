@@ -2,6 +2,7 @@ package com.test.web.layout.html;
 
 import com.test.web.document.common.IDocumentBase;
 import com.test.web.document.common.IElementListener;
+import com.test.web.document.html.common.HTMLElement;
 import com.test.web.layout.algorithm.BaseLayoutCase;
 import com.test.web.layout.algorithm.LayoutAlgorithm;
 import com.test.web.layout.algorithm.LayoutState;
@@ -27,7 +28,7 @@ public class HTMLLayoutAlgorithm<ELEMENT, ELEMENT_TYPE, DOCUMENT extends IDocume
 	@Override
 	protected BaseLayoutCase<?, ?, ?> determineLayoutCase(StackElement<ELEMENT> container, ILayoutStylesGetters subLayoutStyles,
 			ELEMENT_TYPE elementType) {
-		return LayoutCases.determineLayoutCase(container, subLayoutStyles, elementType);
+		return LayoutCases.determineLayoutCase(container, subLayoutStyles, (HTMLElement)elementType);
 	}
 
 	@Override

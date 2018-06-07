@@ -11,7 +11,6 @@ import com.test.web.document.html.common.HTMLElementListener;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.algorithm.PageLayout;
-import com.test.web.layout.common.LayoutStyles;
 import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.IFontSettings;
 import com.test.web.layout.common.ILayoutDebugListener;
@@ -42,11 +41,6 @@ public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER
 
 	private final HTMLLayoutAlgorithm<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>> layoutAlgorithm;
 
-	private final IFontSettings<HTMLElement> fontSettings;
-	
-	// temp var for computing styles
-	private final LayoutStyles tempLayoutStyles;
-	
 	private HTMLElement curElement;
 	
 	private ELEMENT elementWhereLayoutStoppedDueToLoadingDependencies;
@@ -54,7 +48,11 @@ public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER
 	private String linkRel;
 	private String linkType;
 	private String linkHRef;
-	
+
+	private Integer imgWidth;
+	private Integer imgHeight;
+	private String imgSrc;
+
 	private final CSSContext<ELEMENT> cssContext;
 
 	private final HTMLLayoutState<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>>layoutState;
@@ -75,11 +73,7 @@ public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER
 		this.delegate = delegate;
 		this.loadQueue = loadQueue;
 		
-		this.fontSettings = fontSettings;
-	
 		this.layoutAlgorithm = new HTMLLayoutAlgorithm<>(textExtent, renderFactory, fontSettings, layoutDebugListener);
-		
-		this.tempLayoutStyles = new LayoutStyles();
 		
 		this.cssContext = new CSSContext<>();
 		this.layoutState = new HTMLLayoutState<>(
@@ -131,22 +125,13 @@ public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER
 				
 			case IMG:
 				// Image tag, may not know width or height, in that case we have to load image first before we can continue layout
-				cssContext.getCSSLayoutStyles(
-						curElement.getDefaultDisplay(),
-						fontSettings.getFontForElement(curElement),
-						delegate.getId(elementRef),
-						delegate.getTag(elementRef),
-						delegate.getClasses(elementRef),
-						tempLayoutStyles);
-				
-				// Add any from style attribute
-				cssContext.applyLayoutStyles(delegate.getStyles(elementRef), elementRef, tempLayoutStyles);
-				
-				if ( ! (tempLayoutStyles.hasWidth() && tempLayoutStyles.hasWidth()) ) {
-					// must load image in order to figure real width and heigth, so apply here
-					queueLoadingOfUrl(delegate.getImgUrl(elementRef), loadQueue::addImageLoadingForDimensions, elementRef);
+				if (imgWidth  == null || imgHeight  == null) {
+					// Queue loading of image
+					queueLoadingOfUrl(imgSrc, loadQueue::addImageLoadingForDimensions, elementRef);
 				}
-				
+
+				this.imgWidth = null;
+				this.imgHeight = null;
 				break;
 				
 			default:
@@ -236,7 +221,7 @@ public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER
 	}
 	
 	private void layoutElementsFrom(ELEMENT elementRef) {
-		// Must run thorugh document from the elementRef onto end and call onElementStart and onElementEnd etc for each element
+		// Must run through document from the elementRef onto end and call onElementStart and onElementEnd etc for each element
 		delegate.iterateFrom(elementRef, layoutAlgorithm, layoutState);
 	}
 	
@@ -280,7 +265,25 @@ public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER
 					break;
 				}
 				break;
+				
+			case IMG:
+				switch (attribute) {
+				case WIDTH:
+					this.imgWidth = tokenizer.asInteger(stringRef);
+					break;
 
+				case HEIGHT:
+					this.imgHeight = tokenizer.asInteger(stringRef);
+					break;
+					
+				case SRC:
+					this.imgSrc = tokenizer.asString(stringRef);
+					break;
+
+				default:
+					break;
+					
+				}
 			default:
 				
 				throw new IllegalStateException("Unexpected elememnt " + curElement);

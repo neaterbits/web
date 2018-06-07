@@ -120,14 +120,14 @@ public class BlockInlineLayoutState<
 		final boolean addedToNewLine = curBlockElement.updateBlockRemainingForNewInlineElement(widthPx, heightPx, getDepth(), debugListener, this::addToPageLayer);
 
 		// Add as inline element to container so building a tree of elements
-		container.addInlineElementStart(sub, getCurInlineLineNoInBlock());
+		container.addInlineWrapperElementStart(sub, getCurInlineLineNoInBlock());
 	}
 
 	@Override
 	public void addInlineWrapperElementStart(StackElement<ELEMENT> container, StackElement<ELEMENT> sub) {
 		checkAddInlineElement(container, sub);
 
-		container.addInlineElementStart(sub, getCurInlineLineNoInBlock());
+		container.addInlineWrapperElementStart(sub, getCurInlineLineNoInBlock());
 	}
 
 	@Override
