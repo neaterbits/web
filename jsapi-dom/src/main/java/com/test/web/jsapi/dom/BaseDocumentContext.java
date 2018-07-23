@@ -10,19 +10,26 @@ import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.document.html.common.enums.LinkRelType;
 
-abstract class BaseDocumentContext<ELEMENT, ATTRIBUTE> implements IDocument<ELEMENT, ATTRIBUTE> {
+abstract class BaseDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE>> implements IDocument<ELEMENT, ATTRIBUTE> {
 	
-	final IDocument<ELEMENT, ATTRIBUTE> delegate;
+	final DOCUMENT delegate;
 	
-	public BaseDocumentContext(IDocument<ELEMENT, ATTRIBUTE> delegate) {
+	public BaseDocumentContext(DOCUMENT delegate) {
 		if (delegate == null) {
 			throw new IllegalArgumentException("delegate == null");
 		}
 
 		this.delegate = delegate;
 	}
+	
+	
 
 	@Override
+    public final boolean isSameElement(ELEMENT element1, ELEMENT element2) {
+        return delegate.isSameElement(element1, element2);
+    }
+
+    @Override
 	public final int getNumAttributes(ELEMENT element) {
 		return delegate.getNumAttributes(element);
 	}

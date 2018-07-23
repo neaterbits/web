@@ -6,6 +6,7 @@ public abstract class Node<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext
 	extends EventTarget<ELEMENT, ATTRIBUTE, DOCUMENT>{
 
 	protected Node() {
+	    
 	}
 
 	protected Node(DOCUMENT document) {

@@ -25,6 +25,7 @@ public interface IDocument<ELEMENT, ATTRIBUTE>
 	
 	public static final String DEFAULT_NAMESPACE = "http://www.w3.org/1999/xhtml";
 	
+	boolean isSameElement(ELEMENT element1, ELEMENT element2);
 	
 	ELEMENT getElementById(String id);
 	

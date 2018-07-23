@@ -10,6 +10,7 @@ import com.test.web.document.html.oo.OOAttribute;
 import com.test.web.document.html.oo.OOHTMLDocument;
 import com.test.web.document.html.oo.OOTagElement;
 import com.test.web.document.html.test.DocumentParser;
+import com.test.web.jsapi.common.dom.IEvent;
 import com.test.web.jsengine.common.IJSEngine;
 import com.test.web.jsengine.common.JSCompileException;
 import com.test.web.jsengine.common.JSExecutionException;
@@ -28,17 +29,17 @@ public abstract class BaseDOMTest extends TestCase {
 	abstract IJSEngine getJSEngine();
 
 	private static final AttributeTestValues [] testValues = new AttributeTestValues [] {
-			new AttributeTestValues(HTMLAttributeValueType.STRING, 							"a_string", 		 	"another_string", 	null),
-			new AttributeTestValues(HTMLAttributeValueType.STRING_ARRAY,	 			"value1 value2", 	"value3 value4", 	null),
-			new AttributeTestValues(HTMLAttributeValueType.BOOLEAN_TRUE_FALSE,	 "true", 				 	"false", 					null),
+			new AttributeTestValues(HTMLAttributeValueType.STRING, 				 "a_string", 	 	"another_string", 	null),
+			new AttributeTestValues(HTMLAttributeValueType.STRING_ARRAY,	 	 "value1 value2", 	"value3 value4", 	null),
+			new AttributeTestValues(HTMLAttributeValueType.BOOLEAN_TRUE_FALSE,	 "true", 			"false", 					null),
 			new AttributeTestValues(HTMLAttributeValueType.BOOLEAN_MINIMIZABLE,	 a -> a.getName(),  a -> "false", 			a -> null),
-			new AttributeTestValues(HTMLAttributeValueType.BIGDECIMAL, 					"2732839.34984", 	"32987245.23442", "abcde"),
-			new AttributeTestValues(HTMLAttributeValueType.DECIMAL, 						"239.4", 		 		"4352.43", 			"fghij"),
-			new AttributeTestValues(HTMLAttributeValueType.YES_NO, 							"yes", 		 			"no", 					"someothertext"),
-			new AttributeTestValues(HTMLAttributeValueType.INTEGER, 						"123", 		 			"456", 					"notaninteger"),
-			new AttributeTestValues(HTMLAttributeValueType.ENUM, 								a -> getEnumName(a, 0), a -> getEnumName(a, 1), a -> "notanenumconstant"),
-			new AttributeTestValues(HTMLAttributeValueType.ENUM_OR_STRING, 			a -> getEnumName(a, 0), a -> "a_string_value", a -> null),
-			new AttributeTestValues(HTMLAttributeValueType.CSS, 								"width:100px;height:50px",  "float:left;text-align:center",  "notvalidcss"),
+			new AttributeTestValues(HTMLAttributeValueType.BIGDECIMAL, 			"2732839.34984", 	"32987245.23442", "abcde"),
+			new AttributeTestValues(HTMLAttributeValueType.DECIMAL, 			"239.4", 		 		"4352.43", 			"fghij"),
+			new AttributeTestValues(HTMLAttributeValueType.YES_NO, 				"yes", 		 			"no", 					"someothertext"),
+			new AttributeTestValues(HTMLAttributeValueType.INTEGER, 			"123", 		 			"456", 					"notaninteger"),
+			new AttributeTestValues(HTMLAttributeValueType.ENUM, 				a -> getEnumName(a, 0), a -> getEnumName(a, 1), a -> "notanenumconstant"),
+			new AttributeTestValues(HTMLAttributeValueType.ENUM_OR_STRING, 		a -> getEnumName(a, 0), a -> "a_string_value", a -> null),
+			new AttributeTestValues(HTMLAttributeValueType.CSS, 				"width:100px;height:50px",  "float:left;text-align:center",  "notvalidcss"),
 	};
 
 	private static String getEnumName(HTMLAttribute attribute, int ordinal) {
@@ -251,11 +252,11 @@ public abstract class BaseDOMTest extends TestCase {
 
 	private void checkGetAttributeByJS(IJSEngine jsEngine, JSVariableMap varMap, String js, AttributeTestCase atc, String attributeValue) throws JSCompileException, JSExecutionException {
 		
-		final String attrName 					= (String)jsEngine.evalJS(js + ".name", varMap);
+		final String attrName 			= (String)jsEngine.evalJS(js + ".name", varMap);
 		final String attrNamespaceURI 	= (String)jsEngine.evalJS(js + ".namespaceURI", varMap);
-		final String attrPrefix 					= (String)jsEngine.evalJS(js + ".prefix", varMap);
-		final String attrLocalName 			= (String)jsEngine.evalJS(js + ".localName", varMap);
-		final String attrValue 					= (String)jsEngine.evalJS(js + ".value", varMap);
+		final String attrPrefix 	 	= (String)jsEngine.evalJS(js + ".prefix", varMap);
+		final String attrLocalName 		= (String)jsEngine.evalJS(js + ".localName", varMap);
+		final String attrValue 			= (String)jsEngine.evalJS(js + ".value", varMap);
 
 		final HTMLAttribute attribute = atc.getAttribute();
 
@@ -276,9 +277,16 @@ public abstract class BaseDOMTest extends TestCase {
 		// Now run some JS tests
 		final JSVariableMap varMap = new JSVariableMap();
 
-		final DocumentContext<OOTagElement, OOAttribute> documentContext = new DocumentContext<>(document);
+		final BrowserDefaultEventHandling<OOTagElement, OOAttribute, OOHTMLDocument> browserEventHandling = new BrowserDefaultEventHandling<OOTagElement, OOAttribute, OOHTMLDocument>() {
+            @Override
+            public boolean onHandleEvent(IEvent event, OOHTMLDocument document, OOTagElement element) {
+                return false;
+            }
+        };
+		
+		final DocumentContext<OOTagElement, OOAttribute, OOHTMLDocument> documentContext = new DocumentContext<>(document, browserEventHandling);
 
-		varMap.addReflected("document", new DOMDocument<OOTagElement, OOAttribute, DocumentContext<OOTagElement, OOAttribute>>(documentContext));
+		varMap.addReflected("document", new DOMDocument<OOTagElement, OOAttribute, DocumentContext<OOTagElement, OOAttribute, OOHTMLDocument>>(documentContext));
 
 		return varMap;
 	}

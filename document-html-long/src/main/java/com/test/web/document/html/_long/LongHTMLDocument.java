@@ -808,7 +808,13 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		return null;
 	}
 
-	// Attribute getters and setters
+	@Override
+    public boolean isSameElement(Integer element1, Integer element2) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    // Attribute getters and setters
 	@Override
 	public int getNumAttributes(Integer element) {
 		// TODO Auto-generated method stub

@@ -1,33 +1,38 @@
 package com.test.web.jsapi.dom;
 
+import com.test.web.document.html.common.enums.HTMLEvent;
+import com.test.web.jsapi.common.dom.IElement;
+import com.test.web.jsapi.common.dom.IEvent;
 import com.test.web.jsapi.dom.Element;
 
-public class Event {
+public class Event<ELEMENT> implements IEvent {
 	
 	// TODO perhaps use bitflags for fewer memwrites
-	private Element target ;
+	private Element<ELEMENT, ?, ?> target ;
+	private final HTMLEvent htmlEvent;
 	private final long timeStamp;
 	private String type;
 	private boolean defaultPrevented;
 	private boolean bubbles;
 	private boolean cancelable;
 	private boolean composed;
-	private Element currentTarget ;
+	private Element<ELEMENT, ?, ?> currentTarget ;
 	private final boolean isTrusted;
 	
 	private EventPropagation propagation;
 	
-	public Event(Element target, long timeStamp, String type, boolean defaultPrevented, boolean bubbles,
-			boolean cancelable, boolean composed, Element currentTarget, boolean isTrusted) {
+	public Event(Element<ELEMENT, ?, ?> target, HTMLEvent htmlEvent, long timeStamp, String type, boolean defaultPrevented, boolean bubbles,
+			boolean cancelable, boolean composed, Element<?, ?, ?> currentTarget, boolean isTrusted) {
 
 		this.target = target;
+		this.htmlEvent = htmlEvent;
 		this.timeStamp = timeStamp;
 		this.type = type;
 		this.defaultPrevented = defaultPrevented;
 		this.bubbles = bubbles;
 		this.cancelable = cancelable;
 		this.composed = composed;
-		this.currentTarget = currentTarget;
+		this.currentTarget = target;
 		this.isTrusted = isTrusted;
 		this.propagation = EventPropagation.CONTINUE;
 	}
@@ -39,19 +44,15 @@ public class Event {
 		this.cancelable = cancelable;
 	}
 
-	public boolean isDefaultPrevented() {
-		return defaultPrevented;
-	}
-
-	public Element getCurrentTarget() {
+	public Element<ELEMENT, ?, ?> getCurrentTarget() {
 		return currentTarget;
 	}
 	
-	public void setCurrentTarget(Element currentTarget) {
+	public void setCurrentTarget(Element<ELEMENT, ?, ?> currentTarget) {
 		this.currentTarget = currentTarget;
 	}
 	
-	public Element getTarget() {
+	public Element<ELEMENT, ?, ?> getTarget() {
 		return target;
 	}
 	
@@ -90,7 +91,7 @@ public class Event {
 	}
 	
 	// MS compatibiity
-	public Element getSrcElement() {
+	public Element<ELEMENT, ?, ?> getSrcElement() {
 		return getTarget();
 	}
 
@@ -117,4 +118,23 @@ public class Event {
 	public void preventCapture() {
 		stopPropagation();
 	}
+
+	@Override
+    @JSTransient
+    public boolean isDefaultPrevented() {
+        return defaultPrevented;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    @JSTransient
+    public void setCurrentEventTarget(IElement element) {
+        setCurrentTarget((Element)element);
+    }
+
+    @Override
+    @JSTransient
+    public boolean isPropagationStopped() {
+        return propagation != null && (propagation == EventPropagation.STOP || propagation == EventPropagation.STOP_IMMEDIATE);
+    }
 }

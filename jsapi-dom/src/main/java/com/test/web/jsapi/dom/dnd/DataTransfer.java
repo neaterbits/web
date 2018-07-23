@@ -1,7 +1,5 @@
 package com.test.web.jsapi.dom.dnd;
 
-import java.util.List;
-
 import com.test.web.jsapi.file.FileList;
 
 public class DataTransfer {

@@ -6,7 +6,11 @@ public interface IDocumentContext<ELEMENT, ATTRIBUTE> extends IDocument<ELEMENT,
 
 	// Keep a map of all event target with listeners
 	// for lookup when bubbling events and for possibly serializing listeners
-	void addEventTargetNowWithListeners(IEventTarget target);
+
+	void addEventTargetNowWithListeners(EventTargetElement<ELEMENT> target);
 	
-	void removeEventTargetWithNoMoreListeners(IEventTarget target);
+	void removeEventTargetWithNoMoreListeners(EventTargetElement<ELEMENT> target);
+	
+	boolean dispatchEvent(IEvent event, EventTargetElement<ELEMENT> target);
+	
 }

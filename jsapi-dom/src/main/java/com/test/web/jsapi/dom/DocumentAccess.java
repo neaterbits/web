@@ -2,6 +2,14 @@ package com.test.web.jsapi.dom;
 
 import com.test.web.jsapi.common.dom.IDocumentContext;
 
+/**
+ * Base class for anything that accesses document
+ * 
+ * @param <ELEMENT> element eg. HTML element
+ * @param <ATTRIBUTE> attribute type for element attributes
+ * @param <DOCUMENT> the document, eg. HTML DOM
+ */
+
 public abstract class DocumentAccess<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEMENT, ATTRIBUTE>> {
 
 	private DOCUMENT document;

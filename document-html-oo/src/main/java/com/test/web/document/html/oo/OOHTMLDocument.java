@@ -32,7 +32,7 @@ import com.test.web.parse.html.IDocumentParserListener;
 import com.test.web.parse.html.IHTMLParserListener;
 import com.test.web.parse.html.IHTMLStyleParserListener;
 
-public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOAttribute, OOCSSBase> {
+public final class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOAttribute, OOCSSBase> {
 
 	private final IDocumentListener<OOTagElement> listener;
 	private final List<OOTagElement> stack;
@@ -762,7 +762,14 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 		return styleParserListener;
 	}
 
-	// Document navigation
+	
+	
+	@Override
+    public boolean isSameElement(OOTagElement element1, OOTagElement element2) {
+        return element1 == element2;
+    }
+
+    // Document navigation
 	@Override
 	public OOTagElement getParentElement(OOTagElement element) {
 		return (OOTagElement)element.parent;
