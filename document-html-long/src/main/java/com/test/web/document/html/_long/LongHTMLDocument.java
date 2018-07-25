@@ -48,7 +48,7 @@ import com.test.web.types.Debug;
 
 public class LongHTMLDocument extends LongBuffersIntegerIndex
 
-	implements IDocumentParserListener<Integer, Integer, Void> {
+	implements IDocumentParserListener<Integer, Integer, Void, LongHTMLDocument> {
 
 	private static final boolean CHECK_OVERWRITE = true;
 	private static final boolean CHECK_IS_CONTAINER = true;
@@ -591,18 +591,18 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 	
 	@Override
-	public <PARAM> void iterate(IElementListener<Integer, HTMLElement, IDocument<Integer, Integer>, PARAM> listener, PARAM param) {
+	public <PARAM> void iterate(IElementListener<Integer, HTMLElement, LongHTMLDocument, PARAM> listener, PARAM param) {
 		iterate(INITIAL_ELEMENT, listener, param, INITIAL_ELEMENT,  true);
 	}
 	
 	@Override
-	public <PARAM> void iterateFrom(Integer element, IElementListener<Integer, HTMLElement, IDocument<Integer, Integer>, PARAM> listener, PARAM param) {
+	public <PARAM> void iterateFrom(Integer element, IElementListener<Integer, HTMLElement, LongHTMLDocument, PARAM> listener, PARAM param) {
 		iterate(INITIAL_ELEMENT, listener, param, element, false);
 	}
 	
 	private <PARAM> boolean iterate(
 			int curElement,
-			IElementListener<Integer, HTMLElement, IDocument<Integer, Integer>, PARAM> listener,
+			IElementListener<Integer, HTMLElement, LongHTMLDocument, PARAM> listener,
 			PARAM param,
 			int startCallListenerElement,
 			boolean callListener) {

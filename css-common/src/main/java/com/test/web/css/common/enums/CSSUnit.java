@@ -1,7 +1,7 @@
 package com.test.web.css.common.enums;
 
-import com.test.web.layout.common.enums.Unit;
 import com.test.web.types.IEnum;
+import com.test.web.types.layout.Unit;
 
 public enum CSSUnit implements IEnum {
 	PX("px", Unit.PX),

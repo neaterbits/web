@@ -9,8 +9,14 @@ import com.test.web.document.common.IElementListener;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.document.html.common.enums.LinkRelType;
+import com.test.web.jsapi.common.dom.IDocumentContext;
 
-abstract class BaseDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE>> implements IDocument<ELEMENT, ATTRIBUTE> {
+abstract class BaseDocumentContext<
+            ELEMENT,
+            ATTRIBUTE,
+            DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>,
+            DOCUMENT_CONTEXT extends IDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT>>
+        implements IDocument<ELEMENT, ATTRIBUTE, DOCUMENT> {
 	
 	final DOCUMENT delegate;
 	
@@ -190,12 +196,12 @@ abstract class BaseDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumen
 	}
 
 	@Override
-	public final <PARAM> void iterate(IElementListener<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>, PARAM> listener, PARAM param) {
+	public final <PARAM> void iterate(IElementListener<ELEMENT, HTMLElement, DOCUMENT, PARAM> listener, PARAM param) {
 		delegate.iterate(listener, param);
 	}
 
 	@Override
-	public final <PARAM> void iterateFrom(ELEMENT element, IElementListener<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>, PARAM> listener, PARAM param) {
+	public final <PARAM> void iterateFrom(ELEMENT element, IElementListener<ELEMENT, HTMLElement, DOCUMENT, PARAM> listener, PARAM param) {
 		delegate.iterateFrom(element, listener, param);
 	}
 

@@ -5,6 +5,7 @@ import com.test.web.browser.common.IBrowserDocumentLoader;
 import com.test.web.browser.common.OOBrowserDocumentLoader;
 import com.test.web.css.oo.OOCSSRule;
 import com.test.web.document.html.oo.OOAttribute;
+import com.test.web.document.html.oo.OOHTMLDocument;
 import com.test.web.document.html.oo.OOTagElement;
 import com.test.web.render.awt.AWTBufferRenderFactory;
 import com.test.web.render.awt.AWTTextExtent;
@@ -22,10 +23,10 @@ public class SwingMain {
 		final IBufferRendererFactory renderFactory = new AWTBufferRenderFactory();
 		final ITextExtent textExtent = new AWTTextExtent();
 		
-		final IBrowserDocumentLoader<OOTagElement, OOAttribute, OOCSSRule> documentLoader
+		final IBrowserDocumentLoader<OOTagElement, OOAttribute, OOCSSRule, OOHTMLDocument> documentLoader
 				= new OOBrowserDocumentLoader(new QueueRendererFactory(null), renderFactory, textExtent, null);
 		
-		final BrowserMain<OOTagElement, OOAttribute, OOCSSRule> main = new BrowserMain<>(uiFactory, documentLoader);
+		final BrowserMain<OOTagElement, OOAttribute, OOCSSRule, OOHTMLDocument> main = new BrowserMain<>(uiFactory, documentLoader);
 		
 		main.showStartPage();
 		

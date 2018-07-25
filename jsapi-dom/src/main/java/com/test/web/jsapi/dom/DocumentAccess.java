@@ -1,5 +1,6 @@
 package com.test.web.jsapi.dom;
 
+import com.test.web.document.html.common.IDocument;
 import com.test.web.jsapi.common.dom.IDocumentContext;
 
 /**
@@ -10,16 +11,20 @@ import com.test.web.jsapi.common.dom.IDocumentContext;
  * @param <DOCUMENT> the document, eg. HTML DOM
  */
 
-public abstract class DocumentAccess<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEMENT, ATTRIBUTE>> {
+public abstract class DocumentAccess<
+        ELEMENT,
+        ATTRIBUTE,
+        DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>,
+        DOCUMENT_CONTEXT extends IDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT>> {
 
-	private DOCUMENT document;
+	private DOCUMENT_CONTEXT document;
 	private ELEMENT element;
 
 	public DocumentAccess() {
 
 	}
 
-	DocumentAccess(DOCUMENT document) {
+	DocumentAccess(DOCUMENT_CONTEXT document) {
 		
 		if (document == null) {
 			throw new IllegalArgumentException("document == null");
@@ -29,7 +34,7 @@ public abstract class DocumentAccess<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocum
 		this.element = null;
 	}
 
-	public DocumentAccess(DOCUMENT document, ELEMENT element) {
+	public DocumentAccess(DOCUMENT_CONTEXT document, ELEMENT element) {
 		
 		if (document == null) {
 			throw new IllegalArgumentException("document == null");
@@ -43,7 +48,7 @@ public abstract class DocumentAccess<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocum
 		this.element = element;
 	}
 
-	protected final DOCUMENT getDocument() {
+	protected final DOCUMENT_CONTEXT getDocument() {
 		return document;
 	}
 

@@ -16,8 +16,8 @@ import com.test.web.document.html.common.enums.LinkRelType;
  * 
  */
 
-public interface IDocument<ELEMENT, ATTRIBUTE>
-		extends IDocumentBase<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>>,
+public interface IDocument<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>>
+		extends IDocumentBase<ELEMENT, HTMLElement, DOCUMENT>,
 					 IDocumentNavigation<ELEMENT>,
 					 IDocumentAttributeGetters<ELEMENT, ATTRIBUTE>,
 					 IDocumentAttributeSetters<ELEMENT, ATTRIBUTE>{
@@ -62,6 +62,6 @@ public interface IDocument<ELEMENT, ATTRIBUTE>
 
 	BigDecimal getProgressMax(ELEMENT element);
 	BigDecimal getProgressValue(ELEMENT element);
-	
+
 	void dumpFlat(PrintStream out);
 }

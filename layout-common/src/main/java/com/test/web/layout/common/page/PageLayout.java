@@ -1,4 +1,4 @@
-package com.test.web.layout.algorithm;
+package com.test.web.layout.common.page;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +23,7 @@ public final class PageLayout<ELEMENT> implements IPageLayout {
 		this.layers = new ArrayList<>();
 	}
 	
-	public  PageLayer<ELEMENT> addOrGetLayer(int index,  IDelayedRendererFactory renderFactory) {
+	public PageLayer<ELEMENT> addOrGetLayer(int index,  IDelayedRendererFactory renderFactory) {
 		PageLayer<ELEMENT> found = null;
 		
 		for (PageLayer<ELEMENT> l : layers) {

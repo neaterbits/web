@@ -15,6 +15,7 @@ import com.test.web.jsengine.common.IJSEngine;
 import com.test.web.jsengine.common.JSCompileException;
 import com.test.web.jsengine.common.JSExecutionException;
 import com.test.web.jsengine.common.JSVariableMap;
+import com.test.web.page.common.PageAccessImpl;
 import com.test.web.parse.common.ParserException;
 import com.test.web.types.IEnum;
 
@@ -283,10 +284,19 @@ public abstract class BaseDOMTest extends TestCase {
                 return false;
             }
         };
+        
+        final PageAccessImpl<OOTagElement, HTMLElement, OOHTMLDocument> pageAccess = new PageAccessImpl<OOTagElement, HTMLElement, OOHTMLDocument>(null, document);
 		
-		final DocumentContext<OOTagElement, OOAttribute, OOHTMLDocument> documentContext = new DocumentContext<>(document, browserEventHandling);
+		final DocumentContext<OOTagElement, OOAttribute, OOHTMLDocument> documentContext = new DocumentContext<>(
+		        document,
+		        browserEventHandling,
+		        pageAccess);
 
-		varMap.addReflected("document", new DOMDocument<OOTagElement, OOAttribute, DocumentContext<OOTagElement, OOAttribute, OOHTMLDocument>>(documentContext));
+		varMap.addReflected("document", new DOMDocument<
+		        OOTagElement,
+		        OOAttribute,
+		        OOHTMLDocument,
+		        DocumentContext<OOTagElement, OOAttribute, OOHTMLDocument>>(documentContext));
 
 		return varMap;
 	}

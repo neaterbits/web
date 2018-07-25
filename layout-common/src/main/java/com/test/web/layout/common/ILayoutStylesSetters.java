@@ -3,8 +3,8 @@ package com.test.web.layout.common;
 import com.test.web.layout.common.enums.Display;
 import com.test.web.layout.common.enums.LayoutFloat;
 import com.test.web.layout.common.enums.Position;
-import com.test.web.layout.common.enums.Unit;
 import com.test.web.types.FontSpec;
+import com.test.web.types.layout.Unit;
 
 public interface ILayoutStylesSetters {
 

@@ -3,7 +3,7 @@ package com.test.web.jsapi.dom;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.jsapi.common.dom.IEvent;
 
-public interface BrowserDefaultEventHandling<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE>> {
+public interface BrowserDefaultEventHandling<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>> {
 
     /**
      * Implements browser handling of event

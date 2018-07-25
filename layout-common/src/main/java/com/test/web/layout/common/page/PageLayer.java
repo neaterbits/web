@@ -1,4 +1,4 @@
-package com.test.web.layout.algorithm;
+package com.test.web.layout.common.page;
 
 import java.util.LinkedHashMap;
 
@@ -30,7 +30,7 @@ public final class PageLayer<ELEMENT> implements Comparable<PageLayer<ELEMENT>> 
 		this.renderer = renderer;
 	}
 
-	void add(ELEMENT element, IElementRenderLayout layout) {
+	public void add(ELEMENT element, IElementRenderLayout layout) {
 		if (element == null) {
 			throw new IllegalArgumentException("element == null");
 		}
@@ -48,7 +48,7 @@ public final class PageLayer<ELEMENT> implements Comparable<PageLayer<ELEMENT>> 
 		return index;
 	}
 	
-	IDelayedRenderer getRenderer() {
+	public IDelayedRenderer getRenderer() {
 		return renderer;
 	}
 	

@@ -6,7 +6,6 @@ import com.test.web.css.common.CSSContext;
 import com.test.web.css.oo.OOCSSBase;
 import com.test.web.css.oo.OOCSSDocument;
 import com.test.web.css.oo.OOCSSRule;
-import com.test.web.document.html.common.IDocument;
 import com.test.web.document.html.oo.OOAttribute;
 import com.test.web.document.html.oo.OOHTMLDocument;
 import com.test.web.document.html.oo.OOTagElement;
@@ -23,7 +22,7 @@ import com.test.web.render.common.ITextExtent;
 
 public class OOBrowserDocumentLoader
 		extends BaseBrowserDocumentLoader<OOTagElement, OOAttribute, OOCSSBase, OOHTMLDocument, OOCSSRule, OOCSSDocument>
-		implements IBrowserDocumentLoader<OOTagElement, OOAttribute, OOCSSRule> {
+		implements IBrowserDocumentLoader<OOTagElement, OOAttribute, OOCSSRule, OOHTMLDocument> {
 	
 	public OOBrowserDocumentLoader(IDelayedRendererFactory rendererFactory, IBufferRendererFactory bufferedRendererFactory, ITextExtent textExtent, DebugListeners debugListeners) {
 		super(rendererFactory, bufferedRendererFactory, textExtent, debugListeners);
@@ -43,7 +42,7 @@ public class OOBrowserDocumentLoader
 	}
 
 	@Override
-	public IDocument<OOTagElement, OOAttribute> fromHTML(String html, CSSContext<OOCSSRule> cssContext) throws ParserException {
+	public OOHTMLDocument fromHTML(String html, CSSContext<OOCSSRule> cssContext) throws ParserException {
 		return OOHTMLDocument.parseHTMLDocument(html, (charInput, tokenizer) -> parseCSS(charInput, tokenizer, cssContext));
 	}
 

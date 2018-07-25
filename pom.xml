@@ -28,6 +28,9 @@
 	    <module>css-long</module>
 	    <module>css-oo</module>
 	    <module>css-test</module>
+	    <module>eventqueue-common</module>
+	    <module>eventqueue-html</module>
+	    <module>externalevents</module>
 	    <module>io-common</module>
 	    <module>io-long</module>
 	    <module>jsapi-common</module>
@@ -51,6 +54,7 @@
 	    <module>document-html-test</module>
 	    <module>loadqueue-common</module>
 	    <module>loadqueue-html</module>
+	    <module>page-common</module>
 	    <module>render-common</module>
 	    <module>render-queue</module>
 	    <module>render-html</module>

@@ -10,8 +10,8 @@ import com.test.web.layout.common.ILayoutDebugListener;
 import com.test.web.layout.common.LayoutStyles;
 import com.test.web.types.FontSpec;
 
-public class HTMLLayoutContext<ELEMENT, ATTRIBUTE>
-	implements ILayoutContext<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>>{
+public class HTMLLayoutContext<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>>
+	implements ILayoutContext<ELEMENT, HTMLElement, DOCUMENT>{
 
 	private final CSSContext<ELEMENT> cssContext;
 
@@ -26,7 +26,7 @@ public class HTMLLayoutContext<ELEMENT, ATTRIBUTE>
 
 	@Override
 	public void computeLayoutStyles(
-			IDocument<ELEMENT, ATTRIBUTE> document,
+			DOCUMENT document,
 			ELEMENT element,
 			IFontSettings<HTMLElement> fontSettings,
 			LayoutStyles result,

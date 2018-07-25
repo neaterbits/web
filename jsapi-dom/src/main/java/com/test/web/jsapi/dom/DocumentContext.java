@@ -9,6 +9,7 @@ import com.test.web.jsapi.common.dom.EventTargetElement;
 import com.test.web.jsapi.common.dom.IDocumentContext;
 import com.test.web.jsapi.common.dom.IEvent;
 import com.test.web.jsapi.common.dom.IEventListener;
+import com.test.web.page.common.ElementLayoutAccess;
 
 
 /**
@@ -23,9 +24,9 @@ import com.test.web.jsapi.common.dom.IEventListener;
  * @param <ATTRIBUTE>
  */
 
-final class DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE>>
-	extends BaseDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT>
-	implements IDocumentContext<ELEMENT, ATTRIBUTE> {
+final class DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>>
+	extends BaseDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT, DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT>>
+	implements IDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT, DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT>> {
     
     // This keeps track of all elements that have listeners.
 
@@ -34,18 +35,16 @@ final class DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEME
     // TODO Just keep a list for now, can be many listeners so may be too slow
     
     private final List<EventTargetElement<ELEMENT>> allEventTargets;
-    
-    
+    private final ElementLayoutAccess<ELEMENT> elementLayoutAccess;
 
-	DocumentContext(DOCUMENT delegate, BrowserDefaultEventHandling<ELEMENT, ATTRIBUTE, DOCUMENT> defaultEventHandling) {
+	DocumentContext(DOCUMENT delegate, BrowserDefaultEventHandling<ELEMENT, ATTRIBUTE, DOCUMENT> defaultEventHandling, ElementLayoutAccess<ELEMENT> elementLayoutAccess) {
 		super(delegate);
 		
 		this.defaultEventHandling = defaultEventHandling;
-		
+		this.elementLayoutAccess = elementLayoutAccess;
+
 		this.allEventTargets = new ArrayList<>();
 	}
-	
-	
 
     @Override
     public void addEventTargetNowWithListeners(EventTargetElement<ELEMENT> target) {
@@ -104,8 +103,7 @@ final class DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEME
     private EventTargetElement<ELEMENT> makeTarget(ELEMENT element) {
         return HTMLJSElementFactory.makeElement(element, this);
     }
-    
-    
+
     // Dispatch an event directly on an ELEMENT, typically done when caused by an internal change
     private boolean dispatchEvent(IEvent event, ELEMENT element) {
 

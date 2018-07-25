@@ -32,7 +32,7 @@ import com.test.web.parse.html.IDocumentParserListener;
 import com.test.web.parse.html.IHTMLParserListener;
 import com.test.web.parse.html.IHTMLStyleParserListener;
 
-public final class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOAttribute, OOCSSBase> {
+public final class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOAttribute, OOCSSBase, OOHTMLDocument> {
 
 	private final IDocumentListener<OOTagElement> listener;
 	private final List<OOTagElement> stack;
@@ -232,19 +232,19 @@ public final class OOHTMLDocument implements IDocumentParserListener<OOTagElemen
 	}
 
 	@Override
-	public <PARAM> void iterate(IElementListener<OOTagElement, HTMLElement, IDocument<OOTagElement, OOAttribute>, PARAM> listener, PARAM param) {
+	public <PARAM> void iterate(IElementListener<OOTagElement, HTMLElement, OOHTMLDocument, PARAM> listener, PARAM param) {
 		iterate(null, rootElement, listener, param, rootElement,  true);
 	}
 	
 	@Override
-	public <PARAM> void iterateFrom(OOTagElement element, IElementListener<OOTagElement, HTMLElement, IDocument<OOTagElement, OOAttribute>, PARAM> listener, PARAM param) {
+	public <PARAM> void iterateFrom(OOTagElement element, IElementListener<OOTagElement, HTMLElement, OOHTMLDocument, PARAM> listener, PARAM param) {
 		iterate(null, rootElement, listener, param, element, false);
 	}
 	
 	private <PARAM> boolean iterate(
 			OOTagElement containerElement,
 			OODocumentElement curElement,
-			IElementListener<OOTagElement, HTMLElement, IDocument<OOTagElement, OOAttribute>, PARAM> listener,
+			IElementListener<OOTagElement, HTMLElement, OOHTMLDocument, PARAM> listener,
 			PARAM param,
 			OODocumentElement startCallListenerElement,
 			boolean callListener) {

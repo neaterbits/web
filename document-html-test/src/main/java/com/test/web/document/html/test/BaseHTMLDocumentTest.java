@@ -13,7 +13,7 @@ import com.test.web.testdata.TestData;
 
 import junit.framework.TestCase;
 
-public abstract class BaseHTMLDocumentTest<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE>> extends TestCase {
+public abstract class BaseHTMLDocumentTest<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>> extends TestCase {
 	
 	protected abstract DOCUMENT parseHTMLDocument(String html) throws ParserException;
 	
