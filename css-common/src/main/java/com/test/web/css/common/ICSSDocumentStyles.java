@@ -28,6 +28,7 @@ import com.test.web.css.common.enums.CSStyle;
 
 public interface ICSSDocumentStyles<TARGET> {
 	
+    
 	boolean isSet(TARGET ref, CSStyle style);
 	
 	int getLeft(TARGET ref);
@@ -226,4 +227,6 @@ public interface ICSSDocumentStyles<TARGET> {
 	int getSepia(TARGET ref);
 	
 	String getFilterURL(TARGET ref);
+
+    ICSSDocumentStyles<TARGET> makeCSSDocumentStylesCopy(TARGET ref);
 }

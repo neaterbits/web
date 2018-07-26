@@ -10,6 +10,7 @@ import com.test.web.jsapi.common.dom.IDocumentContext;
 import com.test.web.jsapi.common.dom.IEvent;
 import com.test.web.jsapi.common.dom.IEventListener;
 import com.test.web.page.common.ElementLayoutAccess;
+import com.test.web.page.common.PageAccess;
 
 
 /**
@@ -37,11 +38,11 @@ final class DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEME
     private final List<EventTargetElement<ELEMENT>> allEventTargets;
     private final ElementLayoutAccess<ELEMENT> elementLayoutAccess;
 
-	DocumentContext(DOCUMENT delegate, BrowserDefaultEventHandling<ELEMENT, ATTRIBUTE, DOCUMENT> defaultEventHandling, ElementLayoutAccess<ELEMENT> elementLayoutAccess) {
-		super(delegate);
+	DocumentContext(DOCUMENT delegate, BrowserDefaultEventHandling<ELEMENT, ATTRIBUTE, DOCUMENT> defaultEventHandling, PageAccess<ELEMENT> pageAccess) {
+		super(delegate, new UIDocumentChangeListener<>(pageAccess));
 		
 		this.defaultEventHandling = defaultEventHandling;
-		this.elementLayoutAccess = elementLayoutAccess;
+		this.elementLayoutAccess = pageAccess;
 
 		this.allEventTargets = new ArrayList<>();
 	}

@@ -6,8 +6,10 @@ import java.util.List;
 
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.document.common.IElementListener;
+import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.IDocument;
+import com.test.web.document.html.common.IHTMLDocumentListener;
 import com.test.web.document.html.common.enums.LinkRelType;
 import com.test.web.jsapi.common.dom.IDocumentContext;
 
@@ -20,80 +22,294 @@ abstract class BaseDocumentContext<
 	
 	final DOCUMENT delegate;
 	
-	public BaseDocumentContext(DOCUMENT delegate) {
+	private final IHTMLDocumentListener<ELEMENT> listener;
+	
+	public BaseDocumentContext(DOCUMENT delegate, IHTMLDocumentListener<ELEMENT> listener) {
 		if (delegate == null) {
 			throw new IllegalArgumentException("delegate == null");
 		}
 
 		this.delegate = delegate;
+		this.listener = listener;
 	}
 	
-	
-
 	@Override
     public final boolean isSameElement(ELEMENT element1, ELEMENT element2) {
         return delegate.isSameElement(element1, element2);
     }
 
+	@Override
+    public final ELEMENT getParentElement(ELEMENT element) {
+        return delegate.getParentElement(element);
+    }
+
+	
     @Override
 	public final int getNumAttributes(ELEMENT element) {
 		return delegate.getNumAttributes(element);
 	}
-
+    
 	@Override
+    public HTMLAttribute getStandard(ATTRIBUTE attribute) {
+        return delegate.getStandard(attribute);
+    }
+
+    @Override
 	public final ATTRIBUTE setAttributeValue(ELEMENT element, int idx, String value) {
-		return delegate.setAttributeValue(element, idx, value);
+        boolean callListener = false;
+        String beforeValue = null;
+
+        if (listener != null) {
+            // Might have to trigger UI, get last value
+            final ATTRIBUTE attribute = delegate.getAttribute(element, idx);
+
+            if (attribute != null && delegate.isStandardAttribute(attribute)) {
+                callListener = true;
+
+                beforeValue = delegate.getAttributeValue(element, attribute);
+            }
+        }
+        
+		final ATTRIBUTE attribute = delegate.setAttributeValue(element, idx, value);
+
+		if (callListener) {
+            listener.onAttributeUpdated(element, delegate.getStandard(attribute), beforeValue, value);
+        }
+
+        return attribute;
 	}
+
+    private ICSSDocumentStyles<ELEMENT> getStylesForListener(ELEMENT element) {
+        
+        final ICSSDocumentStyles<ELEMENT> beforeStyles = delegate.getStyles(element);
+        
+        return beforeStyles.makeCSSDocumentStylesCopy(element);
+    }
 
 	@Override
 	public ATTRIBUTE setAttributeValue(ELEMENT element, ATTRIBUTE attribute, String value) {
-		return delegate.setAttributeValue(element, attribute, value);
-	}
 
-	@Override
-	public final ELEMENT getParentElement(ELEMENT element) {
-		return delegate.getParentElement(element);
-	}
-	
-	@Override
-	public ATTRIBUTE getAttributeWithName(ELEMENT element, String name) {
-		return delegate.getAttributeWithName(element, name);
-	}
+	    boolean callListener = false;
+        String beforeValue = null;
+        ICSSDocumentStyles<ELEMENT> beforeStyles = null;
+        HTMLAttribute standard = null;
 
-	@Override
-	public final ATTRIBUTE getAttributeWithNameNS(ELEMENT element, String namespaceURI, String localName) {
-		return delegate.getAttributeWithNameNS(element, namespaceURI, localName);
-	}
+        if (listener != null && attribute != null && null != (standard = delegate.getStandard(attribute))) {
 
-	@Override
-	public ATTRIBUTE getAttribute(ELEMENT element, int idx) {
-		return delegate.getAttribute(element, idx);
+            // Might have to trigger UI, get last value
+            callListener = true;
+            
+            if (standard == HTMLAttribute.STYLE) {
+                beforeStyles = getStylesForListener(element);
+            }
+            else {
+                beforeValue = delegate.getAttributeValue(element, attribute);
+            }
+        }
+	    
+		final ATTRIBUTE resultAttribute = delegate.setAttributeValue(element, attribute, value);
+
+		if (callListener) {
+		    if (standard == HTMLAttribute.STYLE) {
+		        listener.onStyleAttributeUpdated(element, beforeStyles, delegate.getStyles(element));
+		    }
+		    else {
+                listener.onAttributeUpdated(element, standard, beforeValue, value);
+		    }
+        }
+
+		return resultAttribute;
 	}
 
 	@Override
 	public ATTRIBUTE setAttributeValue(ELEMENT element, String name, String value) {
-		return delegate.setAttributeValue(element, name, value);
+
+        boolean callListener = false;
+        String beforeValue = null;
+        ICSSDocumentStyles<ELEMENT> beforeStyles = null;
+        HTMLAttribute standard = null;
+
+        if (listener != null) {
+            // Might have to trigger UI, get last value
+            final ATTRIBUTE attribute = delegate.getAttributeWithName(element, name);
+
+            if (attribute != null) {
+                standard = delegate.getStandard(attribute);
+                
+                if (standard != null) {
+                
+                    callListener = true;
+
+                    if (standard == HTMLAttribute.STYLE) {
+                        beforeStyles = getStylesForListener(element);
+                    }
+                    else {
+                        beforeValue = delegate.getAttributeValue(element, attribute);
+                    }
+                }
+            }
+        }
+
+		final ATTRIBUTE attribute = delegate.setAttributeValue(element, name, value);
+
+        if (callListener) {
+            if (standard == HTMLAttribute.STYLE) {
+                listener.onStyleAttributeUpdated(element, beforeStyles, delegate.getStyles(element));
+            }
+            else {
+                listener.onAttributeUpdated(element, standard, beforeValue, value);
+            }
+        }
+
+		return attribute;
 	}
 
 	@Override
 	public final ATTRIBUTE setAttributeValue(ELEMENT element, String namespaceURI, String localName, String value) {
-		return delegate.setAttributeValue(element, namespaceURI, localName, value);
+        boolean callListener = false;
+        String beforeValue = null;
+        ICSSDocumentStyles<ELEMENT> beforeStyles = null;
+        HTMLAttribute standard = null;
+        
+        if (listener != null) {
+            // Might have to trigger UI, get last value
+            final ATTRIBUTE attribute = delegate.getAttributeWithNameNS(element, namespaceURI, localName);
+            
+
+            if (attribute != null) {
+                
+                standard = delegate.getStandard(attribute);
+                
+                if (standard != null) {
+                    callListener = true;
+                
+                    if (standard == HTMLAttribute.STYLE) {
+                        beforeStyles = getStylesForListener(element);
+                    }
+                    else {
+                        beforeValue = delegate.getAttributeValue(element, attribute);
+                    }
+                }
+            }
+        }
+
+		final ATTRIBUTE attribute = delegate.setAttributeValue(element, namespaceURI, localName, value);
+
+		if (callListener) {
+            if (standard == HTMLAttribute.STYLE) {
+                listener.onStyleAttributeUpdated(element, beforeStyles, delegate.getStyles(element));
+            }
+            else {
+                listener.onAttributeUpdated(element, standard, beforeValue, value);
+            }
+		}
+
+		return attribute;
 	}
 
 	@Override
-	public final String getAttributeName(ELEMENT element, ATTRIBUTE attribute) {
-		return delegate.getAttributeName(element, attribute);
-	}
-	
-	@Override
 	public ATTRIBUTE removeAttribute(ELEMENT element, String name) {
-		return delegate.removeAttribute(element, name);
+	    
+	    boolean callListener = false;
+	    String beforeValue = null;
+        ICSSDocumentStyles<ELEMENT> beforeStyles = null;
+	    HTMLAttribute standard = null;
+	    
+	    if (listener != null) {
+	        // Might have to trigger UI, get last value
+	        final ATTRIBUTE attribute = delegate.getAttributeWithName(element, name);
+
+	        if (attribute != null) {
+	            
+	            standard = delegate.getStandard(attribute);
+
+	            if (standard != null) {
+	                callListener = true;
+	            
+	                if (standard == HTMLAttribute.STYLE) {
+	                    beforeStyles = getStylesForListener(element);
+	                }
+	                else {
+	                    beforeValue = delegate.getAttributeValue(element, attribute);
+	                }
+	            }
+	        }
+	    }
+
+	    final ATTRIBUTE attribute = delegate.removeAttribute(element, name);
+
+	    if (callListener) {
+	        if (standard == HTMLAttribute.STYLE) {
+	            listener.onStyleAttributeRemoved(element, beforeStyles);
+	        }
+	        else {
+	            listener.onAttributeRemoved(element, delegate.getStandard(attribute), beforeValue);
+	        }
+	    }
+
+		return attribute;
 	}
 
 	@Override
 	public final ATTRIBUTE removeAttribute(ELEMENT element, String namespaceURI, String name) {
-		return delegate.removeAttribute(element, namespaceURI, name);
+        boolean callListener = false;
+        String beforeValue = null;
+        ICSSDocumentStyles<ELEMENT> beforeStyles = null;
+        HTMLAttribute standard = null;
+
+        if (listener != null) {
+            // Might have to trigger UI, get last value
+            final ATTRIBUTE attribute = delegate.getAttributeWithNameNS(element, namespaceURI, name);
+
+            if (attribute != null) {
+                standard = delegate.getStandard(attribute);
+    
+                if (standard != null) {
+
+                    callListener = true;
+
+                    if (standard == HTMLAttribute.STYLE) {
+                        beforeStyles = getStylesForListener(element);
+                    } else {
+                        beforeValue = delegate.getAttributeValue(element, attribute);
+                    }
+                }
+            }
+        }
+        
+        final ATTRIBUTE attribute = delegate.removeAttribute(element, namespaceURI, name);
+
+        if (callListener) {
+            if (standard == HTMLAttribute.STYLE) {
+                listener.onStyleAttributeRemoved(element, beforeStyles);
+            }
+            else {
+                listener.onAttributeRemoved(element, delegate.getStandard(attribute), beforeValue);
+            }
+        }
+                
+        return attribute;
 	}
+
+    @Override
+    public ATTRIBUTE getAttributeWithName(ELEMENT element, String name) {
+        return delegate.getAttributeWithName(element, name);
+    }
+
+    @Override
+    public final ATTRIBUTE getAttributeWithNameNS(ELEMENT element, String namespaceURI, String localName) {
+        return delegate.getAttributeWithNameNS(element, namespaceURI, localName);
+    }
+
+    @Override
+    public ATTRIBUTE getAttribute(ELEMENT element, int idx) {
+        return delegate.getAttribute(element, idx);
+    }
+
+    @Override
+    public final String getAttributeName(ELEMENT element, ATTRIBUTE attribute) {
+        return delegate.getAttributeName(element, attribute);
+    }
 
 	@Override
 	public final String getAttributeNamespaceURI(ELEMENT element, ATTRIBUTE attribute) {

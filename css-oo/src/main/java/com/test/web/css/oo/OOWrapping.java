@@ -25,6 +25,28 @@ final class OOWrapping {
 		topType = rightType = bottomType = leftType = CSSJustify.NONE;
 	}
 	
+	OOWrapping(OOWrapping toCopy) {
+	    this.top = toCopy.top;
+	    this.topUnit = toCopy.topUnit;
+	    this.topType = toCopy.topType;
+	    
+	    this.right = toCopy.right;
+	    this.rightUnit = toCopy.rightUnit;
+	    this.rightType = toCopy.rightType;
+	    
+	    this.bottom = toCopy.bottom;
+	    this.bottomUnit = toCopy.bottomUnit;
+	    this.bottomType = toCopy.bottomType;
+	    
+	    this.left = toCopy.left;
+	    this.leftUnit = toCopy.leftUnit;
+	    this.leftType = toCopy.leftType;
+	}
+	
+	OOWrapping makeCopy() {
+	    return new OOWrapping(this);
+	}
+	
 	int getTop() {
 		return top;
 	}

@@ -1,0 +1,75 @@
+must have a spearate tree model for layouts? What about long-encoded model?
+
+For OO model these can be linked from the same object, however for integer-encoded we shall not store pointers, only integer references.
+Would be difficult to keep this outside of model unless uses an integer-index as element # 123 instead of just reference into model.
+
+But could keep integer index of element and then allocate like-sized elemens in a separate table that are sorted in order of appearance in model.
+This is very cache-friendly.
+Hower adding elemens is an issue since one would have to move all elements.
+Rather do as with render-queue, add a link.
+
+ Should be fast to iterate from start to finish without iterating the DOM.
+ 
+ so
+ 
+ .iterateRuntimState() where we iterate from beginning to end of the model in the buffers.
+ DOM tree updates will take some time but next to nothing compared to the time it takes for relayout.
+ Important to keep all info in the cache.
+ 
+  - flag for changes (size, position, ...)
+  - perhaps some basize layout info? Whether is a float etc.
+
+Dynamic relayout, for an element when asking for an element's width/height/position:
+ 
+  - all style changes propagate upwards in tree on dynamic change.
+  
+  - get stack of elements to root when checking for updates
+  - loop till reaches element asked for, however if there is a change detected before the element (depending on which facet we are reaading out of element),
+    we break from loop and start relayouting.
+  
+  - might only have to update absolute-position in layout model. Or do we need to store absolute-position? Can be quickly found from relative-offsets.
+  - compact model on idle
+    
+    
+  For OO we could just store this information in the element, albeit rather not mix.
+  
+  So perhaps better just to create an index-based one at once.
+  
+  This requires then an index allocated to each element as they are created.
+  This index can be used to look up related objects.
+  
+This index is the same until model is compacted on idle.
+  
+However the index will not be correct if elements are moved around.
+  
+We need a set of longs for this probably, we only need next-reference since we can find last-instance
+from the last in the DOM (which holds the index to each element here).
+
+
+How to structure as a tree?
+
+To be able to iterate this start-to-finish we also need a firstSub reference.
+
+If we use long [], we can encode as
+
+24 bits next ref
+24 bits sub ref
+
+so can have max 2^24 elements but ought to be plenty.
+
+
+What about updates and iterating upwards ?
+
+Might not be necessary.
+
+
+We get root element from Document model and then start from that index.
+
+
+Removing and adding elements can be done with indices.
+ 
+Important matter is to be able to iterate this model standalone, scanning for document changes.
+For a long page, we do not want to scan the whole DOM but rather cause as few cache hits as possible.
+
+
+  

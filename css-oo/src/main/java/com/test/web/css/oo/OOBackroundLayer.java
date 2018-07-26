@@ -60,6 +60,59 @@ public class OOBackroundLayer extends OOStylesBase {
 	private int bgColorAlpha; // decimal encoded, DecimalSize.NONE if not set
 	private CSSColor bgColorCSS; // enumerated color
 	private CSSBackgroundColor bgColorType;
+	
+	public OOBackroundLayer() {
+
+	}
+	
+	private OOBackroundLayer(OOBackroundLayer toCopy) {
+	    
+	    super(toCopy);
+	    
+	    // Image
+	    this.imageURL = toCopy.imageURL;
+	    this.image = toCopy.image;
+	    
+	    // ... or gradient
+	    this.gradient = toCopy.gradient;
+
+	    // Position
+	    this.left = toCopy.left;
+	    this.leftUnit = toCopy.leftUnit;
+	    this.top = toCopy.top;
+	    this.topUnit = toCopy.topUnit;
+	    this.position = toCopy.position;
+	    
+	    // Size
+	    this.width = toCopy.width;
+	    this.widthUnit = toCopy.widthUnit;
+	    this.height = toCopy.height;
+	    this.heightUnit = toCopy.heightUnit;
+	    this.size = toCopy.size;
+	    
+	    // Repeat
+	    this.repeat = toCopy.repeat;
+	    
+	    // Attachment
+	    this.attachment = toCopy.attachment;
+	    
+	    // Origin
+	    this.origin = toCopy.origin;
+
+	    // Clip
+	    this.clip = toCopy.clip;
+
+	    // Color
+	    this.bgColorRGB = toCopy.bgColorRGB;
+	    this.bgColorAlpha = toCopy.bgColorAlpha;
+	    this.bgColorCSS = toCopy.bgColorCSS;
+	    this.bgColorType = toCopy.bgColorType;
+    }
+	
+	OOBackroundLayer makeCopy() {
+	    return new OOBackroundLayer(this);
+	}
+	
 
 	String getImageUrl() {
 		return imageURL;

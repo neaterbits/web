@@ -3,7 +3,7 @@ package com.test.web.page.common;
 import com.test.web.layout.common.page.PageLayout;
 import com.test.web.types.layout.Unit;
 
-public class ElementLayoutAccessImpl<ELEMENT> implements ElementLayoutAccess<ELEMENT> {
+public abstract class ElementLayoutAccessImpl<ELEMENT> implements ElementLayoutAccess<ELEMENT> {
 
     private final PageLayout<ELEMENT> pageLayout;
 
@@ -29,12 +29,12 @@ public class ElementLayoutAccessImpl<ELEMENT> implements ElementLayoutAccess<ELE
     }
 
     @Override
-    public final int getWidth(ELEMENT element) {
+    public int getWidth(ELEMENT element) {
         return 0;
     }
 
     @Override
-    public final int getHeight(ELEMENT element) {
+    public int getHeight(ELEMENT element) {
         return 0;
     }
 

@@ -49,6 +49,12 @@ public interface IDocument<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMEN
 	int getNumElements(ELEMENT element);
 
 	List<ELEMENT> getElementsWithType(HTMLElement type);
+	
+	default boolean isStandardAttribute(ATTRIBUTE attribute) {
+	    return getStandard(attribute) != null;
+	}
+
+	HTMLAttribute getStandard(ATTRIBUTE attribute);
 
 	// Access methods for various elements
 	String getScriptType(ELEMENT element);

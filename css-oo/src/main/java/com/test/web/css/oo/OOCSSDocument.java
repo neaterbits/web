@@ -8,6 +8,7 @@ import java.util.List;
 import com.test.web.css.common.CSSState;
 import com.test.web.css.common.CSSStyleBuilder;
 import com.test.web.css.common.CSSValueType;
+import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSStyleSheet;
 import com.test.web.css.common.enums.CSSColorGamut;
 import com.test.web.css.common.enums.CSSDisplayMode;
@@ -30,7 +31,7 @@ import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.css.ICSSDocumentParserListener;
 
 /***
- * For storing and accessing a CSS document, encoding in arrays of long [] for less GC and memory churn
+ * For storing and accessing a CSS document
  * 
  * Must be singlethreaded during parsing
  * 
@@ -866,4 +867,10 @@ public final class OOCSSDocument
 		// TODO Auto-generated method stub
 		
 	}
+
+    @Override
+    public ICSSDocumentStyles<OOCSSRule> makeCSSDocumentStylesCopy(OOCSSRule ref) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

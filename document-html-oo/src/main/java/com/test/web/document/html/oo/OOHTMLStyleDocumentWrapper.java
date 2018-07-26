@@ -34,11 +34,19 @@ import com.test.web.types.ColorAlpha;
 import com.test.web.types.ColorRGB;
 import com.test.web.types.DecimalSize;
 
-final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElement>{
+final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElement> {
 
-	private final OOStyleDocument delegate = new OOStyleDocument();
+	private final ICSSDocumentStyles<OOCSSRule> delegate;
+	
+	OOHTMLStyleDocumentWrapper() {
+	    this.delegate = new OOStyleDocument();
+	}
+	
+	private OOHTMLStyleDocumentWrapper(ICSSDocumentStyles<OOCSSRule> delegate) {
+        this.delegate = delegate;
+    }
 
-	public boolean isSet(OOTagElement ref, CSStyle style) {
+    public boolean isSet(OOTagElement ref, CSStyle style) {
 
 		final OOCSSRule styleElement = ref.getStyleElement();
 		
@@ -884,8 +892,17 @@ final class OOHTMLStyleDocumentWrapper implements ICSSDocumentStyles<OOTagElemen
 				? null
 				: delegate.getFilterURL(ref.getStyleElement());
 	}
+	
+	@Override
+    public ICSSDocumentStyles<OOTagElement> makeCSSDocumentStylesCopy(OOTagElement ref) {
+        final OOCSSRule styleElement = ref.getStyleElement();
+	    
+        return styleElement == null
+                ? null
+                : new OOHTMLStyleDocumentWrapper(delegate.makeCSSDocumentStylesCopy(styleElement));
+    }
 
-	public String toString() {
+    public String toString() {
 		return delegate.toString();
 	}
 }

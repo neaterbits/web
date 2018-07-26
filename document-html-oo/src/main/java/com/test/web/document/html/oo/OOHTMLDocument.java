@@ -14,8 +14,7 @@ import com.test.web.document.common.IElementListener;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.HTMLStringConversion;
-import com.test.web.document.html.common.IDocument;
-import com.test.web.document.html.common.IDocumentListener;
+import com.test.web.document.html.common.IHTMLDocumentListener;
 import com.test.web.document.html.common.enums.HTMLDirection;
 import com.test.web.document.html.common.enums.HTMLDropzone;
 import com.test.web.document.html.common.enums.LinkRelType;
@@ -34,7 +33,6 @@ import com.test.web.parse.html.IHTMLStyleParserListener;
 
 public final class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOAttribute, OOCSSBase, OOHTMLDocument> {
 
-	private final IDocumentListener<OOTagElement> listener;
 	private final List<OOTagElement> stack;
 
 	private final DocumentState<OOTagElement> state;
@@ -78,12 +76,7 @@ public final class OOHTMLDocument implements IDocumentParserListener<OOTagElemen
 	}
 
 	public OOHTMLDocument() {
-		this(null);
-	}
 	
-	public OOHTMLDocument(IDocumentListener<OOTagElement> listener) {
-		
-		this.listener = listener;
 		this.stack = new ArrayList<>();
 
 		this.state = new DocumentState<>();
@@ -777,6 +770,8 @@ public final class OOHTMLDocument implements IDocumentParserListener<OOTagElemen
 
 	
 	// Attributes
+	
+	
 
 	@Override
 	public int getNumAttributes(OOTagElement element) {
@@ -784,6 +779,11 @@ public final class OOHTMLDocument implements IDocumentParserListener<OOTagElemen
 	}
 	
 	@Override
+    public HTMLAttribute getStandard(OOAttribute attribute) {
+        return attribute.getStandard();
+    }
+
+    @Override
 	public OOAttribute getAttributeWithName(OOTagElement element, String name) {
 		return element.getAttributeWithName(name);
 	}
@@ -825,39 +825,31 @@ public final class OOHTMLDocument implements IDocumentParserListener<OOTagElemen
 
 	@Override
 	public OOAttribute setAttributeValue(OOTagElement element, int idx, String value) {
-		return triggerUIUpdates(element, element.setAttributeValue(idx, value, state));
+		return element.setAttributeValue(idx, value, state);
 	}
 	
 	@Override
 	public OOAttribute setAttributeValue(OOTagElement element, OOAttribute attribute, String value) {
-		return triggerUIUpdates(element, element.setAttributeValue(attribute, value, state));
+		return element.setAttributeValue(attribute, value, state);
 	}
 
 	@Override
 	public OOAttribute setAttributeValue(OOTagElement element, String name, String value) {
-		return triggerUIUpdates(element, element.setAttributeValue(name, value, state));
+		return element.setAttributeValue(name, value, state);
 	}
 
 	@Override
 	public OOAttribute setAttributeValue(OOTagElement element, String namespaceURI, String localName, String value) {
-		return triggerUIUpdates(element, element.setAttributeValue(namespaceURI, localName, value, state));
+		return element.setAttributeValue(namespaceURI, localName, value, state);
 	}
 
 	@Override
 	public OOAttribute removeAttribute(OOTagElement element, String name) {
-		return triggerUIUpdates(element, element.removeAttribute(name, state));
+		return element.removeAttribute(name, state);
 	}
 
 	@Override
 	public OOAttribute removeAttribute(OOTagElement element, String namespaceURI, String localName) {
-		return triggerUIUpdates(element, element.removeAttribute(namespaceURI, localName, state));
-	}
-
-	private OOAttribute triggerUIUpdates(OOTagElement element, OOAttribute ooAttribute) {
-		if (listener != null && ooAttribute.getStandard() != null) {
-			listener.onAttributeUpdated(element, ooAttribute.getStandard());
-		}
-		
-		return ooAttribute;
+		return element.removeAttribute(namespaceURI, localName, state);
 	}
 }

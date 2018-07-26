@@ -11,14 +11,17 @@ public interface PageAccess<ELEMENT> extends ElementLayoutAccess<ELEMENT> {
 
     // ElementAndLayout<ELEMENT> getElementAndLayoutAt(double pageX, double pageY);
 
-    void relayoutAnyChangedElements();
     
 
-    // Relayout page if anything changed dynamically, eg. JS set width or height og an element or any other part of an element
+    // Relayout page if anything changed dynamically, eg. JS set width or height or an element or any other part of an element
     // that has impact on thatt
     boolean relayoutIfChangedDynamically();
     
     void updateView();
+    
+    
+    // This element must be laid out again
+    void addPendingRelayout(ELEMENT element);
     
     
     /*

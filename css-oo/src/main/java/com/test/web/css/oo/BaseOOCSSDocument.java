@@ -59,6 +59,14 @@ public abstract class BaseOOCSSDocument
 
 	private OOCSSRule curParseElement;
 
+	protected BaseOOCSSDocument() {
+	    
+    }
+	
+	protected BaseOOCSSDocument(BaseOOCSSDocument toCopy) {
+	    this.curParseElement = toCopy.curParseElement.makeCopy();
+    }
+	
 	/***************************************************** Access interface *****************************************************/ 
 	
 	static OOCSSStyles styles(OOCSSRule rule) {

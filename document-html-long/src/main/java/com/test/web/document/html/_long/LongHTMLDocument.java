@@ -17,8 +17,6 @@ import com.test.web.document.common.DocumentState;
 import com.test.web.document.common.IElementListener;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
-import com.test.web.document.html.common.HTMLElementListener;
-import com.test.web.document.html.common.IDocument;
 import com.test.web.document.html.common.enums.HTMLDirection;
 import com.test.web.document.html.common.enums.LinkRelType;
 import com.test.web.io._long.StringBuffers;
@@ -813,6 +811,13 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
         // TODO Auto-generated method stub
         return false;
     }
+
+    @Override
+    public HTMLAttribute getStandard(Integer attribute) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 
     // Attribute getters and setters
 	@Override
