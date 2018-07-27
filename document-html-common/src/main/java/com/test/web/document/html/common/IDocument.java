@@ -9,6 +9,7 @@ import com.test.web.document.common.IDocumentAttributeGetters;
 import com.test.web.document.common.IDocumentAttributeSetters;
 import com.test.web.document.common.IDocumentBase;
 import com.test.web.document.common.IDocumentNavigation;
+import com.test.web.document.html.common.elements.DOCElement;
 import com.test.web.document.html.common.enums.LinkRelType;
 
 /*
@@ -20,7 +21,9 @@ public interface IDocument<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMEN
 		extends IDocumentBase<ELEMENT, HTMLElement, DOCUMENT>,
 					 IDocumentNavigation<ELEMENT>,
 					 IDocumentAttributeGetters<ELEMENT, ATTRIBUTE>,
-					 IDocumentAttributeSetters<ELEMENT, ATTRIBUTE>{
+					 IDocumentAttributeSetters<ELEMENT, ATTRIBUTE>,
+					 
+					 DOCElement<ELEMENT> {
 
 	
 	public static final String DEFAULT_NAMESPACE = "http://www.w3.org/1999/xhtml";

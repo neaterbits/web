@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import com.test.web.buffers.LongBuffersIntegerIndex;
@@ -920,4 +921,139 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
+    @Override
+    public int getClassListLength(Integer element) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+
+    @Override
+    public String getClassListValue(Integer element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public String classListItem(Integer element, int index) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public boolean classListContains(Integer element, String token) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+    @Override
+    public void classListAdd(Integer element, String token) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void classListRemove(Integer element, String... tokens) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public boolean classListReplace(Integer element, String oldToken, String newToken) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+    @Override
+    public boolean classListSupports(Integer element, String token) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+    @Override
+    public boolean classListToggle(Integer element, String token, boolean force) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+    @Override
+    public Iterator<String> classListEntries() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public String getClassName(Integer element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public void setClassName(Integer element, String className) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public String getElementId(Integer element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public void setElementId(Integer element, String id) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public String getLocalName(Integer element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public String getNamespaceURI(Integer element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public String getPrefix(Integer element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public boolean getTabStop(Integer element) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+    @Override
+    public String getTagName(Integer element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    // Layout related elements
 }

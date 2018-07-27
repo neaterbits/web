@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -852,4 +853,118 @@ public final class OOHTMLDocument implements IDocumentParserListener<OOTagElemen
 	public OOAttribute removeAttribute(OOTagElement element, String namespaceURI, String localName) {
 		return element.removeAttribute(namespaceURI, localName, state);
 	}
+
+    @Override
+    public int getClassListLength(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public String getClassListValue(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String classListItem(OOTagElement element, int index) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean classListContains(OOTagElement element, String token) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void classListAdd(OOTagElement element, String token) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void classListRemove(OOTagElement element, String... tokens) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public boolean classListReplace(OOTagElement element, String oldToken, String newToken) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean classListSupports(OOTagElement element, String token) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean classListToggle(OOTagElement element, String token, boolean force) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public Iterator<String> classListEntries() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getClassName(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setClassName(OOTagElement element, String className) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public String getElementId(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setElementId(OOTagElement element, String id) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public String getLocalName(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getNamespaceURI(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getPrefix(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean getTabStop(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public String getTagName(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

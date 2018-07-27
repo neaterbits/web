@@ -26,7 +26,7 @@ import com.test.web.page.common.PageAccess;
  */
 
 final class DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>>
-	extends BaseDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT, DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT>>
+	extends JSElementDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT, DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT>>
 	implements IDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT, DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT>> {
     
     // This keeps track of all elements that have listeners.
