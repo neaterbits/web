@@ -13,7 +13,7 @@ import com.test.web.io.common.Tokenizer;
 import com.test.web.types.BigDecimalConversion;
 import com.test.web.types.DecimalSize;
 import com.test.web.types.IEnum;
-import com.test.web.types.StringUtils;
+import com.test.web.util.StringUtils;
 
 public class StringBuffers extends BaseBuffers<char[][], char[]> implements CharInput, Tokenizer {
 	

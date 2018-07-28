@@ -1,6 +1,6 @@
 package com.test.web.document.html.oo;
 
-import com.test.web.types.StringUtils;
+import com.test.web.util.StringUtils;
 
 // Supporting setting whatever attributes on an element
 final class OOCustomAttribute {

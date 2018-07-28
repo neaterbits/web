@@ -31,8 +31,24 @@ public final class ClassListDOMTokenList<ELEMENT> implements JSDOMTokenList {
     }
 
     @Override
-    public String item(int index) {
-        return docElement.classListItem(element, index);
+    public JSRef<String> item(int index) {
+        
+        final JSRef<String> item;
+        
+        if (index >= getLength()) {
+            item = new JSRef<>(null, JSRefState.UNDEFINED);
+        }
+        else {
+            final String value = docElement.classListItem(element, index);
+            
+            if (value == null) {
+                throw new IllegalStateException("Expected non-null value");
+            }
+            
+            item = new JSRef<>(value, JSRefState.REF);
+        }
+        
+        return item;
     }
 
     @Override

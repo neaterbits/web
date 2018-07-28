@@ -3,7 +3,7 @@ package com.test.web.document.html.common;
 import java.math.BigDecimal;
 
 import com.test.web.types.BigDecimalConversion;
-import com.test.web.types.StringUtils;
+import com.test.web.util.StringUtils;
 
 public class HTMLStringConversion {
 

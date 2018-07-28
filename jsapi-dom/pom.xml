@@ -46,6 +46,12 @@
 		<version>${project.version}</version>
 	</dependency>
 
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>util</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+
 	<!-- test dependencies -->
 	
 	<dependency>

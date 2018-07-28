@@ -2,10 +2,22 @@ package com.test.web.jsapi.dom;
 
 import java.util.Iterator;
 
+
 import com.test.web.document.html.common.IDocument;
 import com.test.web.document.html.common.IHTMLDocumentListener;
 import com.test.web.document.html.common.elements.LAYOUTElement;
 import com.test.web.jsapi.common.dom.IDocumentContext;
+import com.test.web.util.StringUtils;
+
+/**
+ * Abstract classs in DocumentContext tree that handles all JS Element related calls.
+ * 
+ * @param <ELEMENT>
+ * @param <ATTRIBUTE>
+ * @param <DOCUMENT>
+ * @param <DOCUMENT_CONTEXT>
+ */
+
 
 abstract class JSElementDocumentContext<
         ELEMENT,
@@ -20,64 +32,194 @@ abstract class JSElementDocumentContext<
     JSElementDocumentContext(DOCUMENT delegate, IHTMLDocumentListener<ELEMENT> listener) {
         super(delegate, listener);
     }
-
-    @Override
-    public int getClassListLength(ELEMENT element) {
-        // TODO Auto-generated method stub
-        return 0;
+    
+    private ATTRIBUTE getClassAttribute(ELEMENT element) {
+        return getAttributeWithName(element, "class");
+    }
+    
+    private void setClassAttributeValue(ELEMENT element, String value) {
+        setAttributeValue(element, "class", value);
     }
 
+    // Called form the DOMToken list
     @Override
-    public String getClassListValue(ELEMENT element) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    public final int getClassListLength(ELEMENT element) {
 
-    @Override
-    public String classListItem(ELEMENT element, int index) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public boolean classListContains(ELEMENT element, String token) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public void classListAdd(ELEMENT element, String token) {
-        // TODO Auto-generated method stub
+        final ATTRIBUTE attribute = getClassAttribute(element);
         
-    }
-
-    @Override
-    public void classListRemove(ELEMENT element, String... tokens) {
-        // TODO Auto-generated method stub
+        final int length;
         
+        if (attribute == null) {
+            length = 0;
+        }
+        else {
+            // Just use class attribute for this
+            length = StringUtils.countTokens(getAttributeValue(element, attribute)); 
+        }
+
+        return length;
     }
 
     @Override
-    public boolean classListReplace(ELEMENT element, String oldToken, String newToken) {
-        // TODO Auto-generated method stub
-        return false;
+    public final String getClassListValue(ELEMENT element) {
+        final ATTRIBUTE attribute = getClassAttribute(element);
+        
+        return attribute == null ? "" : getAttributeValue(element, attribute);
+    }
+
+    @Override
+    public final String classListItem(ELEMENT element, int index) {
+        final ATTRIBUTE attribute = getClassAttribute(element);
+        
+        if (attribute == null) {
+            throw new IllegalStateException("No attribute, ought to have checked for length in JS Element class");
+        }
+        
+        // Split, removing all whitespace
+        final String value = getClassListValue(element);
+        
+        final String [] s = StringUtils.splitToTokens(value);
+
+        return s[index];
+    }
+
+    @Override
+    public final boolean classListContains(ELEMENT element, String token) {
+        
+        final boolean contains;
+        
+        final ATTRIBUTE attribute = getClassAttribute(element);
+        
+        if (attribute == null) {
+            contains = false;
+        }
+        else {
+            final String value = getAttributeValue(element, attribute);
+            
+            contains = value != null
+                    ? StringUtils.hasToken(value, token)
+                    : false;
+        }
+
+        return contains;
+    }
+
+    @Override
+    public final void classListAdd(ELEMENT element, String token) {
+        
+        final ATTRIBUTE attribute = getClassAttribute(element);
+
+        final String newValue;
+        
+        if (attribute == null) {
+            newValue = token;
+
+            setClassAttributeValue(element, newValue);
+        }
+        else {
+            final String value = getAttributeValue(element, attribute);
+            if (value == null) {
+                newValue = token;
+            }
+            else {
+                newValue = value + ' ' + token;
+            }
+            setAttributeValue(element, attribute, newValue);
+        }
+
+    }
+
+    @Override
+    public final void classListRemove(ELEMENT element, String ... tokens) {
+
+        final ATTRIBUTE attribute = getClassAttribute(element);
+        
+        if (attribute != null) {
+            final String value = getAttributeValue(element, attribute);
+            
+            if (value != null) {
+                final String updated = StringUtils.removeTokens(value, tokens);
+
+                // Matched tokens, so update
+                if (updated != null) {
+                    setAttributeValue(element, attribute, updated);
+                }
+            }
+        }
+    }
+
+    @Override
+    public final boolean classListReplace(ELEMENT element, String oldToken, String newToken) {
+        
+        boolean stringUpdated = false;
+        
+        final ATTRIBUTE attribute = getClassAttribute(element);
+        
+        if (attribute != null) {
+            final String value = getAttributeValue(element, attribute);
+            
+            if (value != null) {
+                final String updated = StringUtils.replaceToken(value, oldToken, newToken);
+                
+                if (updated != null) {
+                    setAttributeValue(element, attribute, value);
+                    stringUpdated = true;
+                }
+            }
+        }
+        
+        return stringUpdated;
     }
 
     @Override
     public boolean classListSupports(ELEMENT element, String token) {
-        // TODO Auto-generated method stub
+        // TODO not supported yet
         return false;
     }
 
     @Override
-    public boolean classListToggle(ELEMENT element, String token, boolean force) {
-        // TODO Auto-generated method stub
-        return false;
+    public final boolean classListToggle(ELEMENT element, String token, Boolean force) {
+
+        boolean tokenInList;
+        
+        final ATTRIBUTE attribute = getClassAttribute(element);
+
+        
+        final String value;
+        
+        if (attribute != null && null != (value = getAttributeValue(element, attribute))) {
+            
+            // Make room for adding token and one space
+            final StringBuilder sb = new StringBuilder(value.length() + token.length() + 1);
+            
+            tokenInList = StringUtils.toggleToken(value, sb, token, force);
+        }
+        else {
+            // Attribute not set at all
+            if (force != null) {
+                if (force) {
+                    setClassAttributeValue(element, token);
+                    tokenInList = true;
+                }
+                else {
+                    // remove so nothing to do since no value
+                    tokenInList = false;
+                }
+                
+            }
+            else {
+                setClassAttributeValue(element, token);
+                tokenInList = true;
+            }
+        }
+        
+        return tokenInList;
     }
 
     @Override
     public Iterator<String> classListEntries() {
-        // TODO Auto-generated method stub
+
+        
         return null;
     }
 

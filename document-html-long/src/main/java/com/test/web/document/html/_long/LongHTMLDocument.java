@@ -978,9 +978,8 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
         return false;
     }
 
-
     @Override
-    public boolean classListToggle(Integer element, String token, boolean force) {
+    public boolean classListToggle(Integer element, String token, Boolean force) {
         // TODO Auto-generated method stub
         return false;
     }

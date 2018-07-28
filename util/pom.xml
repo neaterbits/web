@@ -5,29 +5,11 @@
     <artifactId>root</artifactId>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>io-long</artifactId>
-  <name>Long IO code</name>
+  <artifactId>util</artifactId>
+  <name>Util</name>
   <packaging>jar</packaging>
   <dependencies>
 
-    <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>util</artifactId>
-        <version>${project.version}</version>
-    </dependency>
-
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>buffers</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>io-common</artifactId>
-		<version>${project.version}</version>
-	</dependency>
 
 	<!-- test dependencies --> 
 

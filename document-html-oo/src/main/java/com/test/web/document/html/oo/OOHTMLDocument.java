@@ -903,7 +903,7 @@ public final class OOHTMLDocument implements IDocumentParserListener<OOTagElemen
     }
 
     @Override
-    public boolean classListToggle(OOTagElement element, String token, boolean force) {
+    public boolean classListToggle(OOTagElement element, String token, Boolean force) {
         // TODO Auto-generated method stub
         return false;
     }

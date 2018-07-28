@@ -22,7 +22,7 @@ public interface DOCElement<ELEMENT> {
     
     boolean classListSupports(ELEMENT element, String token);
 
-    boolean classListToggle(ELEMENT element, String token, boolean force);
+    boolean classListToggle(ELEMENT element, String token, Boolean force);
 
     Iterator<String> classListEntries();
     
