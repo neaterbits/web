@@ -36,7 +36,6 @@
  
 	<!-- test dependencies --> 
 
-
 	<dependency>
 		<groupId>${project.groupId}</groupId>
 		<artifactId>render-queue</artifactId>
@@ -85,13 +84,6 @@
 		<version>${project.version}</version>
 		<scope>test</scope>
 	</dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
 
   </dependencies>
 </project>
