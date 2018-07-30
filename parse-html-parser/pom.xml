@@ -5,63 +5,61 @@
     <artifactId>root</artifactId>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>loadqueue-html</artifactId>
-  <name>HTML specific loadqueue code</name>
+  <artifactId>parse-html-parser</artifactId>
+  <name>Parser for HTML</name>
   <packaging>jar</packaging>
   <dependencies>
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>loadqueue-common</artifactId>
+		<artifactId>types</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>render-common</artifactId>
+		<artifactId>css-common</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>parse-html-common</artifactId>
+		<artifactId>document-html-common</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>layout-algorithm</artifactId>
+		<artifactId>parse-common</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>parse-html-common</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+
+	<dependency>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>parse-css</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>layout-html</artifactId>
+		<artifactId>document-common</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 
 	<!-- test dependencies --> 
 
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>testdata</artifactId>
-		<version>${project.version}</version>
-		<scope>test</scope>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>document-html-long</artifactId>
-		<version>${project.version}</version>
-		<scope>test</scope>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>render-html</artifactId>
-		<version>${project.version}</version>
-		<scope>test</scope>
-	</dependency>
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>document-html-oo</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
