@@ -25,7 +25,6 @@ import com.test.web.io.common.SimpleLoadStream;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.IParse;
 import com.test.web.parse.common.ParserException;
-import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.HTMLUtils;
 import com.test.web.parse.html.IDocumentParserListener;
 import com.test.web.parse.html.IHTMLStyleParserListener;
@@ -757,49 +756,6 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		return styleDocument;
 	}
 	
-	public static <STYLE_DOCUMENT> LongHTMLDocument parseHTMLDocument(String text, IParse<STYLE_DOCUMENT> parseStyleDocument)  throws ParserException {
-		try {
-			return loadHTMLDocument(new SimpleLoadStream(text), parseStyleDocument);
-		} catch (IOException ex) {
-			throw new IllegalStateException("Should not catch IOException when parsing from a String", ex);
-		}
-	}
-
-	private static <STYLE_DOCUMENT> LongHTMLDocument loadHTMLDocument(
-			SimpleLoadStream stream,
-			IParse<STYLE_DOCUMENT> parseStyleDocument)  throws IOException, ParserException {
-		
-		final LongHTMLDocument htmlDocument;
-		
-		final StringBuffers buffers = new StringBuffers(stream);
-
-		htmlDocument = new LongHTMLDocument(buffers);
-		
-		final HTMLParser<Integer, STYLE_DOCUMENT, Void> parser = new HTMLParser<>(
-				buffers,
-				buffers,
-				htmlDocument,
-				htmlDocument.getStyleParserListener(),
-				parseStyleDocument);
-		
-		parser.parseHTMLFile();
-
-		return htmlDocument;
-	}
-
-	// Helper method for loading a document, useful from unit tests
-	public static <STYLE_DOCUMENT> LongHTMLDocument loadHTMLDocument(File file, IParse<STYLE_DOCUMENT> parseStyleDocument) throws IOException, ParserException {
-		
-		final LongHTMLDocument doc;
-		
-		try (InputStream inputStream = new FileInputStream(file)) {
-			doc = loadHTMLDocument(new SimpleLoadStream(inputStream), parseStyleDocument);
-		}
-
-		return doc;
-	}
-
-
 	// Document navigation
 	@Override
 	public Integer getParentElement(Integer element) {

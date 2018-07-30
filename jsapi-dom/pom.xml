@@ -63,7 +63,7 @@
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>document-html-oo</artifactId>
+		<artifactId>parse-html-util</artifactId>
 		<version>${project.version}</version>
 		<scope>test</scope>
 	</dependency>

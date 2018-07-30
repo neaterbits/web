@@ -24,7 +24,7 @@
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>parse-html</artifactId>
+		<artifactId>parse-html-common</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 
@@ -35,12 +35,6 @@
 	</dependency>
 
 	<!-- test dependencies --> 
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>document-html-test</artifactId>
-		<version>${project.version}</version>
-	</dependency>
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>

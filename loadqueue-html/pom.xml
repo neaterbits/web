@@ -56,6 +56,13 @@
 		<scope>test</scope>
 	</dependency>
 
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>parse-html-parser</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+    </dependency>
+
 	<dependency>
 		<groupId>${project.groupId}</groupId>
 		<artifactId>render-html</artifactId>

@@ -49,6 +49,7 @@
 	    <module>parse-css-parser</module>
 	    <module>parse-html-common</module>
 	    <module>parse-html-parser</module>
+	    <module>parse-html-util</module>
 	    <module>document-common</module>
 	    <module>document-html-common</module>
 	    <module>document-html-long</module>

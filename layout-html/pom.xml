@@ -27,15 +27,15 @@
 		<artifactId>document-html-common</artifactId>
 		<version>${project.version}</version>
 	</dependency>
+
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>render-common</artifactId>
+        <version>${project.version}</version>
+    </dependency>
  
 	<!-- test dependencies --> 
 
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>render-common</artifactId>
-		<version>${project.version}</version>
-		<scope>test</scope>
-	</dependency>
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
@@ -71,6 +71,13 @@
 		<version>${project.version}</version>
 		<scope>test</scope>
 	</dependency>
+
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>parse-html-util</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+    </dependency>
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>

@@ -15,21 +15,13 @@ import com.test.web.document.common.IElementListener;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.HTMLStringConversion;
-import com.test.web.document.html.common.IHTMLDocumentListener;
 import com.test.web.document.html.common.enums.HTMLDirection;
 import com.test.web.document.html.common.enums.HTMLDropzone;
 import com.test.web.document.html.common.enums.LinkRelType;
 import com.test.web.document.html.common.enums.LinkRevType;
-import com.test.web.io._long.StringBuffers;
-import com.test.web.io.common.LoadStream;
-import com.test.web.io.common.SimpleLoadStream;
 import com.test.web.io.common.Tokenizer;
-import com.test.web.parse.common.IParse;
-import com.test.web.parse.common.ParserException;
-import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.HTMLUtils;
 import com.test.web.parse.html.IDocumentParserListener;
-import com.test.web.parse.html.IHTMLParserListener;
 import com.test.web.parse.html.IHTMLStyleParserListener;
 
 public final class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOAttribute, OOCSSBase, OOHTMLDocument> {
@@ -40,41 +32,6 @@ public final class OOHTMLDocument implements IDocumentParserListener<OOTagElemen
 
 	private OOTagElement rootElement;
 
-	public static <STYLE_DOCUMENT>
-		HTMLParser<OOTagElement, STYLE_DOCUMENT, OOCSSBase> createParser(
-			OOHTMLDocument document,
-			IHTMLParserListener<OOTagElement> parserListener,
-			LoadStream stream,
-			IParse<STYLE_DOCUMENT> parseStyleDocument) {
-
-		final StringBuffers input = new StringBuffers(stream);
-		
-		final HTMLParser<OOTagElement, STYLE_DOCUMENT, OOCSSBase> parser = new HTMLParser<>(
-				input,
-				input,
-				parserListener,
-				document.getStyleParserListener(),
-				parseStyleDocument);
-		
-		return parser;
-	}
-	
-	public static <STYLE_DOCUMENT>
-		OOHTMLDocument parseHTMLDocument(String html, IParse<STYLE_DOCUMENT> parseStyleDocument) throws ParserException {
-
-		final OOHTMLDocument document = new OOHTMLDocument();
-		
-		final HTMLParser<OOTagElement, STYLE_DOCUMENT, OOCSSBase> parser = createParser(document, document, new SimpleLoadStream(html), parseStyleDocument);
-		
-		try {
-			parser.parseHTMLFile();
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException("IO eception while parsing", ex);
-		}
-		
-		return document;
-	}
 
 	public OOHTMLDocument() {
 	

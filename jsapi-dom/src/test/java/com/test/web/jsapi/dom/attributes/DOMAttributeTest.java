@@ -198,8 +198,9 @@ public class DOMAttributeTest extends BaseJSDOMTest {
 		
 		if (attribute != HTMLAttribute.ID) { // TODO test id attribute as well
 			System.out.println("test " + atc.getHtml());
-		// Cache var and verify value is still set
-		final String js = "var attr = document.getElementById(\"" + atc.getElementId() + "\").attributes.getNamedItem(\"" + attribute.getName() + "\");\n"
+			// Cache var and verify value is still set
+			
+			final String js = "var attr = document.getElementById(\"" + atc.getElementId() + "\").attributes.getNamedItem(\"" + attribute.getName() + "\");\n"
 				+ "document.getElementById(\"" + atc.getElementId() + "\").attributes.removeNamedItem(\"" + attribute.getName() + "\");\n"
 				
 				+ "var attr2 = document.getElementById(\"" + atc.getElementId() + "\").attributes.getNamedItem(\"" + attribute.getName() + "\");\n"
@@ -212,7 +213,7 @@ public class DOMAttributeTest extends BaseJSDOMTest {
 				+ "if (attr.value != \"" + updatedValue + "\") throw \"Attribute not set after update: \" + attr.value\n;"
 				;
 		
-		jsEngine.evalJS(js, varMap);
+			jsEngine.evalJS(js, varMap);
 		}
 	}
 	

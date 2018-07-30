@@ -24,12 +24,6 @@
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>parse-html</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
 		<artifactId>io-long</artifactId>
 		<version>${project.version}</version>
 	</dependency>
@@ -48,6 +42,20 @@
 		<version>${project.version}</version>
 		<scope>test</scope>
 	</dependency>
+
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>document-html-long</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>document-html-oo</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
