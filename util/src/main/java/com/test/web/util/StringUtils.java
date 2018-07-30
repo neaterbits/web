@@ -2,6 +2,7 @@ package com.test.web.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class StringUtils {
 	public static boolean equals(String s1, String s2) {
@@ -446,5 +447,33 @@ public class StringUtils {
         }
         
         return tokenInResult;
+    }
+    
+    public static void parseTokens(String value, Consumer<String> addToken) {
+        final String s = value.trim();
+        
+        if (!s.isEmpty()) {
+            int lastIdx = 0;
+            
+            for (int i = 0; i < s.length(); ++ i) {
+                final char c = s.charAt(i);
+                
+                if (Character.isWhitespace(c)) {
+                    addToken.accept(s.substring(lastIdx, i));
+                    
+                    // Skip more whitespace
+                    for (int j = i + 1; j < s.length(); ++ j) {
+                        if ( ! Character.isWhitespace(s.charAt(j))) {
+                            lastIdx = i = j;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (lastIdx != s.length() - 1) {
+                addToken.accept(s.substring(lastIdx));
+            }
+        }
     }
 }
