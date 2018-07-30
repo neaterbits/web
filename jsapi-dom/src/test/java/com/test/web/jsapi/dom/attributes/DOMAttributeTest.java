@@ -11,6 +11,7 @@ import com.test.web.document.html.oo.OOHTMLDocument;
 import com.test.web.document.html.oo.OOTagElement;
 import com.test.web.document.html.test.DocumentParser;
 import com.test.web.jsapi.common.dom.IEvent;
+import com.test.web.jsapi.dom.BaseJSExecutingTest;
 import com.test.web.jsapi.dom.BrowserDefaultEventHandling;
 import com.test.web.jsapi.dom.TestDOMDocument;
 import com.test.web.jsapi.dom.TestDocumentContext;
@@ -22,15 +23,11 @@ import com.test.web.jsengine.common.JSVariableMap;
 import com.test.web.parse.common.ParserException;
 import com.test.web.types.IEnum;
 
-import junit.framework.TestCase;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.function.Consumer;
 
-public abstract class BaseDOMAttributeTest extends TestCase {
-
-	abstract IJSEngine getJSEngine();
+public class DOMAttributeTest extends BaseJSExecutingTest {
 
 	private static final AttributeTestValues [] testValues = new AttributeTestValues [] {
 			new AttributeTestValues(HTMLAttributeValueType.STRING, 				 "a_string", 	 	"another_string", 	null),
