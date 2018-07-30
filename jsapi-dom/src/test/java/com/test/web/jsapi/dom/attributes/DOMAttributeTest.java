@@ -1,21 +1,9 @@
 package com.test.web.jsapi.dom.attributes;
 
-import com.test.web.css.common.CSSContext;
-import com.test.web.css.oo.OOCSSDocument;
-import com.test.web.css.oo.OOCSSRule;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLAttributeValueType;
 import com.test.web.document.html.common.HTMLElement;
-import com.test.web.document.html.oo.OOAttribute;
-import com.test.web.document.html.oo.OOHTMLDocument;
-import com.test.web.document.html.oo.OOTagElement;
-import com.test.web.document.html.test.DocumentParser;
-import com.test.web.jsapi.common.dom.IEvent;
-import com.test.web.jsapi.dom.BaseJSExecutingTest;
-import com.test.web.jsapi.dom.BrowserDefaultEventHandling;
-import com.test.web.jsapi.dom.TestDOMDocument;
-import com.test.web.jsapi.dom.TestDocumentContext;
-import com.test.web.jsapi.dom.TestPageAccess;
+import com.test.web.jsapi.dom.BaseJSDOMTest;
 import com.test.web.jsengine.common.IJSEngine;
 import com.test.web.jsengine.common.JSCompileException;
 import com.test.web.jsengine.common.JSExecutionException;
@@ -27,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.function.Consumer;
 
-public class DOMAttributeTest extends BaseJSExecutingTest {
+public class DOMAttributeTest extends BaseJSDOMTest {
 
 	private static final AttributeTestValues [] testValues = new AttributeTestValues [] {
 			new AttributeTestValues(HTMLAttributeValueType.STRING, 				 "a_string", 	 	"another_string", 	null),
@@ -266,34 +254,6 @@ public class DOMAttributeTest extends BaseJSExecutingTest {
 		assertThat(attrPrefix).isEqualTo(attribute.getAttributePrefix());
 		assertThat(attrLocalName).isEqualTo(attribute.getAttributeLocalName());
 		assertThat(attrValue).isEqualTo(attributeValue);
-	}
-	
-	private JSVariableMap prepareVarMap(String html) throws ParserException {
-		final CSSContext<OOCSSRule> cssContext = new CSSContext<>();
-		
-		final OOHTMLDocument document = OOHTMLDocument.parseHTMLDocument(
-				html,
-				(charInput, tokenizer) -> DocumentParser.parseCSS(charInput, tokenizer, cssContext, new OOCSSDocument()));
-
-		// Now run some JS tests
-		final JSVariableMap varMap = new JSVariableMap();
-
-		final BrowserDefaultEventHandling<OOTagElement, OOAttribute, OOHTMLDocument> browserEventHandling = new BrowserDefaultEventHandling<OOTagElement, OOAttribute, OOHTMLDocument>() {
-            @Override
-            public boolean onHandleEvent(IEvent event, OOHTMLDocument document, OOTagElement element) {
-                return false;
-            }
-        };
-        
-		
-		final TestDocumentContext documentContext = new TestDocumentContext(
-		        document,
-		        browserEventHandling,
-		        new TestPageAccess<>());
-
-		varMap.addReflected("document", new TestDOMDocument(documentContext));
-
-		return varMap;
 	}
 }
 

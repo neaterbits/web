@@ -6,7 +6,7 @@ import com.test.web.document.html.common.HTMLElement;
 final class AttributeTestCase {
 	private final HTMLElement element;
 	private final HTMLAttribute attribute;
-	private final  String html;
+	private final String html;
 	private final String elementId;
 	private final String attributeValue;
 	private final AttributeTestValues attributeTestValues;
