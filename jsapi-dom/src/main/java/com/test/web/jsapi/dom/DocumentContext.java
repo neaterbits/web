@@ -25,7 +25,7 @@ import com.test.web.page.common.PageAccess;
  * @param <ATTRIBUTE>
  */
 
-final class DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>>
+class DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>>
 	extends JSElementDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT, DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT>>
 	implements IDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT, DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT>> {
     

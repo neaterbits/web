@@ -1,4 +1,4 @@
-package com.test.web.jsapi.dom;
+package com.test.web.jsapi.dom.attributes;
 
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;

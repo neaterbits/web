@@ -1,4 +1,4 @@
-package com.test.web.jsapi.dom;
+package com.test.web.jsapi.dom.attributes;
 
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.oo.OOCSSDocument;
@@ -11,11 +11,14 @@ import com.test.web.document.html.oo.OOHTMLDocument;
 import com.test.web.document.html.oo.OOTagElement;
 import com.test.web.document.html.test.DocumentParser;
 import com.test.web.jsapi.common.dom.IEvent;
+import com.test.web.jsapi.dom.BrowserDefaultEventHandling;
+import com.test.web.jsapi.dom.TestDOMDocument;
+import com.test.web.jsapi.dom.TestDocumentContext;
+import com.test.web.jsapi.dom.TestPageAccess;
 import com.test.web.jsengine.common.IJSEngine;
 import com.test.web.jsengine.common.JSCompileException;
 import com.test.web.jsengine.common.JSExecutionException;
 import com.test.web.jsengine.common.JSVariableMap;
-import com.test.web.page.common.PageAccessImpl;
 import com.test.web.parse.common.ParserException;
 import com.test.web.types.IEnum;
 
@@ -25,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.function.Consumer;
 
-public abstract class BaseDOMTest extends TestCase {
+public abstract class BaseDOMAttributeTest extends TestCase {
 
 	abstract IJSEngine getJSEngine();
 
@@ -285,18 +288,13 @@ public abstract class BaseDOMTest extends TestCase {
             }
         };
         
-        final PageAccessImpl<OOTagElement, HTMLElement, OOHTMLDocument> pageAccess = new PageAccessImpl<OOTagElement, HTMLElement, OOHTMLDocument>(null, document);
 		
-		final DocumentContext<OOTagElement, OOAttribute, OOHTMLDocument> documentContext = new DocumentContext<>(
+		final TestDocumentContext documentContext = new TestDocumentContext(
 		        document,
 		        browserEventHandling,
-		        pageAccess);
+		        new TestPageAccess<>());
 
-		varMap.addReflected("document", new DOMDocument<
-		        OOTagElement,
-		        OOAttribute,
-		        OOHTMLDocument,
-		        DocumentContext<OOTagElement, OOAttribute, OOHTMLDocument>>(documentContext));
+		varMap.addReflected("document", new TestDOMDocument(documentContext));
 
 		return varMap;
 	}

@@ -1,4 +1,4 @@
-package com.test.web.jsapi.dom;
+package com.test.web.jsapi.dom.attributes;
 
 enum AttributeTest {
 	INITIAL,
