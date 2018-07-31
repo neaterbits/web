@@ -19,14 +19,28 @@ import java.util.List;
 
 public class DOMElementTest extends BaseJSDOMTest {
 
-    public void testGetElementId() {
-        
-    }
-    
     private static String wrapHTML(String html) {
         return TestData.DOCTYPE + "<html><body>" + html + "</body></html>";
     }
     
+    public void testGetElementId() throws ParserException, JSCompileException, JSExecutionException {
+        
+        final String html = wrapHTML("<div id='the_id' class='abc  def   ghi'></div>");
+
+        final JSVariableMap varMap = prepareVarMap(html);
+
+        assertThat(evalJS("document.getElementById('the_id').id", varMap)).isEqualTo("the_id");
+    }
+
+    public void testGetClassName() throws ParserException, JSCompileException, JSExecutionException {
+        
+        final String html = wrapHTML("<div id='the_id' class='abc  def   ghi'></div>");
+
+        final JSVariableMap varMap = prepareVarMap(html);
+
+        assertThat(evalJS("document.getElementById('the_id').className", varMap)).isEqualTo("abc def ghi");
+    }
+
     public void testClassList() throws JSCompileException, JSExecutionException, ParserException {
         
         final String html = wrapHTML("<div id='the_id' class='abc  def   ghi'></div>");

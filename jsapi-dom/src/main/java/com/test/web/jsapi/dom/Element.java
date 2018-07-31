@@ -59,7 +59,6 @@ public class Element<
         return getDocument().getClientWidth(getElement());
     }
 
-	
 	public final String getId() {
 	    return getDocument().getElementId(getElement());
 	}

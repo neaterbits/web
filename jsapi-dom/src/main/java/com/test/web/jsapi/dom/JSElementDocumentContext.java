@@ -256,8 +256,20 @@ abstract class JSElementDocumentContext<
 
     @Override
     public String getClassName(ELEMENT element) {
-        // TODO Auto-generated method stub
-        return null;
+        
+        final ATTRIBUTE attribute = delegate.getAttributeWithName(element, "class");
+        
+        final String value;
+        final String result;
+        
+        if (attribute != null && null != (value = delegate.getAttributeValue(element, attribute))) {
+            result = value;
+        }
+        else {
+            result = null;
+        }
+
+        return result;
     }
 
     @Override
@@ -268,8 +280,7 @@ abstract class JSElementDocumentContext<
 
     @Override
     public String getElementId(ELEMENT element) {
-        // TODO Auto-generated method stub
-        return null;
+        return delegate.getId(element);
     }
 
     @Override
