@@ -19,7 +19,7 @@ abstract class BaseDocumentContext<
             ATTRIBUTE,
             DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>,
             DOCUMENT_CONTEXT extends IDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT>>
-        implements IDocument<ELEMENT, ATTRIBUTE, DOCUMENT> {
+        implements IDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> {
 	
 	final DOCUMENT delegate;
 	
