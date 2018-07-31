@@ -162,7 +162,7 @@ abstract class JSElementDocumentContext<
                 final String updated = StringUtils.replaceToken(value, oldToken, newToken);
                 
                 if (updated != null) {
-                    setAttributeValue(element, attribute, value);
+                    setAttributeValue(element, attribute, updated);
                     stringUpdated = true;
                 }
             }
@@ -184,7 +184,6 @@ abstract class JSElementDocumentContext<
         
         final ATTRIBUTE attribute = getClassAttribute(element);
 
-        
         final String value;
         
         if (attribute != null && null != (value = getAttributeValue(element, attribute))) {
@@ -193,6 +192,8 @@ abstract class JSElementDocumentContext<
             final StringBuilder sb = new StringBuilder(value.length() + token.length() + 1);
             
             tokenInList = StringUtils.toggleToken(value, sb, token, force);
+            
+            setClassAttributeValue(element, sb.toString());
         }
         else {
             // Attribute not set at all

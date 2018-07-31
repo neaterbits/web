@@ -77,6 +77,11 @@ public final class ClassListDOMTokenList<ELEMENT> implements JSDOMTokenList {
     }
 
     @Override
+    public boolean toggle(String token) {
+        return docElement.classListToggle(element, token, null);
+    }
+
+    @Override
     public boolean toggle(String token, boolean force) {
         return docElement.classListToggle(element, token, force);
     }

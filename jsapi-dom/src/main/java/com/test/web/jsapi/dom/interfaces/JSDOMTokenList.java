@@ -29,6 +29,8 @@ public interface JSDOMTokenList {
     
     boolean supports(String token);
 
+    boolean toggle(String token);
+
     boolean toggle(String token, boolean force);
 
     Iterator<String> entries();

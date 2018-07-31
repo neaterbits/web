@@ -29,4 +29,12 @@ public class JSRef<T> {
         this.ref = ref;
         this.state = state;
     }
+
+    public T getRef() {
+        return ref;
+    }
+
+    public JSRefState getState() {
+        return state;
+    }
 }
