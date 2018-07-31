@@ -17,6 +17,7 @@ import jdk.nashorn.api.scripting.AbstractJSObject;
 
 // Test whether object can be both array and object
 // Necessary for eg. DataTransferItemList
+@SuppressWarnings("restriction")
 public class ArrayAndObjectTest extends TestCase {
 
 	

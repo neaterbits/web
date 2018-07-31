@@ -10,6 +10,7 @@ import com.test.web.jsengine.common.IJSFuntionCallThis;
 import com.test.web.jsengine.common.IJavaAsJSObject;
 import com.test.web.jsengine.common.JSObjectType;
 
+@SuppressWarnings("restriction")
 class NashornJavaAsJSObject implements JSObject, IJSFuntionCallThis {
 
 	private final IJavaAsJSObject delegate;
