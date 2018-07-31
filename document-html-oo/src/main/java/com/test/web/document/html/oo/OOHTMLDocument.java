@@ -870,6 +870,18 @@ public final class OOHTMLDocument implements IDocumentParserListener<OOTagElemen
         // TODO Auto-generated method stub
         return null;
     }
+    
+    @Override
+    public void classListForEach(OOTagElement element, Object callback) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void classListForEach(OOTagElement element, Object callback, Object argument) {
+        // TODO Auto-generated method stub
+        
+    }
 
     @Override
     public String getClassName(OOTagElement element) {

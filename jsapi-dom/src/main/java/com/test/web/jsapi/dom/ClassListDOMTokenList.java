@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import com.test.web.document.html.common.elements.DOCElement;
 import com.test.web.jsapi.dom.interfaces.JSDOMTokenList;
-import com.test.web.jsapi.dom.interfaces.JSFunction;
 
 public final class ClassListDOMTokenList<ELEMENT> implements JSDOMTokenList {
 
@@ -92,12 +91,12 @@ public final class ClassListDOMTokenList<ELEMENT> implements JSDOMTokenList {
     }
 
     @Override
-    public void foreach(JSFunction callback) {
-        throw new UnsupportedOperationException("TODO");
+    public void forEach(Object callback) {
+        docElement.classListForEach(element, callback);
     }
 
     @Override
-    public void foreach(JSFunction callback, Object argument) {
-        throw new UnsupportedOperationException("TODO");
+    public void forEach(Object callback, Object argument) {
+        docElement.classListForEach(element, callback, argument);
     }
 }

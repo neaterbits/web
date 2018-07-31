@@ -7,6 +7,7 @@ import com.test.web.document.html.common.IDocument;
 import com.test.web.document.html.common.IHTMLDocumentListener;
 import com.test.web.document.html.common.elements.LAYOUTElement;
 import com.test.web.jsapi.common.dom.IDocumentContext;
+import com.test.web.jsengine.common.JSInvocation;
 import com.test.web.util.StringUtils;
 
 /**
@@ -29,8 +30,8 @@ abstract class JSElementDocumentContext<
 
             implements LAYOUTElement<ELEMENT> {
 
-    JSElementDocumentContext(DOCUMENT delegate, IHTMLDocumentListener<ELEMENT> listener) {
-        super(delegate, listener);
+    JSElementDocumentContext(DOCUMENT delegate, IHTMLDocumentListener<ELEMENT> listener, JSInvocation jsInvocation) {
+        super(delegate, listener, jsInvocation);
     }
     
     private ATTRIBUTE getClassAttribute(ELEMENT element) {
@@ -126,7 +127,6 @@ abstract class JSElementDocumentContext<
             }
             setAttributeValue(element, attribute, newValue);
         }
-
     }
 
     @Override
@@ -222,6 +222,36 @@ abstract class JSElementDocumentContext<
 
         
         return null;
+    }
+    
+    @Override
+    public void classListForEach(ELEMENT element, Object callback) {
+        final ATTRIBUTE attribute = getClassAttribute(element);
+
+        final String value;
+        
+        if (attribute != null && null != (value = getAttributeValue(element, attribute))) {
+            final String [] tokens = StringUtils.splitToTokens(value);
+            
+            for (String token : tokens) {
+                getJSInvocation().callFunction(callback, token);
+            }
+        }
+    }
+
+    @Override
+    public void classListForEach(ELEMENT element, Object callback, Object argument) {
+        final ATTRIBUTE attribute = getClassAttribute(element);
+
+        final String value;
+
+        if (attribute != null && null != (value = getAttributeValue(element, attribute))) {
+            final String [] tokens = StringUtils.splitToTokens(value);
+
+            for (String token : tokens) {
+                getJSInvocation().callFunctionWithThis(callback, argument, token);
+            }
+        }
     }
 
     @Override

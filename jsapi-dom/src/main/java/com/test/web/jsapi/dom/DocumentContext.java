@@ -9,6 +9,7 @@ import com.test.web.jsapi.common.dom.EventTargetElement;
 import com.test.web.jsapi.common.dom.IDocumentContext;
 import com.test.web.jsapi.common.dom.IEvent;
 import com.test.web.jsapi.common.dom.IEventListener;
+import com.test.web.jsengine.common.JSInvocation;
 import com.test.web.page.common.ElementLayoutAccess;
 import com.test.web.page.common.PageAccess;
 
@@ -38,9 +39,9 @@ class DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, AT
     private final List<EventTargetElement<ELEMENT>> allEventTargets;
     private final ElementLayoutAccess<ELEMENT> elementLayoutAccess;
 
-	DocumentContext(DOCUMENT delegate, BrowserDefaultEventHandling<ELEMENT, ATTRIBUTE, DOCUMENT> defaultEventHandling, PageAccess<ELEMENT> pageAccess) {
-		super(delegate, new UIDocumentChangeListener<>(pageAccess));
-		
+	DocumentContext(DOCUMENT delegate, BrowserDefaultEventHandling<ELEMENT, ATTRIBUTE, DOCUMENT> defaultEventHandling, PageAccess<ELEMENT> pageAccess, JSInvocation jsInvocation) {
+		super(delegate, new UIDocumentChangeListener<>(pageAccess), jsInvocation);
+
 		this.defaultEventHandling = defaultEventHandling;
 		this.elementLayoutAccess = pageAccess;
 
@@ -49,11 +50,11 @@ class DocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, AT
 
     @Override
     public void addEventTargetNowWithListeners(EventTargetElement<ELEMENT> target) {
-        
+
         if (target == null) {
             throw new IllegalArgumentException("target == null");
         }
-        
+
         if (allEventTargets.contains(target)) {
             throw new IllegalArgumentException("Already contains target element");
         }

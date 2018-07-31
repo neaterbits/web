@@ -24,6 +24,10 @@ public interface DOCElement<ELEMENT> {
 
     boolean classListToggle(ELEMENT element, String token, Boolean force);
 
+    void classListForEach(ELEMENT element, Object callback);
+
+    void classListForEach(ELEMENT element, Object callback, Object argument);
+    
     Iterator<String> classListEntries();
     
     String getClassName(ELEMENT element);

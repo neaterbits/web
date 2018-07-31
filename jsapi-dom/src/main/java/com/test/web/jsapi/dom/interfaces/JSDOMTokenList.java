@@ -35,8 +35,8 @@ public interface JSDOMTokenList {
 
     Iterator<String> entries();
     
-    void foreach(JSFunction callback);
+    void forEach(Object callback);
 
-    void foreach(JSFunction callback, Object argument);
+    void forEach(Object callback, Object argument);
     
 }

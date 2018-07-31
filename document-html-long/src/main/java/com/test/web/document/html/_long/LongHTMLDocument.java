@@ -940,6 +940,19 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
         return false;
     }
 
+    @Override
+    public void classListForEach(Integer element, Object callback) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void classListForEach(Integer element, Object callback, Object argument) {
+        // TODO Auto-generated method stub
+        
+    }
+
 
     @Override
     public Iterator<String> classListEntries() {

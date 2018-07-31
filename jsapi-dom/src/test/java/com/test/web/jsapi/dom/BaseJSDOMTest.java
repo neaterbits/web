@@ -35,7 +35,8 @@ public class BaseJSDOMTest extends BaseJSExecutingTest {
         final TestDocumentContext documentContext = new TestDocumentContext(
                 document,
                 browserEventHandling,
-                new TestPageAccess<>());
+                new TestPageAccess<>(),
+                getJSEngine());
 
         varMap.addReflected("document", new TestDOMDocument(documentContext));
 

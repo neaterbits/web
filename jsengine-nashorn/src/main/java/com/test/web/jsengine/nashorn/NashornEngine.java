@@ -13,7 +13,17 @@ import com.test.web.jsengine.common.ICompiledJS;
 import com.test.web.jsengine.common.JSCompileException;
 import com.test.web.jsengine.common.IJSEngine;
 
+import jdk.nashorn.api.scripting.JSObject;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
+import java.util.Collection;
+import java.util.Set;
+
+import com.test.web.jsengine.common.IJSFuntionCallThis;
+import com.test.web.jsengine.common.IJavaAsJSObject;
+import com.test.web.jsengine.common.JSObjectType;
+
+@SuppressWarnings("restriction")
 public class NashornEngine implements IJSEngine {
 
 	private final ScriptEngine engine;
@@ -42,4 +52,33 @@ public class NashornEngine implements IJSEngine {
 		
 		return new NashornCompiledJS(compiled);
 	}
+
+    @Override
+    public Object callFunction(Object function, Object... parameters) {
+        
+        final Object result;
+        
+        if (function instanceof ScriptObjectMirror) {
+            result = ((ScriptObjectMirror)function).call(null, parameters);
+        }
+        else {
+            throw new UnsupportedOperationException("Not a JS function");
+        }
+        
+        return result;
+    }
+
+    @Override
+    public Object callFunctionWithThis(Object function, Object t, Object... parameters) {
+        final Object result;
+        
+        if (function instanceof ScriptObjectMirror) {
+            result = ((ScriptObjectMirror)function).call(t, parameters);
+        }
+        else {
+            throw new UnsupportedOperationException("Not a JS function");
+        }
+        
+        return result;
+    }
 }

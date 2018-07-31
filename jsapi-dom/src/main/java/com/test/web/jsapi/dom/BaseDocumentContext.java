@@ -12,6 +12,7 @@ import com.test.web.document.html.common.IDocument;
 import com.test.web.document.html.common.IHTMLDocumentListener;
 import com.test.web.document.html.common.enums.LinkRelType;
 import com.test.web.jsapi.common.dom.IDocumentContext;
+import com.test.web.jsengine.common.JSInvocation;
 
 abstract class BaseDocumentContext<
             ELEMENT,
@@ -23,16 +24,22 @@ abstract class BaseDocumentContext<
 	final DOCUMENT delegate;
 	
 	private final IHTMLDocumentListener<ELEMENT> listener;
-	
-	public BaseDocumentContext(DOCUMENT delegate, IHTMLDocumentListener<ELEMENT> listener) {
+	private final JSInvocation jsInvocation;
+
+	public BaseDocumentContext(DOCUMENT delegate, IHTMLDocumentListener<ELEMENT> listener, JSInvocation jsInvocation) {
 		if (delegate == null) {
 			throw new IllegalArgumentException("delegate == null");
 		}
 
 		this.delegate = delegate;
 		this.listener = listener;
+		this.jsInvocation = jsInvocation;
 	}
-	
+
+	protected final JSInvocation getJSInvocation() {
+	    return jsInvocation;
+	}
+
 	@Override
     public final boolean isSameElement(ELEMENT element1, ELEMENT element2) {
         return delegate.isSameElement(element1, element2);

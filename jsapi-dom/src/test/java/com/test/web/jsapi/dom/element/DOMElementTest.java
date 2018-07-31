@@ -10,6 +10,9 @@ import com.test.web.testdata.TestData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Tests various features of the Element JS object
  */
@@ -86,7 +89,14 @@ public class DOMElementTest extends BaseJSDOMTest {
         assertThat(evalJS("document.getElementById('the_id').classList.toggle('xzy', false)", varMap)).isEqualTo(false);
         assertThat(evalJS("document.getElementById('the_id').classList.length", varMap)).isEqualTo(3);
         assertThat(evalJS("document.getElementById('the_id').classList.value", varMap)).isEqualTo("abc def zyx");
+
+        final List<String> tokens = new ArrayList<>();
         
+        varMap.addReflected("list", tokens);
+        
+        evalJS("document.getElementById('the_id').classList.forEach(function(token) { list.add(token); })", varMap);
+        
+        assertThat(tokens).containsExactly("abc", "def", "zyx");
         
         // Try to remove an attribute
         //"document.getElementById('the_id').classList.", varMap
