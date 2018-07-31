@@ -265,12 +265,12 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		}
 
 		// DTD
-		if (lexSkipWS(HTMLToken.QUOTED_STRING) != HTMLToken.QUOTED_STRING) {
+		if (lexSkipWS(HTMLToken.DOUBLE_QUOTED_STRING) != HTMLToken.DOUBLE_QUOTED_STRING) {
 			throw lexer.unexpectedToken();
 		}
 
 		// URL
-		if (lexSkipWS(HTMLToken.QUOTED_STRING) != HTMLToken.QUOTED_STRING) {
+		if (lexSkipWS(HTMLToken.DOUBLE_QUOTED_STRING) != HTMLToken.DOUBLE_QUOTED_STRING) {
 			throw lexer.unexpectedToken();
 		}
 		
@@ -623,10 +623,11 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 
 	private void parseAttributeValue(HTMLToken attributeToken, HTMLElement element) throws IOException, ParserException {
 		
-		HTMLToken token = lexSkipWS(HTMLToken.QUOTED_STRING);
+		HTMLToken token = lexSkipWS(HTMLToken.SINGLE_QUOTED_STRING, HTMLToken.DOUBLE_QUOTED_STRING);
 		
 		switch (token) {
-		case QUOTED_STRING:
+		case SINGLE_QUOTED_STRING:
+		case DOUBLE_QUOTED_STRING:
 			// Read until end of quote or whitespace
 			htmlListener.onAttributeWithValue(tokenizer, attributeToken.getAttribute(), lexer.getStringRef(1, 1), element);
 			break;
@@ -641,8 +642,10 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		if (lexSkipWS(HTMLToken.EQUALS) != HTMLToken.EQUALS) {
 			throw lexer.unexpectedToken();
 		}
-		
-		if (lexSkipWS(HTMLToken.QUOTE) != HTMLToken.QUOTE) {
+
+		final HTMLToken quoteToken = lexSkipWS(HTMLToken.SINGLE_QUOTE, HTMLToken.QUOTE);
+
+		if (quoteToken == HTMLToken.NONE) {
 			throw lexer.unexpectedToken();
 		}
 		
@@ -650,23 +653,26 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		
 		do {
 			// Ignore WS at start and end of quotes
-			switch (lexer.lex(HTMLToken.WS, HTMLToken.CLASS_NAME, HTMLToken.QUOTE)) {
-			case WS:
-				// Skip to next
-				break;
-				
-			case CLASS_NAME:
-				// TODO: must skip 1 at end since lexer has read one past, find more elegant solution
-				htmlListener.onClassAttributeValue(tokenizer, lexer.getStringRef(0, lexer.getEndSkip()));
-				break;
-				
-			case QUOTE:
-				done = true;
-				break;
-				
-			default:
-				throw lexer.unexpectedToken();
+			final HTMLToken nextToken = lexer.lex(HTMLToken.WS, HTMLToken.CLASS_NAME, quoteToken);
+			
+			if (nextToken == quoteToken) {
+                done = true;
 			}
+			else {
+			    switch (nextToken) {
+    			case WS:
+    				// Skip to next
+    				break;
+    				
+    			case CLASS_NAME:
+    				// TODO: must skip 1 at end since lexer has read one past, find more elegant solution
+    				htmlListener.onClassAttributeValue(tokenizer, lexer.getStringRef(0, lexer.getEndSkip()));
+    				break;
+
+    			default:
+    				throw lexer.unexpectedToken();
+    			}
+	        }
 		} while (!done);
 	}
 	

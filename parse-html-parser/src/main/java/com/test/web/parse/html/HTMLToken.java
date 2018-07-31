@@ -27,7 +27,9 @@ public enum HTMLToken implements IToken {
 	EQUALS('='),
 	SEMICOLON(';'),
 	
-	QUOTED_STRING('"', '"'),
+	SINGLE_QUOTED_STRING('\'', '\''),
+	DOUBLE_QUOTED_STRING('"', '"'),
+	
 	
 	COMMENT_CONTENT("!--", "-->"),
 
