@@ -10,30 +10,7 @@
   <packaging>jar</packaging>
   <dependencies>
 
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>buffers</artifactId>
-		<version>${project.version}</version>
-	</dependency>
 
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>css-common</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>parse-css</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>io-long</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-	
 	<!-- test dependencies --> 
 
 	<dependency>
@@ -42,6 +19,14 @@
 		<version>${project.version}</version>
 		<scope>test</scope>
 	</dependency>
+
+
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>parse-css-parser</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+    </dependency>
 
     <dependency>
         <groupId>${project.groupId}</groupId>
