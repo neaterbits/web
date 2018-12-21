@@ -2,7 +2,7 @@ package com.test.web.layout.blockinline;
 
 // Width and height is always unknown for eg. span since setting width and height for styling has no effect	
 // We rely on the sum of sub-elements instead that are summarized for each line as we go
-public class CaseInlineWithinBlockBehaving_WidthOrHeightUnknown_DisplayInline<ELEMENT>
+public class CaseInlineWithinBlockBehaving_WrapperSizeUnknown_DisplayInline<ELEMENT>
 	extends CaseInlineWithinBlockBehaving_WidthOrHeightUnknown_Base<ELEMENT> {
 
 	@Override

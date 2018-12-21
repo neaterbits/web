@@ -1,5 +1,6 @@
 package com.test.web.layout.html;
 
+import com.test.web.document.html.common.HTMLElement;
 import com.test.web.layout.algorithm.BaseLayoutCase;
 import com.test.web.layout.blockinline.CaseBlockRoot_CSSSizeKnown;
 import com.test.web.layout.blockinline.CaseBlockRoot_CSSSizeUnknown;
@@ -10,7 +11,7 @@ import com.test.web.layout.blockinline.CaseBlockWithinBlockBehaving_CSSWidthKnow
 import com.test.web.layout.blockinline.CaseInlineWithinBlockBehaving_CSSSizeKnown_DisplayInlineBlock;
 import com.test.web.layout.blockinline.CaseInlineWithinBlockBehaving_CSSWidthOrHeightUnknown_DisplayInlineBlock;
 import com.test.web.layout.blockinline.CaseInlineWithinBlockBehaving_SizeKnown_DisplayInline;
-import com.test.web.layout.blockinline.CaseInlineWithinBlockBehaving_WidthOrHeightUnknown_DisplayInline;
+import com.test.web.layout.blockinline.CaseInlineWithinBlockBehaving_WrapperSizeUnknown_DisplayInline;
 import com.test.web.layout.blockinline.StackElement;
 import com.test.web.layout.common.ILayoutStylesGetters;
 import com.test.web.layout.common.enums.Display;
@@ -21,11 +22,11 @@ class LayoutCases {
 
 	private static final CaseBlockRoot_CSSSizeUnknown<?> BLOCK_ROOT_CSS_SIZE_UNKNOWN = new CaseBlockRoot_CSSSizeUnknown<>();
 
-	private static final CaseInlineWithinBlockBehaving_SizeKnown_DisplayInline<?> INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN_DISPLAY_INLINE
+	private static final CaseInlineWithinBlockBehaving_SizeKnown_DisplayInline<?> INLINE_WITHIN_BLOCK_BEHAVING_SIZE_KNOWN_DISPLAY_INLINE
 				= new CaseInlineWithinBlockBehaving_SizeKnown_DisplayInline<>();
 
-	private static final CaseInlineWithinBlockBehaving_WidthOrHeightUnknown_DisplayInline<?> INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN_DISPLAY_INLINE
-				= new CaseInlineWithinBlockBehaving_WidthOrHeightUnknown_DisplayInline<>();
+	private static final CaseInlineWithinBlockBehaving_WrapperSizeUnknown_DisplayInline<?> INLINE_WITHIN_BLOCK_BEHAVING_WRAPPER_SIZE_UNKNOWN_DISPLAY_INLINE
+				= new CaseInlineWithinBlockBehaving_WrapperSizeUnknown_DisplayInline<>();
 	
 	private static final CaseInlineWithinBlockBehaving_CSSSizeKnown_DisplayInlineBlock<?> INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN_DISPLAY_INLINE_BLOCK
 				= new CaseInlineWithinBlockBehaving_CSSSizeKnown_DisplayInlineBlock<>();
@@ -45,7 +46,7 @@ class LayoutCases {
 	private static final CaseBlockWithinBlockBehaving_CSSSizeUnknown<?> BLOCK_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN
 				= new CaseBlockWithinBlockBehaving_CSSSizeUnknown<>();
 
-	static <ELEMENT_TYPE> BaseLayoutCase<?, ?, ?> determineLayoutCase(StackElement<?> container, ILayoutStylesGetters subLayoutStyles, ELEMENT_TYPE elementType) {
+	static <ELEMENT_TYPE> BaseLayoutCase<?, ?, ?> determineLayoutCase(StackElement<?> container, ILayoutStylesGetters subLayoutStyles, HTMLElement elementType) {
 
 		final BaseLayoutCase<?, ?, ?> ret;
 
@@ -74,9 +75,21 @@ class LayoutCases {
 	
 				switch (subLayoutStyles.getDisplay()) {
 				case INLINE:
-					ret = hasDimensionsFromCSS
-						? INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_KNOWN_DISPLAY_INLINE
-		    			: INLINE_WITHIN_BLOCK_BEHAVING_CSS_SIZE_UNKNOWN_DISPLAY_INLINE;
+					
+					switch (elementType) {
+					case IMG:
+						// Width and height ought to be known here
+						ret = INLINE_WITHIN_BLOCK_BEHAVING_SIZE_KNOWN_DISPLAY_INLINE;
+						break;
+
+					case SPAN:
+					case DIV:
+						ret = INLINE_WITHIN_BLOCK_BEHAVING_WRAPPER_SIZE_UNKNOWN_DISPLAY_INLINE;
+						break;
+						
+					default:
+						throw new UnsupportedOperationException("TODO - handle inline element of type " + elementType);
+					}
 					break;
 	
 				case INLINE_BLOCK:

@@ -48,6 +48,12 @@ public enum HTMLAttribute implements IKeyValue {
 	
 	REV("rev", false, LinkRevType.class, HTMLAttributeValueType.ENUM, null), // not supported in HTML 5
 	
+
+	// img
+	WIDTH("width", false, ValueArity.ONE, HTMLAttributeValueType.INTEGER, null),
+	HEIGHT("height", false, ValueArity.ONE, HTMLAttributeValueType.INTEGER, null),
+	SRC("src", false, ValueArity.ONE, HTMLAttributeValueType.STRING, null),
+	
 	DOWNLOAD("download", false, ValueArity.ONE, HTMLAttributeValueType.STRING),
 	TARGET("target", false, ValueArity.ONE, HTMLAttributeValueType.ENUM_OR_STRING, null),
 	

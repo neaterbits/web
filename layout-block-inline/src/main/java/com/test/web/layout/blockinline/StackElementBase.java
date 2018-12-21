@@ -75,6 +75,30 @@ abstract class StackElementBase<ELEMENT> extends LayoutStackElement<ELEMENT> {
 		return textChunkLayout;
 	}
 
+	private void checkNotAdded(StackElement<ELEMENT> stackElement) {
+		for (int i = firstInlineElement; i < numInlineElements; ++ i) {
+			if (inlineElements[i].getStackElement() == stackElement) {
+				throw new IllegalArgumentException("stack element already added at " + i + "/" + numInlineElements);
+			}
+		}
+	}
+	
+	final void addInlineKnownSizeElement(StackElement<ELEMENT> stackElement, int inlineLineNoInBlock) {
+
+		stackElement.addedInSeparateTree();
+	
+		if (CHECK_ADD) {
+			checkNotAdded(stackElement);
+		}
+		
+		// Make sure we are adding an inline-element, otherwise should not call this method
+		if (!stackElement.getDisplay().isInline()) {
+			throw new IllegalArgumentException("Adding inline element layout that is not inline-display : "  + stackElement.getDisplay());
+		}
+
+		addTextLineElement().initKnownSizeHTMLElement(inlineLineNoInBlock, stackElement);
+	}
+
 	/**
 	 * Add inline element, eg. the image in <span>This is a text<img ...> and an image</span>
 	 * 
@@ -82,16 +106,12 @@ abstract class StackElementBase<ELEMENT> extends LayoutStackElement<ELEMENT> {
 	 * @param atStartOfLine true if first element or is first after line wrap
 	 */
 
-	final void addInlineElementStart(StackElement<ELEMENT> stackElement, int inlineLineNoInBlock) {
+	final void addInlineWrapperElementStart(StackElement<ELEMENT> stackElement, int inlineLineNoInBlock) {
 
 		stackElement.addedInSeparateTree();
 	
 		if (CHECK_ADD) {
-			for (int i = firstInlineElement; i < numInlineElements; ++ i) {
-				if (inlineElements[i].getStackElement() == stackElement) {
-					throw new IllegalArgumentException("stack element already added at " + i + "/" + numInlineElements);
-				}
-			}
+			checkNotAdded(stackElement);
 		}
 		
 		// Make sure we are adding an inline-element, otherwise should not call this method

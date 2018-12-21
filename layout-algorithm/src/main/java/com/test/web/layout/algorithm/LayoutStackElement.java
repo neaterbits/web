@@ -36,6 +36,11 @@ public abstract class LayoutStackElement<ELEMENT> {
 	// Work area for singlethreaded algorithm, storing non threadsafe data here, but should be ok since HTML document parsing happens on one thread
 	private final LayoutStyles layoutStyles;
 
+	
+	// For elements where size is known, eg. HTML <img> elements
+	private int knownSizeWidthPx;
+	private int knownSizeHeightPx;
+	
 	// The resulting layout after computation of width and height, this is what rendering sees
 	// TODO not have this as public but pass in where needed
 	final ElementLayout resultingElementLayout;
@@ -73,6 +78,27 @@ public abstract class LayoutStackElement<ELEMENT> {
 		resultingElementLayout.clear();
 	}
 	
+	public final void initKnownSize(int widthPx, int heightPx) {
+		this.knownSizeWidthPx = widthPx;
+		this.knownSizeHeightPx = heightPx;
+	}
+
+	public final int getKnownSizeWidthPx() {
+		return knownSizeWidthPx;
+	}
+
+	public final void setKnownSizeWidthPx(int knownSizeWidthPx) {
+		this.knownSizeWidthPx = knownSizeWidthPx;
+	}
+
+	public final int getKnownSizeHeightPx() {
+		return knownSizeHeightPx;
+	}
+
+	public final void setKnownSizeHeightPx(int knownSizeHeightPx) {
+		this.knownSizeHeightPx = knownSizeHeightPx;
+	}
+
 	protected final ELEMENT getElement() {
 		return element;
 	}

@@ -28,9 +28,9 @@ public final class StackElement<ELEMENT> extends StackElementBaseBlock<ELEMENT> 
 	@Override
     protected void init(LayoutStackElement<ELEMENT> container, ELEMENT element, String debugName) {
 		super.init(container, element, debugName);
-		
+
 		final StackElement<ELEMENT> containerElement = (StackElement<ELEMENT>)container;
-		
+
 		final int availableWidth = containerElement.getAvailableWidth();
 		final int availableHeight = containerElement.getAvailableHeight();
 

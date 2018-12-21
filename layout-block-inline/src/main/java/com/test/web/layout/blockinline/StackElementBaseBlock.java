@@ -228,12 +228,13 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 		}
 	}
 
-	// Recurses all inline-elements under this block-element that we have buffered during parsing, advancing until we have proessed current line no.
+	// Recurses all inline-elements under this block-element that we have buffered during parsing, advancing until we have processed current line no.
 	// For any wrapper element like <span></span> that ends on this line, we advance firstInlineElement index past it
 	// so that we do not loop through that the next time we run this algorithm
 	
 	static <E> void recursivelyProcessInlineElementsUpTo(StackElementBase<E> cur, int lineToProcess, int lineMaxHeight, AddToPageLayer<E> addToPageLayer, WrapperSums wrapperSums) {
 
+		// continue, take into account margin-left and margin-right of inline wrapper elements, these are added before or after line
 		int widthForCurrentWrapperElement = -1;
 		int heightForCurrentWrapperElement = -1;
 		int leftmostXForCurrentWrapperElement = -1;
@@ -250,7 +251,7 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 		
 		// max-width, returned in order to compute max-width of wrapper elements
 		int maxWidth = 0;
-		
+
 		// sum-height, returned in order to compute height of wrapper elements
 		int sumHeight = 0;
 		
@@ -405,7 +406,6 @@ abstract class StackElementBaseBlock<ELEMENT> extends StackElementBaseInline<ELE
 		}
 		sumHeight += maxHeightForCurLine;
 
-		// return in a long-var so that no need for allocation
 		wrapperSums.init(maxWidth, sumHeight, leftmostX, topmostY);
 	}
 

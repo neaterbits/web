@@ -1,5 +1,6 @@
 package com.test.web.layout.html;
 
+
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.document.html.common.HTMLElement;
@@ -22,6 +23,34 @@ public class HTMLLayoutContext<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<EL
 		}
 
 		this.cssContext = cssContext;
+	}
+
+	@Override
+	public long getKnownWidthHeight(DOCUMENT document, ELEMENT element) {
+
+		final HTMLElement type = document.getType(element);
+		
+		final long result;
+		
+		if (type == HTMLElement.IMG) {
+			final ATTRIBUTE widthAttribute = document.getAttributeWithName(element, "width");
+			final ATTRIBUTE heightAttribute = document.getAttributeWithName(element, "height");
+
+			if (widthAttribute != null && heightAttribute != null) {
+				final long width = Integer.parseInt(document.getAttributeValue(element, widthAttribute));
+				final long height = Integer.parseInt(document.getAttributeValue(element, heightAttribute));
+				
+				result = width << 32 | height;
+			}
+			else {
+				result = -1;
+			}
+		}
+		else {
+			result = -1;
+		}
+
+		return result;
 	}
 
 	@Override

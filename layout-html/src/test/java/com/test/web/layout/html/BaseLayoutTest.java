@@ -96,7 +96,6 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE, DOCUMENT exte
 		assertThat(span1).isNotNull();
 		
 		// margin-left: auto has no effect on display: inline elements, however margin-right: 50px does have an impact on outer bounds
-
 		checkOuterBounds(layer, span1, 0, 0, 72 + 50, 12);
 		checkInnerBounds(layer, span1, 0, 0, 72, 12); // Inner bounds is unchanged as margins not taken into account
 		checkMargins(layer, span1, 0, 50, 0, 0); // These are computed margins in pixels
