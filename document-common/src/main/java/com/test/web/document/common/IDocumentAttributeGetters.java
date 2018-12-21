@@ -1,5 +1,12 @@
 package com.test.web.document.common;
 
+/**
+ * Somewhat HTML independent access methods, eg. could be used for XML documents that also have element/attribute
+ * 
+ * @param <ELEMENT>
+ * @param <ATTRIBUTE>
+ */
+
 public interface IDocumentAttributeGetters<ELEMENT, ATTRIBUTE> {
 
 	int getNumAttributes(ELEMENT element);

@@ -16,8 +16,19 @@ final class OOCSSImportRule extends OOCSSRule implements OOCSSMediaQueryRule {
 		this.importUrl = importUrl;
 		this.importFile = importFile;
 	}
+	
+	OOCSSImportRule(OOCSSImportRule toCopy) {
+	    this.importUrl = toCopy.importUrl;
+	    this.importFile = toCopy.importFile;
+	}
 
-	private OOCSSMediaQueryList mediaQueryList;
+	@Override
+    public OOCSSRule makeCopy() {
+        return new OOCSSImportRule(this);
+    }
+
+
+    private OOCSSMediaQueryList mediaQueryList;
 
 	@Override
 	CSSRuleType getRuleType() {

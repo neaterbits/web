@@ -1,5 +1,6 @@
 package com.test.web.document.html.oo;
 
+import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.enums.CSSRuleType;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.oo.BaseOOCSSDocument;
@@ -13,6 +14,10 @@ public class OOStyleDocument extends BaseOOCSSDocument
 
 	public OOStyleDocument() {
 	}
+
+	public OOStyleDocument(OOCSSRule rule) {
+	    setCurParseElement(rule);
+    }
 
 	@Override
 	public OOCSSBase onBlockStart(CSSRuleType ruleType) {
@@ -34,7 +39,7 @@ public class OOStyleDocument extends BaseOOCSSDocument
 		throw new UnsupportedOperationException("Not required for styles elements");
 	}
 
-	// Called before starting parsing of a CSS element, allows us to map the
+	// Called before starting parsing of a HTML element style attribute, allows us to map the
 	// parsed element
 	// to the HTML element that contains it
 	@Override
@@ -48,4 +53,9 @@ public class OOStyleDocument extends BaseOOCSSDocument
 			htmlElement.setStyle(cssElement, styleText);
 		}
 	}
+
+    @Override
+    public ICSSDocumentStyles<OOCSSRule> makeCSSDocumentStylesCopy(OOCSSRule ref) {
+        return new OOStyleDocument(ref.makeCopy());
+    }
 }

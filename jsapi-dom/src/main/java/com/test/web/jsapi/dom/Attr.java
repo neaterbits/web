@@ -1,14 +1,21 @@
 package com.test.web.jsapi.dom;
 
+import com.test.web.document.html.common.IDocument;
 import com.test.web.jsapi.common.dom.IDocumentContext;
 
-public final class Attr<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEMENT, ATTRIBUTE>>
-	extends DocumentAccess<ELEMENT, ATTRIBUTE, DOCUMENT> {
+public final class Attr<
+    ELEMENT,
+    ATTRIBUTE,
+    DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>,
+    DOCUMENT_CONTEXT extends IDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT>>
+
+
+	extends DocumentAccess<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> {
 	
 	private final ATTRIBUTE attribute;
-	private final Element<ELEMENT, ATTRIBUTE, DOCUMENT> ownerElement;
+	private final Element<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> ownerElement;
 	
-	Attr(DOCUMENT document, ELEMENT element, ATTRIBUTE attribute, Element<ELEMENT, ATTRIBUTE, DOCUMENT> ownerElement) {
+	Attr(DOCUMENT_CONTEXT document, ELEMENT element, ATTRIBUTE attribute, Element<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> ownerElement) {
 		super(document, element);
 
 		this.attribute = attribute;
@@ -39,7 +46,7 @@ public final class Attr<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<EL
 		getDocument().setAttributeValue(getElement(), attribute, value);
 	}
 
-	public Element<ELEMENT, ATTRIBUTE, DOCUMENT> getOwnerElement() {
+	public Element<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> getOwnerElement() {
 		return ownerElement;
 	}
 }

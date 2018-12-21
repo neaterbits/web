@@ -1,10 +1,8 @@
 package com.test.web.layout.html;
 
-import java.lang.annotation.ElementType;
 
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.common.ICSSDocumentStyles;
-import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.layout.common.IFontSettings;
@@ -13,8 +11,8 @@ import com.test.web.layout.common.ILayoutDebugListener;
 import com.test.web.layout.common.LayoutStyles;
 import com.test.web.types.FontSpec;
 
-public class HTMLLayoutContext<ELEMENT, ATTRIBUTE>
-	implements ILayoutContext<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>>{
+public class HTMLLayoutContext<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>>
+	implements ILayoutContext<ELEMENT, HTMLElement, DOCUMENT>{
 
 	private final CSSContext<ELEMENT> cssContext;
 
@@ -28,7 +26,7 @@ public class HTMLLayoutContext<ELEMENT, ATTRIBUTE>
 	}
 
 	@Override
-	public long getKnownWidthHeight(IDocument<ELEMENT, ATTRIBUTE> document, ELEMENT element) {
+	public long getKnownWidthHeight(DOCUMENT document, ELEMENT element) {
 
 		final HTMLElement type = document.getType(element);
 		
@@ -57,7 +55,7 @@ public class HTMLLayoutContext<ELEMENT, ATTRIBUTE>
 
 	@Override
 	public void computeLayoutStyles(
-			IDocument<ELEMENT, ATTRIBUTE> document,
+			DOCUMENT document,
 			ELEMENT element,
 			IFontSettings<HTMLElement> fontSettings,
 			LayoutStyles result,

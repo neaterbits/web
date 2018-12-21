@@ -24,7 +24,7 @@
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>parse-css</artifactId>
+		<artifactId>parse-css-common</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 
@@ -42,21 +42,6 @@
 		<version>${project.version}</version>
 		<scope>test</scope>
 	</dependency>
-
-	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>css-test</artifactId>
-		<version>${project.version}</version>
-		<scope>test</scope>
-	</dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 </project>
 

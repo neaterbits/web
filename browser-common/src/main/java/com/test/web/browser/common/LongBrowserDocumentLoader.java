@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.test.web.css._long.LongCSSDocument;
 import com.test.web.css.common.CSSContext;
 import com.test.web.document.html._long.LongHTMLDocument;
-import com.test.web.document.html.common.IDocument;
 import com.test.web.io.common.CharInput;
 import com.test.web.io.common.LoadStream;
 import com.test.web.io.common.Tokenizer;
@@ -13,13 +12,14 @@ import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser;
 import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.IHTMLParserListener;
+import com.test.web.parse.html.util.ParseHTML;
 import com.test.web.render.common.IBufferRendererFactory;
 import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 
 public class LongBrowserDocumentLoader
 		extends BaseBrowserDocumentLoader<Integer, Integer, Void, LongHTMLDocument, Integer, LongCSSDocument>
-		implements IBrowserDocumentLoader<Integer, Integer, Integer> {
+		implements IBrowserDocumentLoader<Integer, Integer, Integer, LongHTMLDocument> {
 
 	public LongBrowserDocumentLoader(IDelayedRendererFactory rendererFactory,  IBufferRendererFactory bufferRendererFactory, ITextExtent textExtent, DebugListeners debugListeners) {
 		super(rendererFactory, bufferRendererFactory, textExtent, debugListeners);
@@ -39,8 +39,8 @@ public class LongBrowserDocumentLoader
 	}
 
 	@Override
-	public IDocument<Integer, Integer> fromHTML(String html, CSSContext<Integer> cssContext) throws ParserException {
-		return LongHTMLDocument.parseHTMLDocument(html, (charInput, tokenizer) -> parseCSS(charInput, tokenizer, cssContext));
+	public LongHTMLDocument fromHTML(String html, CSSContext<Integer> cssContext) throws ParserException {
+		return ParseHTML.parseLongHTMLDocument(html, (charInput, tokenizer) -> parseCSS(charInput, tokenizer, cssContext));
 	}
 
 	@Override

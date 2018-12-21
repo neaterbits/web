@@ -8,11 +8,11 @@ import com.test.web.document.html.common.IDocument;
  * Returns a JS wrapper object that links to the Document
  *
  */
-public class JSAPI_DOM<ELEMENT, ATTRIBUTE> {
+public class JSAPI_DOM<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>> {
 
-	private final IDocument<ELEMENT, ATTRIBUTE> document;
+	private final DOCUMENT document;
 
-	public JSAPI_DOM(IDocument<ELEMENT,ATTRIBUTE> document) {
+	public JSAPI_DOM(DOCUMENT document) {
 		
 		if (document == null) {
 			throw new IllegalArgumentException("document == null");

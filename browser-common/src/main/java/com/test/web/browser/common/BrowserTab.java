@@ -8,12 +8,12 @@ import com.test.web.document.html.common.IDocument;
 import com.test.web.parse.common.ParserException;
 import com.test.web.ui.common.IUICanvas;
 
-final class BrowserTab<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_ELEMENT> {
+final class BrowserTab<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_ELEMENT, DOCUMENT extends IDocument<HTML_ELEMENT, HTML_ATTRIBUTE, DOCUMENT>> {
 
 	private final IUICanvas uiCanvas;
-	private final IBrowserDocumentLoader<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_ELEMENT> documentLoader;
+	private final IBrowserDocumentLoader<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_ELEMENT, DOCUMENT> documentLoader;
 
-	BrowserTab(IUICanvas uiCanvas, IBrowserDocumentLoader<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_ELEMENT> documentLoader) {
+	BrowserTab(IUICanvas uiCanvas, IBrowserDocumentLoader<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_ELEMENT, DOCUMENT> documentLoader) {
 		
 		if (uiCanvas == null) {
 			throw new IllegalArgumentException("uiCanvas == null");
@@ -33,7 +33,7 @@ final class BrowserTab<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_ELEMENT> {
 	}
 
 	void showHTML(String html, CSSContext<CSS_ELEMENT> cssContext) throws ParserException {
-		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> document = documentLoader.fromHTML(html, cssContext);
+		final DOCUMENT document = documentLoader.fromHTML(html, cssContext);
 
 		// Layout and render the document in one pass
 		documentLoader.layout(document, uiCanvas.getWidth(), uiCanvas.getHeight(), uiCanvas);

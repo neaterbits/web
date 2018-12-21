@@ -1,8 +1,8 @@
 package com.test.web.layout.algorithm;
 
 import com.test.web.layout.common.IElementLayout;
-import com.test.web.layout.common.enums.Unit;
 import com.test.web.types.DecimalSize;
+import com.test.web.types.layout.Unit;
 
 public class LayoutHelperUnits {
 

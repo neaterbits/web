@@ -24,7 +24,7 @@
 
 	<dependency>
 		<groupId>${project.groupId}</groupId>
-		<artifactId>parse-html</artifactId>
+		<artifactId>parse-html-common</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 
@@ -56,19 +56,19 @@
 		<scope>test</scope>
 	</dependency>
 
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>parse-html-parser</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+    </dependency>
+
 	<dependency>
 		<groupId>${project.groupId}</groupId>
 		<artifactId>render-html</artifactId>
 		<version>${project.version}</version>
 		<scope>test</scope>
 	</dependency>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
 
   </dependencies>
 </project>

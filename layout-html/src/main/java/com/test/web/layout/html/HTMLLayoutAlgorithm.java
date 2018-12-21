@@ -6,7 +6,6 @@ import com.test.web.document.html.common.HTMLElement;
 import com.test.web.layout.algorithm.BaseLayoutCase;
 import com.test.web.layout.algorithm.LayoutAlgorithm;
 import com.test.web.layout.algorithm.LayoutState;
-import com.test.web.layout.algorithm.PageLayout;
 import com.test.web.layout.blockinline.StackElement;
 import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.IFontSettings;
@@ -14,6 +13,7 @@ import com.test.web.layout.common.ILayoutContext;
 import com.test.web.layout.common.ILayoutDebugListener;
 import com.test.web.layout.common.ILayoutStylesGetters;
 import com.test.web.layout.common.ViewPort;
+import com.test.web.layout.common.page.PageLayout;
 import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 

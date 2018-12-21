@@ -4,7 +4,7 @@ import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.ICommonDisplayableLinkAttributes;
 import com.test.web.document.html.common.enums.HTMLTarget;
 import com.test.web.types.IEnum;
-import com.test.web.types.StringUtils;
+import com.test.web.util.StringUtils;
 
 // <a> and <area> are displayable links that can delegate to this class
 // cannot inherit since <a> is container while <area> is leaf element

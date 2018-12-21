@@ -1,7 +1,7 @@
 package com.test.web.document.html.oo;
 
 import com.test.web.document.html.common.HTMLAttribute;
-import com.test.web.types.StringUtils;
+import com.test.web.util.StringUtils;
 
 public final class OOAttribute {
 	

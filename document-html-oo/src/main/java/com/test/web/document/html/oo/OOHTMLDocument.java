@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -14,76 +15,26 @@ import com.test.web.document.common.IElementListener;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.HTMLStringConversion;
-import com.test.web.document.html.common.IDocument;
-import com.test.web.document.html.common.IDocumentListener;
 import com.test.web.document.html.common.enums.HTMLDirection;
 import com.test.web.document.html.common.enums.HTMLDropzone;
 import com.test.web.document.html.common.enums.LinkRelType;
 import com.test.web.document.html.common.enums.LinkRevType;
-import com.test.web.io._long.StringBuffers;
-import com.test.web.io.common.LoadStream;
-import com.test.web.io.common.SimpleLoadStream;
 import com.test.web.io.common.Tokenizer;
-import com.test.web.parse.common.IParse;
-import com.test.web.parse.common.ParserException;
-import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.HTMLUtils;
 import com.test.web.parse.html.IDocumentParserListener;
-import com.test.web.parse.html.IHTMLParserListener;
 import com.test.web.parse.html.IHTMLStyleParserListener;
 
-public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOAttribute, OOCSSBase> {
+public final class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOAttribute, OOCSSBase, OOHTMLDocument> {
 
-	private final IDocumentListener<OOTagElement> listener;
 	private final List<OOTagElement> stack;
 
 	private final DocumentState<OOTagElement> state;
 
 	private OOTagElement rootElement;
 
-	public static <STYLE_DOCUMENT>
-		HTMLParser<OOTagElement, STYLE_DOCUMENT, OOCSSBase> createParser(
-			OOHTMLDocument document,
-			IHTMLParserListener<OOTagElement> parserListener,
-			LoadStream stream,
-			IParse<STYLE_DOCUMENT> parseStyleDocument) {
-
-		final StringBuffers input = new StringBuffers(stream);
-		
-		final HTMLParser<OOTagElement, STYLE_DOCUMENT, OOCSSBase> parser = new HTMLParser<>(
-				input,
-				input,
-				parserListener,
-				document.getStyleParserListener(),
-				parseStyleDocument);
-		
-		return parser;
-	}
-	
-	public static <STYLE_DOCUMENT>
-		OOHTMLDocument parseHTMLDocument(String html, IParse<STYLE_DOCUMENT> parseStyleDocument) throws ParserException {
-
-		final OOHTMLDocument document = new OOHTMLDocument();
-		
-		final HTMLParser<OOTagElement, STYLE_DOCUMENT, OOCSSBase> parser = createParser(document, document, new SimpleLoadStream(html), parseStyleDocument);
-		
-		try {
-			parser.parseHTMLFile();
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException("IO eception while parsing", ex);
-		}
-		
-		return document;
-	}
 
 	public OOHTMLDocument() {
-		this(null);
-	}
 	
-	public OOHTMLDocument(IDocumentListener<OOTagElement> listener) {
-		
-		this.listener = listener;
 		this.stack = new ArrayList<>();
 
 		this.state = new DocumentState<>();
@@ -232,19 +183,19 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 	}
 
 	@Override
-	public <PARAM> void iterate(IElementListener<OOTagElement, HTMLElement, IDocument<OOTagElement, OOAttribute>, PARAM> listener, PARAM param) {
+	public <PARAM> void iterate(IElementListener<OOTagElement, HTMLElement, OOHTMLDocument, PARAM> listener, PARAM param) {
 		iterate(null, rootElement, listener, param, rootElement,  true);
 	}
 	
 	@Override
-	public <PARAM> void iterateFrom(OOTagElement element, IElementListener<OOTagElement, HTMLElement, IDocument<OOTagElement, OOAttribute>, PARAM> listener, PARAM param) {
+	public <PARAM> void iterateFrom(OOTagElement element, IElementListener<OOTagElement, HTMLElement, OOHTMLDocument, PARAM> listener, PARAM param) {
 		iterate(null, rootElement, listener, param, element, false);
 	}
 	
 	private <PARAM> boolean iterate(
 			OOTagElement containerElement,
 			OODocumentElement curElement,
-			IElementListener<OOTagElement, HTMLElement, IDocument<OOTagElement, OOAttribute>, PARAM> listener,
+			IElementListener<OOTagElement, HTMLElement, OOHTMLDocument, PARAM> listener,
 			PARAM param,
 			OODocumentElement startCallListenerElement,
 			boolean callListener) {
@@ -762,7 +713,14 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 		return styleParserListener;
 	}
 
-	// Document navigation
+	
+	
+	@Override
+    public boolean isSameElement(OOTagElement element1, OOTagElement element2) {
+        return element1 == element2;
+    }
+
+    // Document navigation
 	@Override
 	public OOTagElement getParentElement(OOTagElement element) {
 		return (OOTagElement)element.parent;
@@ -770,6 +728,8 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 
 	
 	// Attributes
+	
+	
 
 	@Override
 	public int getNumAttributes(OOTagElement element) {
@@ -777,6 +737,11 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 	}
 	
 	@Override
+    public HTMLAttribute getStandard(OOAttribute attribute) {
+        return attribute.getStandard();
+    }
+
+    @Override
 	public OOAttribute getAttributeWithName(OOTagElement element, String name) {
 		return element.getAttributeWithName(name);
 	}
@@ -818,39 +783,157 @@ public class OOHTMLDocument implements IDocumentParserListener<OOTagElement, OOA
 
 	@Override
 	public OOAttribute setAttributeValue(OOTagElement element, int idx, String value) {
-		return triggerUIUpdates(element, element.setAttributeValue(idx, value, state));
+		return element.setAttributeValue(idx, value, state);
 	}
 	
 	@Override
 	public OOAttribute setAttributeValue(OOTagElement element, OOAttribute attribute, String value) {
-		return triggerUIUpdates(element, element.setAttributeValue(attribute, value, state));
+		return element.setAttributeValue(attribute, value, state);
 	}
 
 	@Override
 	public OOAttribute setAttributeValue(OOTagElement element, String name, String value) {
-		return triggerUIUpdates(element, element.setAttributeValue(name, value, state));
+		return element.setAttributeValue(name, value, state);
 	}
 
 	@Override
 	public OOAttribute setAttributeValue(OOTagElement element, String namespaceURI, String localName, String value) {
-		return triggerUIUpdates(element, element.setAttributeValue(namespaceURI, localName, value, state));
+		return element.setAttributeValue(namespaceURI, localName, value, state);
 	}
 
 	@Override
 	public OOAttribute removeAttribute(OOTagElement element, String name) {
-		return triggerUIUpdates(element, element.removeAttribute(name, state));
+		return element.removeAttribute(name, state);
 	}
 
 	@Override
 	public OOAttribute removeAttribute(OOTagElement element, String namespaceURI, String localName) {
-		return triggerUIUpdates(element, element.removeAttribute(namespaceURI, localName, state));
+		return element.removeAttribute(namespaceURI, localName, state);
 	}
 
-	private OOAttribute triggerUIUpdates(OOTagElement element, OOAttribute ooAttribute) {
-		if (listener != null && ooAttribute.getStandard() != null) {
-			listener.onAttributeUpdated(element, ooAttribute.getStandard());
-		}
-		
-		return ooAttribute;
-	}
+    @Override
+    public int getClassListLength(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public String getClassListValue(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String classListItem(OOTagElement element, int index) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean classListContains(OOTagElement element, String token) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void classListAdd(OOTagElement element, String token) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void classListRemove(OOTagElement element, String... tokens) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public boolean classListReplace(OOTagElement element, String oldToken, String newToken) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean classListSupports(OOTagElement element, String token) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean classListToggle(OOTagElement element, String token, Boolean force) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public Iterator<String> classListEntries() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    @Override
+    public void classListForEach(OOTagElement element, Object callback) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void classListForEach(OOTagElement element, Object callback, Object argument) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public String getClassName(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setClassName(OOTagElement element, String className) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public String getElementId(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setElementId(OOTagElement element, String id) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public String getLocalName(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getNamespaceURI(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getPrefix(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean getTabStop(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public String getTagName(OOTagElement element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

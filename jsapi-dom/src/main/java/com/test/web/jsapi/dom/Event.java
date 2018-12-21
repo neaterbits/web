@@ -1,120 +1,145 @@
 package com.test.web.jsapi.dom;
 
+import com.test.web.document.html.common.enums.HTMLEvent;
+import com.test.web.jsapi.common.dom.IElement;
+import com.test.web.jsapi.common.dom.IEvent;
 import com.test.web.jsapi.dom.Element;
 
-public class Event {
+public class Event<ELEMENT> implements IEvent {
 	
 	// TODO perhaps use bitflags for fewer memwrites
-	private Element target ;
+	private EventTarget<ELEMENT, ?, ?, ?> target ;
+	private final HTMLEvent htmlEvent;
 	private final long timeStamp;
 	private String type;
 	private boolean defaultPrevented;
 	private boolean bubbles;
 	private boolean cancelable;
 	private boolean composed;
-	private Element currentTarget ;
+	private EventTarget<ELEMENT, ?, ?, ?> currentTarget ;
 	private final boolean isTrusted;
 	
 	private EventPropagation propagation;
-	
-	public Event(Element target, long timeStamp, String type, boolean defaultPrevented, boolean bubbles,
-			boolean cancelable, boolean composed, Element currentTarget, boolean isTrusted) {
+
+    public Event(EventTarget<ELEMENT, ?, ?, ?> target, HTMLEvent htmlEvent, long timeStamp, boolean composed, boolean isTrusted) {
+       this(target, htmlEvent, timeStamp, htmlEvent.getBubbles(), htmlEvent.getCancelable(), composed, isTrusted);
+    }
+
+    private Event(EventTarget<ELEMENT, ?, ?, ?> target, HTMLEvent htmlEvent, long timeStamp, boolean bubbles,
+			boolean cancelable, boolean composed, boolean isTrusted) {
 
 		this.target = target;
+		this.htmlEvent = htmlEvent;
 		this.timeStamp = timeStamp;
-		this.type = type;
-		this.defaultPrevented = defaultPrevented;
+		this.type = htmlEvent.getType();
+		this.defaultPrevented = false;
 		this.bubbles = bubbles;
 		this.cancelable = cancelable;
 		this.composed = composed;
-		this.currentTarget = currentTarget;
+		this.currentTarget = target;
 		this.isTrusted = isTrusted;
 		this.propagation = EventPropagation.CONTINUE;
 	}
 
 	@Deprecated
-	public void initEvent(String type, boolean bubbles, boolean cancelable) {
+	public final void initEvent(String type, boolean bubbles, boolean cancelable) {
 		this.type = type;
 		this.bubbles = bubbles;
 		this.cancelable = cancelable;
 	}
 
-	public boolean isDefaultPrevented() {
-		return defaultPrevented;
-	}
-
-	public Element getCurrentTarget() {
+	public final EventTarget<ELEMENT, ?, ?, ?> getCurrentTarget() {
 		return currentTarget;
 	}
 	
-	public void setCurrentTarget(Element currentTarget) {
+	public final void setCurrentTarget(EventTarget<ELEMENT, ?, ?, ?> currentTarget) {
 		this.currentTarget = currentTarget;
 	}
 	
-	public Element getTarget() {
+	public final EventTarget<ELEMENT, ?, ?, ?> getTarget() {
 		return target;
 	}
 	
-	public long getTimeStamp() {
+	public final long getTimeStamp() {
 		return timeStamp;
 	}
 	
-	public String getType() {
+	public final String getType() {
 		return type;
 	}
 	
-	public boolean isBubbles() {
+	public final boolean isBubbles() {
 		return bubbles;
 	}
 	
-	public boolean isCancelable() {
+	public final boolean isCancelable() {
 		return cancelable;
 	}
 	
-	public boolean isComposed() {
+	public final boolean isComposed() {
 		return composed;
 	}
 
-	public boolean isScoped() {
+	public final boolean isScoped() {
 		return composed;
 	}
 
-	public boolean isTrusted() {
+	public final boolean isTrusted() {
 		return isTrusted;
 	}
 	
-	public void preventDefault() {
+	public final void preventDefault() {
 		if (cancelable) {
 			this.defaultPrevented = true;
 		}
 	}
 	
 	// MS compatibiity
-	public Element getSrcElement() {
-		return getTarget();
+	public final Element<ELEMENT, ?, ?, ?> getSrcElement() {
+	    throw new UnsupportedOperationException("TODO");
+		//return getTarget();
 	}
 
-	public void stopImmediatePropagation() {
+	public final void stopImmediatePropagation() {
 		this.propagation = EventPropagation.STOP_IMMEDIATE;
 	}
 	
-	public void stopPropagation() {
+	public final void stopPropagation() {
 		this.propagation = EventPropagation.STOP;
 	}
 	
-	EventPropagation getPropagation() {
+	final EventPropagation getPropagation() {
 		return propagation;
 	}
 	
 	// Obsolete methods
 	
 	@Deprecated
-	public void preventBubble() {
+	public final void preventBubble() {
 		stopPropagation();
 	}
 	
 	@Deprecated
-	public void preventCapture() {
+	public final void preventCapture() {
 		stopPropagation();
 	}
+
+	@Override
+    @JSTransient
+    public final boolean isDefaultPrevented() {
+        return defaultPrevented;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    @JSTransient
+    public final void setCurrentEventTarget(IElement element) {
+        setCurrentTarget((Element)element);
+    }
+
+    @Override
+    @JSTransient
+    public final boolean isPropagationStopped() {
+        return propagation != null && (propagation == EventPropagation.STOP || propagation == EventPropagation.STOP_IMMEDIATE);
+    }
 }

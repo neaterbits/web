@@ -3,29 +3,55 @@ package com.test.web.jsapi.dom;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.test.web.document.html.common.IDocument;
+import com.test.web.jsapi.common.dom.EventTargetElement;
 import com.test.web.jsapi.common.dom.IDocumentContext;
 import com.test.web.jsapi.common.dom.IEvent;
 import com.test.web.jsapi.common.dom.IEventListener;
 import com.test.web.jsapi.common.dom.IEventTarget;
-import com.test.web.jsapi.dom.DocumentAccess;
 
-public abstract class EventTarget<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEMENT, ATTRIBUTE>>
-		extends DocumentAccess<ELEMENT, ATTRIBUTE, DOCUMENT>
-		implements IEventTarget {
+public abstract class EventTarget<
+            ELEMENT,
+            ATTRIBUTE,
+            DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>,
+            DOCUMENT_CONTEXT extends IDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT>>
+
+		extends DocumentAccess<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT>
+		implements IEventTarget, EventTargetElement<ELEMENT> {
 
 	private Map<ListenerKey, IEventListener> listeners;
-	
 
 	EventTarget() {
 	}
 	
-	EventTarget(DOCUMENT document) {
+	EventTarget(DOCUMENT_CONTEXT document) {
 		super(document);
 	}
 
-	public EventTarget(DOCUMENT document, ELEMENT element) {
+	public EventTarget(DOCUMENT_CONTEXT document, ELEMENT element) {
 		super(document, element);
 	}
+
+	// EventTargetElement
+    @Override
+    @JSTransient
+    public ELEMENT getTargetElement() {
+        return getElement();
+    }
+
+    @Override
+    @JSTransient
+    public IEventListener getEventListener(IEvent event) {
+        
+        // TODO optimize this? perhaps use map for this
+        for (Map.Entry<ListenerKey, IEventListener> entry : listeners.entrySet()) {
+            if (entry.getKey().type.equals(event.getType())) {
+                return entry.getValue();
+            }
+        }
+
+        return null;
+    }
 
 	private void addListener(ListenerKey key, IEventListener listener) {
 		
@@ -100,9 +126,14 @@ public abstract class EventTarget<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument
 
 	@Override
 	public final boolean dispatchEvent(IEvent event) {
-		// TODO Bubble events upwards
-		throw new UnsupportedOperationException("TODO");
+	    
+	    boolean canceled;
+
+        canceled = getDocument().dispatchEvent(event, this);
+	    
+	    return canceled;
 	}
+	
 
 	private static class ListenerKey {
 		private final String type;

@@ -6,6 +6,7 @@ import com.test.web.jsengine.common.JSObjectType;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
+@SuppressWarnings("restriction")
 class NashornJSAsJavaObject implements IJSAsJavaObject {
 
 	private final ScriptObjectMirror delegate;
@@ -70,7 +71,7 @@ class NashornJSAsJavaObject implements IJSAsJavaObject {
 		return delegate.hasSlot(index);
 	}
 
-	@Override
+    @Override
 	public Object call(Object thiz, Object... params) {
 		
 		Object [] converted = null; // set to null, no allocation unless required

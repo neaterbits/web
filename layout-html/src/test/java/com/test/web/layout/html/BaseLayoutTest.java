@@ -5,11 +5,12 @@ import java.io.IOException;
 import com.test.web.css.common.CSSContext;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.IDocument;
-import com.test.web.layout.algorithm.PageLayer;
-import com.test.web.layout.algorithm.PageLayout;
+import com.test.web.layout.algorithm.LayoutAlgorithm;
 import com.test.web.layout.algorithm.PrintlnLayoutDebugListener;
 import com.test.web.layout.common.MockTextExtent;
 import com.test.web.layout.common.ViewPort;
+import com.test.web.layout.common.page.PageLayer;
+import com.test.web.layout.common.page.PageLayout;
 import com.test.web.layout.html.HTMLLayoutContext;
 import com.test.web.parse.common.ParserException;
 import com.test.web.render.common.IDelayedRendererFactory;
@@ -22,9 +23,10 @@ import junit.framework.TestCase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE> extends TestCase {
+public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE, DOCUMENT extends IDocument<HTML_ELEMENT, HTML_ATTRIBUTE, DOCUMENT>>
+        extends TestCase {
 	
-	protected abstract IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> parseDocument(String html) throws ParserException;
+	protected abstract DOCUMENT parseDocument(String html) throws ParserException;
 	
 	public void testLayout() throws IOException, ParserException {
 		
@@ -34,7 +36,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE> extends TestC
 				"</div>\n"
 		);
 	
-		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
+		final DOCUMENT doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 		final HTML_ELEMENT div = doc.getElementById("element_id");
@@ -55,7 +57,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE> extends TestC
 				"</div>\n"
 		);
 	
-		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
+		final DOCUMENT doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -85,7 +87,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE> extends TestC
 				"</div>\n"
 		);
 	
-		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
+		final DOCUMENT doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -108,7 +110,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE> extends TestC
 				"</div>\n"
 		);
 	
-		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
+		final DOCUMENT doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -129,7 +131,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE> extends TestC
 				"</div>\n"
 		);
 	
-		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
+		final DOCUMENT doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -151,7 +153,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE> extends TestC
 				"</div>\n"
 		);
 	
-		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
+		final DOCUMENT doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -172,7 +174,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE> extends TestC
 				"</div>\n"
 		);
 	
-		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
+		final DOCUMENT doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -194,7 +196,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE> extends TestC
 				"</div>\n"
 		);
 	
-		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
+		final DOCUMENT doc = parseDocument(html);
 		
 		final PageLayer<HTML_ELEMENT> layer = layout(doc, 800, 600);
 
@@ -210,12 +212,12 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE> extends TestC
 	
 	private PageLayer<HTML_ELEMENT> layout(String html, int viewPortWidth, int viewPortHeight) throws ParserException {
 
-		final IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc = parseDocument(html);
+		final DOCUMENT doc = parseDocument(html);
 	
 		return layout(doc, viewPortWidth, viewPortHeight);
 	}
 
-	private PageLayer<HTML_ELEMENT> layout(IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> doc, int viewPortWidth, int viewPortHeight) {
+	private PageLayer<HTML_ELEMENT> layout(DOCUMENT doc, int viewPortWidth, int viewPortHeight) {
 		
 		final IDelayedRendererFactory renderFactory = new QueueRendererFactory(null);
 		
@@ -223,7 +225,7 @@ public abstract class BaseLayoutTest<HTML_ELEMENT, HTML_ATTRIBUTE> extends TestC
 		
 		final ITextExtent textExtent = new MockTextExtent();
 		
-		final HTMLLayoutAlgorithm<HTML_ELEMENT, HTMLElement, IDocument<HTML_ELEMENT, HTML_ATTRIBUTE>> layoutAgorithm = new HTMLLayoutAlgorithm<>(
+		final HTMLLayoutAlgorithm<HTML_ELEMENT, HTMLElement, DOCUMENT> layoutAgorithm = new HTMLLayoutAlgorithm<>(
 				textExtent,
 				renderFactory,
 				new FontSettings(),

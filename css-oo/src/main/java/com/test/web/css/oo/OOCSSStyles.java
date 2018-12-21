@@ -110,6 +110,97 @@ public final class OOCSSStyles extends OOStylesText {
 		this.bgColorAlpha = DecimalSize.NONE;
 	}
 	
+	OOCSSStyles(OOCSSStyles toCopy) {
+	    super(toCopy);
+	    
+	    if (toCopy.values != null) {
+	        this.values = new CSSValue[toCopy.values.length];
+	        
+	        for (int i = 0; i < toCopy.numValues; ++ i) {
+	            this.values[i] = toCopy.values[i].makeCopy();
+	        }
+	    }
+	    
+	    this.numValues = toCopy.numValues;
+	    this.left = toCopy.left;
+	    this.leftUnit = toCopy.leftUnit;
+	    
+	    this.top = toCopy.top;
+	    this.topUnit = toCopy.topUnit;
+	    
+	    this.width = toCopy.width;
+	    this.widthUnit = toCopy.widthUnit;
+	    
+	    this.height = toCopy.height;
+	    this.heightUnit = toCopy.heightUnit;
+	    
+	    this.margins = toCopy.margins.makeCopy();
+	    this.padding = toCopy.padding.makeCopy();
+	    
+	    this.display = toCopy.display;
+	    this.position = toCopy.position;
+	    this._float = toCopy._float;
+	    this.clear = toCopy.clear;
+	    this.textAlign = toCopy.textAlign;
+	    this.overflow = toCopy.overflow;
+	    
+	    this.textDecoration = toCopy.textDecoration;
+	    
+	    this.colorRGB = toCopy.colorRGB;
+	    this.colorAlpha = toCopy.colorAlpha;
+	    this.colorCSS = toCopy.colorCSS;
+	    this.colorType = toCopy.colorType;
+
+	    if (toCopy.bgLayers != null) {
+            this.bgLayers = new OOBackroundLayer[toCopy.bgLayers.length];
+            
+            for (int i = 0; i < toCopy.bgLayers.length; ++ i) {
+                this.bgLayers[i] = toCopy.bgLayers[i].makeCopy();
+            }
+        }
+	    
+	    this.bgColorRGB = toCopy.bgColorRGB;
+	    this.bgColorAlpha = toCopy.bgColorAlpha;
+	    this.bgColorCSS = toCopy.bgColorCSS;
+	    this.bgColorType = toCopy.bgColorType;
+
+	    this.zIndex = toCopy.zIndex;
+	    
+	    this.fontFamily = toCopy.fontFamily;
+	    this.fontName = toCopy.fontName;
+	    this.fontSize = toCopy.fontSize;
+	    this.fontSizeUnit = toCopy.fontSizeUnit;
+	    this.fontSizeEnum = toCopy.fontSizeEnum;
+	    
+	    this.fontWeightNumber = toCopy.fontWeightNumber;
+	    this.fontWeightEnum = toCopy.fontWeightEnum;
+
+	    this.minWidth = toCopy.minWidth;
+	    this.minWidthUnit = toCopy.minWidthUnit;
+	    this.minWidthType = toCopy.minWidthType;
+	    
+	    this.minHeight = toCopy.minHeight;
+	    this.minHeightUnit = toCopy.minHeightUnit;
+	    this.minHeightType = toCopy.minHeightType;
+	    
+	    this.maxWidth = toCopy.maxWidth;
+	    this.maxWidthUnit = toCopy.maxWidthUnit;
+	    this.maxWidthType = toCopy.maxWidthType;
+	    
+	    this.maxHeight = toCopy.maxHeight;
+	    this.maxHeightUnit = toCopy.maxHeightUnit;
+	    this.maxHeightType = toCopy.maxHeightType;
+
+	    // filters
+	    if (toCopy.filter != null) {
+	        this.filter = toCopy.filter.makeCopy();
+	    }
+	}
+	
+	OOCSSStyles makeCopy() {
+	    return new OOCSSStyles(this);
+	}
+	
 	void setPriority(int propertyIndex, CSSPriority priority) {
 		values[propertyIndex].setPriority(priority);
 	}
@@ -990,6 +1081,8 @@ public final class OOCSSStyles extends OOStylesText {
 	private static abstract class CSSValue {
 		private CSSPriority priority;
 
+		abstract CSSValue makeCopy();
+		
 		abstract boolean hasPropertyName(String propertyName);
 		
 		abstract CSStyle getType();
@@ -1001,6 +1094,11 @@ public final class OOCSSStyles extends OOStylesText {
 		CSSValue(CSSPriority priority) {
 			this.priority = priority;
 		}
+		
+		CSSValue(CSSValue toCopy) {
+		    this.priority = toCopy.priority;
+		}
+		
 
 		final CSSPriority getPriority() {
 			return priority;
@@ -1023,8 +1121,20 @@ public final class OOCSSStyles extends OOStylesText {
 
 			this.type = type;
 		}
+		
+		public StandardCSSValue(StandardCSSValue toCopy) {
+		    super(toCopy);
+		    
+		    this.type = toCopy.type;
+        }
 
+		
 		@Override
+        CSSValue makeCopy() {
+            return new StandardCSSValue(this);
+        }
+
+        @Override
 		boolean hasPropertyName(String propertyName) {
 			return type.getName().equalsIgnoreCase(propertyName);
 		}
@@ -1063,8 +1173,21 @@ public final class OOCSSStyles extends OOStylesText {
 			this.name = name;
 			this.value = value;
 		}
+		
+		public CustomCSSValue(CustomCSSValue toCopy) {
+		    super(toCopy);
+
+		    this.name = toCopy.name;
+		    this.value = toCopy.value;
+        }
+
 
 		@Override
+        CSSValue makeCopy() {
+            return new CustomCSSValue(this);
+        }
+
+        @Override
 		boolean hasPropertyName(String propertyName) {
 			return name.equalsIgnoreCase(propertyName);
 		}

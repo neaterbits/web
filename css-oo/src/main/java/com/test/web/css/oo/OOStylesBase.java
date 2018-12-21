@@ -7,6 +7,13 @@ abstract class OOStylesBase {
 	
 	private long styles;
 
+	OOStylesBase() {
+    }
+	
+	OOStylesBase(OOStylesBase toCopy) {
+	    this.styles = toCopy.styles;
+	}
+	
 	static {
 		if (CSStyle.values().length > 64) {
 			throw new IllegalStateException("CSStyle.values().length > 64");

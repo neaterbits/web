@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.test.web.css.common.CSSState;
 import com.test.web.css.common.CSSValueType;
+import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSStyleSheet;
 import com.test.web.css.common.enums.CSSColorGamut;
 import com.test.web.css.common.enums.CSSDisplayMode;
@@ -838,4 +839,10 @@ public final class LongCSSDocument
 		// TODO Auto-generated method stub
 		
 	}
+	
+	
+    @Override
+    public ICSSDocumentStyles<Integer> makeCSSDocumentStylesCopy(Integer ref) {
+        throw new UnsupportedOperationException();
+    }
 }

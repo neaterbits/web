@@ -22,6 +22,12 @@
   		<version>${project.version}</version>
   	</dependency>
 
+    <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>parse-html-util</artifactId>
+        <version>${project.version}</version>
+    </dependency>
+
   	<dependency>
   		<groupId>${project.groupId}</groupId>
   		<artifactId>layout-algorithm</artifactId>
@@ -53,13 +59,6 @@
   	</dependency>
 
 	<!-- test dependencies --> 
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
 
   </dependencies>
 </project>

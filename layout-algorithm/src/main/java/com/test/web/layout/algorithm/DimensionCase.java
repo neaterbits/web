@@ -4,7 +4,7 @@ import com.test.web.layout.common.ILayoutStylesGetters;
 import com.test.web.layout.common.IStyleDimensions;
 import com.test.web.layout.common.IWrapping;
 import com.test.web.layout.common.enums.Justify;
-import com.test.web.layout.common.enums.Unit;
+import com.test.web.types.layout.Unit;
 
 // related to computing margins, padding and inner and outer bounds of elements
 public abstract class DimensionCase {

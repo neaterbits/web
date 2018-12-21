@@ -61,6 +61,36 @@ final class OOCSSFilter {
 		this.sepia = DecimalSize.NONE;
 		this.url = null;
 	}
+	
+	private OOCSSFilter(OOCSSFilter toCopy) {
+	    this.blur = toCopy.blur;
+        this.brightness = toCopy.brightness;
+        this.contrast = toCopy.contrast;
+        this.grayscale = toCopy.grayscale;
+        
+        this.dropShadowH = toCopy.dropShadowH;
+        this.dropShadowV = toCopy.dropShadowV;
+        this.dropShadowBlur = toCopy.dropShadowBlur;
+        this.dropShadowSpread = toCopy.dropShadowSpread;
+        
+        this.dropShadowR = toCopy.dropShadowR;
+        this.dropShadowG = toCopy.dropShadowG;
+        this.dropShadowB = toCopy.dropShadowB;
+        this.dropShadowA = toCopy.dropShadowA;
+        this.dropShadowColor = toCopy.dropShadowColor;
+        
+        this.hueRotate = toCopy.hueRotate;
+        this.invert = toCopy.invert;
+        this.opacity = toCopy.opacity;
+        this.saturate = toCopy.saturate;
+        this.sepia = toCopy.sepia;
+        this.url = toCopy.url;
+	}
+	
+	
+	OOCSSFilter makeCopy() {
+	    return new OOCSSFilter(this);
+	}
 
 	CSSFilter getFilter() {
 		return filter;

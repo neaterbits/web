@@ -9,9 +9,9 @@ import com.test.web.document.html.common.HTMLElementListener;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.io.common.LoadStream;
 import com.test.web.layout.algorithm.LayoutAlgorithm;
-import com.test.web.layout.algorithm.PageLayout;
 import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.ViewPort;
+import com.test.web.layout.common.page.PageLayout;
 import com.test.web.layout.html.HTMLLayoutAlgorithm;
 import com.test.web.layout.html.HTMLLayoutContext;
 import com.test.web.loadqueue.common.LoadQueue;
@@ -39,11 +39,11 @@ public abstract class BaseBrowserDocumentLoader<
 				HTML_ELEMENT,
 				HTML_ATTRIBUTE,
 				CSS_LISTENER_CONTEXT,
-				DOCUMENT extends IDocumentParserListener<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_LISTENER_CONTEXT>,
+				DOCUMENT extends IDocumentParserListener<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_LISTENER_CONTEXT, DOCUMENT>,
 				CSS_ELEMENT,
 				STYLE_DOCUMENT>
 
-		implements IBrowserDocumentLoader<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_ELEMENT> {
+		implements IBrowserDocumentLoader<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_ELEMENT, DOCUMENT> {
 
 	private final IDelayedRendererFactory renderFactory;
 	private final IBufferRendererFactory bufferRenderFactory;
@@ -77,11 +77,11 @@ public abstract class BaseBrowserDocumentLoader<
 	}
 
 	@Override
-	public final PageLayout<HTML_ELEMENT> layout(IDocument<HTML_ELEMENT, HTML_ATTRIBUTE> document, int viewPortWidth, int viewPortHeight, IRenderer displayRenderer) {
+	public final PageLayout<HTML_ELEMENT> layout(DOCUMENT document, int viewPortWidth, int viewPortHeight, IRenderer displayRenderer) {
 
 		final ViewPort viewPort = new ViewPort(viewPortWidth, viewPortHeight);
 		
-		final HTMLLayoutAlgorithm<HTML_ELEMENT, HTMLElement, IDocument<HTML_ELEMENT, HTML_ATTRIBUTE>> layoutAgorithm
+		final HTMLLayoutAlgorithm<HTML_ELEMENT, HTMLElement, DOCUMENT> layoutAgorithm
 			= new HTMLLayoutAlgorithm<>(
 				textExtent,
 				renderFactory,
@@ -102,7 +102,7 @@ public abstract class BaseBrowserDocumentLoader<
 
 		final PageLayout<HTML_ELEMENT> pageLayout = new PageLayout<>();
 		
-		final DisplayRenderer<HTML_ELEMENT, HTML_ATTRIBUTE> renderer = new DisplayRenderer<>(
+		final DisplayRenderer<HTML_ELEMENT, HTML_ATTRIBUTE, DOCUMENT> renderer = new DisplayRenderer<>(
 				viewPort,
 				pageLayout,
 				displayRenderer,
@@ -110,9 +110,9 @@ public abstract class BaseBrowserDocumentLoader<
 				new IDToOffsetList(), // TODO cache between invocations?
 				debugListeners.getDisplayRendererListener());
 		
-		final HTMLRenderer<HTML_ELEMENT, HTML_ATTRIBUTE> htmlRenderer = new HTMLRenderer<>(renderDebugListener, renderer);
+		final HTMLRenderer<HTML_ELEMENT, HTML_ATTRIBUTE, DOCUMENT> htmlRenderer = new HTMLRenderer<>(renderDebugListener, renderer);
 		
-		final HTMLLayoutContext<HTML_ELEMENT, HTML_ATTRIBUTE> layoutContext = new HTMLLayoutContext<>(cssContext);
+		final HTMLLayoutContext<HTML_ELEMENT, HTML_ATTRIBUTE, DOCUMENT> layoutContext = new HTMLLayoutContext<>(cssContext);
 		
 		layoutAgorithm.layout(document, viewPort, layoutContext, pageLayout, htmlRenderer);
 
@@ -141,7 +141,7 @@ public abstract class BaseBrowserDocumentLoader<
 			
 			final PageLayout<HTML_ELEMENT> pageLayout = new PageLayout<>();
 			
-			final DisplayRenderer<HTML_ELEMENT, HTML_ATTRIBUTE> renderer = new DisplayRenderer<>(
+			final DisplayRenderer<HTML_ELEMENT, HTML_ATTRIBUTE, DOCUMENT> renderer = new DisplayRenderer<>(
 					viewPort,
 					pageLayout,
 					displayRenderer,
@@ -150,11 +150,12 @@ public abstract class BaseBrowserDocumentLoader<
 					debugListeners.getDisplayRendererListener());
 			
 			// HTML renderer that will render to display
-			final HTMLElementListener<HTML_ELEMENT, HTML_ATTRIBUTE, IElementRenderLayout> renderListener = new HTMLRenderer<>(new PrintlnRenderDebugListener(System.out), renderer);
+			final HTMLElementListener<HTML_ELEMENT, HTML_ATTRIBUTE, IElementRenderLayout, DOCUMENT> renderListener
+			    = new HTMLRenderer<>(new PrintlnRenderDebugListener(System.out), renderer);
 			
 			// This parser listener will look for external dependencies and add those to the loadqueue,
 			// it will also forward parser events to the DOM and to the layout algorithm
-			final DependencyCollectingParserListener<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_LISTENER_CONTEXT> parserListener
+			final DependencyCollectingParserListener<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_LISTENER_CONTEXT, DOCUMENT> parserListener
 				= new DependencyCollectingParserListener<>(
 						url, // TODO handle redirects eg to index.html
 						document,

@@ -1,15 +1,22 @@
 package com.test.web.jsapi.dom;
 
+import com.test.web.document.html.common.IDocument;
 import com.test.web.jsapi.common.dom.IDocumentContext;
 import com.test.web.jsengine.common.IJSObjectAsArray;
 
-public final class NamedNodeMap<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEMENT, ATTRIBUTE>>
-	extends DocumentAccess<ELEMENT, ATTRIBUTE, DOCUMENT>
+public final class NamedNodeMap<
+        ELEMENT,
+        ATTRIBUTE,
+        DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>,
+        DOCUMENT_CONTEXT extends IDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT>>
+
+	extends DocumentAccess<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT>
+
 	implements IJSObjectAsArray {
 
-	private final Element<ELEMENT, ATTRIBUTE, DOCUMENT> ownerElement;
+	private final Element<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> ownerElement;
 
-	NamedNodeMap(DOCUMENT document, ELEMENT element, Element<ELEMENT, ATTRIBUTE, DOCUMENT> ownerElement) {
+	NamedNodeMap(DOCUMENT_CONTEXT document, ELEMENT element, Element<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> ownerElement) {
 		super(document, element);
 		
 		if (ownerElement == null) {
@@ -23,29 +30,29 @@ public final class NamedNodeMap<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentCo
 		return getDocument().getNumAttributes(getElement());
 	}
 
-	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> getNamedItem(String name) {
+	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> getNamedItem(String name) {
 		final ATTRIBUTE attribute = getDocument().getAttributeWithName(getElement(), name);
 		
 		return attribute == null ? null : new Attr<>(getDocument(), getElement(), attribute, ownerElement);
 	}
 
-	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> getNamedItemNS(String namespaceURI, String localName) {
+	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> getNamedItemNS(String namespaceURI, String localName) {
 		final ATTRIBUTE attribute = getDocument().getAttributeWithNameNS(getElement(), namespaceURI, localName);
 		
 		return attribute == null ? null : new Attr<>(getDocument(), getElement(), attribute, ownerElement);
 	}
 
-	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> setNamedItem(Attr<ELEMENT, ATTRIBUTE, DOCUMENT> attr) {
+	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> setNamedItem(Attr<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> attr) {
 		final ATTRIBUTE existing = getDocument().getAttributeWithName(getElement(), attr.getName());
 		
 		throw new UnsupportedOperationException("TODO");
 	}
 
-	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> setNamedItemNS(Attr<ELEMENT, ATTRIBUTE, DOCUMENT> attr) {
+	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> setNamedItemNS(Attr<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> attr) {
 		throw new UnsupportedOperationException("TODO");
 	}
 
-	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> setNamedItemNS(String namespaceURI, String localName) {
+	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> setNamedItemNS(String namespaceURI, String localName) {
 		final ATTRIBUTE attribute = getDocument().getAttributeWithNameNS(getElement(), namespaceURI, localName);
 		
 		return attribute == null ? null : new Attr<>(getDocument(), getElement(), attribute, ownerElement);
@@ -59,9 +66,9 @@ public final class NamedNodeMap<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentCo
 		return getDocument().removeAttribute(getElement(), namespaceURI, localName);
 	}
 
-	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> item(int index) {
+	public final Attr<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> item(int index) {
 		
-		final Attr<ELEMENT, ATTRIBUTE, DOCUMENT> attr;
+		final Attr<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> attr;
 
 		if (index < getArrayLength()) {
 			final ELEMENT element = getElement();

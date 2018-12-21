@@ -9,6 +9,7 @@ import com.test.web.document.common.IDocumentAttributeGetters;
 import com.test.web.document.common.IDocumentAttributeSetters;
 import com.test.web.document.common.IDocumentBase;
 import com.test.web.document.common.IDocumentNavigation;
+import com.test.web.document.html.common.elements.DOCElement;
 import com.test.web.document.html.common.enums.LinkRelType;
 
 /*
@@ -16,15 +17,18 @@ import com.test.web.document.html.common.enums.LinkRelType;
  * 
  */
 
-public interface IDocument<ELEMENT, ATTRIBUTE>
-		extends IDocumentBase<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>>,
+public interface IDocument<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>>
+		extends IDocumentBase<ELEMENT, HTMLElement, DOCUMENT>,
 					 IDocumentNavigation<ELEMENT>,
 					 IDocumentAttributeGetters<ELEMENT, ATTRIBUTE>,
-					 IDocumentAttributeSetters<ELEMENT, ATTRIBUTE>{
+					 IDocumentAttributeSetters<ELEMENT, ATTRIBUTE>,
+					 
+					 DOCElement<ELEMENT> {
 
 	
 	public static final String DEFAULT_NAMESPACE = "http://www.w3.org/1999/xhtml";
 	
+	boolean isSameElement(ELEMENT element1, ELEMENT element2);
 	
 	ELEMENT getElementById(String id);
 	
@@ -48,6 +52,12 @@ public interface IDocument<ELEMENT, ATTRIBUTE>
 	int getNumElements(ELEMENT element);
 
 	List<ELEMENT> getElementsWithType(HTMLElement type);
+	
+	default boolean isStandardAttribute(ATTRIBUTE attribute) {
+	    return getStandard(attribute) != null;
+	}
+
+	HTMLAttribute getStandard(ATTRIBUTE attribute);
 
 	// Access methods for various elements
 	String getScriptType(ELEMENT element);
@@ -61,6 +71,6 @@ public interface IDocument<ELEMENT, ATTRIBUTE>
 
 	BigDecimal getProgressMax(ELEMENT element);
 	BigDecimal getProgressValue(ELEMENT element);
-	
+
 	void dumpFlat(PrintStream out);
 }

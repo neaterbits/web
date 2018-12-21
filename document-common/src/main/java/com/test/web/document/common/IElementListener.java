@@ -1,7 +1,6 @@
 package com.test.web.document.common;
 
-public interface IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT
-		extends IDocumentBase<ELEMENT, ELEMENT_TYPE, DOCUMENT>, PARAM> {
+public interface IElementListener<ELEMENT, ELEMENT_TYPE, DOCUMENT extends IDocumentBase<ELEMENT, ELEMENT_TYPE, DOCUMENT>, PARAM> {
 
 	void onElementStart(DOCUMENT document,  ELEMENT element, PARAM param);
 

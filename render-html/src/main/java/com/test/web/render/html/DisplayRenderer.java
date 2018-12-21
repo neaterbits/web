@@ -10,7 +10,8 @@ import com.test.web.render.common.IFontLookup;
 import com.test.web.render.common.IRenderer;
 
 // Listens to HTMLRenderer and renders all elements visible in viewport onto display buffer
-public class DisplayRenderer<ELEMENT, ATTRIBUTE> implements HTMLElementListener<ELEMENT, ATTRIBUTE, IElementLayout>{
+public class DisplayRenderer<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>>
+        implements HTMLElementListener<ELEMENT, ATTRIBUTE, IElementLayout, DOCUMENT>{
 
 	private final ViewPort viewPort;
 	private final IPageLayout pageLayout;
@@ -65,7 +66,7 @@ public class DisplayRenderer<ELEMENT, ATTRIBUTE> implements HTMLElementListener<
 	
 
 	@Override
-	public void onElementStart(IDocument<ELEMENT, ATTRIBUTE> document, ELEMENT element, IElementLayout layout) {
+	public void onElementStart(DOCUMENT document, ELEMENT element, IElementLayout layout) {
 		// Nothing to do here, we only sync when we are certain that have layout dimensions
 		// We figure startoffset for last elements before viewport start
 		
@@ -73,7 +74,7 @@ public class DisplayRenderer<ELEMENT, ATTRIBUTE> implements HTMLElementListener<
 	}
 
 	@Override
-	public void onElementEnd(IDocument<ELEMENT, ATTRIBUTE> document, ELEMENT element, IElementLayout layout) {
+	public void onElementEnd(DOCUMENT document, ELEMENT element, IElementLayout layout) {
 
 		// If overlaps with viewport, we will buffer offsets
 		final IBounds bounds = layout.getAbsoluteBounds();
@@ -128,7 +129,7 @@ public class DisplayRenderer<ELEMENT, ATTRIBUTE> implements HTMLElementListener<
 	}
 
 	@Override
-	public void onText(IDocument<ELEMENT, ATTRIBUTE> document, ELEMENT element, String text, IElementLayout layout) {
+	public void onText(DOCUMENT document, ELEMENT element, String text, IElementLayout layout) {
 		
 		final IBounds bounds = layout.getAbsoluteBounds();
 		

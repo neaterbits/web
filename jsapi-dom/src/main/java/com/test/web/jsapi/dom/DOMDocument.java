@@ -1,23 +1,28 @@
 package com.test.web.jsapi.dom;
 
+import com.test.web.document.html.common.IDocument;
 import com.test.web.jsapi.common.dom.IDocumentContext;
 
-public class DOMDocument<ELEMENT, ATTRIBUTE, DOCUMENT extends IDocumentContext<ELEMENT, ATTRIBUTE>>
-		extends Node<ELEMENT, ATTRIBUTE, DOCUMENT> {
+public class DOMDocument<
+        ELEMENT,
+        ATTRIBUTE,
+        DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>,
+        DOCUMENT_CONTEXT extends IDocumentContext<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT>>
+		extends Node<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> {
 
 	public DOMDocument() {
 		super();
 	}
 	
-	DOMDocument(DOCUMENT document) {
+	DOMDocument(DOCUMENT_CONTEXT document) {
 		super(document);
 	}
 
-	public DOMDocument(DOCUMENT document, ELEMENT element) {
+	public DOMDocument(DOCUMENT_CONTEXT document, ELEMENT element) {
 		super(document, element);
 	}
 	
-	public Element<ELEMENT, ATTRIBUTE, DOCUMENT>getElementById(String id) {
+	public Element<ELEMENT, ATTRIBUTE, DOCUMENT, DOCUMENT_CONTEXT> getElementById(String id) {
 		final ELEMENT element = getDocument().getElementById(id);
 		
 		// TODO return the correct instance based on type

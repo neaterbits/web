@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import com.test.web.buffers.LongBuffersIntegerIndex;
@@ -17,8 +18,6 @@ import com.test.web.document.common.DocumentState;
 import com.test.web.document.common.IElementListener;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
-import com.test.web.document.html.common.HTMLElementListener;
-import com.test.web.document.html.common.IDocument;
 import com.test.web.document.html.common.enums.HTMLDirection;
 import com.test.web.document.html.common.enums.LinkRelType;
 import com.test.web.io._long.StringBuffers;
@@ -26,7 +25,6 @@ import com.test.web.io.common.SimpleLoadStream;
 import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.common.IParse;
 import com.test.web.parse.common.ParserException;
-import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.HTMLUtils;
 import com.test.web.parse.html.IDocumentParserListener;
 import com.test.web.parse.html.IHTMLStyleParserListener;
@@ -48,7 +46,7 @@ import com.test.web.types.Debug;
 
 public class LongHTMLDocument extends LongBuffersIntegerIndex
 
-	implements IDocumentParserListener<Integer, Integer, Void> {
+	implements IDocumentParserListener<Integer, Integer, Void, LongHTMLDocument> {
 
 	private static final boolean CHECK_OVERWRITE = true;
 	private static final boolean CHECK_IS_CONTAINER = true;
@@ -591,18 +589,18 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	}
 	
 	@Override
-	public <PARAM> void iterate(IElementListener<Integer, HTMLElement, IDocument<Integer, Integer>, PARAM> listener, PARAM param) {
+	public <PARAM> void iterate(IElementListener<Integer, HTMLElement, LongHTMLDocument, PARAM> listener, PARAM param) {
 		iterate(INITIAL_ELEMENT, listener, param, INITIAL_ELEMENT,  true);
 	}
 	
 	@Override
-	public <PARAM> void iterateFrom(Integer element, IElementListener<Integer, HTMLElement, IDocument<Integer, Integer>, PARAM> listener, PARAM param) {
+	public <PARAM> void iterateFrom(Integer element, IElementListener<Integer, HTMLElement, LongHTMLDocument, PARAM> listener, PARAM param) {
 		iterate(INITIAL_ELEMENT, listener, param, element, false);
 	}
 	
 	private <PARAM> boolean iterate(
 			int curElement,
-			IElementListener<Integer, HTMLElement, IDocument<Integer, Integer>, PARAM> listener,
+			IElementListener<Integer, HTMLElement, LongHTMLDocument, PARAM> listener,
 			PARAM param,
 			int startCallListenerElement,
 			boolean callListener) {
@@ -758,49 +756,6 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		return styleDocument;
 	}
 	
-	public static <STYLE_DOCUMENT> LongHTMLDocument parseHTMLDocument(String text, IParse<STYLE_DOCUMENT> parseStyleDocument)  throws ParserException {
-		try {
-			return loadHTMLDocument(new SimpleLoadStream(text), parseStyleDocument);
-		} catch (IOException ex) {
-			throw new IllegalStateException("Should not catch IOException when parsing from a String", ex);
-		}
-	}
-
-	private static <STYLE_DOCUMENT> LongHTMLDocument loadHTMLDocument(
-			SimpleLoadStream stream,
-			IParse<STYLE_DOCUMENT> parseStyleDocument)  throws IOException, ParserException {
-		
-		final LongHTMLDocument htmlDocument;
-		
-		final StringBuffers buffers = new StringBuffers(stream);
-
-		htmlDocument = new LongHTMLDocument(buffers);
-		
-		final HTMLParser<Integer, STYLE_DOCUMENT, Void> parser = new HTMLParser<>(
-				buffers,
-				buffers,
-				htmlDocument,
-				htmlDocument.getStyleParserListener(),
-				parseStyleDocument);
-		
-		parser.parseHTMLFile();
-
-		return htmlDocument;
-	}
-
-	// Helper method for loading a document, useful from unit tests
-	public static <STYLE_DOCUMENT> LongHTMLDocument loadHTMLDocument(File file, IParse<STYLE_DOCUMENT> parseStyleDocument) throws IOException, ParserException {
-		
-		final LongHTMLDocument doc;
-		
-		try (InputStream inputStream = new FileInputStream(file)) {
-			doc = loadHTMLDocument(new SimpleLoadStream(inputStream), parseStyleDocument);
-		}
-
-		return doc;
-	}
-
-
 	// Document navigation
 	@Override
 	public Integer getParentElement(Integer element) {
@@ -808,7 +763,20 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		return null;
 	}
 
-	// Attribute getters and setters
+	@Override
+    public boolean isSameElement(Integer element1, Integer element2) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public HTMLAttribute getStandard(Integer attribute) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    // Attribute getters and setters
 	@Override
 	public int getNumAttributes(Integer element) {
 		// TODO Auto-generated method stub
@@ -909,4 +877,151 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
+    @Override
+    public int getClassListLength(Integer element) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+
+    @Override
+    public String getClassListValue(Integer element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public String classListItem(Integer element, int index) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public boolean classListContains(Integer element, String token) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+    @Override
+    public void classListAdd(Integer element, String token) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void classListRemove(Integer element, String... tokens) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public boolean classListReplace(Integer element, String oldToken, String newToken) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+    @Override
+    public boolean classListSupports(Integer element, String token) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean classListToggle(Integer element, String token, Boolean force) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void classListForEach(Integer element, Object callback) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void classListForEach(Integer element, Object callback, Object argument) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public Iterator<String> classListEntries() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public String getClassName(Integer element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public void setClassName(Integer element, String className) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public String getElementId(Integer element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public void setElementId(Integer element, String id) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public String getLocalName(Integer element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public String getNamespaceURI(Integer element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public String getPrefix(Integer element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    @Override
+    public boolean getTabStop(Integer element) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+    @Override
+    public String getTagName(Integer element) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    // Layout related elements
 }

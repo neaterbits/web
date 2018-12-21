@@ -10,11 +10,11 @@ import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.HTMLElementListener;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.io.common.Tokenizer;
-import com.test.web.layout.algorithm.PageLayout;
 import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.IFontSettings;
 import com.test.web.layout.common.ILayoutDebugListener;
 import com.test.web.layout.common.ViewPort;
+import com.test.web.layout.common.page.PageLayout;
 import com.test.web.layout.html.HTMLLayoutAlgorithm;
 import com.test.web.layout.html.HTMLLayoutContext;
 import com.test.web.layout.html.HTMLLayoutState;
@@ -30,16 +30,16 @@ import com.test.web.render.common.ITextExtent;
  * as soon as this information is available.
  */
 
-public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER_CONTEXT>
+public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER_CONTEXT, DOCUMENT extends IDocument<ELEMENT, ATTRIBUTE, DOCUMENT>>
 			implements IHTMLParserListener<ELEMENT> {
 
-	// Base URL of the document we are loading, in order to resolve URLs to externa dependencies
+	// Base URL of the document we are loading, in order to resolve URLs to external dependencies
 	private final URL documentURL;
 	
-	private final IDocumentParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER_CONTEXT> delegate;
+	private final IDocumentParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER_CONTEXT, DOCUMENT> delegate;
 	private final ILoadQueue loadQueue;
 
-	private final HTMLLayoutAlgorithm<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>> layoutAlgorithm;
+	private final HTMLLayoutAlgorithm<ELEMENT, HTMLElement, DOCUMENT> layoutAlgorithm;
 
 	private HTMLElement curElement;
 	
@@ -55,18 +55,18 @@ public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER
 
 	private final CSSContext<ELEMENT> cssContext;
 
-	private final HTMLLayoutState<ELEMENT, HTMLElement, IDocument<ELEMENT, ATTRIBUTE>>layoutState;
+	private final HTMLLayoutState<ELEMENT, HTMLElement, DOCUMENT> layoutState;
 	
 	public DependencyCollectingParserListener(
 			URL documentURL,
-			IDocumentParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER_CONTEXT> delegate,
+			IDocumentParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER_CONTEXT, DOCUMENT> delegate,
 			ILoadQueue loadQueue,
 			ViewPort viewPort,
 			ITextExtent textExtent,
 			IDelayedRendererFactory renderFactory,
 			IFontSettings<HTMLElement> fontSettings,
 			PageLayout<ELEMENT> pageLayout,
-			HTMLElementListener<ELEMENT, ATTRIBUTE, IElementRenderLayout> renderListener,
+			HTMLElementListener<ELEMENT, ATTRIBUTE, IElementRenderLayout, DOCUMENT> renderListener,
 			ILayoutDebugListener<HTMLElement> layoutDebugListener) {
 
 		this.documentURL = documentURL;
@@ -103,7 +103,8 @@ public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER
 		// as long as there are no stylesheets or retrieving image dimensions, we might forward directly to layout algorith and compute layout on the fly as we parse
 		
 		if (canProcessElements()) {
-			layoutAlgorithm.onElementStart(delegate, element, layoutState);
+            // TODO casting hack
+			layoutAlgorithm.onElementStart((DOCUMENT)delegate, element, layoutState);
 		}
 		
 		return element;
@@ -142,7 +143,8 @@ public class DependencyCollectingParserListener<ELEMENT, ATTRIBUTE, CSS_LISTENER
 		}
 		
 		if (canProcessElements()) {
-			layoutAlgorithm.onElementEnd(delegate, elementRef, layoutState);
+		    // TODO casting hack
+			layoutAlgorithm.onElementEnd((DOCUMENT)delegate, elementRef, layoutState);
 		}
 
 		return elementRef;

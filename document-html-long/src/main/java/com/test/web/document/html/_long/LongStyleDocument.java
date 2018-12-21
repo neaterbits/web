@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.test.web.css._long.BaseLongCSSDocument;
+import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.enums.CSSRuleType;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.io.common.Tokenizer;
@@ -40,7 +41,12 @@ final class LongStyleDocument extends BaseLongCSSDocument
 		throw new UnsupportedOperationException("Not required for styles elements");
 	}
 	
-	// Called before starting parsing of a CSS element, allows us to map the parsed element
+	@Override
+    public ICSSDocumentStyles<Integer> makeCSSDocumentStylesCopy(Integer ref) {
+        throw new UnsupportedOperationException("TODO");
+    }
+
+    // Called before starting parsing of a CSS element, allows us to map the parsed element
 	// to the HTML element that contains it
 	@Override
 	public void startParseStyleElement(Integer htmlElement, String styleText) {

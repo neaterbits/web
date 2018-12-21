@@ -28,6 +28,9 @@
 	    <module>css-long</module>
 	    <module>css-oo</module>
 	    <module>css-test</module>
+	    <module>eventqueue-common</module>
+	    <module>eventqueue-html</module>
+	    <module>externalevents</module>
 	    <module>io-common</module>
 	    <module>io-long</module>
 	    <module>jsapi-common</module>
@@ -42,8 +45,11 @@
 	    <module>layout-block-inline</module>
 	    <module>layout-html</module>
 	    <module>parse-common</module>
-	    <module>parse-css</module>
-	    <module>parse-html</module>
+	    <module>parse-css-common</module>
+	    <module>parse-css-parser</module>
+	    <module>parse-html-common</module>
+	    <module>parse-html-parser</module>
+	    <module>parse-html-util</module>
 	    <module>document-common</module>
 	    <module>document-html-common</module>
 	    <module>document-html-long</module>
@@ -51,6 +57,7 @@
 	    <module>document-html-test</module>
 	    <module>loadqueue-common</module>
 	    <module>loadqueue-html</module>
+	    <module>page-common</module>
 	    <module>render-common</module>
 	    <module>render-queue</module>
 	    <module>render-html</module>
@@ -62,6 +69,7 @@
 	    <module>browser-common</module>
 	    <module>browser-swing</module>
 	    <module>browser-swt</module>
+	    <module>util</module>
 
 	    <module>testdata</module>
   </modules>
@@ -106,6 +114,13 @@
   		<version>1.7.1</version>
   		<scope>test</scope>
   	</dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
 
   </dependencies>
 
