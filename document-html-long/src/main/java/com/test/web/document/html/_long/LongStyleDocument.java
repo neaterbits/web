@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.neaterbits.util.io.strings.Tokenizer;
 import com.test.web.css._long.BaseLongCSSDocument;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.enums.CSSRuleType;
 import com.test.web.css.common.enums.CSSTarget;
-import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.html.IHTMLStyleParserListener;
 
 // Keeps track of style-attribute contents for all HTML elements within the DOM

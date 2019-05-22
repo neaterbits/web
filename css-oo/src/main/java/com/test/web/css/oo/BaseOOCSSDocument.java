@@ -1,5 +1,6 @@
 package com.test.web.css.oo;
 
+import com.neaterbits.util.io.strings.Tokenizer;
 import com.test.web.css.common.CSSGradientColorStop;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.common.ICSSJustify;
@@ -47,7 +48,6 @@ import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSSUpdate;
 import com.test.web.css.common.enums.CSStyle;
-import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.css.CSSParserListener;
 import com.test.web.types.Ratio;
 

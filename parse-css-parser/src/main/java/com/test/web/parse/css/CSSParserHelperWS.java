@@ -2,10 +2,10 @@ package com.test.web.parse.css;
 
 import java.io.IOException;
 
-import com.test.web.io.common.CharInput;
-import com.test.web.parse.common.Lexer;
-import com.test.web.parse.common.ParserException;
-import com.test.web.parse.common.TokenMergeHelper;
+import com.neaterbits.util.io.strings.CharInput;
+import com.neaterbits.util.parse.Lexer;
+import com.neaterbits.util.parse.ParserException;
+import com.neaterbits.util.parse.TokenMergeHelper;
 
 class CSSParserHelperWS {
 	private static final CSSToken [] wsAndComment = new CSSToken [] { CSSToken.WS, CSSToken.COMMENT };

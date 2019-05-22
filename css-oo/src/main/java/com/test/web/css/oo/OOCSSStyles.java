@@ -2,6 +2,7 @@ package com.test.web.css.oo;
 
 import java.util.Arrays;
 
+import com.neaterbits.util.IEnum;
 import com.test.web.css.common.CSSStyleBuilder;
 import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.enums.CSSBackgroundColor;
@@ -26,7 +27,6 @@ import com.test.web.css.common.enums.CSStyle;
 import com.test.web.types.ColorAlpha;
 import com.test.web.types.ColorRGB;
 import com.test.web.types.DecimalSize;
-import com.test.web.types.IEnum;
 
 public final class OOCSSStyles extends OOStylesText {
 

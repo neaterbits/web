@@ -1,6 +1,6 @@
 package com.test.web.document.html.common.enums;
 
-import com.test.web.types.IEnum;
+import com.neaterbits.util.IEnum;
 import com.test.web.types.Status;
 
 /**

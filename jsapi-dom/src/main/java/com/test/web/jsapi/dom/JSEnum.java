@@ -1,6 +1,6 @@
 package com.test.web.jsapi.dom;
 
-import com.test.web.types.IEnum;
+import com.neaterbits.util.IEnum;
 
 public class JSEnum {
 

@@ -3,11 +3,11 @@ package com.test.web.parse.css;
 import java.io.IOException;
 import java.util.function.BiConsumer;
 
+import com.neaterbits.util.io.strings.CharInput;
+import com.neaterbits.util.parse.Lexer;
+import com.neaterbits.util.parse.ParserException;
 import com.test.web.css.common.enums.CSSJustify;
 import com.test.web.css.common.enums.CSSUnit;
-import com.test.web.io.common.CharInput;
-import com.test.web.parse.common.Lexer;
-import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser.InitialMarginOrPaddingParser;
 import com.test.web.types.DecimalSize;
 

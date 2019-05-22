@@ -1,6 +1,6 @@
 package com.test.web.css.common.enums;
 
-import com.test.web.types.IEnum;
+import com.neaterbits.util.IEnum;
 import com.test.web.types.layout.Unit;
 
 public enum CSSUnit implements IEnum {

@@ -5,9 +5,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.neaterbits.util.parse.ParserException;
 import com.test.web.css.common.CSSContext;
 import com.test.web.document.html.common.IDocument;
-import com.test.web.parse.common.ParserException;
 import com.test.web.ui.common.Alignment;
 import com.test.web.ui.common.HBoxLayoutData;
 import com.test.web.ui.common.IUICanvas;

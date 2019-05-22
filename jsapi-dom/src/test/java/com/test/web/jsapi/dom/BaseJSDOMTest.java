@@ -1,5 +1,6 @@
 package com.test.web.jsapi.dom;
 
+import com.neaterbits.util.parse.ParserException;
 import com.test.web.css.common.CSSContext;
 import com.test.web.css.oo.OOCSSRule;
 import com.test.web.document.html.oo.OOAttribute;
@@ -7,7 +8,6 @@ import com.test.web.document.html.oo.OOHTMLDocument;
 import com.test.web.document.html.oo.OOTagElement;
 import com.test.web.jsapi.common.dom.IEvent;
 import com.test.web.jsengine.common.JSVariableMap;
-import com.test.web.parse.common.ParserException;
 import com.test.web.parse.html.util.ParseHTML;
 
 public class BaseJSDOMTest extends BaseJSExecutingTest {

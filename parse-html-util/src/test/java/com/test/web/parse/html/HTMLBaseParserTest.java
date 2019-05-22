@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import com.neaterbits.util.parse.ParserException;
 import com.test.web.document.html.common.HTMLElement;
-import com.test.web.parse.common.ParserException;
 import com.test.web.testdata.TestData;
 
 import junit.framework.TestCase;

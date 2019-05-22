@@ -1,11 +1,11 @@
 package com.test.web.parse.html;
 
+import com.neaterbits.util.parse.CharType;
+import com.neaterbits.util.parse.CharTypeWS;
+import com.neaterbits.util.parse.IToken;
+import com.neaterbits.util.parse.TokenType;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
-import com.test.web.parse.common.CharType;
-import com.test.web.parse.common.CharTypeWS;
-import com.test.web.parse.common.IToken;
-import com.test.web.parse.common.TokenType;
 import com.test.web.parse.css.CharTypeHTMLElementClass;
 import com.test.web.parse.css.CharTypeHTMLElementTag;
 

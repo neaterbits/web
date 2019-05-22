@@ -1,6 +1,6 @@
 package com.test.web.document.html._long;
 
-import com.test.web.buffers.BufferUtil;
+import com.neaterbits.util.buffers.BufferUtil;
 import com.test.web.types.Debug;
 
 public class LongHTMLBase extends BufferUtil {

@@ -1,11 +1,11 @@
 package com.test.web.jsapi.dom.element;
 
+import com.neaterbits.util.parse.ParserException;
 import com.test.web.jsapi.dom.BaseJSDOMTest;
 import com.test.web.jsapi.dom.JSRef;
 import com.test.web.jsengine.common.JSCompileException;
 import com.test.web.jsengine.common.JSExecutionException;
 import com.test.web.jsengine.common.JSVariableMap;
-import com.test.web.parse.common.ParserException;
 import com.test.web.testdata.TestData;
 
 import static org.assertj.core.api.Assertions.assertThat;

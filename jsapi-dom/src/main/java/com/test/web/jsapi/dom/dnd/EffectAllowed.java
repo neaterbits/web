@@ -1,6 +1,6 @@
 package com.test.web.jsapi.dom.dnd;
 
-import com.test.web.types.IEnum;
+import com.neaterbits.util.IEnum;
 
 public enum EffectAllowed implements IEnum {
 

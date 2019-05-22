@@ -2,9 +2,9 @@ package com.test.web.parse.html;
 
 import java.io.IOException;
 
+import com.neaterbits.util.io.strings.Tokenizer;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
-import com.test.web.io.common.Tokenizer;
 
 /**
  * Parser listener that calls onto model as we are parsing along the input document 

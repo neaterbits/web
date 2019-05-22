@@ -1,6 +1,6 @@
 package com.test.web.parse.html;
 
-import com.test.web.parse.common.CharType;
+import com.neaterbits.util.parse.CharType;
 
 final class HTMLCharTypeText extends CharType {
 

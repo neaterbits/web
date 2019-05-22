@@ -2,6 +2,12 @@ package com.test.web.parse.css;
 
 import com.test.web.css.common.enums.CSSBackgroundColor;
 import com.test.web.css.common.enums.CSSBackgroundImage;
+import com.neaterbits.util.parse.CharType;
+import com.neaterbits.util.parse.CharTypeHexDigit;
+import com.neaterbits.util.parse.CharTypeInteger;
+import com.neaterbits.util.parse.CharTypeWS;
+import com.neaterbits.util.parse.IToken;
+import com.neaterbits.util.parse.TokenType;
 import com.test.web.css.common.enums.CSSBackgroundAttachment;
 import com.test.web.css.common.enums.CSSBackgroundOrigin;
 import com.test.web.css.common.enums.CSSBackgroundRepeat;
@@ -38,12 +44,6 @@ import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSSUpdate;
 import com.test.web.css.common.enums.CSStyle;
-import com.test.web.parse.common.CharType;
-import com.test.web.parse.common.CharTypeHexDigit;
-import com.test.web.parse.common.CharTypeInteger;
-import com.test.web.parse.common.CharTypeWS;
-import com.test.web.parse.common.IToken;
-import com.test.web.parse.common.TokenType;
 
 public enum CSSToken implements IToken {
 	NONE(TokenType.NONE),

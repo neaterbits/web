@@ -2,9 +2,9 @@ package com.test.web.parse.css;
 
 import java.io.IOException;
 
-import com.test.web.io.common.CharInput;
-import com.test.web.parse.common.Lexer;
-import com.test.web.parse.common.ParserException;
+import com.neaterbits.util.io.strings.CharInput;
+import com.neaterbits.util.parse.Lexer;
+import com.neaterbits.util.parse.ParserException;
 
 abstract class CSSParserHelperBase {
 

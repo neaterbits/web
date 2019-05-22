@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 
+import com.neaterbits.util.parse.ParserException;
 import com.test.web.css.common.ICSSDocument;
 import com.test.web.css.common.WrappingHolder;
 import com.test.web.css.common.enums.CSSBackgroundColor;
@@ -30,7 +31,6 @@ import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.io._long.StringBuffers;
 import com.test.web.io.common.SimpleLoadStream;
-import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser;
 import com.test.web.parse.css.ICSSDocumentParserListener;
 import com.test.web.testdata.TestData;

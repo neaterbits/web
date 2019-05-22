@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.neaterbits.util.parse.ParserException;
 import com.test.web.document.html._long.LongHTMLDocument;
 import com.test.web.io._long.StringBuffers;
 import com.test.web.layout.common.page.PageLayout;
@@ -11,7 +12,6 @@ import com.test.web.loadqueue.common.LoadQueue;
 import com.test.web.loadqueue.common.LoadQueueAndStream;
 import com.test.web.loadqueue.common.IStreamFactory;
 import com.test.web.loadqueue.common.scheduler.ThreadedLoadScheduler;
-import com.test.web.parse.common.ParserException;
 import com.test.web.parse.html.HTMLParser;
 import com.test.web.render.html.FontSettings;
 import com.test.web.testdata.TestData;

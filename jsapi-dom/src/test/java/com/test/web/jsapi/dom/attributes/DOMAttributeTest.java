@@ -1,5 +1,7 @@
 package com.test.web.jsapi.dom.attributes;
 
+import com.neaterbits.util.IEnum;
+import com.neaterbits.util.parse.ParserException;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLAttributeValueType;
 import com.test.web.document.html.common.HTMLElement;
@@ -8,8 +10,6 @@ import com.test.web.jsengine.common.IJSEngine;
 import com.test.web.jsengine.common.JSCompileException;
 import com.test.web.jsengine.common.JSExecutionException;
 import com.test.web.jsengine.common.JSVariableMap;
-import com.test.web.parse.common.ParserException;
-import com.test.web.types.IEnum;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

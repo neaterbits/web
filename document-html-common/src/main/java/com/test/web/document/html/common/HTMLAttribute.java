@@ -1,11 +1,11 @@
 package com.test.web.document.html.common;
 
+import com.neaterbits.util.IEnum;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.document.html.common.enums.HTMLDirection;
 import com.test.web.document.html.common.enums.HTMLDropzone;
 import com.test.web.document.html.common.enums.LinkRelType;
 import com.test.web.document.html.common.enums.LinkRevType;
-import com.test.web.types.IEnum;
 import com.test.web.types.IKeyValue;
 import com.test.web.types.IKeyValueList;
 import com.test.web.types.IOptionEnum;

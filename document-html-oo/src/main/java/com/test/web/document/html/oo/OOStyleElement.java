@@ -3,7 +3,6 @@ package com.test.web.document.html.oo;
 import com.test.web.document.common.DocumentState;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
-import com.test.web.document.html.common.HTMLStringConversion;
 
 public class OOStyleElement extends OOTagElement {
 

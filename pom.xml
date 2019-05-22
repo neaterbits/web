@@ -11,6 +11,8 @@
   <properties>
    
 	<outputsRoot>${project.basedir}</outputsRoot>
+	<utilGroupId>com.neaterbits.util</utilGroupId>
+	<utilVersion>0.0.1-SNAPSHOT</utilVersion>
 
    <projectsRoot>${env.PROJECTS_ROOT}</projectsRoot>
   <!--  
@@ -23,7 +25,6 @@
 
 	  <modules>
 	    <module>types</module>
-	    <module>buffers</module>
 	    <module>css-common</module>
 	    <module>css-long</module>
 	    <module>css-oo</module>
@@ -44,7 +45,6 @@
 	    <module>layout-algorithm</module>
 	    <module>layout-block-inline</module>
 	    <module>layout-html</module>
-	    <module>parse-common</module>
 	    <module>parse-css-common</module>
 	    <module>parse-css-parser</module>
 	    <module>parse-html-common</module>

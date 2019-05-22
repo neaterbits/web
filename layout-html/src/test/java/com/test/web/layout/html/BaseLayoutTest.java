@@ -2,6 +2,7 @@ package com.test.web.layout.html;
 
 import java.io.IOException;
 
+import com.neaterbits.util.parse.ParserException;
 import com.test.web.css.common.CSSContext;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.IDocument;
@@ -12,7 +13,6 @@ import com.test.web.layout.common.ViewPort;
 import com.test.web.layout.common.page.PageLayer;
 import com.test.web.layout.common.page.PageLayout;
 import com.test.web.layout.html.HTMLLayoutContext;
-import com.test.web.parse.common.ParserException;
 import com.test.web.render.common.IDelayedRendererFactory;
 import com.test.web.render.common.ITextExtent;
 import com.test.web.render.html.FontSettings;

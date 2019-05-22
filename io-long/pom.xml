@@ -18,8 +18,14 @@
 
 
 	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>buffers</artifactId>
+		<groupId>${utilGroupId}</groupId>
+		<artifactId>util-buffers</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>${utilGroupId}</groupId>
+		<artifactId>util-io-strings</artifactId>
 		<version>${project.version}</version>
 	</dependency>
 

@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.test.web.io.common.CharInput;
-import com.test.web.parse.common.Lexer;
-import com.test.web.parse.common.ParserException;
+import com.neaterbits.util.io.strings.CharInput;
+import com.neaterbits.util.parse.Lexer;
+import com.neaterbits.util.parse.ParserException;
 
 class CSSParserHelperFunction {
 

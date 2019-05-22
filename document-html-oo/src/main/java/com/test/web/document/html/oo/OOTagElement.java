@@ -3,6 +3,11 @@ package com.test.web.document.html.oo;
 import java.io.IOException;
 import java.util.Arrays;
 
+import com.neaterbits.util.IEnum;
+import com.neaterbits.util.io.strings.CharInput;
+import com.neaterbits.util.io.strings.StringCharInput;
+import com.neaterbits.util.parse.Lexer;
+import com.neaterbits.util.parse.ParserException;
 import com.test.web.css.common.enums.CSSRuleType;
 import com.test.web.css.oo.OOCSSBase;
 import com.test.web.css.oo.OOCSSRule;
@@ -13,13 +18,8 @@ import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.HTMLStringConversion;
 import com.test.web.document.html.common.enums.HTMLDirection;
 import com.test.web.document.html.common.enums.HTMLDropzone;
-import com.test.web.io.common.CharInput;
-import com.test.web.io.common.StringCharInput;
-import com.test.web.parse.common.Lexer;
-import com.test.web.parse.common.ParserException;
 import com.test.web.parse.css.CSSParser;
 import com.test.web.parse.css.CSSToken;
-import com.test.web.types.IEnum;
 
 public abstract class OOTagElement extends OOAttributes {
 

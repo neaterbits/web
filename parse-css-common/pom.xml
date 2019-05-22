@@ -23,9 +23,9 @@
 	</dependency>
 
 	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>parse-common</artifactId>
-		<version>${project.version}</version>
+		<groupId>${utilGroupId}</groupId>
+		<artifactId>util-parse</artifactId>
+		<version>${utilVersion}</version>
 	</dependency>
 
 	<!-- test dependencies --> 

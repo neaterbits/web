@@ -1,6 +1,6 @@
 package com.test.web.parse.css;
 
-import com.test.web.parse.common.CharType;
+import com.neaterbits.util.parse.CharType;
 
 public class CharTypeHTMLElementClass extends CharType {
 

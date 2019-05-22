@@ -2,8 +2,8 @@ package com.test.web.render.queue;
 
 import java.util.Arrays;
 
-import com.test.web.buffers.BitOperations;
-import com.test.web.buffers.DuplicateDetectingStringStorageBuffer;
+import com.neaterbits.util.buffers.BitOperations;
+import com.neaterbits.util.buffers.DuplicateDetectingStringStorageBuffer;
 import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.IFontLookup;

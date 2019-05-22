@@ -9,7 +9,6 @@ import com.test.web.document.common.IDocumentAttributeGetters;
 import com.test.web.document.common.IDocumentAttributeSetters;
 import com.test.web.document.common.IDocumentBase;
 import com.test.web.document.common.IDocumentNavigation;
-import com.test.web.document.html.common.elements.DOCElement;
 import com.test.web.document.html.common.enums.LinkRelType;
 
 /*

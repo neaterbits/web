@@ -1,5 +1,6 @@
 package com.test.web.css._long;
 
+import com.neaterbits.util.buffers.BufferUtil;
 import com.test.web.css.common.ICSSJustify;
 import com.test.web.css.common.enums.CSSDisplay;
 import com.test.web.css.common.enums.CSSFloat;
@@ -9,8 +10,6 @@ import com.test.web.css.common.enums.CSSTextAlign;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
 import com.test.web.css.common.enums.CSSJustify;
-
-import com.test.web.buffers.BufferUtil;
 
 /**
  * For storing styling information in a long [] array for this purpose

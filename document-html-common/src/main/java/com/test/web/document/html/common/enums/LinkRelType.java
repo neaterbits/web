@@ -1,7 +1,7 @@
 package com.test.web.document.html.common.enums;
 
+import com.neaterbits.util.IEnum;
 import com.test.web.document.html.common.HTMLElement;
-import com.test.web.types.IEnum;
 import com.test.web.types.Status;
 
 public enum LinkRelType implements IEnum {

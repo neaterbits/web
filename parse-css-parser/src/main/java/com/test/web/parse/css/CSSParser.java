@@ -8,6 +8,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import com.neaterbits.util.Value;
+import com.neaterbits.util.io.strings.CharInput;
+import com.neaterbits.util.io.strings.Tokenizer;
+import com.neaterbits.util.parse.BaseParser;
+import com.neaterbits.util.parse.Lexer;
+import com.neaterbits.util.parse.LexerMatch;
+import com.neaterbits.util.parse.ParserException;
+import com.neaterbits.util.parse.TokenMergeHelper;
 import com.test.web.css.common.CSSGradientColorStop;
 import com.test.web.css.common.enums.CSSBackgroundAttachment;
 import com.test.web.css.common.enums.CSSBackgroundColor;
@@ -28,17 +36,9 @@ import com.test.web.css.common.enums.CSSRuleType;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSStyle;
-import com.test.web.io.common.CharInput;
-import com.test.web.io.common.Tokenizer;
-import com.test.web.parse.common.BaseParser;
-import com.test.web.parse.common.Lexer;
-import com.test.web.parse.common.LexerMatch;
-import com.test.web.parse.common.ParserException;
-import com.test.web.parse.common.TokenMergeHelper;
 import com.test.web.parse.css.CSSParserHelperFunction.IParseParam;
 import com.test.web.types.DecimalSize;
 import com.test.web.types.Ratio;
-import com.test.web.types.Value;
 
 /**
  * For parsing CSS from file or from a style attribute

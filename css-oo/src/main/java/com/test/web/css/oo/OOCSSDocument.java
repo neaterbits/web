@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.neaterbits.util.io.strings.Tokenizer;
 import com.test.web.css.common.CSSState;
 import com.test.web.css.common.CSSStyleBuilder;
 import com.test.web.css.common.CSSValueType;
@@ -27,7 +28,6 @@ import com.test.web.css.common.enums.CSSScripting;
 import com.test.web.css.common.enums.CSSTarget;
 import com.test.web.css.common.enums.CSSUpdate;
 import com.test.web.css.common.enums.CSStyle;
-import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.css.ICSSDocumentParserListener;
 
 /***

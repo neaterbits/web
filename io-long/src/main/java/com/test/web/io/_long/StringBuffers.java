@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
-import com.test.web.buffers.BaseBuffers;
-import com.test.web.buffers.DuplicateDetectingStringStorageBuffer;
-import com.test.web.io.common.CharInput;
+import com.neaterbits.util.IEnum;
+import com.neaterbits.util.buffers.BaseBuffers;
+import com.neaterbits.util.buffers.DuplicateDetectingStringStorageBuffer;
+import com.neaterbits.util.io.strings.CharInput;
+import com.neaterbits.util.io.strings.Tokenizer;
 import com.test.web.io.common.LoadStream;
 import com.test.web.io.common.StreamStatus;
-import com.test.web.io.common.Tokenizer;
 import com.test.web.types.BigDecimalConversion;
 import com.test.web.types.DecimalSize;
-import com.test.web.types.IEnum;
 import com.test.web.util.StringUtils;
 
 public class StringBuffers extends BaseBuffers<char[][], char[]> implements CharInput, Tokenizer {

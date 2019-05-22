@@ -11,9 +11,9 @@
   <dependencies>
 
 	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>buffers</artifactId>
-		<version>${project.version}</version>
+		<groupId>${utilGroupId}</groupId>
+		<artifactId>util-buffers</artifactId>
+		<version>${utilVersion}</version>
 	</dependency>
 
 	<dependency>

@@ -4,18 +4,18 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
 
+import com.neaterbits.util.Value;
+import com.neaterbits.util.io.strings.CharInput;
+import com.neaterbits.util.io.strings.StringCharInput;
+import com.neaterbits.util.io.strings.Tokenizer;
+import com.neaterbits.util.parse.BaseParser;
+import com.neaterbits.util.parse.IParse;
+import com.neaterbits.util.parse.Lexer;
+import com.neaterbits.util.parse.ParserException;
+import com.neaterbits.util.parse.TokenMergeHelper;
 import com.test.web.document.html.common.HTMLElement;
-import com.test.web.io.common.CharInput;
-import com.test.web.io.common.StringCharInput;
-import com.test.web.io.common.Tokenizer;
-import com.test.web.parse.common.BaseParser;
-import com.test.web.parse.common.IParse;
-import com.test.web.parse.common.Lexer;
-import com.test.web.parse.common.ParserException;
-import com.test.web.parse.common.TokenMergeHelper;
 import com.test.web.parse.css.CSSParser;
 import com.test.web.types.IIndent;
-import com.test.web.types.Value;
 
 public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 	extends BaseParser<HTMLToken, CharInput>

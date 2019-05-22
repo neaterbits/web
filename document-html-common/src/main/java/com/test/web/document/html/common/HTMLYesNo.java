@@ -1,6 +1,6 @@
 package com.test.web.document.html.common;
 
-import com.test.web.types.IEnum;
+import com.neaterbits.util.IEnum;
 
 public enum HTMLYesNo implements IEnum {
 

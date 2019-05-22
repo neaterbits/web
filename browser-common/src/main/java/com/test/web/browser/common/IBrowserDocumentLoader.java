@@ -3,10 +3,10 @@ package com.test.web.browser.common;
 import java.io.IOException;
 import java.net.URL;
 
+import com.neaterbits.util.parse.ParserException;
 import com.test.web.css.common.CSSContext;
 import com.test.web.document.html.common.IDocument;
 import com.test.web.layout.common.page.PageLayout;
-import com.test.web.parse.common.ParserException;
 import com.test.web.render.common.IRenderer;
 
 public interface IBrowserDocumentLoader<HTML_ELEMENT, HTML_ATTRIBUTE, CSS_ELEMENT, DOCUMENT extends IDocument<HTML_ELEMENT, HTML_ATTRIBUTE, DOCUMENT>> {

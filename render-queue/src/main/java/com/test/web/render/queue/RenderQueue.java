@@ -1,6 +1,6 @@
 package com.test.web.render.queue;
 
-import com.test.web.buffers.DuplicateDetectingStringStorageBuffer;
+import com.neaterbits.util.buffers.DuplicateDetectingStringStorageBuffer;
 import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.IFontLookup;

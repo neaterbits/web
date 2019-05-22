@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.neaterbits.util.io.strings.Tokenizer;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.css.oo.OOCSSBase;
 import com.test.web.document.common.DocumentState;
@@ -19,7 +20,6 @@ import com.test.web.document.html.common.enums.HTMLDirection;
 import com.test.web.document.html.common.enums.HTMLDropzone;
 import com.test.web.document.html.common.enums.LinkRelType;
 import com.test.web.document.html.common.enums.LinkRevType;
-import com.test.web.io.common.Tokenizer;
 import com.test.web.parse.html.HTMLUtils;
 import com.test.web.parse.html.IDocumentParserListener;
 import com.test.web.parse.html.IHTMLStyleParserListener;

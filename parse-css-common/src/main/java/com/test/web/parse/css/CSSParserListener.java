@@ -2,6 +2,7 @@ package com.test.web.parse.css;
 
 import com.test.web.css.common.enums.CSSBackgroundColor;
 import com.test.web.css.common.enums.CSSBackgroundImage;
+import com.neaterbits.util.io.strings.Tokenizer;
 import com.test.web.css.common.CSSGradientColorStop;
 import com.test.web.css.common.enums.CSSBackgroundAttachment;
 import com.test.web.css.common.enums.CSSBackgroundOrigin;
@@ -45,7 +46,6 @@ import com.test.web.css.common.enums.CSSTextDecoration;
 import com.test.web.css.common.enums.CSSUnit;
 import com.test.web.css.common.enums.CSSUpdate;
 import com.test.web.css.common.enums.CSStyle;
-import com.test.web.io.common.Tokenizer;
 import com.test.web.types.Ratio;
 
 public interface CSSParserListener<CONTEXT> {

@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.neaterbits.util.io.strings.Tokenizer;
 import com.test.web.css.common.CSSContext;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.HTMLElementListener;
 import com.test.web.document.html.common.IDocument;
-import com.test.web.io.common.Tokenizer;
 import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.IFontSettings;
 import com.test.web.layout.common.ILayoutDebugListener;
