@@ -85,7 +85,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		return found;
 	}
 
-	private HTMLToken endTagOrSub(HTMLToken currentTag, boolean allowNone, HTMLToken ... tagTokens) throws IOException, ParserException {
+	private HTMLToken endTagOrSub(HTMLToken currentTag, boolean allowNone, HTMLToken [] tagTokens) throws IOException, ParserException {
 		
 		HTMLToken found = null;
 
@@ -282,9 +282,12 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		debugExit("DOCTYPE");
 	}
 	
+	private static final HTMLToken [] HEAD_OR_BODY = tokens(HTMLToken.HEAD, HTMLToken.BODY);
+	private static final HTMLToken [] BODY = tokens(HTMLToken.BODY);
+	
 	private void parseHTML() throws IOException, ParserException {
 		
-		HTMLToken token = endTagOrSub(HTMLToken.HTML, true, HTMLToken.HEAD, HTMLToken.BODY);
+		HTMLToken token = endTagOrSub(HTMLToken.HTML, true, HEAD_OR_BODY);
 		
 		boolean parsedBody = false;
 		
@@ -308,7 +311,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		
 		if ( ! parsedBody ) {
 
-			token = endTagOrSub(HTMLToken.HTML, true, HTMLToken.BODY);
+			token = endTagOrSub(HTMLToken.HTML, true, BODY);
 
 			switch (token) {
 			case BODY:
@@ -324,12 +327,14 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		}
 	}
 
+	private static final HTMLToken [] HEAD_TOKENS = tokens(HTMLToken.TITLE, HTMLToken.META, HTMLToken.LINK, HTMLToken.SCRIPT, HTMLToken.ELEM_STYLE);
+	
 	private void parseHead() throws IOException, ParserException {
 
 		boolean done = false;
 
 		do {
-			switch (endTagOrSub(HTMLToken.HEAD, false, HTMLToken.TITLE, HTMLToken.META, HTMLToken.LINK, HTMLToken.SCRIPT, HTMLToken.ELEM_STYLE)) {
+			switch (endTagOrSub(HTMLToken.HEAD, false, HEAD_TOKENS)) {
 
 			case TITLE:
 				parseText(HTMLToken.TITLE);
