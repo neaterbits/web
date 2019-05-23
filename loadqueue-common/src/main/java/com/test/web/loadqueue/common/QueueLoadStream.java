@@ -2,7 +2,7 @@ package com.test.web.loadqueue.common;
 
 import java.io.IOException;
 
-import com.test.web.io.common.LoadStream;
+import com.neaterbits.util.io.loadstream.LoadStream;
 
 public abstract class QueueLoadStream extends LoadStream {
 	protected abstract void blockOnDependency();

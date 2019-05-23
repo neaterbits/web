@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.neaterbits.util.io.loadstream.LoadStream;
+import com.neaterbits.util.io.loadstream.SimpleLoadStream;
 import com.neaterbits.util.parse.IParse;
 import com.neaterbits.util.parse.ParserException;
 import com.test.web.css.oo.OOCSSBase;
@@ -12,8 +14,6 @@ import com.test.web.document.html._long.LongHTMLDocument;
 import com.test.web.document.html.oo.OOHTMLDocument;
 import com.test.web.document.html.oo.OOTagElement;
 import com.test.web.io._long.StringBuffers;
-import com.test.web.io.common.LoadStream;
-import com.test.web.io.common.SimpleLoadStream;
 import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.IHTMLParserListener;
 

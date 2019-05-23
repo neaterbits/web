@@ -3,11 +3,11 @@ package com.test.web.browser.common;
 import java.io.IOException;
 import java.net.URL;
 
+import com.neaterbits.util.io.loadstream.LoadStream;
 import com.neaterbits.util.parse.ParserException;
 import com.test.web.css.common.CSSContext;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.HTMLElementListener;
-import com.test.web.io.common.LoadStream;
 import com.test.web.layout.common.IElementRenderLayout;
 import com.test.web.layout.common.ViewPort;
 import com.test.web.layout.common.page.PageLayout;

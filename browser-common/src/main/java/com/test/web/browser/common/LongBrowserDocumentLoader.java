@@ -2,13 +2,13 @@ package com.test.web.browser.common;
 
 import java.io.IOException;
 
+import com.neaterbits.util.io.loadstream.LoadStream;
 import com.neaterbits.util.io.strings.CharInput;
 import com.neaterbits.util.io.strings.Tokenizer;
 import com.neaterbits.util.parse.ParserException;
 import com.test.web.css._long.LongCSSDocument;
 import com.test.web.css.common.CSSContext;
 import com.test.web.document.html._long.LongHTMLDocument;
-import com.test.web.io.common.LoadStream;
 import com.test.web.parse.css.CSSParser;
 import com.test.web.parse.html.HTMLParser;
 import com.test.web.parse.html.IHTMLParserListener;

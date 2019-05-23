@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.function.BiFunction;
 
-import com.test.web.io.common.StreamStatus;
+import com.neaterbits.util.io.loadstream.StreamStatus;
 import com.test.web.loadqueue.common.ILoadQueue;
 import com.test.web.loadqueue.common.LoadCompletionListener;
 import com.test.web.loadqueue.common.LoadQueueAndStream;

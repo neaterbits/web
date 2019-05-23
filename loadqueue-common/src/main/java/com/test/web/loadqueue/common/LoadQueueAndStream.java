@@ -1,6 +1,6 @@
 package com.test.web.loadqueue.common;
 
-import com.test.web.io.common.LoadStream;
+import com.neaterbits.util.io.loadstream.LoadStream;
 
 /**
  * Reference to load queue and initial stream for loading page

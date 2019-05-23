@@ -17,9 +17,9 @@
 	</dependency>
 
 	<dependency>
-		<groupId>${project.groupId}</groupId>
-		<artifactId>io-common</artifactId>
-		<version>${project.version}</version>
+		<groupId>${utilGroupId}</groupId>
+		<artifactId>util-io-common</artifactId>
+		<version>${utilVersion}</version>
 	</dependency>
 
 	<dependency>

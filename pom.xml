@@ -32,7 +32,6 @@
 	    <module>eventqueue-common</module>
 	    <module>eventqueue-html</module>
 	    <module>externalevents</module>
-	    <module>io-common</module>
 	    <module>io-long</module>
 	    <module>jsapi-common</module>
 	    <module>jsapi-dom</module>
