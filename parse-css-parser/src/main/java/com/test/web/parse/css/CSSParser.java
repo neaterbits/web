@@ -72,18 +72,20 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		return CSSParserHelperWS.lexSkipWSAndComment(lexer, tokens);
 	}
 
+	private static final CSSToken [] CSS_TOKENS = tokens(
+			CSSToken.WS,
+			CSSToken.ID_MARKER,
+			CSSToken.CLASS_MARKER,
+			CSSToken.TAG,
+			CSSToken.AT,
+			CSSToken.COMMENT,
+			CSSToken.EOF);
+	
 	public void parseCSS() throws IOException, ParserException {
 		
 		boolean done = false;
 		do {
-			CSSToken token = lexer.lex(
-					CSSToken.WS,
-					CSSToken.ID_MARKER,
-					CSSToken.CLASS_MARKER,
-					CSSToken.TAG,
-					CSSToken.AT,
-					CSSToken.COMMENT,
-					CSSToken.EOF);
+			CSSToken token = lexer.lex(CSS_TOKENS);
 			
 			switch (token) {
 			case ID_MARKER:
@@ -115,6 +117,16 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		} while (!done);
 	}
 	
+	private static final CSSToken [] MARKED_BLOCK_TOKENS = tokens(
+			CSSToken.WS,
+			CSSToken.ID_MARKER,
+			CSSToken.CLASS_MARKER,
+			CSSToken.TAG,
+			CSSToken.COMMA,
+			CSSToken.COMMENT,
+			CSSToken.BRACKET_START
+			);
+	
 	private long parseMarkedBlock(CSSToken initialMarker, LISTENER_CONTEXT context) throws IOException, ParserException {
 		// First read the initial marker
 		parseSelector(initialMarker, context);
@@ -123,7 +135,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		boolean done = false;
 		
 		do {
-			CSSToken token = lexer.lex(CSSToken.WS, CSSToken.ID_MARKER, CSSToken.CLASS_MARKER, CSSToken.TAG, CSSToken.COMMA, CSSToken.COMMENT, CSSToken.BRACKET_START);
+			CSSToken token = lexer.lex(MARKED_BLOCK_TOKENS);
 			
 			if (token == CSSToken.WS) {
 				// Just continue in case of WS
@@ -1599,6 +1611,13 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		listener.onBgColor(context, bgColor);
 	}
 
+	private static final CSSToken [] FUNCTION_TOKENS = tokens(
+			CSSToken.INCLUDING_PARENTHESIS_START,
+			CSSToken.INCLUDING_COMMA,
+			CSSToken.INCLUDING_PARENTHESIS_END,
+			CSSToken.COMMENT,
+			CSSToken.WS);
+	
 	private void skipFunctionParamsAfterParenthesis() throws IOException, ParserException {
 		
 		boolean done = false;
@@ -1607,12 +1626,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			
 			// must handle nested function calls as well, so must search for '('
 			// Find the FIRST that matches instead of the longest
-			CSSToken token = lexer.lex(LexerMatch.FIRST_MATCH,
-					CSSToken.INCLUDING_PARENTHESIS_START,
-					CSSToken.INCLUDING_COMMA,
-					CSSToken.INCLUDING_PARENTHESIS_END,
-					CSSToken.COMMENT,
-					CSSToken.WS);
+			CSSToken token = lexer.lex(LexerMatch.FIRST_MATCH, FUNCTION_TOKENS);
 			
 			switch (token) {
 			case COMMENT:

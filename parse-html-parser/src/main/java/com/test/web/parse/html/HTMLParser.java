@@ -521,10 +521,12 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		return token;
 	}
 	
+	private static final HTMLToken [] TEXT_TOKENS = tokens(HTMLToken.TEXT, HTMLToken.TAG_LESS_THAN);
+	
 	// Parse text elements that may contain other tags?
 	private void parseText(HTMLToken elementToken) throws IOException, ParserException {
 		// Scan for text or start-tag
-		switch (lexer.lex(HTMLToken.TEXT, HTMLToken.TAG_LESS_THAN)) {
+		switch (lexer.lex(TEXT_TOKENS)) {
 		case TEXT:
 			debugText();
 			htmlListener.onText(tokenizer, lexer.getStringRef(0, lexer.getEndSkip()));
@@ -540,6 +542,8 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		}
 	}
 	
+	private static HTMLToken [] STYLE_TEXT_TOKENS = tokens(HTMLToken.TEXT, HTMLToken.COMMENT_CONTENT, HTMLToken.TAG_LESS_THAN);
+	
 	private STYLE_DOCUMENT parseStyleContent(HTMLToken elementToken) throws IOException, ParserException {
 		
 		final STYLE_DOCUMENT styleDocument;
@@ -550,7 +554,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		// Scan for text or start-tag
 		boolean done = false;
 		do {
-			switch (lexer.lex(HTMLToken.TEXT, HTMLToken.COMMENT_CONTENT, HTMLToken.TAG_LESS_THAN)) {
+			switch (lexer.lex(STYLE_TEXT_TOKENS)) {
 			case TEXT:
 				debugText();
 				
@@ -592,13 +596,15 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 
 	// Common attribute parser for any input attribute
 	
+	private static HTMLToken [] WS_EQUALS = tokens(HTMLToken.WS, HTMLToken.EQUALS);
+	
 	private void parseAttribute(HTMLToken attributeToken, HTMLElement element) throws IOException, ParserException {
 		
 		// Attribute may have value, depending
 		boolean done = false;
 		
 		do {
-			final HTMLToken token = lexer.lex(HTMLToken.WS, HTMLToken.EQUALS);
+			final HTMLToken token = lexer.lex(WS_EQUALS);
 			
 			switch (token) {
 			case WS:
@@ -636,6 +642,8 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 			throw lexer.unexpectedToken();
 		}
 	}
+	
+	private static HTMLToken [] QUOTE_TOKENS = tokens(HTMLToken.SINGLE_QUOTE, HTMLToken.QUOTE);
 
 	// class requires special parsing, since is space separated
 	private void parseClassAttribute(HTMLToken attributeToken) throws IOException, ParserException {
@@ -643,7 +651,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 			throw lexer.unexpectedToken();
 		}
 
-		final HTMLToken quoteToken = lexSkipWS(HTMLToken.SINGLE_QUOTE, HTMLToken.QUOTE);
+		final HTMLToken quoteToken = lexSkipWS(QUOTE_TOKENS);
 
 		if (quoteToken == HTMLToken.NONE) {
 			throw lexer.unexpectedToken();
@@ -653,7 +661,9 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		
 		do {
 			// Ignore WS at start and end of quotes
-			final HTMLToken nextToken = lexer.lex(HTMLToken.WS, HTMLToken.CLASS_NAME, quoteToken);
+			
+			final HTMLToken [] classTokens = new HTMLToken [] { HTMLToken.WS, HTMLToken.CLASS_NAME, quoteToken };
+			final HTMLToken nextToken = lexer.lex(classTokens);
 			
 			if (nextToken == quoteToken) {
                 done = true;
@@ -737,15 +747,18 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		}
 	}
 
+	private static final HTMLToken [] WS_END_TAG = tokens(HTMLToken.TAG_LESS_THAN, HTMLToken.WS);
+
+	private static final HTMLToken [] END_TAG = tokens(HTMLToken.TAG_LESS_THAN);
 	
-	private HTMLToken tags(HTMLToken ... htmlTokens) throws IOException, ParserException {
+	private HTMLToken tags(HTMLToken [] htmlTokens) throws IOException, ParserException {
 
 		final HTMLToken ret;
 		
-		HTMLToken token = lexer.lex(HTMLToken.TAG_LESS_THAN, HTMLToken.WS);
+		HTMLToken token = lexer.lex(WS_END_TAG);
 		
 		if (token == HTMLToken.WS) {
-			token = lexer.lex(HTMLToken.TAG_LESS_THAN);
+			token = lexer.lex(END_TAG);
 		}
 
 		if (token == HTMLToken.TAG_LESS_THAN) {

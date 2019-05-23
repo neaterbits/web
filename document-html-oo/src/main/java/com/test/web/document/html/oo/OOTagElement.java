@@ -452,6 +452,8 @@ public abstract class OOTagElement extends OOAttributes {
 		}
 	}
 
+	private static final CSSToken [] ELEMENT_END_TOKENS = new CSSToken [] { CSSToken.WS, CSSToken.SEMICOLON, CSSToken.EOF };
+	
 	private void parseStyle(String value) throws IOException, ParserException {
 		final CharInput charInput = new StringCharInput(value);
 		
@@ -480,7 +482,7 @@ public abstract class OOTagElement extends OOAttributes {
 			
 			do {
 
-				final CSSToken token = lexer.lex(CSSToken.WS, CSSToken.SEMICOLON, CSSToken.EOF);
+				final CSSToken token = lexer.lex(ELEMENT_END_TOKENS);
 				
 				switch (token) {
 				

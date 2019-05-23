@@ -15,11 +15,13 @@ public class CSSParseHelperNumbers extends CSSParserHelperBase {
 		return parseInt(lexer);
 	}
 
+	private static CSSToken [] DECIMAL_TOKENS = new CSSToken [] { CSSToken.INTEGER, CSSToken.DOT };
+	
 	static int parseDecimal(Lexer<CSSToken, CharInput> lexer) throws IOException, ParserException {
 
 		// Allow to start with '.'
 
-		CSSToken token = lexer.lex(CSSToken.INTEGER, CSSToken.DOT);
+		CSSToken token = lexer.lex(DECIMAL_TOKENS);
 
 		int beforeDot;
 		String afterDot;
