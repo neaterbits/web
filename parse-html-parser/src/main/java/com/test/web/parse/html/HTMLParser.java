@@ -237,7 +237,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 			break;
 		
 		case HTML:
-			if (lexSkipWS(HTMLToken.TAG_LESS_THAN) != HTMLToken.TAG_LESS_THAN) {
+			if (lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
 				throw lexer.unexpectedToken();
 			}
 			parseHTML();
