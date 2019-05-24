@@ -36,7 +36,13 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 	private final IParse<STYLE_DOCUMENT> parseStyleDocument;
 	
 	private static Lexer<HTMLToken, CharInput> createLexer(CharInput input) {
-		return new Lexer<HTMLToken, CharInput>(input, HTMLToken.class, HTMLToken.NONE, null);
+		return new Lexer<HTMLToken, CharInput>(
+				input,
+				HTMLToken.class,
+				HTMLToken.NONE,
+				null,
+				new HTMLToken [] { HTMLToken.WS },
+				new HTMLToken [] { HTMLToken.COMMENT });
 	}
 
 	public HTMLParser(
@@ -46,7 +52,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 			IHTMLStyleParserListener<ELEMENT, CSS_LISTENER_CONTEXT> styleAttributeListener,
 			IParse<STYLE_DOCUMENT> parseStyleDocument) {
 
-		super(createLexer(input), HTMLToken.WS);
+		super(createLexer(input));
 	
 		this.tokenizer = tokenizer;
 		this.lexer = getLexer();
@@ -90,7 +96,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		HTMLToken found = null;
 
 		do {
-			switch (lexSkipWS(HTMLToken.TAG_LESS_THAN)) {
+			switch (lexer.lexSkipWS(HTMLToken.TAG_LESS_THAN)) {
 			case TAG_LESS_THAN: // May be start of end-tag 
 				
 				final HTMLToken [] tokens = currentTag != null
@@ -99,7 +105,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 				
 				HTMLToken tagToken;
 					
-				switch ((tagToken = lexSkipWS(tokens))) {
+				switch ((tagToken = lexer.lexSkipWS(tokens))) {
 				case NONE:
 					if (allowNone) {
 						found = tagToken;
@@ -116,7 +122,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 
 				case TAG_SLASH:
 					// This is end-of-tag for current tag, skip tag
-					if (lexSkipWS(currentTag) != currentTag) {
+					if (lexer.lexSkipWS(currentTag) != currentTag) {
 						throw lexer.unexpectedToken();
 					}
 
@@ -125,7 +131,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 					htmlListener.onElementEnd(tokenizer, currentTag.getElement());
 	
 					// Skip '>' too
-					if (lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
+					if (lexer.lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
 						throw lexer.unexpectedToken();
 					}
 					
@@ -144,7 +150,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 						switch (parseTagAttributes(tagToken.getElement(), documentElement, attributeTokens)) {
 						// In '/' then this is start and end tag in one 
 						case TAG_SLASH:
-							if (lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
+							if (lexer.lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
 								throw lexer.unexpectedToken();
 							}
 							debugExit(tagToken.getElement().getName());
@@ -169,7 +175,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 					}
 					else {
 						// This was start of sub-tag, skip '>'
-						if (lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
+						if (lexer.lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
 							throw lexer.unexpectedToken();
 						}
 					}
@@ -213,16 +219,18 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 			DEBUG_OUT.append("Text: \"").append(tokenizer.asString(lexer.getStringRef(0, lexer.getEndSkip()))).println("\"");
 		}
 	}
+	
+	private static final HTMLToken [] DOCTYPE_TOKENS = tokens(HTMLToken.TAG_EXCLAMATION_POINT, HTMLToken.HTML);
 
 	public void parseHTMLFile() throws IOException, ParserException {
 		
 		// Should always start with "<"
-		if (lexSkipWS(HTMLToken.TAG_LESS_THAN) != HTMLToken.TAG_LESS_THAN) {
+		if (lexer.lexSkipWS(HTMLToken.TAG_LESS_THAN) != HTMLToken.TAG_LESS_THAN) {
 			throw lexer.unexpectedToken();
 		}
 		
 		// Now may be !DOCTYPE or html
-		switch (lexSkipWS(HTMLToken.TAG_EXCLAMATION_POINT, HTMLToken.HTML)) {
+		switch (lexer.lexSkipWS(DOCTYPE_TOKENS)) {
 		
 		case TAG_EXCLAMATION_POINT:
 			parseDocType();
@@ -237,7 +245,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 			break;
 		
 		case HTML:
-			if (lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
+			if (lexer.lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
 				throw lexer.unexpectedToken();
 			}
 			parseHTML();
@@ -252,30 +260,30 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 
 		debugEnter("DOCTYPE");
 		
-		if (lexSkipWS(HTMLToken.DOCTYPE) != HTMLToken.DOCTYPE) {
+		if (lexer.lexSkipWS(HTMLToken.DOCTYPE) != HTMLToken.DOCTYPE) {
 			throw lexer.unexpectedToken();
 		}
 
-		if (lexSkipWS(HTMLToken.DOCTYPE_HTML) != HTMLToken.DOCTYPE_HTML) {
+		if (lexer.lexSkipWS(HTMLToken.DOCTYPE_HTML) != HTMLToken.DOCTYPE_HTML) {
 			throw lexer.unexpectedToken();
 		}
 
-		if (lexSkipWS(HTMLToken.DOCTYPE_PUBLIC) != HTMLToken.DOCTYPE_PUBLIC) {
+		if (lexer.lexSkipWS(HTMLToken.DOCTYPE_PUBLIC) != HTMLToken.DOCTYPE_PUBLIC) {
 			throw lexer.unexpectedToken();
 		}
 
 		// DTD
-		if (lexSkipWS(HTMLToken.DOUBLE_QUOTED_STRING) != HTMLToken.DOUBLE_QUOTED_STRING) {
+		if (lexer.lexSkipWS(HTMLToken.DOUBLE_QUOTED_STRING) != HTMLToken.DOUBLE_QUOTED_STRING) {
 			throw lexer.unexpectedToken();
 		}
 
 		// URL
-		if (lexSkipWS(HTMLToken.DOUBLE_QUOTED_STRING) != HTMLToken.DOUBLE_QUOTED_STRING) {
+		if (lexer.lexSkipWS(HTMLToken.DOUBLE_QUOTED_STRING) != HTMLToken.DOUBLE_QUOTED_STRING) {
 			throw lexer.unexpectedToken();
 		}
 		
 		// End of tag
-		if (lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
+		if (lexer.lexSkipWS(HTMLToken.TAG_GREATER_THAN) != HTMLToken.TAG_GREATER_THAN) {
 			throw lexer.unexpectedToken();
 		}
 		
@@ -632,9 +640,11 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		} while (!done);
 	}
 
+	private static final HTMLToken [] ATTRIBUTE_VALUE_QUOTED_STRING = tokens(HTMLToken.SINGLE_QUOTED_STRING, HTMLToken.DOUBLE_QUOTED_STRING);
+	
 	private void parseAttributeValue(HTMLToken attributeToken, HTMLElement element) throws IOException, ParserException {
 		
-		HTMLToken token = lexSkipWS(HTMLToken.SINGLE_QUOTED_STRING, HTMLToken.DOUBLE_QUOTED_STRING);
+		HTMLToken token = lexer.lexSkipWS(ATTRIBUTE_VALUE_QUOTED_STRING);
 		
 		switch (token) {
 		case SINGLE_QUOTED_STRING:
@@ -652,11 +662,11 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 
 	// class requires special parsing, since is space separated
 	private void parseClassAttribute(HTMLToken attributeToken) throws IOException, ParserException {
-		if (lexSkipWS(HTMLToken.EQUALS) != HTMLToken.EQUALS) {
+		if (lexer.lexSkipWS(HTMLToken.EQUALS) != HTMLToken.EQUALS) {
 			throw lexer.unexpectedToken();
 		}
 
-		final HTMLToken quoteToken = lexSkipWS(QUOTE_TOKENS);
+		final HTMLToken quoteToken = lexer.lexSkipWS(QUOTE_TOKENS);
 
 		if (quoteToken == HTMLToken.NONE) {
 			throw lexer.unexpectedToken();
@@ -691,17 +701,19 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		} while (!done);
 	}
 	
+	private static final HTMLToken [] STYLE_QUOTES = tokens(HTMLToken.QUOTE, HTMLToken.SINGLE_QUOTE);
+	
 	// style attribute requires special parsing,  we parse utilizing the CSS parser for the style attribute
 	private void parseStyleAttribute(ELEMENT documentElement) throws IOException, ParserException {
 
 		// Parse style attribute contents using CSS parser, but we have to skip  ' and ;
-		final HTMLToken equalsToken = lexSkipWS(HTMLToken.EQUALS);
+		final HTMLToken equalsToken = lexer.lexSkipWS(HTMLToken.EQUALS);
 		
 		if (equalsToken != HTMLToken.EQUALS) {
 			throw lexer.unexpectedToken();
 		}
 		
-		final HTMLToken token = lexSkipWS(HTMLToken.QUOTE, HTMLToken.SINGLE_QUOTE);
+		final HTMLToken token = lexer.lexSkipWS(STYLE_QUOTES);
 
 		final HTMLToken peekToken;
 		switch (token) {
@@ -738,7 +750,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 			tokens = new HTMLToken [] { token, HTMLToken.SEMICOLON };
 			
 			// Now expect end quote or semicolon
-			final HTMLToken t = lexSkipWS(tokens);
+			final HTMLToken t = lexer.lexSkipWS(tokens);
 			
 			if (t == token) {
 				break;
@@ -790,7 +802,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 	
 	private void checkTagEnd(HTMLToken elementToken) throws IOException, ParserException {
 		
-		final HTMLToken token = lexSkipWS(HTMLToken.TAG_LESS_THAN);
+		final HTMLToken token = lexer.lexSkipWS(HTMLToken.TAG_LESS_THAN);
 		
 		if (token != HTMLToken.TAG_LESS_THAN) {
 			throw lexer.unexpectedToken();
@@ -801,7 +813,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		
 	private void checkTagEndElement(HTMLToken elementToken) throws IOException, ParserException {
 
-		HTMLToken token = lexSkipWS(HTMLToken.TAG_SLASH);
+		HTMLToken token = lexer.lexSkipWS(HTMLToken.TAG_SLASH);
 		if (token != HTMLToken.TAG_SLASH) {
 			throw lexer.unexpectedToken();
 		}
@@ -811,7 +823,7 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 
 	private HTMLToken checkTagEndOrComment(HTMLToken elementToken) throws IOException, ParserException {
 		
-		final HTMLToken token = lexSkipWS(HTMLToken.TAG_LESS_THAN);
+		final HTMLToken token = lexer.lexSkipWS(HTMLToken.TAG_LESS_THAN);
 		
 		if (token != HTMLToken.TAG_LESS_THAN) {
 			throw lexer.unexpectedToken();
@@ -819,10 +831,12 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 		
 		return checkTagEndElementOrComment(elementToken);
 	}
+	
+	private static HTMLToken [] END_TAG_OR_COMMENT = tokens(HTMLToken.TAG_SLASH, HTMLToken.COMMENT_CONTENT);
 
 	private HTMLToken checkTagEndElementOrComment(HTMLToken elementToken) throws IOException, ParserException {
 
-		HTMLToken token = lexSkipWS(HTMLToken.TAG_SLASH, HTMLToken.COMMENT_CONTENT);
+		HTMLToken token = lexer.lexSkipWS(END_TAG_OR_COMMENT);
 		if (token == HTMLToken.TAG_SLASH) {
 			checkElementEnd(elementToken);
 		}
@@ -831,12 +845,12 @@ public class HTMLParser<ELEMENT, STYLE_DOCUMENT, CSS_LISTENER_CONTEXT>
 	}
 
 	private void checkElementEnd(HTMLToken elementToken) throws IOException, ParserException {
-		HTMLToken token = lexSkipWS(elementToken);
+		HTMLToken token = lexer.lexSkipWS(elementToken);
 		if (token != elementToken) {
 			throw lexer.unexpectedToken();
 		}
 		
-		token = lexSkipWS(HTMLToken.TAG_GREATER_THAN);
+		token = lexer.lexSkipWS(HTMLToken.TAG_GREATER_THAN);
 		if (token != HTMLToken.TAG_GREATER_THAN) {
 			throw lexer.unexpectedToken();
 		}

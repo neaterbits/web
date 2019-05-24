@@ -31,6 +31,7 @@ public enum HTMLToken implements IToken {
 	DOUBLE_QUOTED_STRING('"', '"'),
 	
 	
+	COMMENT("<!--", "-->"),
 	COMMENT_CONTENT("!--", "-->"),
 
 	WS(CharTypeWS.INSTANCE),

@@ -26,7 +26,7 @@ class CSSParserHelperMargin extends CSSParserHelperBase {
 	}
 	
 	private static void parseSizeOrAutoOrInitialOrInherit(Lexer<CSSToken, CharInput> lexer, IJustifyFunction toCall, CSSToken [] tokens) throws IOException, ParserException {
-		CSSToken token = CSSParserHelperWS.lexSkipWSAndComment(lexer, tokens);
+		CSSToken token = lexer.lexSkipWSAndComment(tokens);
 		
 		final BiConsumer<Integer, CSSUnit> sizeCallback = (size, unit) -> toCall.onJustify(size, unit, CSSJustify.SIZE);
 		

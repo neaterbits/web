@@ -11,7 +11,7 @@ import com.test.web.types.HexUtils;
 public class CSSParserHelperColor {
 	static CSSToken parseColor(Lexer<CSSToken, CharInput> lexer, IColorRGBFunction rgbColor, ICSSColorFunction cssColor, CSSToken [] tokens) throws IOException, ParserException {
 
-		CSSToken token = CSSParserHelperWS.lexSkipWSAndComment(lexer, tokens);
+		CSSToken token = lexer.lexSkipWSAndComment(tokens);
 		
 		switch (token) {
 		case COLOR_MARKER:

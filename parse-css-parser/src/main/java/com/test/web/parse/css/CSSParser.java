@@ -52,7 +52,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	private final CSSParserListener<LISTENER_CONTEXT> listener;
 
 	public CSSParser(Lexer<CSSToken, CharInput> lexer, Tokenizer tokenizer, CSSParserListener<LISTENER_CONTEXT> listener) {
-		super(lexer, CSSToken.WS);
+		super(lexer);
 		
 		this.lexer = getLexer();
 		this.tokenizer = tokenizer;
@@ -60,18 +60,19 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	}
 	
 	public static Lexer<CSSToken, CharInput> createLexer(CharInput input) {
-		return new Lexer<CSSToken, CharInput>(input, CSSToken.class, CSSToken.NONE, CSSToken.EOF);
+		return new Lexer<CSSToken, CharInput>(
+				input,
+				CSSToken.class,
+				CSSToken.NONE,
+				CSSToken.EOF,
+				new CSSToken [] { CSSToken.WS },
+				new CSSToken [] { CSSToken.COMMENT });
 	}
 		
 	public CSSParser(CharInput input, Tokenizer tokenizer, CSSParserListener<LISTENER_CONTEXT> listener) {
 		this(createLexer(input), tokenizer, listener);
 	}
 	
-	@SafeVarargs
-	private final CSSToken lexSkipWSAndComment(CSSToken ... tokens) throws IOException {
-		return CSSParserHelperWS.lexSkipWSAndComment(lexer, tokens);
-	}
-
 	private static final CSSToken [] CSS_TOKENS = tokens(
 			CSSToken.WS,
 			CSSToken.ID_MARKER,
@@ -214,7 +215,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	}
 	
 	private void parseAtRule() throws IOException, ParserException {
-		final CSSToken token = lexSkipWSAndComment(CSSToken.AT_RULE_IMPORT);
+		final CSSToken token = lexer.lexSkipWSAndComment(CSSToken.AT_RULE_IMPORT);
 		
 		switch (token) {
 		case AT_RULE_IMPORT:
@@ -228,9 +229,11 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		assureTokenSkipWSAndComment(CSSToken.SEMICOLON);
 	}
 	
+	private static final CSSToken [] IMPORT_RULE = tokens(CSSToken.FUNCTION_URL, CSSToken.QUOTED_STRING, CSSToken.SINGLE_QUOTED_STRING);
+	
 	private void parseImportRule() throws IOException, ParserException {
 
-		final CSSToken token = lexSkipWSAndComment(CSSToken.FUNCTION_URL, CSSToken.QUOTED_STRING, CSSToken.SINGLE_QUOTED_STRING);
+		final CSSToken token = lexer.lexSkipWSAndComment(IMPORT_RULE);
 
 		final String importURL;
 		final String importFile;
@@ -269,7 +272,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			parseMediaQuery(context, 0);
 
 			// Next should be comma or semicolon
-			final CSSToken next = lexSkipWSAndComment(CSSToken.COMMA);
+			final CSSToken next =lexer. lexSkipWSAndComment(CSSToken.COMMA);
 
 			if (next == CSSToken.NONE) {
 				// Probably semicolon, exit loop
@@ -290,7 +293,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 
 	
 	private void parseMediaQuery(LISTENER_CONTEXT context, int level) throws IOException, ParserException {
-		final CSSToken token = lexSkipWSAndComment(MEDIA_NEGATION_TYPE_AND_OR_FEATURES_TOKENS);
+		final CSSToken token = lexer.lexSkipWSAndComment(MEDIA_NEGATION_TYPE_AND_OR_FEATURES_TOKENS);
 
 		switch (token) {
 		case PARENTHESIS_START:
@@ -312,7 +315,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	}
 
 	private void parseMediaTypeAndOrFeatures(LISTENER_CONTEXT context, boolean negate) throws IOException, ParserException {
-		final CSSToken token = lexSkipWSAndComment(MEDIA_TYPE_AND_OR_FEATURES_TOKENS);
+		final CSSToken token = lexer.lexSkipWSAndComment(MEDIA_TYPE_AND_OR_FEATURES_TOKENS);
 		
 		switch (token) {
 		case PARENTHESIS_START:
@@ -336,7 +339,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		else {
 			final LISTENER_CONTEXT mediaQueryContext = listener.onMediaQueryStart(context, negated, mediaTypeToken.getMediaType());
 
-			final CSSToken andToken = lexSkipWSAndComment(CSSToken.MF_LOGICAL_OPERATOR_AND);
+			final CSSToken andToken = lexer.lexSkipWSAndComment(CSSToken.MF_LOGICAL_OPERATOR_AND);
 
 			if (andToken == CSSToken.MF_LOGICAL_OPERATOR_AND) {
 				// May be (feature : value) or nested
@@ -367,7 +370,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		final boolean parseMediaFeatures;
 
 		if (expectStartParenthesis) {
-			token = lexSkipWSAndComment(CSSToken.PARENTHESIS_START);
+			token = lexer.lexSkipWSAndComment(CSSToken.PARENTHESIS_START);
 			
 			parseMediaFeatures = token == CSSToken.PARENTHESIS_START;
 		}
@@ -376,7 +379,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		}
 
 		if (parseMediaFeatures) {
-			token = lexSkipWSAndComment(MEDIA_FEATURE_TOKENS);
+			token = lexer.lexSkipWSAndComment(MEDIA_FEATURE_TOKENS);
 			
 			boolean done = false;
 			
@@ -417,7 +420,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	
 	private void parseMediaFeaturesSub(LISTENER_CONTEXT context, int level) throws IOException, ParserException {
 		
-		final CSSToken token = lexSkipWSAndComment(MEDIA_FEATURE_TOKENS_SUB);
+		final CSSToken token = lexer.lexSkipWSAndComment(MEDIA_FEATURE_TOKENS_SUB);
 		
 		boolean done = false;
 		
@@ -483,7 +486,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		}
 		
 		// Now is logical operator or end parenthesis
-		final CSSToken next = lexSkipWSAndComment(operatorTokens);
+		final CSSToken next = lexer.lexSkipWSAndComment(operatorTokens);
 		
 		switch (next) {
 		
@@ -556,7 +559,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	private void parseBlock(LISTENER_CONTEXT context) throws IOException, ParserException {
 		// Parse each item within CSS
 		
-		CSSToken token = lexSkipWSAndComment(CSSToken.BRACKET_START);
+		CSSToken token = lexer.lexSkipWSAndComment(CSSToken.BRACKET_START);
 		
 
 		if (token != CSSToken.BRACKET_START) {
@@ -607,7 +610,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 
 	public void parseElement(LISTENER_CONTEXT context) throws IOException, ParserException {
 		
-		final CSSToken token = lexSkipWS(STYLE_TOKENS);
+		final CSSToken token = lexer.lexSkipWS(STYLE_TOKENS);
 		
 		if (token == CSSToken.NONE) {
 			throw new ParserException("No CSS style token found");
@@ -623,11 +626,13 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	
 	private static final CSSUnit defaultWidthHeightUnit = CSSUnit.PX;
 	
+	private static final CSSToken [] ELEMENT_TOKENS = tokens(CSSToken.COLON, CSSToken.COMMENT);
+	
 	private int parseElementWithoutCheckingForSemiColon(LISTENER_CONTEXT context, CSStyle element) throws IOException, ParserException {
 		CSSToken token;
 		
 		for (;;) {
-			token = lexSkipWS(CSSToken.COLON, CSSToken.COMMENT);
+			token = lexer.lexSkipWS(ELEMENT_TOKENS);
 		
 			if (token == CSSToken.COLON) {
 				break;
@@ -640,7 +645,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		
 		final int propertyIndex = listener.onStylePropertyStart(element);
 		
-		CSSParserHelperWS.skipAnyWS(lexer);
+		lexer.skipAnyWS();
 
 		// Now read value, this depends on input style
 
@@ -794,11 +799,13 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		return propertyIndex;
 	}
 
+	private static final CSSToken [] ELEMENT_START = tokens(CSSToken.SEMICOLON, CSSToken.PRIORITY_MARKER);
+	
 	private void parseElement(LISTENER_CONTEXT context, CSStyle element) throws IOException, ParserException {
 
 		final int propertyIndex = parseElementWithoutCheckingForSemiColon(context, element);
 		
-		final CSSToken token = lexSkipWSAndComment(CSSToken.SEMICOLON, CSSToken.PRIORITY_MARKER);
+		final CSSToken token = lexer.lexSkipWSAndComment(ELEMENT_START);
 		
 		switch (token) {
 		case SEMICOLON:
@@ -833,8 +840,10 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 
 	private static final CSSUnit minMaxDefaultUnit = CSSUnit.PX;
 
+	private static CSSToken MAX_FUNCTION [] = tokens(CSSToken.INTEGER, CSSToken.CSS_NONE, CSSToken.INITIAL, CSSToken.INHERIT, CSSToken.DOT);
+	
 	private void parseMax(IMaxFunction toCall) throws IOException, ParserException {
-		CSSToken token = lexSkipWSAndComment(CSSToken.INTEGER, CSSToken.CSS_NONE, CSSToken.INITIAL, CSSToken.INHERIT, CSSToken.DOT);
+		CSSToken token = lexer.lexSkipWSAndComment(MAX_FUNCTION);
 		
 		final BiConsumer<Integer, CSSUnit> sizeCallback = (size, unit) -> toCall.onMax(size, unit, CSSMax.SIZE);
 		
@@ -865,8 +874,10 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		}
 	}
 
+	private static final CSSToken [] MIN_FUNCTION = tokens(CSSToken.INTEGER, CSSToken.INITIAL, CSSToken.INHERIT, CSSToken.DOT);
+	
 	private void parseMin(IMinFunction toCall) throws IOException, ParserException {
-		CSSToken token = lexSkipWSAndComment(CSSToken.INTEGER, CSSToken.INITIAL, CSSToken.INHERIT, CSSToken.DOT);
+		CSSToken token = lexer.lexSkipWSAndComment(MIN_FUNCTION);
 		
 		final BiConsumer<Integer, CSSUnit> sizeCallback = (size, unit) -> toCall.onMin(size, unit, CSSMin.SIZE);
 		
@@ -931,7 +942,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		boolean commaRead = false;
 		
 		do {
-			CSSToken token = lexSkipWSAndComment(BG_IMAGE_TOKENS);
+			CSSToken token = lexer.lexSkipWSAndComment(BG_IMAGE_TOKENS);
 			
 			switch (token) {
 			case FUNCTION_URL:
@@ -1020,7 +1031,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 						cssColor -> cachedColor.set(cssColor),
 						COLOR_TOKENS);
 				
-				final CSSToken intToken = lexSkipWSAndComment(CSSToken.INTEGER);
+				final CSSToken intToken = lexer.lexSkipWSAndComment(CSSToken.INTEGER);
 				
 				if (intToken == CSSToken.INTEGER) {
 				
@@ -1097,12 +1108,14 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		}
 	}
 	
+	private static final CSSToken [] GRADIENT_TOKENS = tokens(CSSToken.INTEGER, CSSToken.TO);
+	
 	private Object parseGradientDirection() throws IOException, ParserException {
 
 		final Object ret;
 		
 		// positions or angle
-		final CSSToken token = lexSkipWSAndComment(CSSToken.INTEGER, CSSToken.TO);
+		final CSSToken token = lexer.lexSkipWSAndComment(GRADIENT_TOKENS);
 		
 		switch (token) {
 		case INTEGER:
@@ -1112,13 +1125,13 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			
 		case TO:
 			// must parse one or two position components
-			final CSSToken pos1Token = lexSkipWSAndComment(POSITION_COMPONENT_TOKENS);
+			final CSSToken pos1Token = lexer.lexSkipWSAndComment(POSITION_COMPONENT_TOKENS);
 			if (pos1Token == CSSToken.NONE) {
 				throw lexer.unexpectedToken();
 			}
 			
 			// Check for pos2 as well
-			final CSSToken pos2Token = lexSkipWSAndComment(POSITION_COMPONENT_TOKENS);
+			final CSSToken pos2Token = lexer.lexSkipWSAndComment(POSITION_COMPONENT_TOKENS);
 			if (pos2Token == CSSToken.NONE) {
 				ret = pos1Token.getPositionComponent();
 			}
@@ -1164,10 +1177,12 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		return getQuotedString();
 	}
 
+	private static final CSSToken [] QUOTED_STRING_TOKENS = tokens(CSSToken.QUOTED_STRING, CSSToken.SINGLE_QUOTED_STRING);
+	
 	private String parseAnyQuotedString() throws IOException, ParserException {
 		
 		// parse until quote
-		final CSSToken token = lexSkipWSAndComment(CSSToken.QUOTED_STRING, CSSToken.SINGLE_QUOTED_STRING);
+		final CSSToken token = lexer.lexSkipWSAndComment(QUOTED_STRING_TOKENS);
 		
 		if (token != CSSToken.QUOTED_STRING && token != CSSToken.SINGLE_QUOTED_STRING) {
 			throw lexer.unexpectedToken();
@@ -1217,7 +1232,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		final CachedSize cachedSize = new CachedSize();
 		
 		do {
-			CSSToken token = lexSkipWSAndComment(BG_POSITION_TOKENS);
+			CSSToken token = lexer.lexSkipWSAndComment(BG_POSITION_TOKENS);
 			
 			switch (token) {
 			case INTEGER:
@@ -1245,7 +1260,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 				}
 				
 				// another position component, comma for next layer or semicolon
-				CSSToken secondPosToken = lexSkipWSAndComment(BG_SECOND_POSITION_COMPONENT_TOKENS);
+				CSSToken secondPosToken = lexer.lexSkipWSAndComment(BG_SECOND_POSITION_COMPONENT_TOKENS);
 				
 				switch (secondPosToken) {
 				
@@ -1297,7 +1312,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	}
 	
 	private boolean parseBgSize(LISTENER_CONTEXT context, int bgLayer, CachedSize cachedSize, boolean readComma) throws IOException, ParserException  {
-		CSSToken token = lexSkipWSAndComment(BG_SIZE_TOKENS);
+		CSSToken token = lexer.lexSkipWSAndComment(BG_SIZE_TOKENS);
 		
 		boolean commaRead = false;
 		
@@ -1376,7 +1391,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		boolean commaRead = false;
 		
 		do {
-			CSSToken token = lexSkipWSAndComment(tokens);
+			CSSToken token = lexer.lexSkipWSAndComment(tokens);
 			
 			final E value = getValue.apply(token);
 			
@@ -1450,7 +1465,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		
 		final CSSToken [] tokens = TokenMergeHelper.merge(tokenMap.values(), CSSToken.COMMA);
 		
-		CSSToken token = lexSkipWSAndComment(tokens);
+		CSSToken token = lexer.lexSkipWSAndComment(tokens);
 		
 		
 		final String text = lexer.get();
@@ -1519,7 +1534,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			tokenMap.remove(CSStyle.BACKGROUND_POSITION);
 			
 			// Now we might have '/' for size
-			token = lexSkipWSAndComment(CSSToken.SLASH);
+			token = lexer.lexSkipWSAndComment(CSSToken.SLASH);
 			if (token == CSSToken.SLASH) {
 				// we should now have size
 				parseBgSize(context, bgLayer, cachedSize, false);
@@ -1678,7 +1693,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	private boolean readComma() throws IOException, ParserException {
 		boolean commaRead = false;
 		
-		switch(lexSkipWSAndComment(CSSToken.COMMA)) {
+		switch(lexer.lexSkipWSAndComment(CSSToken.COMMA)) {
 		case COMMA: commaRead = true; break; // continue next iteration
 		case NONE: break;
 		default: throw lexer.unexpectedToken();
@@ -1736,7 +1751,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	private static final CSSToken [] FONTSIZE_TOKENS = copyTokens(token -> token.getFontSize() != null, CSSToken.INTEGER);
 	
 	private void parseFontSize(LISTENER_CONTEXT context) throws NumberFormatException, IOException, ParserException {
-		CSSToken token = lexSkipWSAndComment(FONTSIZE_TOKENS);
+		CSSToken token = lexer.lexSkipWSAndComment(FONTSIZE_TOKENS);
 		
 		switch (token) {
 		case INTEGER:
@@ -1760,7 +1775,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	private static final CSSToken [] FONTWEIGHT_TOKENS = copyTokens(token -> token.getFontWeight() != null, CSSToken.INTEGER);
 	
 	private void parseFontWeight(LISTENER_CONTEXT context) throws NumberFormatException, IOException, ParserException {
-		CSSToken token = lexSkipWSAndComment(FONTWEIGHT_TOKENS);
+		CSSToken token = lexer.lexSkipWSAndComment(FONTWEIGHT_TOKENS);
 		
 		switch (token) {
 		case INTEGER:
@@ -1823,7 +1838,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 		do {
 			boolean gotFilterEnum = false;
 			
-			token = lexSkipWSAndComment(FILTER_TOKENS);
+			token = lexer.lexSkipWSAndComment(FILTER_TOKENS);
 			
 			switch (token) {
 			
@@ -1890,7 +1905,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			}
 
 			if (!done) {
-				token = lexSkipWSAndComment(CSSToken.COMMA);
+				token = lexer.lexSkipWSAndComment(CSSToken.COMMA);
 				
 				switch (token) {
 				case COMMA:
@@ -2085,7 +2100,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 			throw new IllegalArgumentException("input tokens must contain ')'");
 		}
 		
-		CSSToken token = lexSkipWSAndComment(tokens);
+		CSSToken token = lexer.lexSkipWSAndComment(tokens);
 		
 		status.clear();
 		
@@ -2142,7 +2157,7 @@ public class CSSParser<LISTENER_CONTEXT> extends BaseParser<CSSToken, CharInput>
 	
 	private void parseEnum(CSSToken [] tokens, Consumer<CSSToken> onToken) throws IOException, ParserException {
 		
-		CSSToken token = lexSkipWSAndComment(tokens);
+		CSSToken token = lexer.lexSkipWSAndComment(tokens);
 		
 		if (token == CSSToken.NONE) {
 			throw lexer.unexpectedToken();

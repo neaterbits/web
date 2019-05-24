@@ -31,7 +31,7 @@ public class CSSParseHelperNumbers extends CSSParserHelperBase {
 			beforeDot = parseInt(lexer);
 
 			// may or may not be a dot here
-			token = CSSParserHelperWS.lexSkipWSAndComment(lexer, CSSToken.DOT);
+			token = lexer.lexSkipWSAndComment(CSSToken.DOT);
 			if (token == CSSToken.DOT) {
 				CSSParserHelperWS.assureTokenSkipWSAndComment(lexer, CSSToken.INTEGER);
 				afterDot = lexer.get();

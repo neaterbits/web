@@ -19,7 +19,7 @@ class CSSParserHelperFunction {
 	
 	static Object [] parseFunctionParams(Lexer<CSSToken, CharInput> lexer, int numParams, IParseParam parseParam) throws IOException, ParserException {
 		// Parsed the function name already, parse the parameters
-		CSSToken token = CSSParserHelperWS.lexSkipWSAndComment(lexer, CSSToken.PARENTHESIS_START);
+		CSSToken token = lexer.lexSkipWSAndComment(CSSToken.PARENTHESIS_START);
 	
 		if (token != CSSToken.PARENTHESIS_START) {
 			throw lexer.unexpectedToken();
@@ -35,7 +35,7 @@ class CSSParserHelperFunction {
 			
 			for (int i = 0; i < numParams; ++ i) {
 				
-				CSSParserHelperWS.skipAnyWS(lexer);
+				lexer.skipAnyWS();
 				
 				ret[i] = parseParam.parse(i);
 
@@ -44,7 +44,7 @@ class CSSParserHelperFunction {
 						? CSSToken.PARENTHESIS_END
 						: CSSToken.COMMA;
 				
-				token = CSSParserHelperWS.lexSkipWSAndComment(lexer, nextToken);
+				token = lexer.lexSkipWSAndComment(nextToken);
 
 				if (token != nextToken) {
 					throw lexer.unexpectedToken();
@@ -55,9 +55,14 @@ class CSSParserHelperFunction {
 		return ret;
 	}
 
+	private static final CSSToken [] NEXT_FUNCTION_PARAM = new CSSToken [] {
+			CSSToken.COMMA,
+			CSSToken.PARENTHESIS_END
+	};
+	
 	static Object [] parseUnknownNumberOfFunctionParams(Lexer<CSSToken, CharInput> lexer, IParseParam parseParam) throws IOException, ParserException {
 		// Parsed the function name already, parse the parameters
-		CSSToken token = CSSParserHelperWS.lexSkipWSAndComment(lexer, CSSToken.PARENTHESIS_START);
+		CSSToken token = lexer.lexSkipWSAndComment(CSSToken.PARENTHESIS_START);
 	
 		if (token != CSSToken.PARENTHESIS_START) {
 			throw lexer.unexpectedToken();
@@ -73,11 +78,11 @@ class CSSParserHelperFunction {
 		
 		do {
 				
-			CSSParserHelperWS.skipAnyWS(lexer);
+			lexer.skipAnyWS();
 			
 			list.add(parseParam.parse(paramIdx));
 			
-			token = CSSParserHelperWS.lexSkipWSAndComment(lexer, CSSToken.COMMA, CSSToken.PARENTHESIS_END);
+			token = lexer.lexSkipWSAndComment(NEXT_FUNCTION_PARAM);
 
 			switch (token) {
 			case COMMA:

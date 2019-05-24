@@ -140,7 +140,7 @@ public class CSSParserHelperSize extends CSSParserHelperBase {
 		CSSUnit unit = defaultUnit;
 		
 		// Decimal number, should be integer
-		token = CSSParserHelperWS.lexSkipWSAndComment(lexer, CSSToken.INTEGER);
+		token = lexer.lexSkipWSAndComment(CSSToken.INTEGER);
 		
 		if (token != CSSToken.INTEGER) {
 			throw lexer.unexpectedToken();
