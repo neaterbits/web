@@ -1,11 +1,11 @@
 package com.test.web.document.html.oo;
 
 import com.neaterbits.util.IEnum;
+import com.neaterbits.util.StringUtils;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.ICommonLinkAttributes;
 import com.test.web.document.html.common.enums.LinkRelType;
 import com.test.web.document.html.common.enums.LinkRevType;
-import com.test.web.util.StringUtils;
 
 class OOCommonLinkAttributes implements ICommonLinkAttributes {
 	private String href;

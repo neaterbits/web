@@ -2,7 +2,7 @@ package com.test.web.types;
 
 import java.util.function.BiFunction;
 
-// Decimal-size for HTML sizes, does not required BigDecial, we just specify as a int and a shift
+// Decimal-size for HTML sizes, does not required BigDecimal, we just specify as a int and a shift
 // We do not need BigInteger or unlimited precision
 // Can also encode this as an int for storage
 public class DecimalSize {

@@ -2,8 +2,8 @@ package com.test.web.document.html.common;
 
 import java.math.BigDecimal;
 
-import com.test.web.types.BigDecimalConversion;
-import com.test.web.util.StringUtils;
+import com.neaterbits.util.BigDecimalConversion;
+import com.neaterbits.util.StringUtils;
 
 public class HTMLStringConversion {
 

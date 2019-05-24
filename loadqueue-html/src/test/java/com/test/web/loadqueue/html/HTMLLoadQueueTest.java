@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.neaterbits.util.parse.ParserException;
+import com.test.util.io.buffers.StringBuffers;
 import com.test.web.document.html._long.LongHTMLDocument;
-import com.test.web.io._long.StringBuffers;
 import com.test.web.layout.common.page.PageLayout;
 import com.test.web.loadqueue.common.LoadQueue;
 import com.test.web.loadqueue.common.LoadQueueAndStream;

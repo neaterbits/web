@@ -2,11 +2,11 @@ package com.test.web.document.html.oo;
 
 import java.math.BigDecimal;
 
+import com.neaterbits.util.BigDecimalConversion;
 import com.test.web.document.common.DocumentState;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.HTMLElement;
 import com.test.web.document.html.common.HTMLStringConversion;
-import com.test.web.types.BigDecimalConversion;
 import com.test.web.types.DecimalSize;
 
 class OOProgressElement extends OOLeafElement {

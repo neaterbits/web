@@ -1,10 +1,10 @@
 package com.test.web.document.html.oo;
 
 import com.neaterbits.util.IEnum;
+import com.neaterbits.util.StringUtils;
 import com.test.web.document.html.common.HTMLAttribute;
 import com.test.web.document.html.common.ICommonDisplayableLinkAttributes;
 import com.test.web.document.html.common.enums.HTMLTarget;
-import com.test.web.util.StringUtils;
 
 // <a> and <area> are displayable links that can delegate to this class
 // cannot inherit since <a> is container while <area> is leaf element
