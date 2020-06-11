@@ -2,6 +2,9 @@ package com.test.web.parse.css;
 
 import com.test.web.css.common.enums.CSSBackgroundColor;
 import com.test.web.css.common.enums.CSSBackgroundImage;
+
+import java.util.function.Predicate;
+
 import com.neaterbits.util.parse.CharType;
 import com.neaterbits.util.parse.CharTypeHexDigit;
 import com.neaterbits.util.parse.CharTypeInteger;
@@ -1313,7 +1316,12 @@ public enum CSSToken implements IToken {
 		return toLiteral;
 	}
 
-	public CSStyle getElement() {
+	@Override
+    public Predicate<CharSequence> getCustom() {
+        return null;
+    }
+
+    public CSStyle getElement() {
 		return element;
 	}
 

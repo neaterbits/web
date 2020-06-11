@@ -1,21 +1,14 @@
 package com.test.web.document.html._long;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
-import com.neaterbits.util.buffers.DuplicateDetectingStringStorageBuffer;
 import com.neaterbits.util.buffers.LongBuffersIntegerIndex;
+import com.neaterbits.util.buffers.MapStringStorageBuffer;
 import com.neaterbits.util.io.strings.Tokenizer;
-import com.neaterbits.util.parse.IParse;
-import com.neaterbits.util.parse.ParserException;
 import com.test.util.io.buffers.StringBuffers;
 import com.test.web.css.common.ICSSDocumentStyles;
 import com.test.web.document.common.DocumentState;
@@ -58,15 +51,15 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 	private final int [] stack;
 	private int depth;
 
-	private final DuplicateDetectingStringStorageBuffer idBuffer;
-	private final DuplicateDetectingStringStorageBuffer classBuffer;
-	private final DuplicateDetectingStringStorageBuffer accessKeyBuffer;
-	private final DuplicateDetectingStringStorageBuffer contextMenuBuffer;
-	private final DuplicateDetectingStringStorageBuffer langBuffer;
-	private final DuplicateDetectingStringStorageBuffer titleBuffer;
-	private final DuplicateDetectingStringStorageBuffer relBuffer;
-	private final DuplicateDetectingStringStorageBuffer typeBuffer;
-	private final DuplicateDetectingStringStorageBuffer hrefBuffer;
+	private final MapStringStorageBuffer idBuffer;
+	private final MapStringStorageBuffer classBuffer;
+	private final MapStringStorageBuffer accessKeyBuffer;
+	private final MapStringStorageBuffer contextMenuBuffer;
+	private final MapStringStorageBuffer langBuffer;
+	private final MapStringStorageBuffer titleBuffer;
+	private final MapStringStorageBuffer relBuffer;
+	private final MapStringStorageBuffer typeBuffer;
+	private final MapStringStorageBuffer hrefBuffer;
 
 	private final LongStyleDocument styleDocument;
 
@@ -88,14 +81,15 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 		this.state = new DocumentState<>();
 		
-		this.idBuffer = new DuplicateDetectingStringStorageBuffer();
-		this.classBuffer = new DuplicateDetectingStringStorageBuffer();
+		this.idBuffer = new MapStringStorageBuffer();
+		this.classBuffer = new MapStringStorageBuffer();
 		
 		this.elementClasses = new int[100];
 		this.numElementClasses = 1; // Skip initial so that default encoded class value (0) never points to an index 
 		
 		// Just reuse same buffer
-		this.accessKeyBuffer = this.contextMenuBuffer = this.langBuffer = this.titleBuffer = this.relBuffer = this.typeBuffer = this.hrefBuffer = new DuplicateDetectingStringStorageBuffer();
+		this.accessKeyBuffer = this.contextMenuBuffer = this.langBuffer = this.titleBuffer = this.relBuffer = this.typeBuffer = this.hrefBuffer
+		        = new MapStringStorageBuffer();
 		
 		this.rootElement = LongHTML.END_OF_LIST_MARKER;
 	
@@ -457,7 +451,7 @@ public class LongHTMLDocument extends LongBuffersIntegerIndex
 
 		final int id = LongHTML.getId(elementBuf, elementOffset);
 				
-		return id == DuplicateDetectingStringStorageBuffer.NONE ? null : idBuffer.getString(id);
+		return id == MapStringStorageBuffer.NONE ? null : idBuffer.getString(id);
 	}
 	
 	@Override

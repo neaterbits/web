@@ -1,6 +1,6 @@
 package com.test.web.render.queue;
 
-import com.neaterbits.util.buffers.DuplicateDetectingStringStorageBuffer;
+import com.neaterbits.util.buffers.MapStringStorageBuffer;
 import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.IFontLookup;
@@ -21,7 +21,7 @@ class RenderQueue implements IDelayedRenderer {
 
 	RenderQueue(IRenderQueueDebugListener debugListener) {
 		
-		final DuplicateDetectingStringStorageBuffer stringStorageBuffer = new DuplicateDetectingStringStorageBuffer();
+		final MapStringStorageBuffer stringStorageBuffer = new MapStringStorageBuffer();
 		
 		final LongBuf secondary = new LongBuf(stringStorageBuffer, null, debugListener);
 		

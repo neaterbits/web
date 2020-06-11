@@ -1,5 +1,7 @@
 package com.test.web.parse.html;
 
+import java.util.function.Predicate;
+
 import com.neaterbits.util.parse.CharType;
 import com.neaterbits.util.parse.CharTypeWS;
 import com.neaterbits.util.parse.IToken;
@@ -289,7 +291,12 @@ public enum HTMLToken implements IToken {
 		return charType;
 	}
 
-	public HTMLElement getElement() {
+	@Override
+    public Predicate<CharSequence> getCustom() {
+        return null;
+    }
+
+    public HTMLElement getElement() {
 		return element;
 	}
 

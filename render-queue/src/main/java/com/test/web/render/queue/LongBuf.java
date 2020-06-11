@@ -3,7 +3,7 @@ package com.test.web.render.queue;
 import java.util.Arrays;
 
 import com.neaterbits.util.buffers.BitOperations;
-import com.neaterbits.util.buffers.DuplicateDetectingStringStorageBuffer;
+import com.neaterbits.util.buffers.MapStringStorageBuffer;
 import com.test.web.render.common.IDelayedRenderer;
 import com.test.web.render.common.IFont;
 import com.test.web.render.common.IFontLookup;
@@ -19,12 +19,12 @@ final class LongBuf extends BitOperations implements IDelayedRenderer, IMarkRend
 	private int offset;
 
 	// store strings here
-	private final DuplicateDetectingStringStorageBuffer repeatableBuffer;
+	private final MapStringStorageBuffer repeatableBuffer;
 	
 	// set to non-null if this is primary buffer
 	private final LongBuf secondary;
 	
-	LongBuf(DuplicateDetectingStringStorageBuffer repeatableBuffer, LongBuf secondary, IRenderQueueDebugListener debugListener) {
+	LongBuf(MapStringStorageBuffer repeatableBuffer, LongBuf secondary, IRenderQueueDebugListener debugListener) {
 		this.repeatableBuffer = repeatableBuffer;
 		this.secondary = secondary;
 		this.debugListener = debugListener;

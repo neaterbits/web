@@ -7,7 +7,7 @@ public class CharTypeHTMLElementTag extends CharType {
 	public static final CharTypeHTMLElementTag INSTANCE = new CharTypeHTMLElementTag();
 
 	@Override
-	public boolean matches(String s) {
+	public boolean matches(CharSequence s) {
 		boolean matches;
 		
 		if (!isASCIILetter(s.charAt(0))) {

@@ -7,7 +7,7 @@ public class CharTypeHTMLElementClass extends CharType {
 	public static final CharTypeHTMLElementClass INSTANCE = new CharTypeHTMLElementClass();
 
 	@Override
-	public boolean matches(String s) {
+	public boolean matches(CharSequence s) {
 		return CharTypeHTMLElementId.isIdentifier(s);
 	}
 }

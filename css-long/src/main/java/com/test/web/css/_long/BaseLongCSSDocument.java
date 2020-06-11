@@ -1,6 +1,6 @@
 package com.test.web.css._long;
 
-import com.neaterbits.util.buffers.DuplicateDetectingStringStorageBuffer;
+import com.neaterbits.util.buffers.MapStringStorageBuffer;
 import com.neaterbits.util.buffers.LongBuffersIntegerIndex;
 import com.neaterbits.util.io.strings.Tokenizer;
 import com.test.web.css.common.CSSGradientColorStop;
@@ -59,7 +59,7 @@ public abstract class BaseLongCSSDocument
 		extends LongBuffersIntegerIndex
 		implements CSSParserListener<Void>, ICSSDocumentStyles<Integer> {
 
-	private DuplicateDetectingStringStorageBuffer fontBuffer;
+	private MapStringStorageBuffer fontBuffer;
 
 	private int curParseElement;
 
